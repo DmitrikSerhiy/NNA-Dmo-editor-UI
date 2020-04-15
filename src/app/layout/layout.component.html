@@ -1,0 +1,24 @@
+<body>
+  <mat-sidenav-container role="main" style="height: 100%" (backdropClick)="closeByBackdrop()" >
+    <mat-sidenav #rightMenu position="end" [mode]="over" [(opened)]="toggleRightMenu" role="directory"
+      [fixedInViewport]="true" [fixedTopGap]="0" [fixedBottomGap]="0"> 
+      
+      <div [ngSwitch]="currentMenuName">
+        <!-- Values took from rigth-menus.ts -->
+        <app-dmo-collections *ngSwitchCase="'dmoCollections'" [rightMenuIsClosing$]='rightMenuIsClosing$' (closeRightMenu)="closeRightMenu($event)" ></app-dmo-collections>  
+        <!-- ' -->
+        <div *ngSwitchDefault>No selected menu</div>
+      </div>
+   
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" (toggleMenu)="oppenedByGrabber($event)" ></app-right-menu-grabber>
+      <app-nav-menu></app-nav-menu>
+      <app-sidebar (collapsedEvent)="receiveCollapsed($event)" (toggleRightMenu)="receiveRightMenu($event)">
+      </app-sidebar>
+      <section class="main-container" [ngClass]="{collapsed: collapedSideBar}">
+        <router-outlet></router-outlet>
+      </section>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</body>

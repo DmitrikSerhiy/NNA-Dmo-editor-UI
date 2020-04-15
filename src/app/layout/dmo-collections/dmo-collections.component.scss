@@ -1,0 +1,129 @@
+.dmo-collections {
+  border-bottom-width: 0;
+
+  @mixin collection-item {
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    &:hover {
+      background-color: #f1f5f7;
+      cursor: pointer;
+    }
+  }
+
+  .loader-container {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.3;
+    display: flex;
+    align-items: center;
+    margin-top: 3rem;
+
+    :first-child {
+      margin: auto;
+    }
+  }
+
+  .collection-buttons-row {
+    display: flex;
+    .add-collection-button {
+      height: 40px;
+      flex-basis: 80%;
+      @include collection-item;
+      justify-content: flex-start;
+    }
+    form {
+      min-height: 40px;
+      width: 100%;
+      padding: 0;
+      .add-collection-form {
+        display: flex;
+        justify-content: space-between;
+
+        input {
+          flex: 1 1 70%;
+        }
+        button {
+          margin: auto 5px;
+        }
+        .bg-secondary {
+          margin-right: 1.5rem;
+        }
+      }
+      .validation-wrapper {
+        height: 1.3rem;
+        display: flex;
+        justify-content: center;
+      }
+    }
+    .filter-collection-button {
+      height: 40px;
+      flex-basis: 20%;
+      @include collection-item;
+
+      justify-content: center;
+      i {
+        margin: auto;
+      }
+    }
+  }
+  .list-group-item {
+    width: 100%;
+    display: flex;
+    padding: 0;
+    border-width: 0px 0px 1px 0px;
+    border-radius: 0;
+    &:hover {
+      background-color: #f1f5f7;
+      cursor: pointer;
+
+      .remove-icon {
+        display: block;
+      }
+    }
+
+    .list-group-item-link {
+      text-decoration: none;
+      color: #000;
+      outline: none;
+      padding: 0.75rem 1.25rem;
+      width: 100%;
+      display: flex;
+
+      .dmo-count {
+        margin-left: auto;
+        margin-right: 4rem;
+      }
+    }
+
+    .remove-icon {
+      z-index: 5;
+      position: absolute;
+      padding: 0.75rem 1.25rem;
+      right: 0;
+      border: 1px black;
+      border-radius: 50%;
+      display: none;
+      margin-left: auto;
+      margin-right: 0.4rem;
+    }
+  }
+
+  .collections-placeholder {
+    display: flex;
+    justify-content: center;
+    div {
+        margin: auto;
+        margin-top: 4rem;
+    }
+  }
+
+  .collection-item:last-child {
+    border-width: 0;
+  }
+
+}

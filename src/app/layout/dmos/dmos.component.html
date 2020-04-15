@@ -1,0 +1,69 @@
+<div class="dmos-page">
+
+    <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class="dmos-table-details">
+        <div *ngIf="selectedDmo" class="dmo-info">
+            <div>
+                number of acts, bits, episodes etc.
+            </div>
+            <button class="nna-button nna-button-primary" (click)="redirectToDmo()"><i class="fa fa-sitemap"
+                    aria-hidden="true"></i> &#160; Open editor</button>
+            <button class="nna-button nna-button-secondary" (click)="onDmoRemove()"><i class="fa fa-trash"
+                    aria-hidden="true"></i> &#160; Remove DMO </button>
+        </div>
+
+        <div class="search-container">
+            <i class="fa fa-search text-muted"></i>
+            <input type="text" class="form-control input-underline-light search-input" (focus)="resetSelected()"
+                placeholder="dmo, movie, rating etc." (keyup)="applyDmosFilter($event)" autocomplete="off">
+        </div>
+    </div>
+    <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class='dmos-table-wrapper'>
+
+        <table mat-table [dataSource]="dmosTable" #dmosSorter="matSort" matSort>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef class="hoverable-element"> </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="movieTitle">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
+                    class="hoverable-element column-header"> Movie title </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
+                    class="hoverable-element column-header">
+                    DMO name </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dmoStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="dmoStatus" (click)="resetSelected()"
+                    class="hoverable-element column-header"> Status </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.dmoStatus}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="shortComment">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="shortComment" (click)="resetSelected()"
+                    class="hoverable-element column-header"> Comment </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.shortComment}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="mark">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="mark" (click)="resetSelected()"
+                    class="hoverable-element column-header">
+                    Rating </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.mark}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="dmosTableColumns"></tr>
+            <tr mat-row class="hoverable-element" *matRowDef="let row; columns: dmosTableColumns;"
+                [class.clicked-row]="selectedDmo == row" (click)="onRowSelect(row)">
+            </tr>
+        </table>
+
+        <mat-paginator #dmosPaginator [length]="dmosCount" [pageSize]="15" showFirstLastButtons></mat-paginator>
+    </div>
+</div>

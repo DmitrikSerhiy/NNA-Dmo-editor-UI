@@ -1,0 +1,59 @@
+<div class="login-page" [@routerTransition]>
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <!-- <img class="user-avatar" src="assets/images/logo.png" width="150px" /> -->
+            <h1>Registration</h1>
+            <form role="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()"> 
+                <div class="form-content">
+                    <div class="form-group">
+                        <input type="text" name="name" formControlName="name" class="form-control input-underline input-lg" placeholder="{{ 'User name' }}">
+
+                        <div class="validation-wrapper">
+                            <div *ngIf="name.invalid && (name.dirty || name.touched)" class="validation-container">
+                                <div *ngIf="name.errors.required">
+                                    <p class="validation-text">Name is missing</p> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="email" formControlName="email" class="form-control input-underline input-lg" placeholder="{{ 'Email' }}">
+
+                        <div class="validation-wrapper">
+                            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="validation-container">
+                                <div *ngIf="email.errors.required">
+                                    <p class="validation-text">Email is missing</p> 
+                                </div>
+                                <div *ngIf="email.errors.email">
+                                    <p class="validation-text">Not correct email address</p>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password" formControlName="password" class="form-control input-underline input-lg" placeholder="{{ 'Password' }}">
+
+                        <div class="validation-wrapper">
+                            <div *ngIf="password.invalid && (password.dirty || password.touched)" class="validation-container">
+                                <div *ngIf="password.errors.required">
+                                    <p class="validation-text">Password is missing </p>
+                                </div>
+                                <div *ngIf="password.errors.minlength">
+                                    <p class="validation-text">Password must be at least 8 characters long</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a class="btn rounded-btn" [routerLink]="['/dashboard']"><i class="fa fa-home" aria-hidden="true"></i></a>
+                &nbsp;
+                <a class="btn rounded-btn" [routerLink]="['/login']">{{ 'Already have an account?' }}</a>
+                &nbsp;
+                <button class="btn rounded-btn" type="submit"  [disabled]="!registerForm.valid"> Register </button>
+            </form>
+        </div>
+    </div>
+</div>

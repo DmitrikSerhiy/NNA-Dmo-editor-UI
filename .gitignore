@@ -1,46 +1,40 @@
-# Outputs
-bazel-*
-test-project-host-*
-dist/
-dist-schema/
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# IDEs
-jsconfig.json
+# compiled output
+/dist
+/dist-server
+/tmp
+/out-tsc
 
-# Intellij IDEA/WebStorm
-# https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-.idea/inspectionProfiles/
-.idea/**/compiler.xml
-.idea/**/encodings.xml
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
+# dependencies
+/node_modules
 
-# Also ignore code styles because .editorconfig is used instead.
-.idea/codeStyles/
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# VSCode
-# https://github.com/github/gitignore/blob/master/Global/VisualStudioCode.gitignore
-.vscode/
+# IDE - VSCode
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-**/*.code-workspace
 
-# Typings file.
-typings/
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
 
-# Misc
-coverage/
-node_modules/
-tmp/
-npm-debug.log*
-yarn-error.log*
-.ng_pkg_build/
-
-# Mac OSX Finder files.
-**/.DS_Store
+# System Files
 .DS_Store
+Thumbs.db

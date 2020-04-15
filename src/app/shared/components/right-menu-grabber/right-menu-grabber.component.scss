@@ -1,0 +1,34 @@
+.right-menu-grabber-container {
+    position: fixed;
+    background-color: #1678c2;
+    right: -1.2rem;
+    top: 4.5rem;
+    z-index: 1000;
+    color: #fff;
+    border-top-left-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+    height: 1.8rem;
+    display: flex;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #0c61a0;
+        color: #fff;
+        right: 0rem;
+    }
+
+    .right-menu-grabber {
+        margin: auto;
+        display: flex;
+
+        i {
+            padding-left: 4px;
+        }
+
+        .fa-list {
+            padding-top: 1px;
+        }
+    }
+
+
+}

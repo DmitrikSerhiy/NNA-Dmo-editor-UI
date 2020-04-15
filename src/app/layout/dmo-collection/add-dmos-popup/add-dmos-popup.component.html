@@ -1,0 +1,47 @@
+<div class="dmos-modal">
+    <div mat-dialog-title>
+        <h4 class="modal-title" id="modal-basic-title">Add DMOs to '{{collectionName}}' collection</h4>
+    </div>
+    <div [hidden]="!dmos" mat-dialog-content class="dmos-table-container">
+        <div [hidden]="showEditForm" class="search-container">
+            <i class="fa fa-search text-muted"></i>
+            <input type="text" class="form-control input-underline-light search-input"
+                placeholder="dmo name or movie title" (keyup)="applyDmosFilter($event)" autocomplete="off">
+        </div>
+        <table mat-table [dataSource]="dmosTable" #dmosSort="matSort" matSort>
+            <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef class="column-header">
+                    <mat-checkbox (change)="$event ? dmosTableToggle() : null"
+                        [checked]="selectedDmo.hasValue() && isAllDmoSelected()"
+                        [indeterminate]="selectedDmo.hasValue() && !isAllDmoSelected()">
+                    </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row" class="dmo-cell">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectedDmo.toggle(row) : null"
+                        [checked]="selectedDmo.isSelected(row)">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="movieTitle">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="column-header" class="hoverable-element"> Movie title </th>
+                <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="column-header" class="hoverable-element"> DMO name </th>
+                <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="dmosTableColumn"></tr>
+            <tr mat-row *matRowDef="let row; columns: dmosTableColumn;"> </tr>
+
+        </table>
+        <mat-paginator #dmosPaginator [length]="dmosCount" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <div class="modal-footer" mat-dialog-actions>
+        <button type="button" class="nna-button nna-button-secondary" (click)="onClose()">Cancel</button>
+        <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Add</button>
+    </div>
+</div>

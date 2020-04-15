@@ -1,0 +1,6 @@
+<div *ngIf="shouldbeShown" class="right-menu-grabber-container" (click)="toggleRightMenu()" title={{userFriendlyMenuName}}>
+    <div [ngSwitch]="menuName" class="right-menu-grabber">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> 
+        <i class="fa fa-list" *ngSwitchCase="'dmoCollections'"></i>
+    </div>
+</div>

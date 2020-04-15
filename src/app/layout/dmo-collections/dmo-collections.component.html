@@ -1,0 +1,59 @@
+<div class="card card-default mb-3 dmo-collections">
+    <div class="card-header">
+        <i class="fa fa-list" aria-hidden="true"></i> Decomposed movie object collentions
+    </div>
+    <div *ngIf="isFormProcessing" class="loader-container">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    </div>
+    <div class="card-body p-0">
+        <div class="collection-buttons-row">
+            <div class="add-collection-button" (click)="toggleAddCollectionForm()" [hidden]="!showAddButton">
+                <i class="fa fa-plus control-icon" aria-hidden="true"> <span>new collection</span></i>
+            </div>
+
+            <form [formGroup]="addCollectionForm" (ngSubmit)="onAddCollection()" [hidden]="showAddButton" autocomplete="off">
+                <div class="add-collection-form">
+                    <input id="collectionNameField" #collectionNameField type="text" name="collectionName" formControlName="collectionName"
+                        class="form-control input-underline-light" placeholder="name">
+                    <button type="submit" [disabled]="!addCollectionForm.valid" class='nna-icon-button bg-primary'
+                        [ngClass]="{'nna-diabled-button': !addCollectionForm.valid}">
+                        <i class="fa fa-check"aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class='nna-icon-button bg-secondary' (click)="toggleAddCollectionForm()">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
+                    class="validation-wrapper">
+                    <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
+                        class="validation-container">
+                        <div *ngIf="collectionName.errors.required">
+                            <p class="validation-text">name is missing </p>
+                        </div>
+                        <div *ngIf="collectionName.errors.maxlength">
+                            <p class="validation-text">Maximum name length is 20</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="filter-collection-button" [hidden]="!showAddButton" (click)="sortCollections()" >                
+                <i [hidden]="collectionsByAcs || collectionsByDefault" class="fa fa-sort-numeric-desc" aria-hidden="true" title="sort by descending"></i>
+                <i [hidden]="collectionsByDesc || collectionsByDefault" class="fa fa-sort-numeric-asc" aria-hidden="true" title="sort by ascending"></i>
+                <i [hidden]="collectionsByDesc || collectionsByAcs" class="fa fa-list" aria-hidden="true" title="do not sort"></i>
+            </div>
+        </div>
+
+        <div class="list-group">
+            <div class="list-group-item" *ngFor="let dmoList of sortedDmoLists;">
+                <div class="list-group-item-link" (click)="openCollection(dmoList.id)">
+                    &#9679; {{ dmoList.collectionName }} <span class="dmo-count">{{ dmoList.dmoCount }}</span>
+                </div>
+                <div class="remove-icon" (click)="onDeleteCollection(dmoList)"><i class="fa fa-trash"></i></div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="dmoLists && !dmoLists.length" class="collections-placeholder">
+        <div> You have no collection yet</div>
+    </div>
+
+</div>

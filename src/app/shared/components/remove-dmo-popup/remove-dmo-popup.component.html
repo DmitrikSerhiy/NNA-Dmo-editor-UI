@@ -1,0 +1,12 @@
+<div class="delete-dmo-modal">
+    <div class="modal-header" mat-dialog-title>
+        <h4 class="modal-title" id="modal-basic-title">Delete DMO</h4>
+    </div>
+    <div class="modal-body" mat-dialog-content>
+        <p style="margin: 0"> Are you sure you want to delete '{{dmoName}}' DMO?</p>
+    </div>
+    <div class="modal-footer" mat-dialog-actions>
+        <button type="button" class="nna-button nna-button-secondary" (click)="onClose()">Cancel</button>
+        <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Delete</button>
+    </div>
+</div>

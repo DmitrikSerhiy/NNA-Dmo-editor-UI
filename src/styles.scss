@@ -1,0 +1,165 @@
+@import "~ngx-toastr/toastr";
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #e01a76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.non-user-agent-css:-webkit-autofill {
+  background-color: #222 !important;
+}
+
+.validation-wrapper {
+  margin-top: 0.2rem;
+  height: 0.8rem;
+
+  .validation-container {
+    height: 0.8rem;
+    p {
+      margin-bottom: 0;
+    }
+  }
+}
+.validation-text {
+  color: #ff8c00;
+}
+
+.user-settings {
+  :hover {
+    cursor: pointer;
+  }
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@mixin nna-button-settings() {
+  height: 1.6rem;
+  font-size: 0.6rem;
+  outline: none !important;
+  text-shadow: none;
+  line-height: 1em;
+  font-style: normal;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 500rem;
+  user-select: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  min-height: 1em;
+  border: none;
+  vertical-align: baseline;
+  &:active {
+    text-shadow: none;
+    box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.35) inset !important;
+  }
+  &:hover {
+    text-shadow: none;
+  }
+}
+
+.nna-icon-button {
+  @include nna-button-settings;
+  width: 1.6rem;
+  height: 1.6rem;
+  line-height: 25px;
+  font-size: 10px;
+
+  &:focus {
+    outline: 0 !important;
+  }
+
+  i {
+    margin: auto;
+    color: #fff;
+  }
+}
+
+.nna-diabled-button {
+  background-color: #545b62 !important;
+  pointer-events: none;
+}
+
+.nna-button {
+  @include nna-button-settings;
+}
+
+.nna-button-primary {
+  background-color: #1678c2;
+  color: #fff;
+  &:active {
+    background-color: #1a69a4;
+    color: #fff;
+  }
+  &:hover {
+    background-color: #0d71bb;
+    color: #fff;
+  }
+}
+
+.nna-button-secondary {
+  background-color: #545b62;
+  color: #fff;
+  &:active {
+    background-color:#505863;
+    color: #fff;
+  }
+  &:hover {
+    background-color: #474d53;
+    color: #fff;
+  }
+}
+
+.input-underline {
+  background: 0 0;
+  border: none;
+  box-shadow: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  border-radius: 0;
+}
+.input-underline:focus {
+  border-bottom: 2px solid #fff;
+  box-shadow: none;
+}
+
+.input-underline-light {
+  background: 0 0;
+  border: none;
+  box-shadow: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  color: #000;
+  border-radius: 0;
+}
+.input-underline-light:focus {
+  border-bottom: 1px solid #000;
+  box-shadow: 0px 17px 10px -17px rgba(0, 0, 0, 0.54);
+  outline: none;
+}
+
+.control-icon {
+  color: #007bff;
+  font-size: 14px;
+  span {
+    margin-left: 0.5rem;
+    color: black;
+    font-size: medium;
+  }
+}
+
+
+
