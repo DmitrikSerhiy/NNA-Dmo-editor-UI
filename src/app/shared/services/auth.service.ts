@@ -7,11 +7,11 @@ import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 import { UserDetails } from '../models/serverResponse';
 
+import { environment } from 'src/environments/environment';
+
 @Injectable()
 export class AuthService {
-
-    //todo: relocate it to environment file
-    serverUrl = 'https://localhost:44305/api/account/';
+    serverUrl = environment.server_user + 'account/';
     constructor(private http: HttpClient) { }
 
     authorize(email: string, password: string): Observable<UserDetails> {

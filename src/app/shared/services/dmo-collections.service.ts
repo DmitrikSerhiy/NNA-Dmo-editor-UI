@@ -5,13 +5,13 @@ import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class DmoCollectionsService {
-
-  serverUrl = 'https://localhost:44305/api/dmoCollections/';
-
+  serverUrl = environment.server_user + 'dmoCollections/';
   constructor(private http: HttpClient) { }
 
   getCollections(): Observable<DmoCollectionShortDto[]> {

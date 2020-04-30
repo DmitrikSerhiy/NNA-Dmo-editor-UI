@@ -7,7 +7,7 @@
     </div>
     <div class="card-body p-0">
         <div class="collection-buttons-row">
-            <div class="add-collection-button" (click)="toggleAddCollectionForm()" [hidden]="!showAddButton">
+            <div class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton">
                 <i class="fa fa-plus control-icon" aria-hidden="true"> <span>new collection</span></i>
             </div>
 
@@ -19,7 +19,7 @@
                         [ngClass]="{'nna-diabled-button': !addCollectionForm.valid}">
                         <i class="fa fa-check"aria-hidden="true"></i>
                     </button>
-                    <button type="button" class='nna-icon-button bg-secondary' (click)="toggleAddCollectionForm()">
+                    <button type="button" class='nna-icon-button bg-secondary' (click)="toggleAddCollectionForm(false)">
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </button>
                 </div>

@@ -3,7 +3,7 @@
         <h4 class="modal-title" id="modal-basic-title">Add DMOs to '{{collectionName}}' collection</h4>
     </div>
     <div [hidden]="!dmos" mat-dialog-content class="dmos-table-container">
-        <div [hidden]="showEditForm" class="search-container">
+        <div class="search-container">
             <i class="fa fa-search text-muted"></i>
             <input type="text" class="form-control input-underline-light search-input"
                 placeholder="dmo name or movie title" (keyup)="applyDmosFilter($event)" autocomplete="off">
@@ -41,7 +41,7 @@
     </div>
 
     <div class="modal-footer" mat-dialog-actions>
-        <button type="button" class="nna-button nna-button-secondary" (click)="onClose()">Cancel</button>
+        <button type="button" class="nna-button nna-button-secondary" (click)="onClose(false)">Cancel</button>
         <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Add</button>
     </div>
 </div>

@@ -160,6 +160,21 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       });
   }
 
+  toggleAddCollectionForm(close = false) {
+    if (close) {
+      this.showAddButton = true;
+    } else {
+      this.showAddButton = !this.showAddButton;
+    }
+    this.resetAddCollectionForm();
+
+    if (!this.showAddButton) {
+      setTimeout(() => {
+        this.collectionNameField.nativeElement.focus();
+      }, 100);
+    }
+  }
+
   private resetCollectionsSort() {
     this.collectionsByDefault = false;
     this.collectionsByAcs = false;
@@ -185,21 +200,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     }
     this.collectionManager.setCollectionId('');
     this.router.navigateByUrl('/');
-  }
-
-  private toggleAddCollectionForm(close = false) {
-    if (close) {
-      this.showAddButton = true;
-    } else {
-      this.showAddButton = !this.showAddButton;
-    }
-    this.resetAddCollectionForm();
-
-    if (!this.showAddButton) {
-      setTimeout(() => {
-        this.collectionNameField.nativeElement.focus();
-      }, 100);
-    }
   }
 
   private resetAddCollectionForm() {

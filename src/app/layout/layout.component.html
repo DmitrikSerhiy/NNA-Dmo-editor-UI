@@ -1,6 +1,6 @@
 <body>
   <mat-sidenav-container role="main" style="height: 100%" (backdropClick)="closeByBackdrop()" >
-    <mat-sidenav #rightMenu position="end" [mode]="over" [(opened)]="toggleRightMenu" role="directory"
+    <mat-sidenav #rightMenu position="end" [(opened)]="toggleRightMenu" role="directory"
       [fixedInViewport]="true" [fixedTopGap]="0" [fixedBottomGap]="0"> 
       
       <div [ngSwitch]="currentMenuName">

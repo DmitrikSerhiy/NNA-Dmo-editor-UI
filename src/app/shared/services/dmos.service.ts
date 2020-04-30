@@ -6,11 +6,13 @@ import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class DmosService {
-  serverUrl = 'https://localhost:44305/api/dmos/';
+  serverUrl = environment.server_user + 'dmos/';
   constructor(private http: HttpClient) { }
 
   getAlldmos(): Observable<DmoShortDto[]> {
