@@ -1,0 +1,23 @@
+version: 0.2
+
+env:
+    variables:
+        S3_BUCKET: "http://nna-front-bucket1.s3-website.eu-central-1.amazonaws.com"
+        BUILD_FOLDER: "dist"
+phases:
+  install:
+    runtime-versions:
+        nodejs: 10
+    commands:
+        - echo Installing source NPM dependencies...
+        - npm install
+        - npm install -g @angular/cli
+  build:
+    commands:
+        - echo Build started 
+        - ng build --prod
+artifacts:
+    files:
+        - '**/*'
+    base-directory: 'dist*'
+    discard-paths: yes
