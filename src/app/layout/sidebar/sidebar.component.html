@@ -16,7 +16,7 @@
             <span>{{ 'DMOs' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/dmo']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item">
+        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item">
             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Create DMO' }}</span>
         </a>
