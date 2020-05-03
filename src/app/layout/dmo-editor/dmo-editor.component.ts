@@ -1,8 +1,9 @@
-import { environment } from './../../../environments/environment';
+import { EditorHub } from './services/editor-hub.sercice';
+
 import { Toastr } from '../../shared/services/toastr.service';
 import { DmosService } from '../../shared/services/dmos.service';
 import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
-import * as signalR from '@aspnet/signalr';
+
 
 
 @Component({
@@ -12,9 +13,9 @@ import * as signalR from '@aspnet/signalr';
 })
 export class DmoEditorComponent implements OnInit {
   @ViewChild('dmobit', { static: true }) dmobit: ElementRef;
-  private hubConnection: signalR.HubConnection;
 
   constructor(
+    private editorHub: EditorHub,
     private dmosService: DmosService,
     private toastr: Toastr) { }
 
@@ -22,30 +23,22 @@ export class DmoEditorComponent implements OnInit {
     // this.dmosService.getDmo('1c1b7d62-6a1a-4f0a-9691-2418c1e0f324').subscribe({
     //   next: (res) => {console.log(res); }
     // });
+
+  }
+
+  connect() {
+    this.editorHub.startConnection();
+  }
+
+  disconnect() {
+    this.editorHub.abortConnection();
   }
 
   onEnter() {
     let text = this.dmobit.nativeElement.value;
     console.log(text);
 
-    this.startConnection();
-    this.listener();
+    this.editorHub.sendBeat(text);
   }
 
-  startConnection()  {
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.server_user + 'editor')
-      .build();
-
-    this.hubConnection
-      .start()
-      .then(() => console.log('Connection started'))
-      .catch(err => console.log('Error while starting connection: ' + err));
-  }
-
-  listener() {
-    this.hubConnection.on('Send', (data) => {
-      console.log(data);
-    });
-  }
 }
