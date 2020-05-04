@@ -1,3 +1,4 @@
+import { PartialDmoUpdateDto } from './../emo-editor-dtos';
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
 
@@ -32,9 +33,9 @@ export class EditorHub {
     }
 
 
-    sendBeat(message: string) {
+    partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
         if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('NewBeat', message);
+            this.hubConnection.invoke('DmoUpdate', dmoUpdate);
         }
     }
 
@@ -71,7 +72,7 @@ export class EditorHub {
     }
 
     private registerOnServerEvents() {
-        this.hubConnection.on('Notify', (data) => {
+        this.hubConnection.on('UpdateNotify', (data) => {
             console.log(data);
           });
     }

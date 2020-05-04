@@ -1,3 +1,4 @@
+import { BeatDto, PartialDmoUpdateDto } from './emo-editor-dtos';
 import { EditorHub } from './services/editor-hub.sercice';
 
 import { Toastr } from '../../shared/services/toastr.service';
@@ -38,7 +39,24 @@ export class DmoEditorComponent implements OnInit {
     let text = this.dmobit.nativeElement.value;
     console.log(text);
 
-    this.editorHub.sendBeat(text);
+
+    const update1: PartialDmoUpdateDto = {
+      dmoId: '1c1b7d62-6a1a-4f0a-9691-2418c1e01111',
+      beats: [
+      {
+        description: 'first beat',
+        order: 1,
+        plotTimeSpot: {hours: 0, minutes: 5 }
+      },
+      {
+        description: 'second beat',
+        order: 2,
+        plotTimeSpot: {hours: 0, minutes: 8 }
+      }
+    ]
+  };
+
+    this.editorHub.partiallyUpdateDmo(update1);
   }
 
 }
