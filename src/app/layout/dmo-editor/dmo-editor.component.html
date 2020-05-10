@@ -1,5 +1,5 @@
 <p>dmo editor works!</p>
 
-<button (click)='connect()'> Connect! </button>
-<button (click)='disconnect()'> Disconnenct! </button>
+<button *ngIf='!isConnected' (click)='connect()'> Connect! </button>
+<button *ngIf='isConnected' (click)='disconnect()'> Disconnenct! </button>
 <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit" (keyup.enter)="onEnter()">

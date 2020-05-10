@@ -14,24 +14,28 @@ export class EditorHub {
 
     constructor(private userManager: UserManager) { }
 
-    startConnection() {
+    async startConnection() {
         if (this.userManager.isAuthorized) {
             this.createConnection();
             this.registerOnServerEvents();
-            this.hubConnection
-                .start()
-                .then(() => console.log('Connection started'))
-                .catch(err => console.log('Error while starting connection: ' + err));
+            try {
+                await this.hubConnection.start();
+                console.log('Connection started');
+            } catch (err) {
+                console.log('Error while starting connection: ' + err);
             }
+        }
     }
 
-    abortConnection() {
-        this.hubConnection.stop()
-            .then(() => console.log('Connection stopped'))
-            .catch(err => console.log('Error while stoppint connection: ' + err));
-        this.connectionIsBuilt = false;
+    async abortConnection() {
+        try {
+            await this.hubConnection.stop();
+            this.connectionIsBuilt = false;
+            console.log('Connection stopped');
+        } catch (err) {
+            console.log('Error while stoppint connection: ' + err);
+        }
     }
-
 
     partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
         if (this.connectionIsBuilt) {
@@ -55,14 +59,14 @@ export class EditorHub {
         // .withAutomaticReconnect() //todo: unkoment for prod
         .build();
 
-        this.hubConnection.onreconnecting((error) => {
-            if (error != null) {
-                console.error(error);
-            } else {
-                // todo: show orange reconnecting status;
-                console.log('Reconnecting...');
-            }
-        });
+        // this.hubConnection.onreconnecting((error) => {
+        //     if (error != null) {
+        //         console.error(error);
+        //     } else {
+        //         // todo: show orange reconnecting status;
+        //         console.log('Reconnecting...');
+        //     }
+        // });
         // todo: uncoment for prod
         // this.hubConnection.onreconnected(() => {
         //     //todo: show green reconnected status;
@@ -73,7 +77,6 @@ export class EditorHub {
                 console.error(error);
             }
             // todo: show red reconnected status;
-            console.log('connection clesed');
         });
         this.connectionIsBuilt = true;
     }

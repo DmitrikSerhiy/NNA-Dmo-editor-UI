@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { RemoveDmoPopupComponent } from './../../shared/components/remove-dmo-popup/remove-dmo-popup.component';
 import { Subject, Observable, throwError } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
@@ -30,7 +31,8 @@ export class DmosComponent implements OnInit, OnDestroy {
   constructor(
     private dmosService: DmosService,
     private toastr: Toastr,
-    public matModule: MatDialog) { }
+    public matModule: MatDialog,
+    private router: Router) { }
 
   ngOnInit() {
     this.handleDMOSubscription(this.loadDmos());
@@ -42,7 +44,7 @@ export class DmosComponent implements OnInit, OnDestroy {
   }
 
   redirectToDmo() {
-    console.log('not implemented yet');
+    this.router.navigateByUrl('/editor?dmoId=' + this.selectedDmo.id);
   }
 
   onDmoRemove() {
