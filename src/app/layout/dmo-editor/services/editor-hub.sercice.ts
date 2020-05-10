@@ -39,41 +39,51 @@ export class EditorHub {
         }
     }
 
+    loadDmo(dmoId: string) {
+        if (this.connectionIsBuilt) {
+            this.hubConnection.invoke('LoadDmo', dmoId);
+        }
+    }
+
     private createConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(environment.server_user + 'editor', {
-            accessTokenFactory: () => this.userManager.getJWT(),//todo: request refresh token if expired
+            accessTokenFactory: () => this.userManager.getJWT(),// todo: request refresh token if expired
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets })
         .configureLogging(signalR.LogLevel.Information)
-        .withAutomaticReconnect()
+        // .withAutomaticReconnect() //todo: unkoment for prod
         .build();
 
         this.hubConnection.onreconnecting((error) => {
             if (error != null) {
                 console.error(error);
             } else {
-                //todo: show orange reconnecting status;
+                // todo: show orange reconnecting status;
                 console.log('Reconnecting...');
             }
         });
-        this.hubConnection.onreconnected(() => {
-            //todo: show green reconnected status;
-            console.log('Reconnected.');
-        });
+        // todo: uncoment for prod
+        // this.hubConnection.onreconnected(() => {
+        //     //todo: show green reconnected status;
+        //     console.log('Reconnected.');
+        // });
         this.hubConnection.onclose((error) => {
             if (error != null) {
                 console.error(error);
             }
-            //todo: show red reconnected status;
+            // todo: show red reconnected status;
             console.log('connection clesed');
         });
         this.connectionIsBuilt = true;
     }
 
     private registerOnServerEvents() {
-        this.hubConnection.on('UpdateNotify', (data) => {
+        this.hubConnection.on('PartialDmoUpdateResult', (data) => {
             console.log(data);
+          });
+          this.hubConnection.on('LoadDmoResult', data => {
+              console.log(data);
           });
     }
 }

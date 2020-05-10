@@ -56,7 +56,9 @@ export class DmoEditorComponent implements OnInit {
     ]
   };
 
-    this.editorHub.partiallyUpdateDmo(update1);
+    // this.editorHub.partiallyUpdateDmo(update1);
+
+    this.editorHub.loadDmo('1c1b7d62-6a1a-4f0a-9691-2418c1e01111');
   }
 
 }
