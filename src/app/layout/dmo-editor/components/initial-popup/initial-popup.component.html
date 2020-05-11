@@ -1,0 +1,13 @@
+<div class="initial-dmo-editor-popup">
+    <div class="modal-header" mat-dialog-title>
+        <h4 class="modal-title" id="modal-basic-title">New DMO info</h4>
+    </div>
+    <div class="modal-body" mat-dialog-content>
+        <input type="text" #dmoMovieTitle name="dmoMovieTitle" class="form-control input-underline-light" placeholder="Movie title">
+        <input type="text" #dmoName name="dmoName" class="form-control input-underline-light" placeholder="DMO name">
+    </div>
+    <div class="modal-footer" mat-dialog-actions>
+        <button type="button" class="nna-button nna-button-secondary" (click)="onClose(false)">Cancel</button>
+        <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Open editor</button>
+    </div>
+</div>

@@ -1,3 +1,5 @@
+import { Time } from '@angular/common';
+
 export enum RightMenues {
     dashboard = 'dashboard',
     dmoCollections = 'dmoCollections',
@@ -36,6 +38,19 @@ export class DmoDto {
     dmoStatusId: number;
     shortComment: string;
     mark: number;
+    beats: BeatDto[];
+
+    constructor(dmoName: string, dmoMovieTitle: string) {
+        this.name = dmoName;
+        this.movieTitle = dmoMovieTitle;
+    }
+}
+
+export class CreateDmoDto {
+    name: string;
+    movieTitle: string;
+    shortComment: string;
+    mark: number;
 }
 
 export class DmoShorterDto {
@@ -70,5 +85,17 @@ export class DmosIdDto {
 export class AddDmosToCollectionDto {
     collectionId: string;
     dmos: DmosIdDto[];
+}
+
+export interface BeatDto {
+    id: string;
+    description: string;
+    order: number;
+    plotTimeSpot: Time;
+}
+
+export interface PartialDmoUpdateDto {
+    beats: BeatDto[];
+    id: string;
 }
 

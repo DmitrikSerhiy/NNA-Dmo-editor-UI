@@ -1,4 +1,5 @@
-import { PartialDmoUpdateDto } from './../emo-editor-dtos';
+import { PartialDmoUpdateDto, DmoDto, CreateDmoDto } from './../../models';
+
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
 
@@ -37,26 +38,14 @@ export class EditorHub {
         }
     }
 
-    partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
-        if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('DmoUpdate', dmoUpdate);
-        }
-    }
-
-    loadDmo(dmoId: string) {
-        if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('LoadDmo', dmoId);
-        }
-    }
-
     private createConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(environment.server_user + 'editor', {
-            accessTokenFactory: () => this.userManager.getJWT(),// todo: request refresh token if expired
+            accessTokenFactory: () => this.userManager.getJWT(), // todo: request refresh token if expired
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets })
         .configureLogging(signalR.LogLevel.Information)
-        // .withAutomaticReconnect() //todo: unkoment for prod
+        // .withAutomaticReconnect() //todo: uncomment for prod
         .build();
 
         // this.hubConnection.onreconnecting((error) => {
@@ -85,8 +74,32 @@ export class EditorHub {
         this.hubConnection.on('PartialDmoUpdateResult', (data) => {
             console.log(data);
           });
-          this.hubConnection.on('LoadDmoResult', data => {
-              console.log(data);
-          });
+        this.hubConnection.on('CreateDmoResult', (data) => {
+            console.log(data);
+        });
+
+        this.hubConnection.on('LoadDmoResult', data => {
+            console.log(data);
+        });
+    }
+
+
+
+    partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
+        if (this.connectionIsBuilt) {
+            this.hubConnection.invoke('DmoUpdate', dmoUpdate);
+        }
+    }
+
+    loadDmo(dmoId: string) {
+        if (this.connectionIsBuilt) {
+            this.hubConnection.invoke('LoadDmo', dmoId);
+        }
+    }
+
+    createDmo(dmo: CreateDmoDto) {
+        if (this.connectionIsBuilt) {
+            this.hubConnection.invoke('CreateDmo', dmo);
+        }
     }
 }
