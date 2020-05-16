@@ -5,6 +5,10 @@
 
     .modal-body {
         margin: 0 0 20px;
+
+        input, textarea {
+            margin: 0.5rem;
+        }
     }
 
     .modal-footer { }

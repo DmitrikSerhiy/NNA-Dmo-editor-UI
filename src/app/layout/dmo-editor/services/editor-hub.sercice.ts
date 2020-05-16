@@ -29,6 +29,9 @@ export class EditorHub {
     }
 
     async abortConnection() {
+        if (!this.connectionIsBuilt) {
+            return;
+        }
         try {
             await this.hubConnection.stop();
             this.connectionIsBuilt = false;
@@ -71,6 +74,9 @@ export class EditorHub {
     }
 
     private registerOnServerEvents() {
+        if (!this.connectionIsBuilt) {
+            return;
+        }
         this.hubConnection.on('PartialDmoUpdateResult', (data) => {
             console.log(data);
           });
@@ -83,23 +89,25 @@ export class EditorHub {
         });
     }
 
-
-
-    partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
-        if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('DmoUpdate', dmoUpdate);
+    async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
+        if (!this.connectionIsBuilt) {
+            return;
         }
+        await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
     }
 
-    loadDmo(dmoId: string) {
-        if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('LoadDmo', dmoId);
+    async loadDmo(dmoId: string) {
+        if (!this.connectionIsBuilt) {
+            return;
         }
+        const result = await this.hubConnection.invoke('LoadDmo', dmoId);
+        console.log(result);
     }
 
-    createDmo(dmo: CreateDmoDto) {
-        if (this.connectionIsBuilt) {
-            this.hubConnection.invoke('CreateDmo', dmo);
+    async createDmo(dmo: CreateDmoDto) {
+        if (!this.connectionIsBuilt) {
+            return;
         }
+        await this.hubConnection.invoke('CreateDmo', dmo);
     }
 }

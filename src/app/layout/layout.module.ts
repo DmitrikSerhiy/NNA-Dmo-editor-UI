@@ -27,7 +27,7 @@ const routes: Routes = [{
         { path: 'editor', loadChildren: () =>
             import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
         { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module')
-            .then(m => m.DmoCollectionModule), canActivate: [AuthGuard] }
+            .then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
     ]}
 ];
 

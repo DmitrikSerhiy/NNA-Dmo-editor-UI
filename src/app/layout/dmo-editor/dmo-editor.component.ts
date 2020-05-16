@@ -18,7 +18,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   @ViewChild('dmobit', { static: true }) dmobit: ElementRef;
   dmoId: string;
   isConnected = false;
-  initialPopup: any;
+  isDmoInfoSet = false;
+  isInitialPopupOpen = false;
+  initialPopup: MatDialogRef<InitialPopupComponent>;
   currentDmo: DmoDto;
 
   constructor(
@@ -32,20 +34,40 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.activatedRoute.queryParams.subscribe(params => {
       this.dmoId = params['dmoId'];
     });
-
     if (this.dmoId) {
-      this.connect().then(r => this.editorHub.loadDmo(this.dmoId));
+      await this.connect();
+      this.editorHub.loadDmo(this.dmoId);
+      this.isDmoInfoSet = true;
     } else {
-      await this.finalizePopupAndOpenConnection();
+      await this.finalizePopup();
+      if (this.isDmoInfoSet) {
+        await this.openConnection();
+      }
     }
   }
 
-  async newDmo() {
-    await this.finalizePopupAndOpenConnection();
+  async setDmoInfo() {
+    await this.finalizePopup();
+    if (this.isDmoInfoSet) {
+      await this.openConnection();
+    }
+  }
+
+  async editDmoInfo() {
+    const popupData = {
+      dmoName: this.currentDmo.name,
+      movieTitle: this.currentDmo.movieTitle,
+      shortComment: this.currentDmo.shortComment
+    };
+
+    await this.finalizePopup(popupData);
   }
 
   async ngOnDestroy() {
     await this.disconnect();
+    this.dmoId = '';
+    this.isDmoInfoSet = false;
+    this.initialPopup.close();
   }
 
   async connect() {
@@ -58,10 +80,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isConnected = false;
   }
 
-  onEnter() {
-    let text = this.dmobit.nativeElement.value;
-    console.log(text);
+  async closeEditor() {
+    await this.disconnect();
+    this.isDmoInfoSet = false;
+    this.currentDmo = null;
+    this.matModule.closeAll();
+    this.initialPopup = null;
+  }
 
+  async onEnter() {
   //   const update1: ShortDmoWithBeatsDto = {
   //     id: '1c1b7d62-6a1a-4f0a-9691-2418c1e01111',
   //     beats: [
@@ -83,28 +110,32 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   //this.editorHub.partiallyUpdateDmo(update1);
   }
 
-  private async finalizePopupAndOpenConnection() {
-    this.initialPopup = this.matModule.open(InitialPopupComponent);
-    if (await this.setInitialData()) {
-      const createDto: CreateDmoDto = {
-        name: this.currentDmo.name,
-        movieTitle: this.currentDmo.movieTitle,
-        mark: this.currentDmo.mark,
-        shortComment: this.currentDmo.shortComment
-      };
+  private async finalizePopup(popupData: any = null) {
+    this.initialPopup = this.matModule.open(InitialPopupComponent, {
+      data: popupData,
+      width: '400px' });
+    this.isInitialPopupOpen = true;
 
-      await this.connect();
-      await this.editorHub.createDmo(createDto);//load dmo
-    }
+    await this.setInitialData();
+  }
+
+  private async openConnection() {
+    await this.connect();
+    //await this.editorHub.createDmo(createDto); //load dmo
+    //let result = await this.editorHub.loadDmo('1c1b7d62-6a1a-4f0a-9691-2418c1e01111');
   }
 
   private async setInitialData() {
-    const result = await this.initialPopup.afterClosed().toPromise();
-    if (!result) {
-      return false;
+    const dmoinfo = await this.initialPopup.afterClosed().toPromise();
+    this.isInitialPopupOpen = false;
+    if (!dmoinfo) {
+      this.isDmoInfoSet = false;
     } else {
-      this.currentDmo = new DmoDto(result.dmoName, result.dmoMovieTitle);
-      return true;
+      this.currentDmo = new DmoDto();
+      this.currentDmo.name = dmoinfo.dmoName;
+      this.currentDmo.movieTitle = dmoinfo.movieTitle;
+      this.currentDmo.shortComment = dmoinfo.shortComment;
+      this.isDmoInfoSet = true;
     }
   }
 

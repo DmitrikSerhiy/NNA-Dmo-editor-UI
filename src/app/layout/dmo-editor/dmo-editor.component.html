@@ -1,13 +1,14 @@
 
-<div *ngIf='currentDmo'>
+<div *ngIf='isDmoInfoSet'>
+    <button class="nna-button nna-button-primary" (click)='editDmoInfo()'>Edit DMO</button>
     editor
-<button *ngIf='isConnected' (click)='disconnect()'> Disconnenct! </button>
+    <button *ngIf='isConnected' (click)='disconnect()'> Disconnenct! </button>
+    <button (click)='closeEditor()'>Close editor</button>
+    <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit" (keyup.enter)="onEnter()">
 </div>
-<div *ngIf='!currentDmo'>
-    <button class="dmo-details-popup-button nna-button nna-button-primary" (click)='newDmo()'>Set new DMO details</button>
+<div *ngIf='!isDmoInfoSet && !isInitialPopupOpen'>
+    <button class="dmo-details-popup-button nna-button nna-button-primary" (click)='setDmoInfo()'>Create DMO</button>
     <!-- <button *ngIf='!isConnected' (click)='connect()'> Connect! </button> -->
-   
-    <!-- <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit" (keyup.enter)="onEnter()"> -->
 </div>
 
 

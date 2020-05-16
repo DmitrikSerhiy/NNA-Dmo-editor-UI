@@ -40,17 +40,13 @@ export class DmoDto {
     mark: number;
     beats: BeatDto[];
 
-    constructor(dmoName: string, dmoMovieTitle: string) {
-        this.name = dmoName;
-        this.movieTitle = dmoMovieTitle;
-    }
+    constructor() {}
 }
 
 export class CreateDmoDto {
     name: string;
     movieTitle: string;
     shortComment: string;
-    mark: number;
 }
 
 export class DmoShorterDto {
