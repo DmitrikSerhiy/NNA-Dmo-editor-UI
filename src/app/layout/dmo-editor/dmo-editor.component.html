@@ -1,10 +1,17 @@
 
 <div *ngIf='isDmoInfoSet'>
-    <button class="nna-button nna-button-primary" (click)='editDmoInfo()'>Edit DMO</button>
-    editor
-    <button *ngIf='isConnected' (click)='disconnect()'> Disconnenct! </button>
-    <button (click)='closeEditor()'>Close editor</button>
-    <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit" (keyup.enter)="onEnter()">
+    <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
+        <mat-tab  label="Editor"> 
+            <button class="nna-button nna-button-primary" (click)='editDmoInfo()'>Edit DMO</button>
+            editor
+            <button *ngIf='isConnected' (click)='disconnect()'> Disconnenct! </button>
+            <button (click)='closeEditor()'>Close editor</button>
+            <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit" (keyup.enter)="onEnter()">    
+        </mat-tab>
+        <mat-tab label="Details"> some staff 
+            
+        </mat-tab>
+    </mat-tab-group> 
 </div>
 <div *ngIf='!isDmoInfoSet && !isInitialPopupOpen'>
     <button class="dmo-details-popup-button nna-button nna-button-primary" (click)='setDmoInfo()'>Create DMO</button>
