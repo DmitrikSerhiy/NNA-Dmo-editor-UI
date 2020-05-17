@@ -1,4 +1,4 @@
-import { PartialDmoUpdateDto, DmoDto, CreateDmoDto } from './../../models';
+import { PartialDmoUpdateDto, DmoDto, CreateDmoDto, EditDmoInfoDto } from './../../models';
 
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -23,7 +23,7 @@ export class EditorHub {
                 await this.hubConnection.start();
                 console.log('Connection started');
             } catch (err) {
-                console.log('Error while starting connection: ' + err);
+                console.error('Error while starting connection: ' + err);
             }
         }
     }
@@ -37,7 +37,7 @@ export class EditorHub {
             this.connectionIsBuilt = false;
             console.log('Connection stopped');
         } catch (err) {
-            console.log('Error while stoppint connection: ' + err);
+            console.error('Error while stoppint connection: ' + err);
         }
     }
 
@@ -77,16 +77,9 @@ export class EditorHub {
         if (!this.connectionIsBuilt) {
             return;
         }
-        this.hubConnection.on('PartialDmoUpdateResult', (data) => {
-            console.log(data);
-          });
-        this.hubConnection.on('CreateDmoResult', (data) => {
-            console.log(data);
-        });
-
-        this.hubConnection.on('LoadDmoResult', data => {
-            console.log(data);
-        });
+        // this.hubConnection.on('PartialDmoUpdateResult', (data) => {
+        //     console.log(data);
+        //   });
     }
 
     async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
@@ -96,18 +89,24 @@ export class EditorHub {
         await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
     }
 
-    async loadDmo(dmoId: string) {
+    async loadDmo(dmoId: string): Promise<DmoDto> {
         if (!this.connectionIsBuilt) {
             return;
         }
-        const result = await this.hubConnection.invoke('LoadDmo', dmoId);
-        console.log(result);
+        return await this.hubConnection.invoke('LoadDmo', dmoId);
     }
 
-    async createDmo(dmo: CreateDmoDto) {
+    async createDmo(dmo: CreateDmoDto): Promise<CreateDmoDto> {
         if (!this.connectionIsBuilt) {
             return;
         }
-        await this.hubConnection.invoke('CreateDmo', dmo);
+        return await this.hubConnection.invoke('CreateDmo', dmo);
+    }
+
+    async editDmo(dmo: EditDmoInfoDto): Promise<EditDmoInfoDto> {
+        if (!this.connectionIsBuilt) {
+            return;
+        }
+        return await this.hubConnection.invoke('UpdateDmoInfo', dmo);
     }
 }

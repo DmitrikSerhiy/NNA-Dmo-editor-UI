@@ -22,7 +22,7 @@ export class InitialPopupComponent implements OnInit {
         this.initialData = data;
         this.isEdit = true;
       } else {
-        this.initialData = null;
+        this.initialData = { cancelled: false };
       }
     }
 
@@ -40,8 +40,9 @@ export class InitialPopupComponent implements OnInit {
     }
   }
 
-  onClose(canceled: boolean) {
-    if (canceled) {
+  onClose(cancelled: boolean) {
+    if (cancelled) {
+      this.initialData.cancelled = cancelled;
       this.dialogRef.close(this.initialData);
       return;
     }
@@ -53,6 +54,7 @@ export class InitialPopupComponent implements OnInit {
     this.dialogRef.close({
       dmoName: this.dmoNameInput.value,
       movieTitle: this.movieTitleInput.value,
-      shortComment: this.shortComment.value });
+      shortComment: this.shortComment.value,
+      cancelled: false });
   }
 }

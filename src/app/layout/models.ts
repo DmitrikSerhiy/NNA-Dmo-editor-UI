@@ -44,9 +44,30 @@ export class DmoDto {
 }
 
 export class CreateDmoDto {
+    id: string;
     name: string;
     movieTitle: string;
     shortComment: string;
+
+    constructor(name: string, movieTitle: string, shortComment: string) {
+        this.name = name;
+        this.movieTitle = movieTitle;
+        this.shortComment = shortComment;
+    }
+}
+
+export class EditDmoInfoDto {
+    id: string;
+    name: string;
+    movieTitle: string;
+    shortComment: string;
+
+    // constructor(id: string, name: string, movieTitle: string, shortComment: string) {
+    //     this.id = id;
+    //     this.name = name;
+    //     this.movieTitle = movieTitle;
+    //     this.shortComment = shortComment;
+    // }
 }
 
 export class DmoShorterDto {
