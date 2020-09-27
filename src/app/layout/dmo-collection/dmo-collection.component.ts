@@ -26,6 +26,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   currentDmoCollection: DmoCollectionDto;
   shouldCollectionShowTable = false;
   awaitingForDmos = false;
+  showPopupOverview = false;
   collectionTable: MatTableDataSource<DmoShortDto>;
   collectionTableColumn: string[];
   collectionLength = 0;
@@ -137,6 +138,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   async onAddDmo() {
     this.awaitingForDmos = true;
+    this.showPopupOverview = true;
     const collectionWithDmo = new ShortDmoCollectionDto();
     collectionWithDmo.collectionName = this.currentDmoCollection.collectionName;
 
@@ -145,6 +147,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       .then((dmos: DmoShortDto[]) => collectionWithDmo.dmos = dmos.map(d => new DmoShorterDto(d.id, d.movieTitle, d.name)))
       .catch((err) => this.toastr.error(err));
 
+    this.awaitingForDmos = false;
     const dialogRef = this.matModule.open(AddDmosPopupComponent, {
       data: collectionWithDmo,
       minWidth: '430px'
@@ -153,7 +156,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .subscribe({
         next: (selectDmos: DmoShortDto[]) => {
-          this.awaitingForDmos = false;
+          this.showPopupOverview = false;
           if (!selectDmos) {
             return;
           }
