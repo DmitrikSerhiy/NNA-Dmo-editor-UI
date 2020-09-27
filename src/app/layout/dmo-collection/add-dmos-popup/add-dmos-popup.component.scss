@@ -1,46 +1,56 @@
 .dmos-modal {
-  .dmos-table-container {
+  .dmos-table-wrapper {
+    .dmos-table-container {
 
-    .search-container {
-      flex: 0 1 100%;
-      display: flex;
-      i {
-        position: relative;
-        margin-top: 0.6rem;
-        margin-left: 1rem;
+      .search-container {
+        flex: 0 1 100%;
+        display: flex;
+        i {
+          position: relative;
+          margin-top: 0.6rem;
+          margin-left: 1rem;
+        }
+
+        .search-input {
+          &:focus {
+            background-color: unset;
+          }
+        }
       }
 
-      .search-input {
-        &:focus {
-          background-color: unset;
+      table {
+        width: 100%;
+        margin: auto;
+
+        .dmo-cell {
+          padding-right: 1rem;
+        }
+
+        .hoverable-element {
+          padding: 0.75rem;
+          cursor: pointer;
+        }
+        .hoverable-element:hover {
+          background: #f1f5f7;
+        }
+
+        .hoverable-element:active {
+          background: #c9d6dc;
+        }
+
+        ::ng-deep .mat-sort-header-container {
+          button {
+            outline: none;
+          }
         }
       }
     }
-
-    table {
-      width: 100%;
-      margin: auto;
-
-      .dmo-cell {
-        padding-right: 1rem;
-      }
-
-      .hoverable-element {
-        padding: 0.75rem;
-        cursor: pointer;
-      }
-      .hoverable-element:hover {
-        background: #f1f5f7;
-      }
-
-      .hoverable-element:active {
-        background: #c9d6dc;
-      }
-
-      ::ng-deep .mat-sort-header-container {
-        button {
-          outline: none;
-        }
+  }
+  .no-dmos-wrapper {
+    .modal-footer {
+      display: flex;
+      .centred {
+        margin: auto;
       }
     }
   }
