@@ -1,6 +1,6 @@
 import { CurrentSidebarService } from './../../shared/services/current-sidebar.service';
 import { RemoveCollectionPopupComponent } from './../../shared/components/remove-collection-popup/remove-collection-popup.component';
-import { AddDmosPopupComponent } from './add-dmos-popup/add-dmos-popup.component';
+import { AddDmosPopupComponent } from '../../shared/components/add-dmos-popup/add-dmos-popup.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CollectionsManagerService } from './../../shared/services/collections-manager.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';

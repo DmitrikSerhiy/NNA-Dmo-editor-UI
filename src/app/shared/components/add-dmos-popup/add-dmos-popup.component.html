@@ -46,7 +46,7 @@
             <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Add</button>
         </div>
     </div>
-    <div class="no-dmos-wrapper">
+    <div class="no-dmos-wrapper" [hidden]="dmosCount >= 1">
         <div mat-dialog-title>
             <h4 class="modal-title" id="modal-basic-title">You have no DMO yet. Try to create one</h4>
         </div>

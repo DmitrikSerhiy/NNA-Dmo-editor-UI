@@ -2,7 +2,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { DmoShortDto, DmoCollectionDto, DmoShorterDto } from './../../models';
+import { DmoShortDto, DmoCollectionDto, DmoShorterDto } from '../../../layout/models';
 import { Component, OnInit, ViewChild, Input, Inject } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';

@@ -11,7 +11,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { AddDmosPopupComponent } from './add-dmos-popup/add-dmos-popup.component';
+import { AddDmosPopupComponent } from '../../shared/components/add-dmos-popup/add-dmos-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
