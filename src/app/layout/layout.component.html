@@ -12,10 +12,9 @@
    
     </mat-sidenav>
     <mat-sidenav-content>
-      <app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" (toggleMenu)="oppenedByGrabber($event)" ></app-right-menu-grabber>
+      <app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" (toggleMenu)="receiveRightMenuFromGrabber($event)" ></app-right-menu-grabber>
       <app-nav-menu></app-nav-menu>
-      <app-sidebar (collapsedEvent)="receiveCollapsed($event)" (toggleRightMenu)="receiveRightMenu($event)">
-      </app-sidebar>
+      <app-sidebar (collapsedEvent)="receiveCollapsed($event)" (toggleRightMenu)="receiveRightMenu($event)"></app-sidebar>
       <section class="main-container" [ngClass]="{collapsed: collapedSideBar}">
         <router-outlet></router-outlet>
       </section>

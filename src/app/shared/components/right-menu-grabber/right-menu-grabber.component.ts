@@ -19,7 +19,7 @@ export class RightMenuGrabberComponent implements OnInit {
 
   ngOnInit() {
     this.rightMenuGrabberService.shouldShowGrabber$.subscribe({
-      next: () => this.shouldbeShown = this.rightMenuGrabberService.isGrabbershouldBeShown()
+      next: async () => this.shouldbeShown = await this.rightMenuGrabberService.isGrabbershouldBeShown()
     });
   }
 

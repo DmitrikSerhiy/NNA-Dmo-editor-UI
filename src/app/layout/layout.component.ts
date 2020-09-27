@@ -25,7 +25,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         private currestSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService) { }
 
-    ngOnInit() { }
+    ngOnInit() { 
+        this.collectionService.setCollectionId('');
+    }
 
     ngAfterViewInit(): void {
         this.rightMenuIsClosing$ = this.rightMenu.closedStart;
@@ -35,6 +37,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         if (!this.collectionService.getCurrentCollectionId()) {
             this.collectionService.setCollectionId('');
             this.resetMenues();
+            console.log('should set previous')
             this.currestSidebarService.setPrevious();
         }
     }
@@ -63,7 +66,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         }
     }
 
-    oppenedByGrabber($event) {
+    receiveRightMenuFromGrabber($event) {
         this.receiveRightMenu($event);
     }
 

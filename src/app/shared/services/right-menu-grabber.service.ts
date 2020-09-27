@@ -20,7 +20,9 @@ export class RightMenuGrabberService {
     this.shouldShowGrabberSource.next(false);
   }
 
-  isGrabbershouldBeShown() {
+  async isGrabbershouldBeShown() {
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    await delay(1000)
     return this.shouldShowGrabber;
   }
 
