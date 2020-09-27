@@ -26,6 +26,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   sortedDmoLists: DmoCollectionShortDto[];
   showAddButton = true;
   isFormProcessing = false;
+  showSortButton = false;
   selectedDmoCollectionName: DmoCollectionShortDto;
   oppenedCollectionId: string;
   private unsubscribe$: Subject<void> = new Subject();
@@ -180,6 +181,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.collectionsByAcs = false;
     this.collectionsByDesc = true;
     this.sortedDmoLists = [...this.dmoLists];
+    this.showSortButton = this.dmoLists.length > 1;
   }
 
   private loadCollections() {
@@ -189,7 +191,8 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       .subscribe(
         (response: DmoCollectionShortDto[]) => {
           this.dmoLists = response;
-          this.resetCollectionsSort(); },
+          this.resetCollectionsSort(); 
+        },
         (error) => this.toastr.error(error),
         () => this.hideLoader());
   }
@@ -213,4 +216,5 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   private hideLoader() {
     this.isFormProcessing = false;
   }
+
 }

@@ -32,9 +32,14 @@
     display: flex;
     .add-collection-button {
       height: 40px;
-      flex-basis: 80%;
       @include collection-item;
       justify-content: flex-start;
+    }
+    .add-collection-button-partial-width {
+      flex-basis: 80%;
+    }
+    .add-collection-button-full-width {
+      flex-basis: 100%;
     }
     form {
       min-height: 40px;
