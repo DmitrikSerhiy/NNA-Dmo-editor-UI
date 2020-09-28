@@ -7,7 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Toastr } from './../../shared/services/toastr.service';
 
 import { concatMap, map, catchError, finalize, takeUntil } from 'rxjs/operators';
-import { throwError, Observable, Subject } from 'rxjs';
+import { throwError, Observable, Subject, Subscription } from 'rxjs';
 
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter, OnDestroy, ElementRef } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
@@ -31,7 +31,11 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   oppenedCollectionId: string;
   private unsubscribe$: Subject<void> = new Subject();
   get collectionName() { return this.addCollectionForm.get('collectionName'); }
+  loadCollectionsSubsciption: Subscription;
+  rightMenuOpnSubscription: Subscription;
+  rightMenuClsSubscription: Subscription;
   @Input() rightMenuIsClosing$: Observable<void>;
+  @Input() rightMenuIsOpening$: EventEmitter<void>;
   @Output() closeRightMenu = new EventEmitter<void>();
   @ViewChild('removeCollectionModal', { static: true }) removeModal: NgbActiveModal;
   @ViewChild('collectionNameField', { static: true }) collectionNameField: ElementRef;
@@ -50,9 +54,13 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.rightMenuIsClosing$.subscribe(() => {
+    console.log('init');
+    this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
       this.toggleAddCollectionForm(true);
     });
+    this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
+      this.loadCollectionsSubsciption = this.loadCollections();
+    })
 
     this.addCollectionForm = new FormGroup({
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
@@ -67,12 +75,16 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.collectionManager.currentCollectionObserver
       .subscribe(col => { this.oppenedCollectionId = col; });
 
-      this.loadCollections();
+    this.loadCollectionsSubsciption = this.loadCollections();
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.loadCollectionsSubsciption.unsubscribe();
+    this.rightMenuOpnSubscription.unsubscribe();
+    this.rightMenuClsSubscription.unsubscribe();
+    console.log('destroy');
   }
 
   sortCollections() {
@@ -97,7 +109,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       return 0;
     }
   }
-
 
   openCollection(id: string) {
     this.closeRightMenu.emit();
@@ -191,9 +202,9 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.showSortButton = this.dmoLists.length > 1;
   }
 
-  private loadCollections() {
+  private loadCollections() : Subscription{
     this.showLoader();
-    this.dmoCollectionsService.getCollections()
+    return this.dmoCollectionsService.getCollections()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(
         (response: DmoCollectionShortDto[]) => {

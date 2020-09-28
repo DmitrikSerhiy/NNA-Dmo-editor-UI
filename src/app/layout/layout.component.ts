@@ -3,7 +3,7 @@ import { CurrentSidebarService } from './../shared/services/current-sidebar.serv
 import { CollectionsManagerService } from './../shared/services/collections-manager.service';
 import { Observable } from 'rxjs';
 import { RightMenues } from './models';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
@@ -19,6 +19,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     currentMenuName: string;
     currentUserFriendlyMenuName: string;
     rightMenuIsClosing$: Observable<void>;
+    rightMenuIsOpening$ = new EventEmitter<void>();
 
     constructor(
         private collectionService: CollectionsManagerService,
@@ -51,6 +52,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     openRightMenu($event) {
         this.resetMenues();
+        this.rightMenuIsOpening$.emit();
         if ($event === RightMenues.dmoCollections) {
             this.currentMenuName = RightMenues.dmoCollections;
             this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu($event);
