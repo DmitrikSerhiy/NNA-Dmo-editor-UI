@@ -11,7 +11,7 @@ import { throwError, Observable, Subject } from 'rxjs';
 
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter, OnDestroy, ElementRef } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -45,7 +45,8 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     private toastr: Toastr,
     private router: Router,
     public matModule: MatDialog,
-    private collectionManager: CollectionsManagerService) { }
+    private collectionManager: CollectionsManagerService,
+    private route: ActivatedRoute) { }
 
 
   ngOnInit() {
@@ -55,6 +56,12 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
     this.addCollectionForm = new FormGroup({
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
+    });
+
+    this.route.params.subscribe(p => {
+      if (!p['id']) {
+        this.collectionManager.setCollectionId('');
+      }
     });
 
     this.collectionManager.currentCollectionObserver

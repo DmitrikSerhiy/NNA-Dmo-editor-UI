@@ -22,7 +22,6 @@ export class CollectionsManagerService {
   }
 
   getCurrentCollectionId() {
-    console.log(`current collection ${this.currentCollectionId}`)
     return this.currentCollectionId;
   }
 }
