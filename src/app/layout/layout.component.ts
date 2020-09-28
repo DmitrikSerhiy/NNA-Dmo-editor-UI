@@ -37,7 +37,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         if (!this.collectionService.getCurrentCollectionId()) {
             this.collectionService.setCollectionId('');
             this.resetMenues();
-            console.log('should set previous')
             this.currestSidebarService.setPrevious();
         }
     }
@@ -50,7 +49,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.collapedSideBar = $event;
     }
 
-    receiveRightMenu($event) {
+    openRightMenu($event) {
         this.resetMenues();
         if ($event === RightMenues.dmoCollections) {
             this.currentMenuName = RightMenues.dmoCollections;
@@ -66,8 +65,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         }
     }
 
-    receiveRightMenuFromGrabber($event) {
-        this.receiveRightMenu($event);
+    openRightMenuByGrabber($event) {
+        this.openRightMenu($event);
     }
 
     private getCurrentUserFriendlyRightMenu(menu: RightMenues) {

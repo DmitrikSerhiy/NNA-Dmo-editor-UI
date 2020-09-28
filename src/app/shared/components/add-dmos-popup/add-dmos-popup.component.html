@@ -47,8 +47,9 @@
         </div>
     </div>
     <div class="no-dmos-wrapper" [hidden]="dmosCount >= 1">
-        <div mat-dialog-title>
-            <h4 class="modal-title" id="modal-basic-title">You have no DMO yet. Try to create one</h4>
+        <div class="modal-message" mat-dialog-title>
+            <h5 class="modal-title">There's no DMO which you could add to this collection.</h5>
+            <h5 class="modal-title">Try to create new one</h5>
         </div>
         <div class="modal-footer" mat-dialog-actions>
             <button type="button" class="nna-button nna-button-primary centred" (click)="onClose(false)">Ok</button>

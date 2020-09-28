@@ -6,9 +6,9 @@
             <span>{{ 'Dashboard' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item">
-            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
-            <span>{{ 'DMO collections' }}</span>
+        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item">
+            <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
+            <span>{{ 'Create DMO' }}</span>
         </a>
 
         <a *ngIf="isAuthorized" id="dmos-tab" [routerLink]="['/dmos']" [routerLinkActive]="['router-link-active']" (click)="sendDmosEvent()" class="list-group-item">
@@ -16,9 +16,9 @@
             <span>{{ 'DMOs' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item">
-            <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
-            <span>{{ 'Create DMO' }}</span>
+        <a *ngIf="isAuthorized" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item">
+            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+            <span>{{ 'DMO collections' }}</span>
         </a>
 
     </div>
