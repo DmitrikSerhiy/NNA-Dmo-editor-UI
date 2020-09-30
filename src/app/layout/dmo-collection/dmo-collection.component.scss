@@ -19,6 +19,24 @@
             margin-left: 0.5rem;
             opacity: 0;
           }
+
+          .search-container {
+            flex: 0 1 220px;
+            display: flex;
+            i {
+              position: absolute;
+              margin-top: 0.6rem;
+              margin-left: 1rem;
+            }
+    
+            .search-input {
+              padding-left: 2.5rem;
+              &:focus {
+                background-color: unset;
+              }
+            }
+          }
+          
         }
 
         &:hover {
@@ -71,34 +89,6 @@
         div {
           margin: auto;
           margin-left: 1rem;
-        }
-      }
-
-      .add-dmo-container {
-        justify-content: center;
-        align-self: center;
-        margin-left: auto;
-        height: 2rem;
-
-        button {
-          margin: auto 1rem;
-        }
-      }
-
-      .search-container {
-        flex: 0 1 220px;
-        display: flex;
-        i {
-          position: absolute;
-          margin-top: 0.6rem;
-          margin-left: 1rem;
-        }
-
-        .search-input {
-          padding-left: 2.5rem;
-          &:focus {
-            background-color: unset;
-          }
         }
       }
 

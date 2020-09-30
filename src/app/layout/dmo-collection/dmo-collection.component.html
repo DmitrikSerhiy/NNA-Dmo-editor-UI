@@ -5,14 +5,28 @@
                 <div class="collection-name-header">
                     <h4 *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}}
                     </h4>
-                    <button type="button" [hidden]="showEditForm" class='nna-icon-button bg-primary'
+                    <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary'
                         (click)='showEditCollectionNameForm()'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" [hidden]="showEditForm" class="nna-button nna-button-primary" 
+                        (click)="onAddDmo()">
+                        <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
                     </button>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button bg-secondary'
                         (click)='onRemoveCollection()'>
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
+                    <button type="button" [hidden]="showEditForm || showSearchContainer" class='nna-icon-button nna-button-primary'
+                        (click)="toggleSearchContainer($event)">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                    <div [hidden]="showEditForm || !showSearchContainer" class="search-container">
+                        <i class="fa fa-search text-muted"></i>
+                        <input type="text" class="form-control input-underline-light search-input" (focus)="resetSelected()"
+                            placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off" 
+                            (mouseout)="toggleSearchContainer($event)">
+                    </div>
                 </div>
                 <form [hidden]="!showEditForm" [formGroup]="editCollectionNameForm" (ngSubmit)="onEditCollectionName()"
                     autocomplete="off">
@@ -22,7 +36,7 @@
                             class="form-control input-underline-light search-input" placeholder="collection name"
                             autocomplete="off">
 
-                        <button type="submit" [disabled]="!editCollectionNameForm.valid" class='nna-icon-button bg-primary'
+                        <button type="submit" [disabled]="!editCollectionNameForm.valid" class='nna-icon-button nna-button-primary'
                             [ngClass]="{'nna-diabled-button': !editCollectionNameForm.valid}">
                             <i class="fa fa-check" aria-hidden="true"></i>
                         </button>
@@ -46,22 +60,11 @@
             </div>
 
             <div [hidden]="showEditForm" class="dmo-details-container" [ngClass]="{'show-flex': selectedDmoInCollection}">
-                <div>
-                    number of acts, bits, episodes etc.
-                </div>
                 <button class="nna-button nna-button-primary" (click)="redirectToDmo()"><i class="fa fa-sitemap"
                         aria-hidden="true"></i> &#160; Open editor</button>
                 <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"><i class="fa fa-trash"
                         aria-hidden="true"></i> &#160; Remove from collection </button>
-            </div>
-            <div [hidden]="showEditForm" class="add-dmo-container">
-                <button class="nna-button nna-button-primary" (click)="onAddDmo()"><i class="fa fa-plus"
-                        aria-hidden="true"></i> &#160; Add Dmo </button>
-            </div>
-            <div [hidden]="showEditForm" class="search-container">
-                <i class="fa fa-search text-muted"></i>
-                <input type="text" class="form-control input-underline-light search-input" (focus)="resetSelected()"
-                    placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off">
+                <div> number of acts, bits, episodes etc. </div>
             </div>
         </div>
 
@@ -116,7 +119,7 @@
     <div class="empty-collection-placeholder" [hidden]="collectionLength != 0">
         <div *ngIf="currentDmoCollection">'{{currentDmoCollection.collectionName}}' is empty</div>
         <button class="nna-button nna-button-primary" (click)="onAddDmo()">
-            <i class="fa fa-plus" aria-hidden="true"></i> &#160; Add DMO 
+            <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
         </button>
         or
         <button type="button" class='nna-button nna-button-secondary'(click)='onRemoveCollection()'>

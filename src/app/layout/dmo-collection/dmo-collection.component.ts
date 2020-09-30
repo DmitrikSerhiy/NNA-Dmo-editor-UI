@@ -27,6 +27,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   shouldCollectionShowTable = false;
   awaitingForDmos = false;
   showPopupOverview = false;
+  showSearchContainer = false;
   collectionTable: MatTableDataSource<DmoShortDto>;
   collectionTableColumn: string[];
   collectionLength = 0;
@@ -222,6 +223,11 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   resetSelected() {
     this.selectedDmoInCollection = null;
+  }
+
+  toggleSearchContainer(event: any) {
+    (event.target as HTMLInputElement).value = '';
+    this.showSearchContainer = !this.showSearchContainer;
   }
 
   private redirectToDashboard() {
