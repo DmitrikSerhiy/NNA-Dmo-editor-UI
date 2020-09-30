@@ -64,6 +64,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         } else if ($event === RightMenues.dashboard) {
             this.rightMenuGrabberService.hideGrabber();
             this.collectionService.setCollectionId('');
+        } else if ($event === RightMenues.test) {
+            this.currentMenuName = RightMenues.test;
+            this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu($event);
+            this.rightMenuGrabberService.showGrabber();
+            this.toggleRightMenu = $event;
         }
     }
 
@@ -74,6 +79,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private getCurrentUserFriendlyRightMenu(menu: RightMenues) {
         switch (menu) {
             case RightMenues.dmoCollections: return 'DMO collections';
+            case RightMenues.test: return 'Test'
             default: return '';
         }
     }

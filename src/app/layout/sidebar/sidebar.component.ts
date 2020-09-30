@@ -78,6 +78,11 @@ export class SidebarComponent implements OnInit {
     this.toggleRightMenu.emit(RightMenues.dmoCollections);
   }
 
+  sendTestEvent() {
+    this.currestSidebarService.setMenu(SidebarTabs.test);
+    this.toggleRightMenu.emit(RightMenues.test);
+  }
+
   sendDmosEvent() {
     this.currestSidebarService.setMenu(SidebarTabs.dmos);
     this.toggleRightMenu.emit(RightMenues.dmos);

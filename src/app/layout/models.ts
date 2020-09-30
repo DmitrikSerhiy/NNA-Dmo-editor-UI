@@ -4,14 +4,16 @@ export enum RightMenues {
     dashboard = 'dashboard',
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
-    dmo = 'dmo'
+    dmo = 'dmo',
+    test = 'test'
 }
 
 export enum SidebarTabs {
     dashboard = 'dashboard',
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
-    dmo = 'dmo'
+    dmo = 'dmo',
+    test = 'test'
 }
 
 export class DmoCollectionShortDto {

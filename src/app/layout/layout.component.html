@@ -6,6 +6,7 @@
       <div [ngSwitch]="currentMenuName">
         <!-- Values took from rigth-menus.ts -->
         <app-dmo-collections *ngSwitchCase="'dmoCollections'" [rightMenuIsClosing$]='rightMenuIsClosing$' [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)" ></app-dmo-collections>  
+        <app-test-right-menu *ngSwitchCase="'test'" [rightMenuIsClosing$]='rightMenuIsClosing$'  [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)"></app-test-right-menu>
         <!-- ' -->
         <div *ngSwitchDefault>No selected menu</div>
       </div>

@@ -16,6 +16,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { DmoCollectionsComponent } from './dmo-collections/dmo-collections.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TestRightMenuComponent } from './test-right-menu/test-right-menu.component';
 
 const routes: Routes = [{
     path: '',
@@ -32,7 +33,7 @@ const routes: Routes = [{
 ];
 
 @NgModule({
-    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent],
+    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent],
     imports: [
         CommonModule,
         RouterModule.forChild(routes),
