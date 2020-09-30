@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { RemoveDmoPopupComponent } from './../../shared/components/remove-dmo-popup/remove-dmo-popup.component';
-import { Subject, Observable, throwError } from 'rxjs';
+import { Subject, Observable, throwError, Subscription } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Toastr } from './../../shared/services/toastr.service';
@@ -27,6 +27,7 @@ export class DmosComponent implements OnInit, OnDestroy {
   @ViewChild('dmosSorter', { static: true }) dmosSorter: MatSort;
   private unsubscribe$: Subject<void> = new Subject();
   selectedDmo: DmoShortDto;
+  dmoSubscription: Subscription;
 
   constructor(
     private dmosService: DmosService,
@@ -41,6 +42,7 @@ export class DmosComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.dmoSubscription.unsubscribe();
   }
 
   redirectToDmo() {
@@ -92,7 +94,7 @@ export class DmosComponent implements OnInit, OnDestroy {
   }
 
   private handleDMOSubscription(dmoObservable: Observable<DmoShortDto[]>) {
-    dmoObservable.subscribe({
+    this.dmoSubscription = dmoObservable.subscribe({
         next: (result: DmoShortDto[]) => {
           this.allDmos = result;
           this.initializeDmosTable(this.allDmos);
