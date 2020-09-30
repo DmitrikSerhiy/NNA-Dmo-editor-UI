@@ -54,7 +54,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    console.log('init');
     this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
       this.toggleAddCollectionForm(true);
     });
@@ -84,7 +83,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.loadCollectionsSubsciption.unsubscribe();
     this.rightMenuOpnSubscription.unsubscribe();
     this.rightMenuClsSubscription.unsubscribe();
-    console.log('destroy');
   }
 
   sortCollections() {

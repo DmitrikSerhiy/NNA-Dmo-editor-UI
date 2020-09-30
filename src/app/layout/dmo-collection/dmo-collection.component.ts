@@ -13,7 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { concatMap, map, takeUntil, finalize } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { DmoCollectionsService } from 'src/app/shared/services/dmo-collections.service';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -32,6 +32,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   collectionTableColumn: string[];
   collectionLength = 0;
   selectedDmoInCollection: DmoShortDto;
+  dmoSubscription: Subscription;
   @ViewChild('collectionPaginator', { static: true }) collectionPaginator: MatPaginator;
   @ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
   @ViewChild('removeFullCollectionModal', { static: true }) removeCollectionModal: NgbActiveModal;
@@ -57,18 +58,19 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
     });
 
-    let dmoObserver = this.loadDmos();
     this.route.params.subscribe(p => {
       if (!p['id']) {
+        this.dmoSubscription.unsubscribe();
         return;
       }
-      dmoObserver = this.loadDmos();
+      this.dmoSubscription = this.loadDmos();
     });
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.dmoSubscription.unsubscribe();
   }
 
   onRowSelect(row: DmoShortDto) {
