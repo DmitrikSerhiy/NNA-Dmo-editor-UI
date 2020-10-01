@@ -1,7 +1,7 @@
 <nav class="sidebar" [ngClass]="{collapsed : !sidebarState}">
     <div class="list-group">
         <!-- Id should be the same as LeftMenuTab -->
-        <a id="dashboard-tab" [routerLink]="['/dashboard']" [routerLinkActive]="['router-link-active']" (click)="sendDashboardEvent()" class="list-group-item">
+        <a id="dashboard-tab" [routerLink]="['/dashboard']" [routerLinkActive]="['router-link-active']" (click)="sendDashboardEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-home" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Dashboard' }}</span>
         </a>

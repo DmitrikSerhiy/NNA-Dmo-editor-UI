@@ -44,6 +44,16 @@ $topnav-background-color: #222;
             color: #fff;
             cursor: pointer;
         }
+        // .side-item-collapse {
+        //     &:hover { 
+        //         span {
+        //             opacity: 1 !important;
+        //         }
+        //         width: 160px;
+        //         // opacity: 1 !important;
+        //         background-color: aqua !important;
+        //     }
+        // }
         .header-fields {
             padding-top: 10px;
 
@@ -173,6 +183,13 @@ $topnav-background-color: #222;
 .collapsed {
     width: 60px;
     span {
-        display: none;
+        opacity: 0;
     }
+     
+    // a {
+    //     &:hover {
+    //         color: #222;
+    //         opacity: 1;
+    //     }
+    // }
 }

@@ -1,8 +1,7 @@
 import { SidebarTabs } from './../models';
 import { CurrentSidebarService } from './../../shared/services/current-sidebar.service';
 import { RightMenues } from '../models';
-import { Component, OnInit, Output, EventEmitter, Renderer2 } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 
