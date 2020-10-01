@@ -46,7 +46,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.rightMenu.close();
     }
 
-    receiveCollapsed($event) {
+    sidebarEvent($event) {
         this.collapedSideBar = $event;
     }
 

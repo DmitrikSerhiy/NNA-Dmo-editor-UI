@@ -19,14 +19,3 @@
 .collapsed {
     margin-left: 60px;
 }
-@media screen and (max-width: 992px) {
-    .main-container {
-        margin-left: 0px !important;
-    }
-}
-@media print {
-    .main-container {
-        margin-top: 0px !important;
-        margin-left: 0px !important;
-    }
-}

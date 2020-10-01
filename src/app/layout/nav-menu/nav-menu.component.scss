@@ -8,6 +8,7 @@ $topnav-background-color: #222;
         .nav-item > a {
             color: #999;
             &:hover {
+                cursor: pointer;
                 color: #fff;
             }
         }

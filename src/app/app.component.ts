@@ -6,11 +6,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  collapedSideBar: boolean;
 
   ngOnInit() {}
-
-    receiveCollapsed($event) {
-        this.collapedSideBar = $event;
-    }
 }

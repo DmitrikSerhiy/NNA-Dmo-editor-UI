@@ -8,6 +8,7 @@ import { EditorHub } from './services/editor-hub.sercice';
 import { Toastr } from '../../shared/services/toastr.service';
 import { DmosService } from '../../shared/services/dmos.service';
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 
 @Component({
   selector: 'app-dmo-editor',
@@ -28,7 +29,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private dmosService: DmosService,
     private activatedRoute: ActivatedRoute,
     private toastr: Toastr,
-    public matModule: MatDialog) { }
+    public matModule: MatDialog,
+    private sidebarManagerService: SidebarManagerService) { }
 
   async ngOnInit() {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -45,6 +47,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         await this.createDmo();
       }
     }
+    this.sidebarManagerService.toggleSidebar(false);
   }
 
   async setDmoInfo() {
