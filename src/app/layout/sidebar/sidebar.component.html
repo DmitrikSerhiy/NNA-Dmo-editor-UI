@@ -1,4 +1,4 @@
-<nav class="sidebar" [ngClass]="{collapsed: collapsed}">
+<nav class="sidebar" [ngClass]="{collapsed : !sidebarState}">
     <div class="list-group">
         <!-- Id should be the same as LeftMenuTab -->
         <a id="dashboard-tab" [routerLink]="['/dashboard']" [routerLinkActive]="['router-link-active']" (click)="sendDashboardEvent()" class="list-group-item">
@@ -27,8 +27,8 @@
         </a>
 
     </div>
-    <div class="toggle-button" [ngClass]="{collapsed: collapsed}" (click)="toggleSidebar()">
-        <i class="fa fa-fw fa-angle-double-{{collapsed?'right':'left'}}"></i>&nbsp;
+    <div class="toggle-button" [ngClass]="{collapsed : !sidebarState}" (click)="toggleSidebar()">
+        <i class="fa fa-fw fa-angle-double-{{sidebarState?'left':'right'}}"></i>&nbsp;
         <span>{{ 'Collapse Sidebar'  }}</span>
     </div>
 

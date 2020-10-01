@@ -47,7 +47,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         await this.createDmo();
       }
     }
-    this.sidebarManagerService.toggleSidebar(false);
+    this.sidebarManagerService.collapseSidebar();
   }
 
   async setDmoInfo() {

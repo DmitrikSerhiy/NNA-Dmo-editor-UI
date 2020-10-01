@@ -12,33 +12,27 @@ import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.s
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  collapsed: boolean;
   isAuthorized: boolean;
-
-  @Output() sidebarEvent$ = new EventEmitter<boolean>();
-  @Output() toggleRightMenu$ = new EventEmitter<RightMenues>();
+  sidebarState: boolean;
+  @Output() toggleRightMenu$: EventEmitter<RightMenues>;
 
   constructor(
     public userManager: UserManager,
     private currestSidebarService: CurrentSidebarService,
-    private sidebarManagerService: SidebarManagerService) { }
+    private sidebarManagerService: SidebarManagerService) { 
+      this.toggleRightMenu$ = new EventEmitter<RightMenues>();
+    }
 
   ngOnInit() {
     this.isAuthorized = this.userManager.isAuthorized();
-    this.collapsed = false;
-
-
-    // this.collapsedEvent.subscribe(() => { this.toggleCollapsed(); })
     this.currestSidebarService.currentMenuSource$.subscribe();
-    // this.sidebarManagerService.subscibe(this.collapsedEvent);
+    this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; console.log(event$) })
+    this.sidebarState = this.sidebarManagerService.IsOpen;
   }
 
   toggleSidebar() {
-    this.collapsed = !this.collapsed;
-    this.sidebarEvent$.emit(this.collapsed);
-    // this.sidebarManagerService.toggleSidebar(this.collapsed);
+    this.sidebarManagerService.toggleSidebar();
   }
-
 
   sendDmoCollectionsEvent() {
     this.currestSidebarService.setMenu(SidebarTabs.dmoCollections);

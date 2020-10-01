@@ -1,34 +1,32 @@
-import { EventEmitter, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SidebarManagerService {
+  private sidebar : BehaviorSubject<boolean>;
+  sidebarObserver$: Observable<boolean>; 
 
-  private claseSidebar$: EventEmitter<boolean>;
-  private _isOpen: boolean;//BehaviorSubject<boolean>;
-  // private _isOpenObeserver: Observable<boolean>
+  private _isOpen: boolean;
 
   public get IsOpen(): boolean {
-    return this._isOpen; //this._isOpen.value;
+    return this._isOpen;
   }
 
   constructor() {
-    this.claseSidebar$ = new EventEmitter<boolean>();
     this._isOpen = true;
+    this.sidebar = new BehaviorSubject<boolean>(true);
+    this.sidebarObserver$ = this.sidebar.asObservable();
    }
 
-  subscibe(sidebarEvent: EventEmitter<boolean>) {
-    this.claseSidebar$.subscribe(($event) => {
-      this._isOpen = $event;
-      console.log(`${$event} from subscribe`)
-      sidebarEvent.emit($event);
-    });
+  toggleSidebar() { 
+    this._isOpen = !this._isOpen;
+    this.sidebar.next(this._isOpen)
   }
 
-  toggleSidebar($event: boolean, ) {
-    console.log(`${$event} from emited`);
-    this.claseSidebar$.emit($event)
+  collapseSidebar() {
+    this._isOpen = false;
+    this.sidebar.next(false);
   }
 }

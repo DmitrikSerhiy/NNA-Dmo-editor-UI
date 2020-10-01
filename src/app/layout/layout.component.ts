@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { RightMenues } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
+import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
 
 @Component({
     selector: 'app-layout',
@@ -14,7 +15,6 @@ import { MatSidenav } from '@angular/material/sidenav';
 export class LayoutComponent implements OnInit, AfterViewInit {
 
     @ViewChild('rightMenu', { static: true }) rightMenu: MatSidenav;
-    collapedSideBar: boolean;
     toggleRightMenu: RightMenues;
     currentMenuName: string;
     currentUserFriendlyMenuName: string;
@@ -24,7 +24,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     constructor(
         private collectionService: CollectionsManagerService,
         private currestSidebarService: CurrentSidebarService,
-        private rightMenuGrabberService: RightMenuGrabberService) { }
+        private rightMenuGrabberService: RightMenuGrabberService,
+        private sidebarManagerService: SidebarManagerService) { }
 
     ngOnInit() { 
         this.collectionService.setCollectionId('');
@@ -44,10 +45,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     closeRightMenu() {
         this.rightMenu.close();
-    }
-
-    sidebarEvent($event) {
-        this.collapedSideBar = $event;
     }
 
     openRightMenu($event) {
