@@ -89,7 +89,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     if (!this.selectedDmoInCollection) {
       return;
     }
-    console.log('dmo editor is not implement yet');
+    this.router.navigateByUrl('/editor?dmoId=' + this.selectedDmoInCollection.id);
   }
 
   removeFromCollection() {
