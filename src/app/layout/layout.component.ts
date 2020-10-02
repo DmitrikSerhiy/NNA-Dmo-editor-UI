@@ -25,7 +25,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         private collectionService: CollectionsManagerService,
         private currestSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService,
-        private sidebarManagerService: SidebarManagerService) { }
+        public sidebarManagerService: SidebarManagerService) { }
 
     ngOnInit() { 
         this.collectionService.setCollectionId('');
