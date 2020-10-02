@@ -1,6 +1,9 @@
 $topnav-background-color: #222;
 :host {
     .navbar {
+        height: 48px;
+        padding-top: 0;
+        padding-bottom: 0;
         background-color: $topnav-background-color;
         .navbar-brand {
             color: #fff;

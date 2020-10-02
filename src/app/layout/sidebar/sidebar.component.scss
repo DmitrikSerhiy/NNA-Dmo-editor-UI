@@ -34,26 +34,41 @@ $topnav-background-color: #222;
                 margin-right: 10px;
             }
         }
-        a:hover {
-            background: darken($topnav-background-color, 5%);
-            color: #fff;
-            cursor: pointer;
+        a {
+            -webkit-transition: all 0.2s ease-in-out;
+            -moz-transition: all 0.2s ease-in-out;
+            -ms-transition: all 0.2s ease-in-out;
+            -o-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
+            
+            position: fixed;
+            width: 236px;
+            &:hover {
+                background: darken($topnav-background-color, 5%);
+                color: #fff;
+                cursor: pointer;
+            }
         }
+        @for $i from 1 through 5 {
+            a:nth-child(#{$i}) {
+                top: $i * 48px
+            }
+          }
         a.router-link-active {
             background: darken($topnav-background-color, 5%);
             color: #fff;
             cursor: pointer;
         }
-        // .side-item-collapse {
-        //     &:hover { 
-        //         span {
-        //             opacity: 1 !important;
-        //         }
-        //         width: 160px;
-        //         // opacity: 1 !important;
-        //         background-color: aqua !important;
-        //     }
-        // }
+        .side-item-collapse {
+            width: 60px;
+            &:hover { 
+                span {
+                    opacity: 1 !important;
+                }
+                width: 236px;
+                background-color: $topnav-background-color !important;
+            }
+        }
         .header-fields {
             padding-top: 10px;
 
@@ -185,11 +200,4 @@ $topnav-background-color: #222;
     span {
         opacity: 0;
     }
-     
-    // a {
-    //     &:hover {
-    //         color: #222;
-    //         opacity: 1;
-    //     }
-    // }
 }
