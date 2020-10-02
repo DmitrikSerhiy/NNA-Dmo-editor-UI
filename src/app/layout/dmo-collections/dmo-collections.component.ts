@@ -27,6 +27,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   showAddButton = true;
   isFormProcessing = false;
   showSortButton = false;
+  sortingTittle: string;
   selectedDmoCollectionName: DmoCollectionShortDto;
   oppenedCollectionId: string;
   private unsubscribe$: Subject<void> = new Subject();
@@ -91,11 +92,13 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       this.collectionsByAcs = true;
       this.collectionsByDesc = false;
       this.sortedDmoLists = this.sortedDmoLists.sort(comparer).reverse();
+      this.sortingTittle = 'reverce sorting'
     } else if (this.collectionsByAcs) {
       this.collectionsByDefault = true;
       this.collectionsByAcs = false;
       this.collectionsByDesc = false;
       this.sortedDmoLists = this.sortedDmoLists.sort(comparer);
+      this.sortingTittle = 'reset sorting'
     } else {
       this.resetCollectionsSort();
     }
@@ -198,6 +201,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.collectionsByDesc = true;
     this.sortedDmoLists = [...this.dmoLists];
     this.showSortButton = this.dmoLists.length > 1;
+    this.sortingTittle = 'sort by dmos'
   }
 
   private loadCollections() : Subscription{
