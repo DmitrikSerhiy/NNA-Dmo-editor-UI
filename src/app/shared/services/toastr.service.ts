@@ -21,8 +21,8 @@ export class Toastr {
         });
     }
 
-    error(message: string) {
-        this.toastr.error(message, 'Error!', {
+    error(errorObject: any) {
+        this.toastr.error(errorObject.message, errorObject.header, {
             timeOut: this.toastrDelay
         });
     }

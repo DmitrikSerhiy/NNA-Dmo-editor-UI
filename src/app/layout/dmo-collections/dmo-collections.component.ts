@@ -174,7 +174,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
                   this.resetCollectionsSort(); }))));
 
           deleteAndRefresh$.subscribe({
-            error: (err) => { this.toastr.error(err); },
+            error: (err) => { console.log(`from obs ${err}`); this.toastr.error(err); },
           });
         }
       });

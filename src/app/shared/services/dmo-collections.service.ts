@@ -1,25 +1,27 @@
 import { DmoCollectionShortDto, DmoCollectionDto, DmoShortDto, AddDmosToCollectionDto } from './../../layout/models';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
+import { CustomErrorHandler } from './custom-error-handler';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DmoCollectionsService {
   serverUrl = environment.server_user + 'dmoCollections/';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, 
+    private errorHandler: CustomErrorHandler) { }
 
   getCollections(): Observable<DmoCollectionShortDto[]> {
     return this.http
       .get(this.serverUrl)
       .pipe(
         map((response: DmoCollectionShortDto[]) => response),
-        catchError(this.handleError));
+        catchError(this.errorHandler.handle));
   }
 
   deleteCollection(collectionId: string): Observable<any> {
@@ -27,7 +29,7 @@ export class DmoCollectionsService {
       .delete(this.serverUrl, {params: new HttpParams().set('collectionId', collectionId)})
       .pipe(
         map(response => response ),
-        catchError(this.handleError));
+        catchError(this.errorHandler.handle));
   }
 
   addCollection(collectionName: string): Observable<any> {
@@ -35,7 +37,7 @@ export class DmoCollectionsService {
       .post(this.serverUrl, { CollectionName: collectionName })
       .pipe(
         map(response => response ),
-        catchError(this.handleError));
+        catchError(this.errorHandler.handle));
   }
 
 
@@ -44,7 +46,7 @@ export class DmoCollectionsService {
     .put(this.serverUrl + 'collection/name/', {id: collectionId, collectionName: newCollectionName})
     .pipe(
       map(response => response),
-      catchError(this.handleError));
+      catchError(this.errorHandler.handle));
   }
 
   getCollectionName(collectionId: string): Observable<DmoCollectionShortDto> {
@@ -52,7 +54,7 @@ export class DmoCollectionsService {
     .get(this.serverUrl + 'collection/name/', {params: new HttpParams().set('collectionId', collectionId) })
     .pipe(
       map((response: DmoCollectionShortDto) => response),
-      catchError(this.handleError));
+      catchError(this.errorHandler.handle));
   }
 
 
@@ -61,7 +63,7 @@ export class DmoCollectionsService {
       .get(this.serverUrl + 'collection/', {params: new HttpParams().set('collectionId', collectionId) })
       .pipe(
         map((response: DmoCollectionDto) => response),
-        catchError(this.handleError) );
+        catchError(this.errorHandler.handle) );
   }
 
   addDmosToCollection(addDmosToCollectionDto: AddDmosToCollectionDto) {
@@ -69,7 +71,7 @@ export class DmoCollectionsService {
     .post(this.serverUrl + 'collection/dmos', addDmosToCollectionDto)
     .pipe(
       map((response: DmoCollectionDto) => response),
-      catchError(this.handleError) );
+      catchError(this.errorHandler.handle) );
   }
 
   removeFromCollection(dmoId: string, collectionId: string) {
@@ -80,7 +82,7 @@ export class DmoCollectionsService {
     .delete(this.serverUrl + 'collection/dmos', {params: params })
     .pipe(
       map((response: DmoCollectionDto) => response),
-      catchError(this.handleError) );
+      catchError(this.errorHandler.handle) );
   }
 
   getExcludedDmos(collectionId: string) {
@@ -91,15 +93,6 @@ export class DmoCollectionsService {
   .get(this.serverUrl + 'collection/dmos', {params: params })
   .pipe(
     map((response: DmoShortDto[]) => response),
-    catchError(this.handleError) );
-  }
-
-  private handleError(err: HttpErrorResponse) {
-    const errorMessage = err.error.errorMessage;
-    if (!errorMessage) {
-      return throwError('Server error. Try later.');
-    }
-
-    return throwError(errorMessage);
+    catchError(this.errorHandler.handle) );
   }
 }

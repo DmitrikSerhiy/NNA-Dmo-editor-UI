@@ -1,26 +1,28 @@
 import { DmoDto } from './../../layout/models';
 import { DmoShortDto } from '../../layout/models';
-import { HttpErrorResponse, HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
+import { CustomErrorHandler } from './custom-error-handler';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DmosService {
   serverUrl = environment.server_user + 'dmos/';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private errorHandler: CustomErrorHandler) { }
 
   getAlldmos(): Observable<DmoShortDto[]> {
     return this.http
       .get(this.serverUrl)
       .pipe(
         map((response: DmoShortDto[]) => response),
-        catchError(this.handleError));
+        catchError(this.errorHandler.handle));
   }
 
   deleteDmo(dmoId: string): Observable<any> {
@@ -28,7 +30,7 @@ export class DmosService {
       .delete(this.serverUrl, {params: new HttpParams().set('dmoId', dmoId)})
       .pipe(
         map(response => response ),
-        catchError(this.handleError));
+        catchError(this.errorHandler.handle));
   }
 
   getDmo(dmoId: string): Observable<DmoDto> {
@@ -36,16 +38,6 @@ export class DmosService {
       .get(this.serverUrl + 'editor', {params: new HttpParams().set('dmoId', dmoId)})
       .pipe(
         map((response: DmoDto) => response ),
-        catchError(this.handleError));
-  }
-
-
-  private handleError(err: HttpErrorResponse) {
-    const errorMessage = err.error.errorMessage;
-    if (!errorMessage) {
-      return throwError('Server error. Try later.');
-    }
-
-    return throwError(errorMessage);
+        catchError(this.errorHandler.handle));
   }
 }
