@@ -1,4 +1,4 @@
-import { DmoCollectionShortDto, DmoCollectionDto, DmoShortDto, AddDmosToCollectionDto } from './../../layout/models';
+import { DmoCollectionShortDto, DmoCollectionDto, AddDmosToCollectionDto, ShortDmoDto } from './../../layout/models';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -92,7 +92,7 @@ export class DmoCollectionsService {
   return this.http
   .get(this.serverUrl + 'collection/dmos', {params: params })
   .pipe(
-    map((response: DmoShortDto[]) => response),
+    map((response: ShortDmoDto[]) => response),
     catchError(this.errorHandler.handle) );
   }
 }

@@ -1,4 +1,4 @@
-import { PartialDmoUpdateDto, DmoDto, CreateDmoDto, EditDmoInfoDto } from './../../models';
+import { PartialDmoUpdateDto, DmoDto, ShortDmoDto } from './../../models';
 
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -11,102 +11,97 @@ import { environment } from './../../../../environments/environment';
 })
 export class EditorHub {
     private hubConnection: signalR.HubConnection;
-    private connectionIsBuilt = false;
+    public get isConnected() : boolean {
+        return this.hubConnection.state == signalR.HubConnectionState.Connected
+    }
+    
 
     constructor(private userManager: UserManager) { }
 
     async startConnection() {
         if (this.userManager.isAuthorized) {
             this.createConnection();
-            this.registerOnServerEvents();
-            try {
-                await this.hubConnection.start();
-                console.log('Connection started');
-            } catch (err) {
-                console.error('Error while starting connection: ' + err);
-            }
+            await this.hubConnection.start();
         }
     }
 
     async abortConnection() {
-        if (!this.connectionIsBuilt) {
+        if (!this.isConnected) {
             return;
         }
-        try {
-            await this.hubConnection.stop();
-            this.connectionIsBuilt = false;
-            console.log('Connection stopped');
-        } catch (err) {
-            console.error('Error while stoppint connection: ' + err);
-        }
+
+        await this.hubConnection.stop();
     }
 
     private createConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(environment.server_user + 'editor', {
             accessTokenFactory: () => this.userManager.getJWT(), // todo: request refresh token if expired
-            skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets })
-        .configureLogging(signalR.LogLevel.Information)
-        // .withAutomaticReconnect() //todo: uncomment for prod
+        .configureLogging(signalR.LogLevel.Trace)
+        .withAutomaticReconnect()
         .build();
 
-        // this.hubConnection.onreconnecting((error) => {
-        //     if (error != null) {
-        //         console.error(error);
-        //     } else {
-        //         // todo: show orange reconnecting status;
-        //         console.log('Reconnecting...');
-        //     }
-        // });
-        // todo: uncoment for prod
-        // this.hubConnection.onreconnected(() => {
-        //     //todo: show green reconnected status;
-        //     console.log('Reconnected.');
-        // });
+        this.hubConnection.onreconnecting((error) => {
+            if (error != null) {
+                console.error(error);
+            } else {
+                // todo: show orange reconnecting status;
+                console.log('Reconnecting...');
+            }
+        });
+        this.hubConnection.onreconnected(() => {
+            //todo: show green reconnected status;
+            console.log('Reconnected.');
+        });
         this.hubConnection.onclose((error) => {
             if (error != null) {
                 console.error(error);
             }
             // todo: show red reconnected status;
         });
-        this.connectionIsBuilt = true;
     }
 
-    private registerOnServerEvents() {
-        if (!this.connectionIsBuilt) {
-            return;
-        }
-        // this.hubConnection.on('PartialDmoUpdateResult', (data) => {
-        //     console.log(data);
-        //   });
-    }
 
     async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
-        if (!this.connectionIsBuilt) {
+        if (!this.isConnected) {
             return;
         }
         await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
     }
 
     async loadDmo(dmoId: string): Promise<DmoDto> {
-        if (!this.connectionIsBuilt) {
+        if (!this.isConnected) {
             return;
         }
-        return await this.hubConnection.invoke('LoadDmo', dmoId);
+        try {
+            return await this.hubConnection.invoke('LoadDmo', dmoId);
+        } catch (err) {
+            return Promise.reject();
+        }
     }
 
-    async createDmo(dmo: CreateDmoDto): Promise<CreateDmoDto> {
-        if (!this.connectionIsBuilt) {
+    async createDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
+        if (!this.isConnected) {
             return;
         }
-        return await this.hubConnection.invoke('CreateDmo', dmo);
+        try {
+            return await this.hubConnection.invoke('CreateDmo', dmo);
+        } catch (err) {
+            return Promise.reject();
+        }
+        
     }
 
-    async editDmo(dmo: EditDmoInfoDto): Promise<EditDmoInfoDto> {
-        if (!this.connectionIsBuilt) {
+    async editDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
+        if (!this.isConnected) {
             return;
         }
-        return await this.hubConnection.invoke('UpdateDmoInfo', dmo);
+        try {
+            return await this.hubConnection.invoke('UpdateDmoInfo', dmo);
+        } catch (err) {
+            return Promise.reject();
+        }
     }
+    
 }

@@ -9,3 +9,13 @@ export class UserDetails implements IServerResponse {
     userName: string;
 }
 
+export class ToastrErrorMessage {
+    message: string;
+    header: string;
+
+    constructor(error: string, header: string) {
+        this.message = error;
+        this.header = header;
+    }
+}
+

@@ -34,7 +34,7 @@ export class InitialPopupComponent implements OnInit {
       'shortComment': new FormControl()
     });
     if (this.data) {
-      this.dmoNameInput.setValue(this.data.dmoName);
+      this.dmoNameInput.setValue(this.data.name);
       this.movieTitleInput.setValue(this.data.movieTitle);
       this.shortComment.setValue(this.data.shortComment);
     }
@@ -52,7 +52,7 @@ export class InitialPopupComponent implements OnInit {
     }
 
     this.dialogRef.close({
-      dmoName: this.dmoNameInput.value,
+      name: this.dmoNameInput.value,
       movieTitle: this.movieTitleInput.value,
       shortComment: this.shortComment.value,
       cancelled: false });

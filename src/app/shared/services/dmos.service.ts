@@ -1,5 +1,4 @@
-import { DmoDto } from './../../layout/models';
-import { DmoShortDto } from '../../layout/models';
+import { DmoDto, ShortDmoDto } from './../../layout/models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -17,11 +16,11 @@ export class DmosService {
   constructor(private http: HttpClient,
     private errorHandler: CustomErrorHandler) { }
 
-  getAlldmos(): Observable<DmoShortDto[]> {
+  getAlldmos(): Observable<ShortDmoDto[]> {
     return this.http
       .get(this.serverUrl)
       .pipe(
-        map((response: DmoShortDto[]) => response),
+        map((response: ShortDmoDto[]) => response),
         catchError(this.errorHandler.handle));
   }
 

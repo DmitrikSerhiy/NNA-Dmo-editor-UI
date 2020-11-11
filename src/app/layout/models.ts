@@ -22,16 +22,6 @@ export class DmoCollectionShortDto {
     collectionName: string;
 }
 
-export class DmoShortDto {
-    id: string;
-    name: string;
-    movieTitle: string;
-    dmoStatus: string;
-    dmoStatusId: number;
-    shortComment: string;
-    mark: number;
-}
-
 export class DmoDto {
     id: string;
     name: string;
@@ -45,53 +35,27 @@ export class DmoDto {
     constructor() {}
 }
 
-export class CreateDmoDto {
+export class ShortDmoDto {
     id: string;
     name: string;
     movieTitle: string;
     shortComment: string;
 
-    constructor(name: string, movieTitle: string, shortComment: string) {
+    constructor(name: string, movieTitle: string) {
         this.name = name;
         this.movieTitle = movieTitle;
-        this.shortComment = shortComment;
     }
-}
-
-export class EditDmoInfoDto {
-    id: string;
-    name: string;
-    movieTitle: string;
-    shortComment: string;
-
-    // constructor(id: string, name: string, movieTitle: string, shortComment: string) {
-    //     this.id = id;
-    //     this.name = name;
-    //     this.movieTitle = movieTitle;
-    //     this.shortComment = shortComment;
-    // }
-}
-
-export class DmoShorterDto {
-    constructor(id: string, movieTitle: string, dmoName: string) {
-        this.id = id;
-        this.movieTitle = movieTitle;
-        this.name = dmoName;
-    }
-    id: string;
-    movieTitle: string;
-    name: string;
 }
 
 export class ShortDmoCollectionDto {
     collectionName: string;
-    dmos: DmoShorterDto[];
+    dmos: ShortDmoDto[];
 }
 
 export class DmoCollectionDto {
     id: string;
     collectionName: string;
-    dmos: DmoShortDto[];
+    dmos: ShortDmoDto[];
 }
 
 export class DmosIdDto {

@@ -1,5 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
+import { ToastrErrorMessage } from '../models/serverResponse';
 
 @Injectable()
 export class Toastr {
@@ -21,7 +22,7 @@ export class Toastr {
         });
     }
 
-    error(errorObject: any) {
+    error(errorObject: ToastrErrorMessage) {
         this.toastr.error(errorObject.message, errorObject.header, {
             timeOut: this.toastrDelay
         });

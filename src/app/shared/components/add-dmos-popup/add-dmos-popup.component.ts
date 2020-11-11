@@ -2,7 +2,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { DmoShortDto, DmoCollectionDto, DmoShorterDto } from '../../../layout/models';
+import { DmoCollectionDto, ShortDmoDto } from '../../../layout/models';
 import { Component, OnInit, ViewChild, Input, Inject } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -13,8 +13,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./add-dmos-popup.component.scss']
 })
 export class AddDmosPopupComponent implements OnInit {
-  dmosTable: MatTableDataSource<DmoShorterDto>;
-  dmos: DmoShortDto[];
+  dmosTable: MatTableDataSource<ShortDmoDto>;
+  dmos: ShortDmoDto[];
   collectionName: string;
   isAwaitingForDmos = true;
   dmosTableColumn: string[];
@@ -22,7 +22,7 @@ export class AddDmosPopupComponent implements OnInit {
   @ViewChild('dmosPaginator', { static: true }) dmosPaginator: MatPaginator;
   @ViewChild('dmosSort', { static: true }) dmosSorter: MatSort;
   @ViewChild('addDmoToCollectionModal', { static: true }) addToCollectionModal: NgbActiveModal;
-  selectedDmo = new SelectionModel<DmoShorterDto>(true, []);
+  selectedDmo = new SelectionModel<ShortDmoDto>(true, []);
 
   @Input() openModule: boolean;
 

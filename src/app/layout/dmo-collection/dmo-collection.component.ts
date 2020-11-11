@@ -5,8 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CollectionsManagerService } from './../../shared/services/collections-manager.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from './../../shared/services/toastr.service';
-import { DmoCollectionDto, DmoShortDto, DmoCollectionShortDto, AddDmosToCollectionDto,
-   DmosIdDto, ShortDmoCollectionDto, DmoShorterDto, SidebarTabs } from './../models';
+import { DmoCollectionDto, DmoCollectionShortDto, AddDmosToCollectionDto,
+   DmosIdDto, ShortDmoCollectionDto, SidebarTabs, ShortDmoDto } from './../models';
 import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
@@ -28,10 +28,10 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   awaitingForDmos = false;
   showPopupOverview = false;
   showSearchContainer = false;
-  collectionTable: MatTableDataSource<DmoShortDto>;
+  collectionTable: MatTableDataSource<ShortDmoDto>;
   collectionTableColumn: string[];
   collectionLength = 0;
-  selectedDmoInCollection: DmoShortDto;
+  selectedDmoInCollection: ShortDmoDto;
   dmoSubscription: Subscription;
   @ViewChild('collectionPaginator', { static: true }) collectionPaginator: MatPaginator;
   @ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
@@ -73,7 +73,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     this.dmoSubscription.unsubscribe();
   }
 
-  onRowSelect(row: DmoShortDto) {
+  onRowSelect(row: ShortDmoDto) {
     if (this.showEditForm) {
       return;
     }
@@ -147,7 +147,14 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
     const collectionId = this.route.snapshot.paramMap.get('id');
     await this.dmoCollectionService.getExcludedDmos(collectionId).toPromise()
-      .then((dmos: DmoShortDto[]) => collectionWithDmo.dmos = dmos.map(d => new DmoShorterDto(d.id, d.movieTitle, d.name)))
+      .then((dmos: ShortDmoDto[]) => collectionWithDmo.dmos = 
+        dmos.map(d => { 
+          let dmo = new ShortDmoDto(d.movieTitle, d.name);
+          dmo.id = d.id;
+          dmo.shortComment = d.shortComment;
+          return dmo;
+        })
+      )
       .catch((err) => this.toastr.error(err));
 
     this.awaitingForDmos = false;
@@ -158,7 +165,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed()
       .subscribe({
-        next: (selectDmos: DmoShortDto[]) => {
+        next: (selectDmos: ShortDmoDto[]) => {
           this.showPopupOverview = false;
           if (!selectDmos) {
             return;
@@ -263,7 +270,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     this.showEditForm = false;
   }
 
-  private initializeCollectionTable(dataSource: DmoShortDto[]) {
+  private initializeCollectionTable(dataSource: ShortDmoDto[]) {
     this.collectionTableColumn = ['movieTitle', 'name', 'dmoStatus', 'shortComment', 'mark'];
     this.collectionTable = new MatTableDataSource(dataSource);
     this.collectionTable.paginator = this.collectionPaginator;

@@ -4,12 +4,12 @@ import { Subject, Observable, throwError, Subscription } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Toastr } from './../../shared/services/toastr.service';
-import { DmoShortDto } from './../models';
 import { DmosService } from '../../shared/services/dmos.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { concatMap, takeUntil, finalize, catchError } from 'rxjs/operators';
+import { ShortDmoDto } from '../models';
 
 @Component({
   selector: 'app-dmos',
@@ -18,15 +18,15 @@ import { concatMap, takeUntil, finalize, catchError } from 'rxjs/operators';
 })
 export class DmosComponent implements OnInit, OnDestroy {
 
-  allDmos: DmoShortDto[];
+  allDmos: ShortDmoDto[];
   shouldShowDmosTable = false;
-  dmosTable: MatTableDataSource<DmoShortDto>;
+  dmosTable: MatTableDataSource<ShortDmoDto>;
   dmosTableColumns: string[];
   dmosCount = 0;
   @ViewChild('dmosPaginator', { static: true }) dmosPaginator: MatPaginator;
   @ViewChild('dmosSorter', { static: true }) dmosSorter: MatSort;
   private unsubscribe$: Subject<void> = new Subject();
-  selectedDmo: DmoShortDto;
+  selectedDmo: ShortDmoDto;
   dmoSubscription: Subscription;
 
   constructor(
@@ -76,7 +76,7 @@ export class DmosComponent implements OnInit, OnDestroy {
     this.selectedDmo = null;
   }
 
-  onRowSelect(row: DmoShortDto) {
+  onRowSelect(row: ShortDmoDto) {
     if (this.selectedDmo && this.selectedDmo === row) {
       this.selectedDmo = null;
       return;
@@ -93,9 +93,9 @@ export class DmosComponent implements OnInit, OnDestroy {
     }
   }
 
-  private handleDMOSubscription(dmoObservable: Observable<DmoShortDto[]>) {
+  private handleDMOSubscription(dmoObservable: Observable<ShortDmoDto[]>) {
     this.dmoSubscription = dmoObservable.subscribe({
-        next: (result: DmoShortDto[]) => {
+        next: (result: ShortDmoDto[]) => {
           this.allDmos = result;
           this.initializeDmosTable(this.allDmos);
         },
@@ -117,7 +117,7 @@ export class DmosComponent implements OnInit, OnDestroy {
     this.selectedDmo = null;
   }
 
-  private initializeDmosTable(dmos: DmoShortDto[]) {
+  private initializeDmosTable(dmos: ShortDmoDto[]) {
     this.dmosTable = new MatTableDataSource(dmos);
     this.dmosTable.paginator = this.dmosPaginator;
     this.dmosTable.sort = this.dmosSorter;

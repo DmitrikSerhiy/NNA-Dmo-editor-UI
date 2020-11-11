@@ -25,7 +25,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.isAuthorized = this.userManager.isAuthorized();
     this.currestSidebarService.currentMenuSource$.subscribe();
-    this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; console.log(event$) })
+    this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; })
     this.sidebarState = this.sidebarManagerService.IsOpen;
   }
 
