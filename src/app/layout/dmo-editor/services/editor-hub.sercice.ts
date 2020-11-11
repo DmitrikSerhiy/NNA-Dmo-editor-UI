@@ -12,7 +12,7 @@ import { environment } from './../../../../environments/environment';
 export class EditorHub {
     private hubConnection: signalR.HubConnection;
     public get isConnected() : boolean {
-        return this.hubConnection.state == signalR.HubConnectionState.Connected
+        return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected
     }
     
 
