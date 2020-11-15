@@ -37,9 +37,9 @@ export class EditorHub {
         this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(environment.server_user + 'editor', {
             accessTokenFactory: () => this.userManager.getJWT(), // todo: request refresh token if expired
-            transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling | signalR.HttpTransportType.ServerSentEvents,
+            transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
-            skipNegotiation: false })
+            skipNegotiation: true })
         .configureLogging(signalR.LogLevel.Trace)
         .withAutomaticReconnect()
         .build();
