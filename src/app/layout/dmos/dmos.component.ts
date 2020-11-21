@@ -121,7 +121,7 @@ export class DmosComponent implements OnInit, OnDestroy {
     this.dmosTable = new MatTableDataSource(dmos);
     this.dmosTable.paginator = this.dmosPaginator;
     this.dmosTable.sort = this.dmosSorter;
-    this.dmosTableColumns = ['movieTitle', 'name', 'dmoStatus', 'shortComment', 'mark'];
+    this.dmosTableColumns = ['name', 'movieTitle', 'dmoStatus', 'shortComment', 'mark'];
     this.dmosCount = dmos.length;
     this.shouldShowDmosTable = true;
   }

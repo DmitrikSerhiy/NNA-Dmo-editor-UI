@@ -24,14 +24,14 @@
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="movieTitle">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="column-header" class="hoverable-element"> Movie title </th>
-                    <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
-                </ng-container>
-
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="column-header" class="hoverable-element"> DMO name </th>
                     <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.name}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="movieTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="column-header" class="hoverable-element"> Movie title </th>
+                    <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="dmosTableColumn"></tr>

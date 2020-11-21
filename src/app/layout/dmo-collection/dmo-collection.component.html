@@ -75,17 +75,16 @@
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.id}} </td>
             </ng-container>
 
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
+                    class="hoverable-element column-header"> DMO name </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
             <ng-container matColumnDef="movieTitle">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
                     class="hoverable-element column-header"> Movie title </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
-                    class="hoverable-element column-header">
-                    DMO name </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="dmoStatus">

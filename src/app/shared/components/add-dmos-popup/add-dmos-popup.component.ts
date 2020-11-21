@@ -78,7 +78,7 @@ export class AddDmosPopupComponent implements OnInit {
   }
 
   private initializeDmosTable() {
-    this.dmosTableColumn = ['select', 'movieTitle', 'name'];
+    this.dmosTableColumn = ['select', 'name', 'movieTitle'];
     this.dmosTable = new MatTableDataSource(this.dmos);
     this.dmosTable.paginator = this.dmosPaginator;
     this.dmosTable.sort = this.dmosSorter;

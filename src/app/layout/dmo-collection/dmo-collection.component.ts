@@ -271,7 +271,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   }
 
   private initializeCollectionTable(dataSource: ShortDmoDto[]) {
-    this.collectionTableColumn = ['movieTitle', 'name', 'dmoStatus', 'shortComment', 'mark'];
+    this.collectionTableColumn = ['name', 'movieTitle', 'dmoStatus', 'shortComment', 'mark'];
     this.collectionTable = new MatTableDataSource(dataSource);
     this.collectionTable.paginator = this.collectionPaginator;
     this.collectionTable.sort = this.collectionSorter;

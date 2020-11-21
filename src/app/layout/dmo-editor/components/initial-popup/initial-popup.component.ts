@@ -1,6 +1,6 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-initial-popup',
@@ -14,6 +14,13 @@ export class InitialPopupComponent implements OnInit {
   get dmoNameInput() { return this.dmoForm.get('dmoNameInput'); }
   get movieTitleInput() { return this.dmoForm.get('movieTitleInput'); }
   get shortComment() { return this.dmoForm.get('shortComment'); }
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if( event.key === "Enter") {
+      this.onClose(false);
+    }
+  }
+
 
   constructor(
     public dialogRef: MatDialogRef<InitialPopupComponent>,
