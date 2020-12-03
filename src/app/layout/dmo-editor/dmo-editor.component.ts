@@ -96,7 +96,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private async setLoadedDmo() {
-    const result = await this.editorHub.loadDmo(this.dmoId);
+    const result = await this.editorHub.LoadShortDmo(this.dmoId);
     if (!result) {
       this.toastr.error(new ToastrErrorMessage('Failed to load dmo', 'Server error'));
       return;
@@ -107,7 +107,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   async editCurrentDmo() {
     const cancelled = await this.finalizePopup(this.currentDmo);
     if (!cancelled) {
-      const result = await this.editorHub.editDmo(this.currentDmo);
+      const result = await this.editorHub.updateShortDmo(this.currentDmo);
       if (!result) {
         this.toastr.error(new ToastrErrorMessage('Failed to update dmo', 'Server error'));
         return;

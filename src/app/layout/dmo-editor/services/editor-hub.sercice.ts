@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 
 import * as signalR from '@microsoft/signalr';
 import { environment } from './../../../../environments/environment';
+import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +67,18 @@ export class EditorHub {
     }
 
 
+    private getResult(response: EditorResponseDto) {
+        if (response.errors.length != 0) {
+            return null;
+        }
+
+        if (response.warnings.length != 0) {
+            return null;
+        }
+
+        return response.result;
+    }
+
     async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
         if (!this.isConnected) {
             return;
@@ -73,12 +86,16 @@ export class EditorHub {
         await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
     }
 
-    async loadDmo(dmoId: string): Promise<DmoDto> {
+    async LoadShortDmo(dmoId: string): Promise<DmoDto> {
         if (!this.isConnected) {
             return;
         }
         try {
-            return await this.hubConnection.invoke('LoadDmo', dmoId);
+            var response = await this.hubConnection.invoke('LoadShortDmo', dmoId);
+            console.log(response);
+            var result = this.getResult(response);
+            return Promise.resolve<DmoDto>(result);
+            //todo: continue later
         } catch (err) {
             return Promise.reject();
         }
@@ -96,12 +113,12 @@ export class EditorHub {
         
     }
 
-    async editDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
+    async updateShortDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
         if (!this.isConnected) {
             return;
         }
         try {
-            return await this.hubConnection.invoke('UpdateDmoInfo', dmo);
+            return await this.hubConnection.invoke('UpdateShortDmo', dmo);
         } catch (err) {
             return Promise.reject();
         }
