@@ -2,11 +2,12 @@ export class EditorResponseDto {
     httpCode: string;
     header: string;
     message: string;
+    isSuccessful: boolean;
 
     errors: EditorErrorDetailsDto[];
     warnings: EditorValidationDetailsDto[];
 
-    result: any;
+    data: any;
 }
 
 export class EditorErrorDetailsDto {

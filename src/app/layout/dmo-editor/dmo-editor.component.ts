@@ -1,15 +1,15 @@
 import { ShortDmoDto } from './../models';
 import { InitialPopupComponent } from './components/initial-popup/initial-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { EditorHub } from './services/editor-hub.sercice';
 
 import { Toastr } from '../../shared/services/toastr.service';
-import { DmosService } from '../../shared/services/dmos.service';
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
+import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 
 @Component({
   selector: 'app-dmo-editor',
@@ -19,115 +19,176 @@ import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 export class DmoEditorComponent implements OnInit, OnDestroy {
   @ViewChild('dmobit', { static: true }) dmobit: ElementRef;
   dmoId: string;
-  isDmoInfoSet = false;
-  isInitialPopupOpen = false;
+  isDmoInfoSet: boolean;
+  isInitialPopupOpen: boolean;
   initialPopup: MatDialogRef<InitialPopupComponent>;
   currentDmo: ShortDmoDto;
 
   constructor(
     private editorHub: EditorHub,
-    private dmosService: DmosService,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private toastr: Toastr,
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService) { }
 
   async ngOnInit() {
+    this.isDmoInfoSet = false;
+    this.isInitialPopupOpen = false;
     this.activatedRoute.queryParams.subscribe(params => {
       this.dmoId = params['dmoId'];
     });
     if (this.dmoId) {
-      await this.editorHub.startConnection();
-      await this.setLoadedDmo();
-      this.sidebarManagerService.collapseSidebar();
+      await this.loadDmo();
     } else {
-      await this.setDmoInfo();
-    }
-  }
-
-  async setDmoInfo() {
-    const cancelled = await this.finalizePopup();
-    if (!cancelled) {
-      await this.editorHub.startConnection();
       await this.createAndInitDmo();
-      this.sidebarManagerService.collapseSidebar();
     }
   }
 
   async ngOnDestroy() {
-    await this.editorHub.abortConnection();
-    this.dmoId = '';
-    this.isDmoInfoSet = false;
-    this.matModule.closeAll();
-    this.initialPopup = null;
+    await this.closeEditorAndClearData();
+  }
+
+  async createAndInitDmo() {
+    const popupResult = await this.finalizePopup();
+    if (!popupResult) {
+      return;
+    }
+    await this.editorHub.startConnection();
+    
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.createDmo(popupResult);
+    } catch (err) {
+      this.showUnhandledException(err);
+      return;
+    }
+
+    if (this.handleResponse(response)) {
+      this.initDmo(response.data);
+      this.sidebarManagerService.collapseSidebar();
+    }
+  }
+
+  async editCurrentDmo() {
+    const popupResult = await this.finalizePopup(this.currentDmo);
+    if (!popupResult) {
+      return;
+    }
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.updateShortDmo(popupResult);
+
+      if (this.handleResponse(response)) {
+        await this.loadDmo();
+      }
+
+    } catch (err) {
+      this.showUnhandledException(err);
+      return;
+    }
+  }
+
+  async loadDmo() {
+    await this.editorHub.startConnection();
+
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.loadShortDmo(this.dmoId);
+    } catch(err) {
+      this.showUnhandledException(err);
+      return;
+    }
+
+    if (this.handleResponse(response)) {
+      this.initDmo(response.data);
+      this.sidebarManagerService.collapseSidebar();
+    }
   }
 
   async closeEditor() {
-    await this.editorHub.abortConnection();
-    this.isDmoInfoSet = false;
-    this.currentDmo = null;
-    this.matModule.closeAll();
-    this.initialPopup = null;
+    await this.closeEditorAndClearData();
+    this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
   }
 
-  private async finalizePopup(popupData: any = null): Promise<boolean> {
+  private async finalizePopup(popupData: any = null): Promise<ShortDmoDto> {
     this.initialPopup = this.matModule.open(InitialPopupComponent, {
       data: popupData,
       width: '400px' });
+
     this.isInitialPopupOpen = true;
 
     const popupResult = await this.initialPopup.afterClosed().toPromise();
     this.isInitialPopupOpen = false;
     if (!popupResult || popupResult.cancelled) {
-      return true;
+      return null;
     } 
 
-    this.initDmo(popupResult);
+    let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
+    response.shortComment = popupResult.shortComment;
+    if(this.dmoId) {
+      response.id = this.dmoId;
+    }
+
+    this.initialPopup = null;
+    this.matModule.ngOnDestroy();
+    return response;
+  }
+
+  private handleResponse(entry: EditorResponseDto) : boolean {
+    if (!entry) {
+      return false;
+    }
+
+    if (entry.isSuccessful) {
+      return true;
+    }
+
+    if (entry.errors != null || entry.errors.length != 0) {
+      entry.errors.forEach(err => console.error(err.errorMessage));
+      this.toastr.error(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
+      return false;
+    }
+
+    if (entry.warnings != null || entry.warnings.length != 0) {
+      this.toastr.warning(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
+      console.error('Validation result is not implemented');
+      console.log('validation warnings');
+      entry.warnings.forEach(war => console.log(`field: ${war.fieldName} message: ${war.validationMessage}`));
+      return false;
+    }
+
+    this.showUnhandledException();
     return false;
   }
 
-  private async createAndInitDmo() {
-    const result = await this.editorHub.createDmo(this.currentDmo);
-      if (!result) {
-        this.toastr.error(new ToastrErrorMessage('Faild to create dmo', 'Server error'));
-        return;
-      }
-      this.initDmo(result);
-  }
-
-  private async setLoadedDmo() {
-    const result = await this.editorHub.LoadShortDmo(this.dmoId);
-    if (!result) {
-      this.toastr.error(new ToastrErrorMessage('Failed to load dmo', 'Server error'));
-      return;
-    }
-    this.initDmo(result);
-  }
-
-  async editCurrentDmo() {
-    const cancelled = await this.finalizePopup(this.currentDmo);
-    if (!cancelled) {
-      const result = await this.editorHub.updateShortDmo(this.currentDmo);
-      if (!result) {
-        this.toastr.error(new ToastrErrorMessage('Failed to update dmo', 'Server error'));
-        return;
-      }
-      this.initDmo(result);
+  private showUnhandledException(err?: any) {
+    if (!err) {
+      this.toastr.error(new ToastrErrorMessage('Unhandled exception', 'Error'));
+    } else {
+      this.toastr.error(new ToastrErrorMessage(err, 'Error'));
+      console.error(err);
     }
   }
 
   private initDmo(result: ShortDmoDto) {
-    if (!this.currentDmo) {
-      this.currentDmo = new ShortDmoDto(result.name, result.movieTitle);
-    } else {
-      this.currentDmo.name = result.name;
-      this.currentDmo.movieTitle = result.movieTitle;
-    }
+    this.currentDmo = new ShortDmoDto(result.name, result.movieTitle);
+
     if(result.id) {
       this.currentDmo.id = result.id;
     }
     this.currentDmo.shortComment = result.shortComment;
     this.isDmoInfoSet = true;
+  }
+
+  private async closeEditorAndClearData() {
+    await this.editorHub.abortConnection();
+    this.dmoId = '';
+    this.isDmoInfoSet = false;
+    this.isInitialPopupOpen = false;
+    this.matModule.closeAll();
+    this.initialPopup = null;
+    this.currentDmo = null;
   }
 
 }

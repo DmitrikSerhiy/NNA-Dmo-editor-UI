@@ -15,12 +15,16 @@ export class EditorHub {
     public get isConnected() : boolean {
         return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected
     }
-    
 
-    constructor(private userManager: UserManager) { }
+    constructor(private userManager: UserManager) { 
+        this.hubConnection = null;
+    }
 
     async startConnection() {
         if (this.userManager.isAuthorized) {
+            if(this.hubConnection != null && this.hubConnection.state != 'Disconnected') {
+                return;
+            }
             this.createConnection();
             await this.hubConnection.start();
         }
@@ -41,7 +45,7 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        .configureLogging(signalR.LogLevel.Trace)
+        // .configureLogging(signalR.LogLevel.Trace)  //uncomment in some issues
         .withAutomaticReconnect()
         .build();
 
@@ -67,17 +71,7 @@ export class EditorHub {
     }
 
 
-    private getResult(response: EditorResponseDto) {
-        if (response.errors.length != 0) {
-            return null;
-        }
-
-        if (response.warnings.length != 0) {
-            return null;
-        }
-
-        return response.result;
-    }
+    // ----- editor bub methods ------
 
     async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
         if (!this.isConnected) {
@@ -86,42 +80,40 @@ export class EditorHub {
         await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
     }
 
-    async LoadShortDmo(dmoId: string): Promise<DmoDto> {
+    async loadShortDmo(dmoId: string) : Promise<EditorResponseDto> {
         if (!this.isConnected) {
             return;
         }
         try {
-            var response = await this.hubConnection.invoke('LoadShortDmo', dmoId);
-            console.log(response);
-            var result = this.getResult(response);
-            return Promise.resolve<DmoDto>(result);
-            //todo: continue later
+            var response = await this.hubConnection.invoke('LoadShortDmo', { id: dmoId } );
+            return Promise.resolve<EditorResponseDto>(response);
         } catch (err) {
-            return Promise.reject();
+            Promise.reject(err)
         }
     }
 
-    async createDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
+    async createDmo(dmo: ShortDmoDto) : Promise<EditorResponseDto> {
         if (!this.isConnected) {
             return;
         }
         try {
-            return await this.hubConnection.invoke('CreateDmo', dmo);
+            var response = await this.hubConnection.invoke('CreateDmo', dmo);
+            return Promise.resolve<EditorResponseDto>(response);
         } catch (err) {
-            return Promise.reject();
+            Promise.reject(err)
         }
-        
     }
 
-    async updateShortDmo(dmo: ShortDmoDto): Promise<ShortDmoDto> {
+    async updateShortDmo(dmo: ShortDmoDto): Promise<EditorResponseDto> {
         if (!this.isConnected) {
             return;
         }
         try {
-            return await this.hubConnection.invoke('UpdateShortDmo', dmo);
+            var response = await this.hubConnection.invoke('UpdateShortDmo', dmo);
+            return Promise.resolve<EditorResponseDto>(response);
         } catch (err) {
-            return Promise.reject();
+            return Promise.reject(err);
         }
     }
-    
+    // ----- editor bub methods ------
 }

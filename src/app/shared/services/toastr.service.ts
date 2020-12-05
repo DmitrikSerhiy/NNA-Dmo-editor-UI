@@ -22,6 +22,12 @@ export class Toastr {
         });
     }
 
+    warning(errorObject: ToastrErrorMessage) {
+        this.toastr.warning(errorObject.message, errorObject.header, {
+            timeOut: this.toastrDelay
+        });
+    }
+
     error(errorObject: ToastrErrorMessage) {
         this.toastr.error(errorObject.message, errorObject.header, {
             timeOut: this.toastrDelay
