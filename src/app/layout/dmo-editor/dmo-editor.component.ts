@@ -71,7 +71,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   async editCurrentDmo() {
-    const popupResult = await this.finalizePopup(this.currentDmo);
+    const popupResult = await this.finalizePopup();
     if (!popupResult) {
       return;
     }
@@ -111,7 +111,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
   }
 
-  private async finalizePopup(popupData: any = null): Promise<ShortDmoDto> {
+  private async finalizePopup(): Promise<ShortDmoDto> {
+    let popupData = null;
+    if(this.currentDmo) {
+      popupData = this.currentDmo;
+    }
     this.initialPopup = this.matModule.open(InitialPopupComponent, {
       data: popupData,
       width: '400px' });
@@ -126,8 +130,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
     response.shortComment = popupResult.shortComment;
-    if(this.dmoId) {
-      response.id = this.dmoId;
+    if(this.currentDmo && this.currentDmo.id) {
+      response.id = this.currentDmo.id;
     }
 
     this.initialPopup = null;
@@ -144,13 +148,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    if (entry.errors != null || entry.errors.length != 0) {
+    if (entry.errors != null && entry.errors.length != 0) {
       entry.errors.forEach(err => console.error(err.errorMessage));
       this.toastr.error(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
       return false;
     }
 
-    if (entry.warnings != null || entry.warnings.length != 0) {
+    if (entry.warnings != null && entry.warnings.length != 0) {
       this.toastr.warning(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
       console.error('Validation result is not implemented');
       console.log('validation warnings');
@@ -176,6 +180,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     if(result.id) {
       this.currentDmo.id = result.id;
+      this.dmoId = result.id;
     }
     this.currentDmo.shortComment = result.shortComment;
     this.isDmoInfoSet = true;

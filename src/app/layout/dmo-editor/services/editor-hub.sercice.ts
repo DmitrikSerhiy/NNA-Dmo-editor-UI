@@ -45,7 +45,7 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        // .configureLogging(signalR.LogLevel.Trace)  //uncomment in some issues
+        // .configureLogging(signalR.LogLevel.Trace)  //uncomment for testing
         .withAutomaticReconnect()
         .build();
 

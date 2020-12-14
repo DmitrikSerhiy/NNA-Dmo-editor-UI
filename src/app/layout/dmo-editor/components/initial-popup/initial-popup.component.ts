@@ -8,9 +8,17 @@ import { Component, OnInit, Inject, HostListener } from '@angular/core';
   styleUrls: ['./initial-popup.component.scss']
 })
 export class InitialPopupComponent implements OnInit {
+
+  maxEntityNameLength = 20;
+  maxShortCommentLength = 100;
+  shouldShowCustomDmoNameValidation = false;
+
   private initialData: any;
+  allowAutoDmoName: boolean;
   isEdit = false;
   dmoForm: FormGroup;
+  defaultDmoPlaceholder = 'dmo';
+  generatedDmoName: string;
   get dmoNameInput() { return this.dmoForm.get('dmoNameInput'); }
   get movieTitleInput() { return this.dmoForm.get('movieTitleInput'); }
   get shortComment() { return this.dmoForm.get('shortComment'); }
@@ -28,17 +36,19 @@ export class InitialPopupComponent implements OnInit {
       if (data) {
         this.initialData = data;
         this.isEdit = true;
+        this.allowAutoDmoName = false;
       } else {
         this.initialData = { cancelled: false };
+        this.allowAutoDmoName = true;
       }
     }
 
   ngOnInit() {
     this.dialogRef.backdropClick().subscribe(() => this.onClose(true));
     this.dmoForm = new FormGroup({
-      'dmoNameInput': new FormControl('', [Validators.required]),
-      'movieTitleInput': new FormControl('', [Validators.required]),
-      'shortComment': new FormControl()
+      'dmoNameInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)] ),
+      'movieTitleInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)]),
+      'shortComment': new FormControl('',  [Validators.maxLength(this.maxShortCommentLength)] )
     });
     if (this.data) {
       this.dmoNameInput.setValue(this.data.name);
@@ -63,5 +73,25 @@ export class InitialPopupComponent implements OnInit {
       movieTitle: this.movieTitleInput.value,
       shortComment: this.shortComment.value,
       cancelled: false });
+  }
+
+  dmoNameAutofill(movieInput): void {
+    if(!movieInput) {
+      this.dmoNameInput.setValue('');
+      return;
+    }
+
+    this.dmoNameInput.setValue(`${movieInput} ${this.defaultDmoPlaceholder}`);
+
+    if (this.movieTitleInput.value > this.maxEntityNameLength) {
+      this.shouldShowCustomDmoNameValidation = false;
+      return;
+    }
+
+    if (this.dmoNameInput.value.length > this.maxEntityNameLength) {
+      this.shouldShowCustomDmoNameValidation = true;
+    } else {
+      this.shouldShowCustomDmoNameValidation = false;
+    }
   }
 }

@@ -4,15 +4,73 @@
     </div>
     <div class="modal-body" mat-dialog-content>
         <form role="form" [formGroup]="dmoForm">
-            <input autocomplete="off" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
-                class="form-control input-underline-light" placeholder="DMO name*" />
-            <input autocomplete="off" type="text" name="movieTitleInput" formControlName="movieTitleInput" 
+            
+            <!-- without dmo autofill -->
+            <input *ngIf='!allowAutoDmoName' autocomplete="off" type="text" name="movieTitleInput" formControlName="movieTitleInput" 
                 class="form-control input-underline-light" placeholder="Movie title*" />
+
+            <div *ngIf='!allowAutoDmoName' class="validation-wrapper validation-wrapper-popup">
+                <div *ngIf="movieTitleInput.invalid && (movieTitleInput.dirty || movieTitleInput.touched)" class="validation-container">
+                    <div *ngIf="movieTitleInput.errors.maxlength">
+                        <p class="validation-text">Maximum movie name length is {{maxEntityNameLength}}</p>
+                    </div> 
+                </div>
+            </div>
+
+            <input *ngIf='!allowAutoDmoName' autocomplete="off" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
+                class="form-control input-underline-light" placeholder="DMO name*" />
+
+            <div *ngIf='!allowAutoDmoName' class="validation-wrapper validation-wrapper-popup">
+                <div *ngIf="dmoNameInput.invalid && (dmoNameInput.dirty || dmoNameInput.touched)" class="validation-container">
+                    <div *ngIf="dmoNameInput.errors.maxlength">
+                        <p class="validation-text">Maximum dmo name length is {{maxEntityNameLength}}</p>
+                    </div> 
+                </div>
+            </div>
+            <!-- ====================== -->
+            
+
+
+            <!-- dmo name is autofilled -->
+            <input *ngIf='allowAutoDmoName' #movieInput autocomplete="off" type="text" name="movieTitleInput" formControlName="movieTitleInput" 
+                class="form-control input-underline-light" placeholder="Movie title*" (keyup)="dmoNameAutofill(movieInput.value)" />
+
+            <div *ngIf='allowAutoDmoName' class="validation-wrapper validation-wrapper-popup">
+                <div *ngIf="movieTitleInput.invalid && (movieTitleInput.dirty || movieTitleInput.touched)" class="validation-container">
+                    <div *ngIf="movieTitleInput.errors.maxlength">
+                        <p class="validation-text">Maximum movie name length is {{maxEntityNameLength}}</p>
+                    </div> 
+                </div>
+            </div>
+
+            <input *ngIf='allowAutoDmoName' autocomplete="off" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
+                class="form-control input-underline-light" placeholder="DMO name*" />
+
+            <div *ngIf='allowAutoDmoName' class="validation-wrapper validation-wrapper-popup">
+                <div *ngIf="(dmoNameInput.invalid && (dmoNameInput.dirty || dmoNameInput.touched)) || shouldShowCustomDmoNameValidation" class="validation-container">
+                    <div *ngIf="shouldShowDmoNameValidation && !dmoNameInput.errors">
+                        <p class="validation-text">Maximum dmo name length is {{maxEntityNameLength}}</p>
+                    </div> 
+                    <div *ngIf="!shouldShowDmoNameValidation && dmoNameInput.errors && dmoNameInput.errors.maxlength">
+                        <p class="validation-text">Maximum dmo name length is {{maxEntityNameLength}}</p>
+                    </div> 
+
+                </div>
+            </div>
+            <!-- ====================== -->
+
+
             <textarea autocomplete="off" name="shortComment" formControlName="shortComment" 
                 class="form-control input-underline-light" rows="2" placeholder="Short comment"></textarea>
-            <div class="validation-wrapper">
 
+            <div class="validation-wrapper validation-wrapper-popup">
+                <div *ngIf="shortComment.invalid && (shortComment.dirty || shortComment.touched)" class="validation-container">
+                    <div *ngIf="shortComment.errors.maxlength">
+                        <p class="validation-text">Maximum comment length is {{maxShortCommentLength}}</p> 
+                    </div>
+                </div>
             </div>
+
         </form>
     </div>
     <div class="modal-footer" mat-dialog-actions>

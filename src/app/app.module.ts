@@ -34,7 +34,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,

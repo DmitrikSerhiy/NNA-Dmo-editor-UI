@@ -12,25 +12,30 @@ export class Toastr {
 
     success(message: string) {
         this.toastr.success(message, 'Success!', {
-            timeOut: this.toastrDelay
+            timeOut: this.toastrDelay,
+            positionClass: 'toast-bottom-right',
+            
         });
     }
 
     info(message: string) {
         this.toastr.info(message, 'Info', {
-            timeOut: this.toastrDelay
+            timeOut: this.toastrDelay,
+            positionClass: 'toast-bottom-right'
         });
     }
 
     warning(errorObject: ToastrErrorMessage) {
         this.toastr.warning(errorObject.message, errorObject.header, {
-            timeOut: this.toastrDelay
+            timeOut: this.toastrDelay,
+            positionClass: 'toast-bottom-right'
         });
     }
 
     error(errorObject: ToastrErrorMessage) {
         this.toastr.error(errorObject.message, errorObject.header, {
-            timeOut: this.toastrDelay
+            timeOut: this.toastrDelay,
+            positionClass: 'toast-bottom-right'
         });
     }
 
