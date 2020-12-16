@@ -2,7 +2,7 @@ import { RightMenuGrabberService } from './../shared/services/right-menu-grabber
 import { CurrentSidebarService } from './../shared/services/current-sidebar.service';
 import { CollectionsManagerService } from './../shared/services/collections-manager.service';
 import { Observable } from 'rxjs';
-import { RightMenues } from './models';
+import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
@@ -23,7 +23,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     constructor(
         private collectionService: CollectionsManagerService,
-        private currestSidebarService: CurrentSidebarService,
+        private currentSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService,
         public sidebarManagerService: SidebarManagerService) { }
 
@@ -33,13 +33,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         this.rightMenuIsClosing$ = this.rightMenu.closedStart;
+        this.currentSidebarService.setMenu(SidebarTabs.dashboard);
     }
 
     closeByBackdrop() {
         if (!this.collectionService.getCurrentCollectionId()) {
             this.collectionService.setCollectionId('');
             this.resetMenues();
-            this.currestSidebarService.setPrevious();
+            this.currentSidebarService.setPrevious();
         }
     }
 

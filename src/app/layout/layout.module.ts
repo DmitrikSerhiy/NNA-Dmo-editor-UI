@@ -22,13 +22,13 @@ const routes: Routes = [{
     path: '',
     component: LayoutComponent,
     children: [
-        { path: '', redirectTo: 'dashboard', pathMatch: 'prefix' },
         { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
         { path: 'dmos', loadChildren: () => import('./dmos/dmos.module').then(m => m.DmosModule), canActivate: [AuthGuard] },
         { path: 'editor', loadChildren: () =>
             import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
         { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module')
             .then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
+        { path: '', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
     ]}
 ];
 
