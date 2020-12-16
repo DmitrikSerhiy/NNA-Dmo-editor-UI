@@ -1,5 +1,7 @@
 <div class="dmos-page">
-
+    <div *ngIf="isDmosLoadings" class="dmo-loader-container">  
+        <mat-progress-spinner diameter="70" mode="indeterminate"></mat-progress-spinner>
+    </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class="dmos-table-details">
         <div *ngIf="selectedDmo" class="dmo-info">
             <div>

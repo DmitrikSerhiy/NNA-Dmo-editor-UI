@@ -9,7 +9,7 @@ import { Component, OnInit, Inject, HostListener } from '@angular/core';
 })
 export class InitialPopupComponent implements OnInit {
 
-  maxEntityNameLength = 20;
+  maxEntityNameLength = 50;
   maxShortCommentLength = 100;
   shouldShowCustomDmoNameValidation = false;
 

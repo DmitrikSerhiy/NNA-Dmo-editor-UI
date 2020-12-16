@@ -63,7 +63,7 @@ $topnav-background-color: #222;
             width: 60px;
             &:hover { 
                 span {
-                    opacity: 1 !important;
+                    display: inline !important;
                 }
                 width: 236px;
                 background-color: $topnav-background-color !important;
@@ -198,6 +198,7 @@ $topnav-background-color: #222;
 .collapsed {
     width: 60px;
     span {
-        opacity: 0;
+        margin-left: 8px;
+        display: none;
     }
 }

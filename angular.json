@@ -85,7 +85,8 @@
             ],
             "scripts": [],
             "assets": [
-              "src/assets"
+              "src/assets",
+              "favicon.png" 
             ]
           }
         },

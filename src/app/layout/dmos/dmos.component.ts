@@ -18,6 +18,7 @@ import { ShortDmoDto } from '../models';
 })
 export class DmosComponent implements OnInit, OnDestroy {
 
+  isDmosLoadings = true;
   allDmos: ShortDmoDto[];
   shouldShowDmosTable = false;
   dmosTable: MatTableDataSource<ShortDmoDto>;
@@ -96,6 +97,7 @@ export class DmosComponent implements OnInit, OnDestroy {
   private handleDMOSubscription(dmoObservable: Observable<ShortDmoDto[]>) {
     this.dmoSubscription = dmoObservable.subscribe({
         next: (result: ShortDmoDto[]) => {
+          this.isDmosLoadings = false;
           this.allDmos = result;
           this.initializeDmosTable(this.allDmos);
         },

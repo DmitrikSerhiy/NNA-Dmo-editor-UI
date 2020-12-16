@@ -1,5 +1,11 @@
 .dmos-page {
-
+  .dmo-loader-container {
+    display: flex;
+    height: 400px;
+    mat-progress-spinner {
+      margin: auto;
+    }
+  }
   .dmos-table-details {
     display: flex;
     width: 100%;
