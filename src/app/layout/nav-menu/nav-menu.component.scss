@@ -1,11 +1,18 @@
 $topnav-background-color: #222;
 :host {
-    .navbar {
+    .nna-nav {
+        padding-left: 0;
         height: 48px;
         padding-top: 0;
         padding-bottom: 0;
         background-color: $topnav-background-color;
+
+        img {
+            margin: 0 10px;    
+        }
+
         .navbar-brand {
+            margin-left: 1rem;
             color: #fff;
         }
         .nav-item > a {

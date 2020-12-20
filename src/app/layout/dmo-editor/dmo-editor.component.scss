@@ -1,13 +1,15 @@
 .general-editor-wrapper {
     min-height: 100vh;
+    margin: -1rem;
+    padding: 1rem;
+    // background-image: linear-gradient(to right bottom, #f3f3f3, #e1e1e1, #cecece, #bdbdbd, #ababab);
+    background-image: url("/assets/editor_background.jpg");
 
     .controls-panel {
         height: 2rem;
         display: flex;
         justify-content: flex-start;
         
-        background-color: gray;
-
         button {
             align-self: center;
         }
@@ -15,6 +17,20 @@
             margin-left: 0.5rem;
         }
     }
+
+    .editor-board-wrapper {
+        display: flex;
+        flex-flow: row nowrap;
+        min-height: 100vh;
+
+        .editor-plot-flow {
+            flex: 3rem 0 0;
+        }
+        .editor-board {
+            flex: auto 1 1;
+        }
+    }
+    
 }
 
 .dmo-details-popup-button {
