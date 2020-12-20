@@ -1,0 +1,17 @@
+.canvas-wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    max-width: 4rem;
+
+    .time-tracker-container {
+        height: 100px;
+        flex: 1 1 auto;
+    }
+    
+    .time-tracker-canvas {
+        height: 100px;
+        max-width: 1rem;
+        flex: 0 0 1rem;
+    }
+}

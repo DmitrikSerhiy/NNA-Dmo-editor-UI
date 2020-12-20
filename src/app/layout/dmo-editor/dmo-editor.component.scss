@@ -2,7 +2,6 @@
     min-height: 100vh;
     margin: -1rem;
     padding: 1rem;
-    // background-image: linear-gradient(to right bottom, #f3f3f3, #e1e1e1, #cecece, #bdbdbd, #ababab);
     background-image: url("/assets/editor_background.jpg");
 
     .controls-panel {
@@ -24,10 +23,11 @@
         min-height: 100vh;
 
         .editor-plot-flow {
-            flex: 3rem 0 0;
+            flex: 0 0 4rem;
+            background-color: gray;
         }
         .editor-board {
-            flex: auto 1 1;
+            flex: 1 1 auto;
         }
     }
     
