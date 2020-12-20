@@ -1,16 +1,27 @@
 
-<div *ngIf='isDmoInfoSet'>
-    <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
-        <mat-tab  label="Editor"> 
-            <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO</button>
-            editor
-            <button (click)='closeEditor()'>Close editor</button>
-            <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit">    
-        </mat-tab>
+<div *ngIf='isDmoInfoSet' class="general-editor-wrapper">
+    <div class="controls-panel">
+        <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
+        <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
+    </div>
+    <!-- <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
+        <mat-tab  label="Editor">  -->
+
+ 
+
+            <!-- <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit">     -->
+
+
+
+
+
+
+
+        <!-- </mat-tab>
         <mat-tab label="Details"> some staff 
             
         </mat-tab>
-    </mat-tab-group> 
+    </mat-tab-group>  -->
 </div>
 <div *ngIf='!isDmoInfoSet && !isInitialPopupOpen'>
     <button class="dmo-details-popup-button nna-button nna-button-primary" (click)='createAndInitDmo()'>Create DMO</button>

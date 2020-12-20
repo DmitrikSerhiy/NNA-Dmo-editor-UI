@@ -33,16 +33,18 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private sidebarManagerService: SidebarManagerService) { }
 
   async ngOnInit() {
-    this.isDmoInfoSet = false;
-    this.isInitialPopupOpen = false;
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.dmoId = params['dmoId'];
-    });
-    if (this.dmoId) {
-      await this.loadDmo();
-    } else {
-      await this.createAndInitDmo();
-    }
+    this.isDmoInfoSet = true;
+
+    // this.isDmoInfoSet = false;
+    // this.isInitialPopupOpen = false;
+    // this.activatedRoute.queryParams.subscribe(params => {
+    //   this.dmoId = params['dmoId'];
+    // });
+    // if (this.dmoId) {
+    //   await this.loadDmo();
+    // } else {
+    //   await this.createAndInitDmo();
+    // }
   }
 
   async ngOnDestroy() {
@@ -50,24 +52,29 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   async createAndInitDmo() {
-    const popupResult = await this.finalizePopup();
-    if (!popupResult) {
-      return;
-    }
-    await this.editorHub.startConnection();
-    
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.createDmo(popupResult);
-    } catch (err) {
-      this.showUnhandledException(err);
-      return;
-    }
+    let tempDmo = new ShortDmoDto('test name', 'test movie');
+    tempDmo.id = 'some id';
+    tempDmo.shortComment = 'some comment';
+    this.initDmo(tempDmo);
 
-    if (this.handleResponse(response)) {
-      this.initDmo(response.data);
-      this.sidebarManagerService.collapseSidebar();
-    }
+    // const popupResult = await this.finalizePopup();
+    // if (!popupResult) {
+    //   return;
+    // }
+    // await this.editorHub.startConnection();
+    
+    // let response: EditorResponseDto;
+    // try {
+    //   response = await this.editorHub.createDmo(popupResult);
+    // } catch (err) {
+    //   this.showUnhandledException(err);
+    //   return;
+    // }
+
+    // if (this.handleResponse(response)) {
+    //   this.initDmo(response.data);
+    //   this.sidebarManagerService.collapseSidebar();
+    // }
   }
 
   async editCurrentDmo() {
