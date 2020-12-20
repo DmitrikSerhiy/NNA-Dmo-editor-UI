@@ -11,24 +11,53 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   public context: CanvasRenderingContext2D;
 
   private plotFlowWidth: number;
-  constructor() { 
-    this.plotFlowWidth = 16; //1rem
+  private lineHeigth: number;
+  private beatFlowPointRadius: number;
 
+
+  constructor() { 
+    this.plotFlowWidth = 24;
+    this.lineHeigth = 32;
+    this.beatFlowPointRadius = 6;
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit(): void {
-    this.context = this.plotFlow.nativeElement.getContext('2d');
+    let canvas = this.plotFlow.nativeElement;
+    this.context = canvas.getContext('2d');
+    let dpi = window.devicePixelRatio;
+
+    let style_height = +getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);
+    let style_width = +getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);
+
+    canvas.setAttribute('height', style_height * dpi);
+    canvas.setAttribute('width', style_width * dpi);
+
     this.setupInitialPlotFlow();
   }
 
 
   private setupInitialPlotFlow() {
     this.context.beginPath();
-    this.context.moveTo(0, 0);
-    this.context.lineTo(this.plotFlowWidth, 0);
+    this.context.lineWidth = 3;
+    this.context.moveTo(0, 0.5);
+    this.context.lineTo(this.plotFlowWidth, 0.5);
     this.context.stroke();
+
+    this.context.lineWidth = 1;
+    this.context.moveTo(this.plotFlowWidth / 2 + 0.5, 0);
+    this.context.lineTo(this.plotFlowWidth / 2 + 0.5, this.lineHeigth);
+    this.context.stroke();
+
+    this.drawBeatFlowPoint(this.plotFlowWidth / 2, this.lineHeigth);
+
+  }
+
+  private drawBeatFlowPoint(x: number, y: number) {
+    this.context.moveTo(x, y);
+    this.context.arc(x, y, this.beatFlowPointRadius, 0, 2 * Math.PI);
+    this.context.fill();
   }
 }

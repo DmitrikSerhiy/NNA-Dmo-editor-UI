@@ -5,13 +5,18 @@
     max-width: 4rem;
 
     .time-tracker-container {
-        height: 100px;
         flex: 1 1 auto;
+
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
     }
     
     .time-tracker-canvas {
-        height: 100px;
-        max-width: 1rem;
-        flex: 0 0 1rem;
+        margin-top: 0.5rem;
+        width: 16px;
+        height: 300px;
+        flex-shrink: 0;
+        flex-grow: 0;
     }
 }
