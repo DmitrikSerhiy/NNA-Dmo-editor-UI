@@ -10,29 +10,64 @@ export class TimePickerComponent implements OnInit {
 
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
   private timeSet: TimeDto;
+  private isTimeValid: boolean;
   private isKeyEventValid: boolean;
+  private isRemoveKeyPressed: boolean;
 
   constructor() { 
     this.timeSet = new TimeDto();
     this.isKeyEventValid = false;
+    this.isRemoveKeyPressed = false;
   }
 
   ngOnInit() {
   }
 
   finalizeTimeInput(): void {
-    //if (this.timeSet)
-    // add validation?
+    if (!this.timeSet) {
+      this.timeSet = new TimeDto();
+      this.timeSet.hour = '0';
+      this.timeSet.minutes = '00';
+      this.timeSet.seconds = '00';
+      this.setTimeField();
+      return
+    }
+
+    if (!this.timeSet.hour) {
+      this.timeSet.hour = '0';
+    }
+
+    if (!this.timeSet.minutes) {
+      this.timeSet.minutes = '00';
+    } else if (this.timeSet.minutes.length == 1) {
+      this.timeSet.minutes = `0${this.timeSet.minutes}`;
+    }
+
+    if (!this.timeSet.seconds) {
+      this.timeSet.seconds = '00';
+    } else if (this.timeSet.seconds.length == 1) {
+      this.timeSet.seconds = `0${this.timeSet.seconds}`;
+    }
+    this.setTimeField();
   }
 
   validateKey(event: any): void {
     let key = event.which || event.keyCode || event.charCode;
-    if ((key < 48 || key > 57) && key != 8 && key != 46 && key != 37 && key != 39) {
+    if ((key < 48 || key > 57) &&  // numbers
+        (key < 97 || key > 107) && // numbers on numeric keyboard
+        key != 8 && key != 46 &&   // delete and backspace
+        key != 37 && key != 39 &&  // left and right arrows
+        key != 32) {               // space
       event.preventDefault();
       this.isKeyEventValid = false;
       return;
     }
 
+    if (key == 8 || key == 46 ) {
+      this.isRemoveKeyPressed = true;
+    } else {
+      this.isRemoveKeyPressed = false;
+    }
     this.isKeyEventValid = true;
   }
 
@@ -41,16 +76,27 @@ export class TimePickerComponent implements OnInit {
       return;
     }
 
+    // if(this.isSystmeKeyPressed) {
+    //   console.log('system is pressed');
+    //   return;
+    // }
+
     let timeDto = this.parseInputTime(value);
     if (!timeDto) {
       this.timeSet = null;
       return;
     }
 
-    this.timePicker.nativeElement.value = this.getTimeView(timeDto);
     this.timeSet = timeDto;
+    this.setTimeField();
   }
 
+
+
+
+  private setTimeField() {
+    this.timePicker.nativeElement.value = this.getTimeView(this.timeSet);
+  }
   
   private getTimeView(time: TimeDto) : string {
     if (!time) {
@@ -66,13 +112,15 @@ export class TimePickerComponent implements OnInit {
     }
 
     return `${time.hour}`;
-}
+  }
 
   private parseInputTime(timeInput: string): TimeDto {
     if (!timeInput || timeInput.length <= 0) {
       return null;
     } 
-    let time = timeInput.replace(':', '').replace(':', '');
+    
+    let time = timeInput.replace(/:+/g, '');
+    time = time.replace(/ +/g, '0');
     let timeDto = new TimeDto();
 
     if (time.length == 1) {

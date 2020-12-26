@@ -1,41 +1,43 @@
 .time-picker-container {
+    $active-color: #1a69a4;
+
     .time-picker {
         display: block;
         border: none;
         padding: 0;
-
         width: 63px;
-        background: none;
         font: 1.8ch droid sans mono, consolas, monospace;
+        background: transparent;
 
         &:focus {
             outline: none;
             background: repeating-linear-gradient(
                 90deg,
-                #000 0px,
-                #000 8.6px,
-               transparent 8.6px,
-               transparent 17.2px,
-               #000 17.2px,
-               #000 25.8px,
-               transparent 25.8px,
-               transparent 26.8px,
-               #000 26.8px,
-               #000 36.4px,
-               transparent 36.4px,
-               transparent 45.2px,
-               #000 45.2px,
-               #000 53.8px,
-               transparent 53.8px,
-               transparent 54.8px,
-               #000 54.8px,
-               #000 63.4px,
-               transparent 62.4px,
-               transparent 63px
+                $active-color 0px, 
+                $active-color 8.6px,
+                transparent 8.6px,
+                transparent 17.2px,
+                $active-color 17.2px,
+                $active-color 25.8px,
+                transparent 25.8px,
+                transparent 26.8px,
+                $active-color 26.8px,
+                $active-color 35.4px,
+                transparent 35.4px,
+                transparent 45.2px,
+                $active-color 45.2px,
+                $active-color 53.8px,
+                transparent 53.8px,
+                transparent 54.8px,
+                $active-color 54.8px,
+                $active-color 62.4px,
+                transparent 62.4px,
+                transparent 63px
              );
              background-repeat: no-repeat;
              background-size: 63px 1px;
              background-position: bottom;
+             color: $active-color;
         }
     }
 
