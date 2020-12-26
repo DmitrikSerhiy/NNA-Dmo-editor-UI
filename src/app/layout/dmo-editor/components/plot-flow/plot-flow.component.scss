@@ -6,10 +6,13 @@
 
     .time-tracker-container {
         flex: 1 1 auto;
-
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
+
+        h6 {
+            margin: 0;
+        }
     }
     
     .time-tracker-canvas {
