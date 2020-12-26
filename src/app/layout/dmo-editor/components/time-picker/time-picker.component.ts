@@ -17,6 +17,10 @@ export class TimePickerComponent implements OnInit {
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
   private isSpaceKeyPressed: boolean;
+  private isArrowKeyPressed: boolean;
+  private pressedKeyCode: number;
+  private isEnterKeyPressed: boolean;
+  private currentCursorPosition: number;
 
   constructor() { 
     this.timeSet = new TimeDto();
@@ -26,6 +30,7 @@ export class TimePickerComponent implements OnInit {
     this.initialLoad = true;
     this.changesDetected = true;
     this.isSpaceKeyPressed = false;
+    this.currentCursorPosition = 0;
   }
 
   ngOnInit() {
@@ -61,6 +66,7 @@ export class TimePickerComponent implements OnInit {
         (key < 97 || key > 107) && // numbers on numeric keyboard
         key != 8 && key != 46 &&   // delete and backspace
         key != 37 && key != 39 &&  // left and right arrows
+        key != 13 &&               // enter
         key != 32) {               // space
       event.preventDefault();
       this.isKeyEventValid = false;
@@ -69,6 +75,7 @@ export class TimePickerComponent implements OnInit {
       return;
     }
 
+    this.pressedKeyCode = key;
     if (key == 8 || key == 46 ) {
       this.isRemoveKeyPressed = true;
     } else {
@@ -76,15 +83,28 @@ export class TimePickerComponent implements OnInit {
     }
     
     if (key == 37 || key == 39) {
+      this.isArrowKeyPressed = true;
       this.changesDetected = false;
+      this.currentCursorPosition = this.timePicker.nativeElement.selectionStart;
     } else {
       this.changesDetected = true;
+      this.isArrowKeyPressed = false;
     }
 
     if (key == 32) {
       this.isSpaceKeyPressed = true;
     } else {
       this.isSpaceKeyPressed = false;
+    }
+
+    if (key == 13) {
+      this.isEnterKeyPressed = true;
+    } else {
+      this.isEnterKeyPressed = false;
+    }
+
+    if (this.isRemoveKeyPressed) {
+      this.shiftCursor();
     }
 
     this.isKeyEventValid = true;
@@ -95,13 +115,32 @@ export class TimePickerComponent implements OnInit {
       return;
     }
 
-    // if(this.isSystmeKeyPressed) {
-    //   console.log('system is pressed');
-    //   return;
-    // }
+    if (this.isArrowKeyPressed) {
+      this.shiftCursor();
+      return;
+    }
 
     let timeDto = this.parseInputTime(value);
-    this.setTime(timeDto);
+
+    if (this.isEnterKeyPressed) {
+      this.setTime(timeDto, false)
+      this.timePicker.nativeElement.blur();
+    } else {
+      this.setTime(timeDto);
+    }
+  }
+
+  private shiftCursor() {
+    let start = this.timePicker.nativeElement.selectionStart;
+    if (this.pressedKeyCode == 37 || this.pressedKeyCode == 8 ) { // left or backspace
+      if (start == 5 || start == 2) {
+        this.timePicker.nativeElement.setSelectionRange(start - 1, start - 1);
+      }
+    } else if (this.pressedKeyCode == 39 || this.pressedKeyCode == 46 ) { // right or delete
+      if (start == 1 || start == 4) {
+        this.timePicker.nativeElement.setSelectionRange(start + 1, start + 1);
+      }
+    }
   }
 
   private setTime(timeDto: TimeDto, editMode: boolean = true) {
@@ -118,15 +157,6 @@ export class TimePickerComponent implements OnInit {
     }
     this.timeSet = timeDto;
     this.timePicker.nativeElement.value =  this.getTimeView(this.timeSet, editMode);
-
-    console.log('prev');
-    console.log( this.previousTimeSetObject.previousTimeSet);
-    console.log(this.previousTimeSetObject.previousTimeView);
-
-    console.log('curr');
-    console.log(this.timeSet);
-    console.log(this.timePicker.nativeElement.value);
-
   }
   
   private getTimeView(timeDto: TimeDto, editMode: boolean = true) : string {
