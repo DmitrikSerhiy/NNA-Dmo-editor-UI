@@ -10,48 +10,52 @@ export class TimePickerComponent implements OnInit {
 
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
   private timeSet: TimeDto;
-  private isTimeValid: boolean;
+  private previousTimeSetObject: any;
+  private changesDetected: boolean;
+  private initialLoad: boolean;
+  // private isTimeValid: boolean;
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
+  private isSpaceKeyPressed: boolean;
 
   constructor() { 
     this.timeSet = new TimeDto();
     this.isKeyEventValid = false;
     this.isRemoveKeyPressed = false;
+    this.previousTimeSetObject = { previousTimeSet: new TimeDto(), previousTimeView: '' };
+    this.initialLoad = true;
+    this.changesDetected = true;
+    this.isSpaceKeyPressed = false;
   }
 
   ngOnInit() {
   }
 
   finalizeTimeInput(): void {
-    if (!this.timeSet) {
-      this.timeSet = new TimeDto();
-      this.timeSet.hour = '0';
-      this.timeSet.minutes = '00';
-      this.timeSet.seconds = '00';
-      this.setTimeField();
+    if (!this.timeSet || this.timeSet.isEmpty) {
+      this.timeSet = new TimeDto().getDefaultDto();
+      this.changesDetected = true;
+      this.setTime(this.timeSet, false);
       return
     }
 
-    if (!this.timeSet.hour) {
-      this.timeSet.hour = '0';
+    if (this.timeSet.minutes.hasValue) {
+      if (this.timeSet.minutes.value.length == 1) {
+        this.timeSet.minutes.setValue(`${this.timeSet.minutes.value}0`);
+      }
     }
 
-    if (!this.timeSet.minutes) {
-      this.timeSet.minutes = '00';
-    } else if (this.timeSet.minutes.length == 1) {
-      this.timeSet.minutes = `0${this.timeSet.minutes}`;
+    if (this.timeSet.seconds.hasValue) {
+      if (this.timeSet.seconds.value.length == 1) {
+        this.timeSet.seconds.setValue(`${this.timeSet.seconds.value}0`);
+      }
     }
 
-    if (!this.timeSet.seconds) {
-      this.timeSet.seconds = '00';
-    } else if (this.timeSet.seconds.length == 1) {
-      this.timeSet.seconds = `0${this.timeSet.seconds}`;
-    }
-    this.setTimeField();
+    this.changesDetected = true;
+    this.setTime(this.timeSet, false);
   }
 
-  validateKey(event: any): void {
+  setKeyMetaData(event: any): void {
     let key = event.which || event.keyCode || event.charCode;
     if ((key < 48 || key > 57) &&  // numbers
         (key < 97 || key > 107) && // numbers on numeric keyboard
@@ -60,6 +64,8 @@ export class TimePickerComponent implements OnInit {
         key != 32) {               // space
       event.preventDefault();
       this.isKeyEventValid = false;
+      this.isRemoveKeyPressed = false;
+      this.changesDetected = false;
       return;
     }
 
@@ -68,6 +74,19 @@ export class TimePickerComponent implements OnInit {
     } else {
       this.isRemoveKeyPressed = false;
     }
+    
+    if (key == 37 || key == 39) {
+      this.changesDetected = false;
+    } else {
+      this.changesDetected = true;
+    }
+
+    if (key == 32) {
+      this.isSpaceKeyPressed = true;
+    } else {
+      this.isSpaceKeyPressed = false;
+    }
+
     this.isKeyEventValid = true;
   }
 
@@ -82,68 +101,102 @@ export class TimePickerComponent implements OnInit {
     // }
 
     let timeDto = this.parseInputTime(value);
-    if (!timeDto) {
-      this.timeSet = null;
+    this.setTime(timeDto);
+  }
+
+  private setTime(timeDto: TimeDto, editMode: boolean = true) {
+    if(!this.changesDetected) {
       return;
     }
-
+    if(this.initialLoad) {
+      this.previousTimeSetObject.previousTimeSet = timeDto;
+      this.previousTimeSetObject.previousTimeView = this.getTimeView(timeDto, editMode);
+      this.initialLoad = false;
+    } else {
+      this.previousTimeSetObject.previousTimeSet = this.timeSet;
+      this.previousTimeSetObject.previousTimeView =  this.getTimeView(this.timeSet, editMode);
+    }
     this.timeSet = timeDto;
-    this.setTimeField();
-  }
+    this.timePicker.nativeElement.value =  this.getTimeView(this.timeSet, editMode);
 
+    console.log('prev');
+    console.log( this.previousTimeSetObject.previousTimeSet);
+    console.log(this.previousTimeSetObject.previousTimeView);
 
+    console.log('curr');
+    console.log(this.timeSet);
+    console.log(this.timePicker.nativeElement.value);
 
-
-  private setTimeField() {
-    this.timePicker.nativeElement.value = this.getTimeView(this.timeSet);
   }
   
-  private getTimeView(time: TimeDto) : string {
-    if (!time) {
-      return null;
+  private getTimeView(timeDto: TimeDto, editMode: boolean = true) : string {
+    return editMode
+      ? this.getTimeViewOnEditMode(timeDto)
+      : this.getTimeViewOnDefaultMode(timeDto);
+  }
+
+  private getTimeViewOnDefaultMode(time: TimeDto) : string {
+    if (time.isEmpty) {
+      return `${time.hour.defaultValue}:${time.minutes.defaultValue}:${time.seconds.defaultValue}`;
     }
 
-    if (time.seconds) {
-      return `${time.hour}:${time.minutes}:${time.seconds}`;
+    if (time.hour.hasValue && !time.minutes.hasValue && !time.seconds.hasValue) {
+      return `${time.hour.value}:${time.minutes.defaultValue}:${time.seconds.defaultValue}`;
     }
 
-    else if (time.minutes) {
-      return `${time.hour}:${time.minutes}`;
+    if (time.hour.hasValue && time.minutes.hasValue && !time.seconds.hasValue) {
+      return `${time.hour.value}:${time.minutes.value}:${time.seconds.defaultValue}`;
     }
 
-    return `${time.hour}`;
+    return `${time.hour.value}:${time.minutes.value}:${time.seconds.value}`;
+  }
+
+  private getTimeViewOnEditMode(time: TimeDto) : string {
+    if (time.isEmpty) {
+      return '';
+    }
+
+    if (time.hour.hasValue && !time.minutes.hasValue && !time.seconds.hasValue) {
+      return time.hour.value;
+    }
+
+    if (time.hour.hasValue && time.minutes.hasValue && !time.seconds.hasValue) {
+      return `${time.hour.value}:${time.minutes.value}`;
+    }
+
+    return `${time.hour.value}:${time.minutes.value}:${time.seconds.value}`;
   }
 
   private parseInputTime(timeInput: string): TimeDto {
+    let timeDto = new TimeDto();
     if (!timeInput || timeInput.length <= 0) {
-      return null;
+      return timeDto.getEmptyDto();
     } 
     
     let time = timeInput.replace(/:+/g, '');
     time = time.replace(/ +/g, '0');
-    let timeDto = new TimeDto();
 
     if (time.length == 1) {
-      timeDto.hour = time;
+      timeDto.setHour(time);
       return timeDto;
     }
 
     else if (time.length > 1 && time.length <= 3) {
-      timeDto.hour = time[0];
+      timeDto.setHour(time[0]);
       if(time.length == 2) {
-        timeDto.minutes = time[1];
+        timeDto.setMinutes(time[1]);
       } else {
-        timeDto.minutes = `${time[1]}${time[2]}`;
+        timeDto.setMinutes(`${time[1]}${time[2]}`);
       }
       return timeDto;
     }
 
-    timeDto.hour = time[0];
-    timeDto.minutes = `${time[1]}${time[2]}`;
+    timeDto.setHour(time[0]);
+    timeDto.setMinutes(`${time[1]}${time[2]}`);
     if (time.length == 4) {
-      timeDto.seconds = time[3];
+      timeDto.setSeconds(time[3]);
     } else {
-      timeDto.seconds = `${time[3]}${time[4]}`;
+      timeDto.setSeconds(`${time[3]}${time[4]}`);
     }
     return timeDto;
   }
