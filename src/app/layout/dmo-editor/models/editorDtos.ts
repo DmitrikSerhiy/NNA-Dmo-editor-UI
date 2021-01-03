@@ -2,11 +2,13 @@ export class TimeDto {
     private _hour: TimeValueDto;
     private _minutes: TimeValueDto;
     private _seconds: TimeValueDto;
+    private _isValid: boolean;
 
     constructor() {
         this._hour = new TimeValueDto('0');
         this._minutes = new TimeValueDto('00');
         this._seconds = new TimeValueDto('00');
+        this._isValid = true;
     }
 
     get hour(): TimeValueDto { return this._hour }
@@ -17,6 +19,21 @@ export class TimeDto {
 
     get seconds(): TimeValueDto { return this._seconds }
     setSeconds(value: string) { this._seconds.setValue(value); }
+
+    get isValid(): boolean {
+        if (this._minutes.hasValue) {
+            this._isValid = +this._minutes.value >= 0 && +this._minutes.value <= 60;
+            if (!this._isValid) {
+                return false;
+            }
+        }
+    
+        if (this._seconds) {
+          this._isValid = +this._seconds.value >= 0 && +this._seconds.value <= 60;
+        }
+    
+        return this._isValid;
+    }
 
     get isDefault(): boolean {
         return  this._hour.value == this._hour.defaultValue && 
@@ -73,6 +90,7 @@ export class TimeValueDto {
 
 
 export class TimeFlowPointDto {
+    id: string;
     order: number;
     time: TimeDto;
     lineCount: number;

@@ -15,7 +15,7 @@
     <mat-sidenav-content>
       <app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" (toggleMenu)="openRightMenuByGrabber($event)" ></app-right-menu-grabber>
       <app-nav-menu></app-nav-menu>
-      <app-sidebar  (toggleRightMenu$)="openRightMenu($event)"></app-sidebar>  
+      <app-sidebar (toggleRightMenu$)="openRightMenu($event)"></app-sidebar>  
       <section class="main-container" [ngClass]="{collapsed: !sidebarManagerService.IsOpen}">
         <router-outlet></router-outlet>
       </section>

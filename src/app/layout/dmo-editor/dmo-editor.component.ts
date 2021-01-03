@@ -113,17 +113,20 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     plotPoints = [];
     let point1 = new TimeFlowPointDto();
     point1.order = 1;
+    point1.id = 'some id 1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
     point1.lineCount = 1;
 
     let point2 = new TimeFlowPointDto();
     point2.order = 2;
+    point2.id = 'some id 2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
     point2.lineCount = 3;
 
     let point3 = new TimeFlowPointDto(); 
     point3.order = 3;
-    point3.time = new TimeDto().setAndGetTime('0', '12', '44');
+    point3.id = 'some id 3';
+    point3.time = new TimeDto().setAndGetTime('3', '32', '44');
     point3.lineCount = 2;
 
     plotPoints.push(point1, point2, point3);

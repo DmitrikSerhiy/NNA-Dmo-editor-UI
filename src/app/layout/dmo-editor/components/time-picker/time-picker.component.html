@@ -1,4 +1,9 @@
 <div class="time-picker-container">
-    <input #timePicker class="time-picker" maxlength='7' type="text" placeholder="h:mm:ss" (focusout)="finalize(timePicker.value)"
-        autocomplete="off"  spellcheck=false (keydown)="setKeyMetaData($event)" (keyup)="pick(timePicker.value)"/>
+    <input #timePicker class="time-picker" 
+        maxlength='7' type="text" autocomplete="off"  spellcheck = false    
+        placeholder="h:mm:ss" 
+        (keydown)="setKeyMetaData($event)"
+        (keyup)="pick(timePicker.value)"
+        (focusout)="finalize(timePicker.value)"
+        [ngClass]="{invalid: !isFieldValid}"/>
 </div>

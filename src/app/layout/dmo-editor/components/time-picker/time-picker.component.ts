@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 
 @Component({
@@ -9,9 +9,10 @@ import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 export class TimePickerComponent implements OnInit {
 
   @Input() plotPoint: TimeFlowPointDto;
+  @Output() timeSetEvent = new EventEmitter<TimeFlowPointDto>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
-  private timeSet: TimeDto;
+  private timeSet: TimeDto; //main field with data
   private changesDetected: boolean;
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
@@ -25,12 +26,14 @@ export class TimePickerComponent implements OnInit {
     this.isKeyEventValid = false;
     this.isRemoveKeyPressed = false;
     this.changesDetected = true;
+    this.isFieldValid = true;
   }
 
   ngOnInit() {
     if (this.plotPoint) {
       this.changesDetected = true;
       this.setTime(this.plotPoint.time, false);
+      this.isFieldValid = this.plotPoint.time.isValid;
     }
   }
 
@@ -100,9 +103,8 @@ export class TimePickerComponent implements OnInit {
   finalize(): void {
     if (!this.timeSet || this.timeSet.isEmpty) {
       this.timeSet = new TimeDto().getDefaultDto();
-      this.changesDetected = true;
-      this.setTime(this.timeSet, false);
-      return
+      this.setupAndSendValue();
+      return;
     }
 
     if (this.timeSet.minutes.hasValue) {
@@ -117,13 +119,25 @@ export class TimePickerComponent implements OnInit {
       }
     }
 
-    this.changesDetected = true;
-    this.setTime(this.timeSet, false);
+    this.setupAndSendValue();
   }
 
 
 
+  private setupAndSendValue() {
+    this.changesDetected = true;
+    this.setTime(this.timeSet, false);
+    this.isFieldValid = this.timeSet.isValid;
 
+    let plotPoint: TimeFlowPointDto = {
+      id: this.plotPoint.id,
+      order: this.plotPoint.order, // todo: in case if I add draggability to the plot flow
+      lineCount: this.plotPoint.lineCount, 
+      time: this.timeSet
+    }
+
+    this.timeSetEvent.emit(plotPoint);
+  }
 
   private shiftCursor(): void {
     let start = this.timePicker.nativeElement.selectionStart;

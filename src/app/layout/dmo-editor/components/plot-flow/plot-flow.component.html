@@ -1,7 +1,10 @@
 <div class="canvas-wrapper">
     <div *ngIf="timeFlowData" class="time-tracker-container">
         <h6>Start</h6>
-        <app-time-picker *ngFor="let plotPoint of timeFlowData.plotPoints;" [plotPoint]='plotPoint'></app-time-picker>  
+        <app-time-picker *ngFor="let plotPoint of timeFlowData.plotPoints;" 
+            [plotPoint]='plotPoint' 
+            (timeSetEvent)="timeSet($event)">
+        </app-time-picker>  
         
         <h6 *ngIf="timeFlowData.isFinished">End</h6>
     </div>
