@@ -1,22 +1,21 @@
-
 export class TimeDto {
-    private _hour: TimeValue;
-    private _minutes: TimeValue;
-    private _seconds: TimeValue;
+    private _hour: TimeValueDto;
+    private _minutes: TimeValueDto;
+    private _seconds: TimeValueDto;
 
     constructor() {
-        this._hour = new TimeValue('0');
-        this._minutes = new TimeValue('00');
-        this._seconds = new TimeValue('00');
+        this._hour = new TimeValueDto('0');
+        this._minutes = new TimeValueDto('00');
+        this._seconds = new TimeValueDto('00');
     }
 
-    get hour(): TimeValue { return this._hour }
+    get hour(): TimeValueDto { return this._hour }
     setHour(value: string) { this._hour.setValue(value); }
 
-    get minutes(): TimeValue { return this._minutes }
+    get minutes(): TimeValueDto { return this._minutes }
     setMinutes(value: string) { this._minutes.setValue(value); }
 
-    get seconds(): TimeValue { return this._seconds }
+    get seconds(): TimeValueDto { return this._seconds }
     setSeconds(value: string) { this._seconds.setValue(value); }
 
     get isDefault(): boolean {
@@ -44,9 +43,16 @@ export class TimeDto {
         timeDto._seconds.setValue('');
         return timeDto;
     }
+
+    setAndGetTime(hour: string, minutes: string, seconds: string) : TimeDto {
+        this.setHour(hour);
+        this.setMinutes(minutes);
+        this.setSeconds(seconds);
+        return this;
+    }
 }
 
-export class TimeValue {
+export class TimeValueDto {
     private _defaultValue: string;
     private _value: string;
     
@@ -64,3 +70,16 @@ export class TimeValue {
         this.setValue('');
     }
 }
+
+
+export class TimeFlowPointDto {
+    order: number;
+    time: TimeDto;
+    lineCount: number;
+}
+
+export class TimeFlowDto {
+    plotPoints: TimeFlowPointDto[];
+    isFinished: boolean;
+}
+

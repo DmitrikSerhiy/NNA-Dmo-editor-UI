@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { TimeFlowDto, TimeFlowPointDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-plot-flow',
@@ -14,6 +15,7 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   private lineHeigth: number;
   private beatFlowPointRadius: number;
 
+  @Input() timeFlowData: TimeFlowDto;
 
   constructor() { 
     this.plotFlowWidth = 24;
@@ -22,6 +24,10 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   }
 
   ngOnInit() {
+    console.log(this.timeFlowData);
+    if (this.timeFlowData.plotPoints.length > 0) {
+
+    }
   }
 
   ngAfterViewInit(): void {

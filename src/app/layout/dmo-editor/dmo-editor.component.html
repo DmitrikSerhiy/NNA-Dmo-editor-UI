@@ -5,14 +5,14 @@
         <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
     </div>
     <div class="editor-board-wrapper">
-        <div class="editor-plot-flow">
-            <app-plot-flow></app-plot-flow>
+        <div class="editor-plot-flow" *ngIf="plotFlow">
+            <app-plot-flow [timeFlowData]="plotFlow"></app-plot-flow>
         </div>
         <div class="editor-board">
-
-            <app-time-picker></app-time-picker>
+            <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
         </div>
     </div>
+    
     <!-- <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
         <mat-tab  label="Editor">  -->
             <!-- <input type="text" #dmobit name="bit" class="form-control input-underline-light" placeholder="bit">     -->

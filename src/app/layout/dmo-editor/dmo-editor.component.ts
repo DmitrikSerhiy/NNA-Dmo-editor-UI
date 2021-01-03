@@ -10,6 +10,7 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
+import { TimeDto, TimeFlowDto, TimeFlowPointDto } from './models/editorDtos';
 
 @Component({
   selector: 'app-dmo-editor',
@@ -23,6 +24,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   isInitialPopupOpen: boolean;
   initialPopup: MatDialogRef<InitialPopupComponent>;
   currentDmo: ShortDmoDto;
+  beats: any[];
+  plotFlow: TimeFlowDto;
 
   constructor(
     private editorHub: EditorHub,
@@ -33,8 +36,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private sidebarManagerService: SidebarManagerService) { }
 
   async ngOnInit() {
-    this.isDmoInfoSet = true;
-
+    this.createAndInitDmo();
     // this.isDmoInfoSet = false;
     // this.isInitialPopupOpen = false;
     // this.activatedRoute.queryParams.subscribe(params => {
@@ -51,11 +53,21 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     await this.closeEditorAndClearData();
   }
 
+  public addBeat() {
+
+  }
+
+  
+  //this is async method
   async createAndInitDmo() {
     let tempDmo = new ShortDmoDto('test name', 'test movie');
     tempDmo.id = 'some id';
     tempDmo.shortComment = 'some comment';
     this.initDmo(tempDmo);
+    this.plotFlow = new TimeFlowDto();
+    this.plotFlow.plotPoints = this.setPlotPoints();
+    this.plotFlow.isFinished = true;
+    this.isDmoInfoSet = true;
 
     // const popupResult = await this.finalizePopup();
     // if (!popupResult) {
@@ -94,6 +106,29 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.showUnhandledException(err);
       return;
     }
+  }
+
+  setPlotPoints(): TimeFlowPointDto[] {
+    let plotPoints : TimeFlowPointDto[];
+    plotPoints = [];
+    let point1 = new TimeFlowPointDto();
+    point1.order = 1;
+    point1.time = new TimeDto().setAndGetTime('0', '05', '10');
+    point1.lineCount = 1;
+
+    let point2 = new TimeFlowPointDto();
+    point2.order = 2;
+    point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
+    point2.lineCount = 3;
+
+    let point3 = new TimeFlowPointDto(); 
+    point3.order = 3;
+    point3.time = new TimeDto().setAndGetTime('0', '12', '44');
+    point3.lineCount = 2;
+
+    plotPoints.push(point1, point2, point3);
+
+    return plotPoints;
   }
 
   async loadDmo() {

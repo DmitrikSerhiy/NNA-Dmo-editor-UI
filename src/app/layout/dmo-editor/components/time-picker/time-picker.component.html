@@ -1,5 +1,5 @@
 <div class="time-picker-container">
-    <input #timePicker class="time-picker" maxlength='7' type="text" placeholder="h:mm:ss" (focusout)="finalizeTimeInput(timePicker.value)"
+    <input class="time-picker" maxlength='7' type="text" placeholder="h:mm:ss" (focusout)="finalizeTimeInput(timePicker.value)"
         autocomplete="off"  spellcheck=false (keydown)="setKeyMetaData($event)" (keyup)="timePick(timePicker.value)"/>
 
 </div>

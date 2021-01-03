@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { TimeDto } from '../../models/editorDtor';
+import { Component, ElementRef, Input, OnInit, Renderer2, RendererFactory2, ViewChild } from '@angular/core';
+import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-time-picker',
@@ -8,7 +8,10 @@ import { TimeDto } from '../../models/editorDtor';
 })
 export class TimePickerComponent implements OnInit {
 
-  @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
+  @Input() plotPoint: TimeFlowPointDto;
+  private renderer: Renderer2;
+  private inputField: any;
+  // @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
   private timeSet: TimeDto;
   private previousTimeSetObject: any;
   private changesDetected: boolean;
@@ -22,11 +25,12 @@ export class TimePickerComponent implements OnInit {
   private isEnterKeyPressed: boolean;
   private currentCursorPosition: number;
 
-  constructor() { 
+  constructor(private rendererFactory: RendererFactory2) { 
+    this.renderer = rendererFactory.createRenderer(null, null);
     this.timeSet = new TimeDto();
     this.isKeyEventValid = false;
     this.isRemoveKeyPressed = false;
-    this.previousTimeSetObject = { previousTimeSet: new TimeDto(), previousTimeView: '' };
+    this.previousTimeSetObject = { previousTimeSet: new TimeDto(), previousTimeView: '' }; // todo: remove
     this.initialLoad = true;
     this.changesDetected = true;
     this.isSpaceKeyPressed = false;
@@ -34,6 +38,12 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.inputField = this.renderer.selectRootElement('.time-picker', true);
+    if (this.plotPoint) {
+      this.changesDetected = true;
+      this.setTime(this.plotPoint.time, false);
+      // this.
+    }
   }
 
   finalizeTimeInput(): void {

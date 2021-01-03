@@ -8,6 +8,7 @@ import { DmoEditorComponent as DmoEditor } from './dmo-editor.component';
 import { InitialPopupComponent } from './components/initial-popup/initial-popup.component';
 import { PlotFlowComponent } from './components/plot-flow/plot-flow.component';
 import { TimePickerComponent } from './components/time-picker/time-picker.component';
+import { DirectivesDirective } from './directives.directive';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }
@@ -15,7 +16,7 @@ const routes: Routes = [
 
 @NgModule({
   entryComponents: [InitialPopupComponent],
-  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent],
+  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent, DirectivesDirective],
   imports: [
     CommonModule,
     ReactiveFormsModule,
