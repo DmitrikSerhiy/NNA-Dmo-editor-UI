@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, Renderer2, RendererFactory2, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 
 @Component({
@@ -9,65 +9,49 @@ import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 export class TimePickerComponent implements OnInit {
 
   @Input() plotPoint: TimeFlowPointDto;
-  private renderer: Renderer2;
-  private inputField: any;
-  // @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
+  @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
+
   private timeSet: TimeDto;
-  private previousTimeSetObject: any;
   private changesDetected: boolean;
-  private initialLoad: boolean;
-  // private isTimeValid: boolean;
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
-  private isSpaceKeyPressed: boolean;
   private isArrowKeyPressed: boolean;
   private pressedKeyCode: number;
   private isEnterKeyPressed: boolean;
-  private currentCursorPosition: number;
+  private isFieldValid: boolean;
 
-  constructor(private rendererFactory: RendererFactory2) { 
-    this.renderer = rendererFactory.createRenderer(null, null);
+  constructor() { 
     this.timeSet = new TimeDto();
     this.isKeyEventValid = false;
     this.isRemoveKeyPressed = false;
-    this.previousTimeSetObject = { previousTimeSet: new TimeDto(), previousTimeView: '' }; // todo: remove
-    this.initialLoad = true;
     this.changesDetected = true;
-    this.isSpaceKeyPressed = false;
-    this.currentCursorPosition = 0;
   }
 
   ngOnInit() {
-    this.inputField = this.renderer.selectRootElement('.time-picker', true);
     if (this.plotPoint) {
       this.changesDetected = true;
       this.setTime(this.plotPoint.time, false);
-      // this.
     }
   }
 
-  finalizeTimeInput(): void {
-    if (!this.timeSet || this.timeSet.isEmpty) {
-      this.timeSet = new TimeDto().getDefaultDto();
-      this.changesDetected = true;
-      this.setTime(this.timeSet, false);
-      return
+  pick(value: string): void {
+    if (!this.isKeyEventValid) {
+      return;
     }
 
-    if (this.timeSet.minutes.hasValue) {
-      if (this.timeSet.minutes.value.length == 1) {
-        this.timeSet.minutes.setValue(`${this.timeSet.minutes.value}0`);
-      }
+    if (this.isArrowKeyPressed) {
+      this.shiftCursor();
+      return;
     }
 
-    if (this.timeSet.seconds.hasValue) {
-      if (this.timeSet.seconds.value.length == 1) {
-        this.timeSet.seconds.setValue(`${this.timeSet.seconds.value}0`);
-      }
-    }
+    let timeDto = this.parseInputTime(value);
 
-    this.changesDetected = true;
-    this.setTime(this.timeSet, false);
+    if (this.isEnterKeyPressed) {
+      this.setTime(timeDto, false)
+      this.timePicker.nativeElement.blur();
+    } else {
+      this.setTime(timeDto);
+    }
   }
 
   setKeyMetaData(event: any): void {
@@ -95,16 +79,9 @@ export class TimePickerComponent implements OnInit {
     if (key == 37 || key == 39) {
       this.isArrowKeyPressed = true;
       this.changesDetected = false;
-      this.currentCursorPosition = this.timePicker.nativeElement.selectionStart;
     } else {
       this.changesDetected = true;
       this.isArrowKeyPressed = false;
-    }
-
-    if (key == 32) {
-      this.isSpaceKeyPressed = true;
-    } else {
-      this.isSpaceKeyPressed = false;
     }
 
     if (key == 13) {
@@ -119,28 +96,36 @@ export class TimePickerComponent implements OnInit {
 
     this.isKeyEventValid = true;
   }
-
-  timePick(value: string): void {
-    if (!this.isKeyEventValid) {
-      return;
+    
+  finalize(): void {
+    if (!this.timeSet || this.timeSet.isEmpty) {
+      this.timeSet = new TimeDto().getDefaultDto();
+      this.changesDetected = true;
+      this.setTime(this.timeSet, false);
+      return
     }
 
-    if (this.isArrowKeyPressed) {
-      this.shiftCursor();
-      return;
+    if (this.timeSet.minutes.hasValue) {
+      if (this.timeSet.minutes.value.length == 1) {
+        this.timeSet.minutes.setValue(`${this.timeSet.minutes.value}0`);
+      }
     }
 
-    let timeDto = this.parseInputTime(value);
-
-    if (this.isEnterKeyPressed) {
-      this.setTime(timeDto, false)
-      this.timePicker.nativeElement.blur();
-    } else {
-      this.setTime(timeDto);
+    if (this.timeSet.seconds.hasValue) {
+      if (this.timeSet.seconds.value.length == 1) {
+        this.timeSet.seconds.setValue(`${this.timeSet.seconds.value}0`);
+      }
     }
+
+    this.changesDetected = true;
+    this.setTime(this.timeSet, false);
   }
 
-  private shiftCursor() {
+
+
+
+
+  private shiftCursor(): void {
     let start = this.timePicker.nativeElement.selectionStart;
     if (this.pressedKeyCode == 37 || this.pressedKeyCode == 8 ) { // left or backspace
       if (start == 5 || start == 2) {
@@ -153,20 +138,12 @@ export class TimePickerComponent implements OnInit {
     }
   }
 
-  private setTime(timeDto: TimeDto, editMode: boolean = true) {
+  private setTime(timeDto: TimeDto, editMode: boolean = true): void {
     if(!this.changesDetected) {
       return;
     }
-    if(this.initialLoad) {
-      this.previousTimeSetObject.previousTimeSet = timeDto;
-      this.previousTimeSetObject.previousTimeView = this.getTimeView(timeDto, editMode);
-      this.initialLoad = false;
-    } else {
-      this.previousTimeSetObject.previousTimeSet = this.timeSet;
-      this.previousTimeSetObject.previousTimeView =  this.getTimeView(this.timeSet, editMode);
-    }
     this.timeSet = timeDto;
-    this.timePicker.nativeElement.value =  this.getTimeView(this.timeSet, editMode);
+    this.timePicker.nativeElement.value = this.getTimeView(this.timeSet, editMode);
   }
   
   private getTimeView(timeDto: TimeDto, editMode: boolean = true) : string {
@@ -240,4 +217,5 @@ export class TimePickerComponent implements OnInit {
     }
     return timeDto;
   }
+
 }

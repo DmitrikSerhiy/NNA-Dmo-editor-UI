@@ -58,7 +58,6 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
     this.context.stroke();
 
     this.drawBeatFlowPoint(this.plotFlowWidth / 2, this.lineHeigth);
-
   }
 
   private drawBeatFlowPoint(x: number, y: number) {
