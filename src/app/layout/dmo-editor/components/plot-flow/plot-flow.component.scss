@@ -10,8 +10,10 @@
         flex-flow: column nowrap;
         align-items: center;
 
-        h6 {
+        .plot-flow-height {
             margin: 0;
+            height: 2rem;
+            display: flex;
         }
     }
     

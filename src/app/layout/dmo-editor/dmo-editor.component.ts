@@ -112,7 +112,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     let plotPoints : TimeFlowPointDto[];
     plotPoints = [];
     let point1 = new TimeFlowPointDto();
-    point1.order = 1;
+    point1.order = 1; //start from 1!!!
     point1.id = 'some id 1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
     point1.lineCount = 1;
@@ -121,15 +121,33 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     point2.order = 2;
     point2.id = 'some id 2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
-    point2.lineCount = 3;
+    point2.lineCount = 1;
 
     let point3 = new TimeFlowPointDto(); 
     point3.order = 3;
     point3.id = 'some id 3';
-    point3.time = new TimeDto().setAndGetTime('3', '32', '44');
-    point3.lineCount = 2;
+    point3.time = new TimeDto().setAndGetTime('1', '12', '15');
+    point3.lineCount = 1;
 
-    plotPoints.push(point1, point2, point3);
+    let point4 = new TimeFlowPointDto(); 
+    point4.order = 4;
+    point4.id = 'some id 4';
+    point4.time = new TimeDto().setAndGetTime('2', '56', '00');
+    point4.lineCount = 1;
+
+    let point5 = new TimeFlowPointDto(); 
+    point5.order = 5;
+    point5.id = 'some id 5';
+    point5.time = new TimeDto().setAndGetTime('3', '32', '44');
+    point5.lineCount = 1;
+
+    let point6 = new TimeFlowPointDto(); 
+    point6.order = 6;
+    point6.id = 'some id 6';
+    point6.time = new TimeDto().setAndGetTime('3', '54', '36');
+    point6.lineCount = 1;
+
+    plotPoints.push(point1, point2, point3, point4, point5, point6);
 
     return plotPoints;
   }
