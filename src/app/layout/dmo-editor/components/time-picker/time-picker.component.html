@@ -1,5 +1,6 @@
 <div class="time-picker-container">
     <input #timePicker class="time-picker" 
+        id="{{ plotPoint.id }}"
         maxlength='7' type="text" autocomplete="off"  spellcheck = false    
         placeholder="h:mm:ss" 
         (keydown)="setKeyMetaData($event)"

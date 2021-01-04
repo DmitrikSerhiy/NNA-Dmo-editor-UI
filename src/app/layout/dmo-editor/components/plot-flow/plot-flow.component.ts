@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { TimeDto, TimeFlowDto, TimeFlowPointDto } from '../../models/editorDtos';
+import { TimePickerComponent } from '../time-picker/time-picker.component';
 
 @Component({
   selector: 'app-plot-flow',
@@ -9,11 +10,13 @@ import { TimeDto, TimeFlowDto, TimeFlowPointDto } from '../../models/editorDtos'
 export class PlotFlowComponent implements OnInit, AfterViewInit  {
 
   @ViewChild('plotFlow', {static: false}) plotFlow: ElementRef;
+  @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   public context: CanvasRenderingContext2D;
 
   private plotFlowWidth: number;
   private currentHeight: number;
   private baseLineHeight: number;
+  private timePickerHeight: number;
   private beatFlowPointRadius: number;
 
   @Input() timeFlowData: TimeFlowDto;
@@ -21,7 +24,8 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   constructor() { 
     this.plotFlowWidth = 24;
     this.baseLineHeight = 32; //2rem
-    this.beatFlowPointRadius = 6;
+    this.timePickerHeight = 20;
+    this.beatFlowPointRadius = 4;
     this.currentHeight = 0;
   }
 
@@ -46,8 +50,8 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   }
 
   timeSet($event: TimeFlowPointDto) {
-    console.log('time was changed');
-    console.log($event);
+    // console.log('time was changed');
+    // console.log($event);
     //todo: change time in timeFlowData and send it to further parent
   }
 
@@ -55,36 +59,70 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   private setupInitialPlotFlow() {
     // === start ===
     this.context.beginPath();
-    this.context.lineWidth = 3;
-    this.context.moveTo(0, 0.5);
-    this.context.lineTo(this.plotFlowWidth, 0.5);
+    this.context.lineWidth = 2;
+    this.context.moveTo(0, 0);
+    this.context.lineTo(this.plotFlowWidth, 0);
     this.context.stroke();
-    this.context.lineWidth = 1;
-    this.context.moveTo(this.plotFlowWidth / 2 + 0.5, 0);
+    this.context.closePath();
     // === ===
+
+
+    this.context.beginPath();
+    this.context.lineWidth = 1;
+    let xMiddle = this.plotFlowWidth / 2 + 0.5;
+    this.context.moveTo(xMiddle, 0);
 
     for (let i = 0; i < this.timeFlowData.plotPoints.length; i++) {
       this.incrementPlotFlowPointHeight(i, this.timeFlowData.plotPoints[i].lineCount);
+
       console.log(this.currentHeight);
-      this.context.lineTo(this.plotFlowWidth / 2, this.currentHeight);
+      this.context.lineTo(xMiddle, this.currentHeight);
       this.context.stroke();
-  
-      this.drawBeatFlowPoint(this.plotFlowWidth / 2, this.currentHeight);
+      this.drawBeatFlowPoint(xMiddle, this.currentHeight);
     }
+
+    this.setupTimepickerMargin();
+  }
+
+  private setupTimepickerMargin(): void {
+    this.timePickers.forEach(timePicker => {
+      let nativeElement = timePicker.timePicker.nativeElement;
+      let plotPoint = this.timeFlowData.plotPoints.find(p => p.id === nativeElement.getAttribute('id'));
+      if (plotPoint) {
+        nativeElement.parentElement.parentElement.setAttribute('style', `margin-bottom: ${this.getTimepickerContainerMargin(plotPoint.lineCount)}px`);
+      }
+    });
+  }
+
+  private getTimepickerContainerMargin(lineCount: number): number {
+    if (lineCount == 1) {
+      return 0;
+    }
+
+    return this.baseLineHeight * (lineCount - 1);
   }
 
   private drawBeatFlowPoint(x: number, y: number) {
+    this.context.beginPath();
     this.context.moveTo(x, y);
-    this.context.arc(x, y, this.beatFlowPointRadius, 0, 2 * Math.PI);
+    this.context.arc(x, y, this.beatFlowPointRadius, 0, 2 * Math.PI, false);
     this.context.fill();
-    this.context.moveTo(x, y);
+    this.context.closePath();
   }
 
   private incrementPlotFlowPointHeight(i: number, lineCount: number) {
     if (i == 0) {
-      return this.currentHeight = this.baseLineHeight + (this.baseLineHeight);
+      this.currentHeight = (this.baseLineHeight / 2);
+      return;
     }
 
-    this.currentHeight += lineCount * this.baseLineHeight;
+    if (lineCount == 1) {
+      this.currentHeight += this.baseLineHeight;
+      return;
+    }
+
+    console.log(lineCount - 1);
+    //fix here
+    this.currentHeight += (lineCount - 1) * this.baseLineHeight;
   }
 }

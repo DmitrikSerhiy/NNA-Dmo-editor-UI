@@ -2,25 +2,35 @@
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    max-width: 4rem;
+    // max-width: 4rem;
 
     .time-tracker-container {
-        flex: 1 1 auto;
+        flex: 1 1 3rem;
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
+        // background-color: red;
 
+        // .test1 {
+        //     border: 1px solid red;
+        //     height: 100px;
+        //     width: 20px;;
+        // }
         .plot-flow-height {
             margin: 0;
             height: 2rem;
             display: flex;
+            // background-color: red;
         }
     }
     
     .time-tracker-canvas {
-        margin-top: 0.5rem;
-        width: 16px;
-        height: 300px;
+        background-color: royalblue;
+        //max-width: 1.5rem;
+        // margin-top: 0.5rem;
+        // width: 1.5rem;
+        // height: 100%;
+        // height: 300px;
         flex-shrink: 0;
         flex-grow: 0;
     }

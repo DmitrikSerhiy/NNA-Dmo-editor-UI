@@ -1,14 +1,15 @@
 <div class="canvas-wrapper">
     <div *ngIf="timeFlowData" class="time-tracker-container">
-        <h6 class="plot-flow-height">Start</h6>
-        <app-time-picker *ngFor="let plotPoint of timeFlowData.plotPoints;" 
+
+        <!-- <h6 class="plot-flow-height">Start</h6> -->
+        <app-time-picker #timePickers *ngFor="let plotPoint of timeFlowData.plotPoints;" 
             class="plot-flow-height"
             [plotPoint]='plotPoint' 
             (timeSetEvent)="timeSet($event)">
-        </app-time-picker>  
+        </app-time-picker>   
         
-        <h6 class="plot-flow-height" *ngIf="timeFlowData.isFinished">End</h6>
+        <!-- <h6 class="plot-flow-height" *ngIf="timeFlowData.isFinished">End</h6> -->
     </div>
-    <canvas class="time-tracker-canvas" #plotFlow></canvas>
+    <canvas class="time-tracker-canvas" #plotFlow width="24" ></canvas>
 </div>
 

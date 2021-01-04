@@ -21,9 +21,6 @@ export class TimePickerComponent implements OnInit {
   private isEnterKeyPressed: boolean;
   private isFieldValid: boolean;
 
-  private baseLineHeight = 32; //2rem
-  private beatFlowPointRadius = 6;
-
   constructor() { 
     this.timeSet = new TimeDto();
     this.isKeyEventValid = false;
@@ -37,8 +34,6 @@ export class TimePickerComponent implements OnInit {
       this.changesDetected = true;
       this.setTime(this.plotPoint.time, false);
       this.isFieldValid = this.plotPoint.time.isValid;
-
-      this.timePicker.nativeElement.setAttribute('style', `margin-top: ${this.getPlotPointMargin()}px`)
     }
   }
 
@@ -128,17 +123,8 @@ export class TimePickerComponent implements OnInit {
   }
 
 
-  private getPlotPointMargin() {
-    if (this.plotPoint.order == 1) {
-      return 0;
-    }
 
-    if (this.plotPoint.lineCount == 1) {
-      return 0;
-    }
-
-    return ((this.baseLineHeight - (2 * this.beatFlowPointRadius)) * this.plotPoint.lineCount);
-  }
+  
 
   private setupAndSendValue() {
     this.changesDetected = true;
