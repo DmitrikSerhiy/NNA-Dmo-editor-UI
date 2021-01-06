@@ -15,38 +15,33 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
 
   private plotFlowWidth: number;
   private currentHeight: number;
-  private baseLineHeight: number;
+
+  startCoord = "0,0 24,0"
+  endCoord = "0, 300, 24, 300";
+  someShit = "12,0 12,30";
+
+  private timePickerBoxHeight: number;
   private timePickerHeight: number;
-  private beatFlowPointRadius: number;
 
   @Input() timeFlowData: TimeFlowDto;
 
   constructor() { 
     this.plotFlowWidth = 24;
-    this.baseLineHeight = 32; //2rem
+    this.timePickerBoxHeight = 32;
     this.timePickerHeight = 20;
-    this.beatFlowPointRadius = 4;
     this.currentHeight = 0;
   }
 
   ngOnInit() {
     if (this.timeFlowData.plotPoints.length > 0) {
-
+      
     }
   }
 
   ngAfterViewInit(): void {
-    let canvas = this.plotFlow.nativeElement;
-    this.context = canvas.getContext('2d');
-    let dpi = window.devicePixelRatio;
+    this.setupTimepickersMargin();
 
-    let style_height = +getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);
-    let style_width = +getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);
 
-    canvas.setAttribute('height', style_height * dpi);
-    canvas.setAttribute('width', style_width * dpi);
-
-    this.setupInitialPlotFlow();
   }
 
   timeSet($event: TimeFlowPointDto) {
@@ -56,73 +51,37 @@ export class PlotFlowComponent implements OnInit, AfterViewInit  {
   }
 
 
-  private setupInitialPlotFlow() {
-    // === start ===
-    this.context.beginPath();
-    this.context.lineWidth = 2;
-    this.context.moveTo(0, 0);
-    this.context.lineTo(this.plotFlowWidth, 0);
-    this.context.stroke();
-    this.context.closePath();
-    // === ===
-
-
-    this.context.beginPath();
-    this.context.lineWidth = 1;
-    let xMiddle = this.plotFlowWidth / 2 + 0.5;
-    this.context.moveTo(xMiddle, 0);
-
-    for (let i = 0; i < this.timeFlowData.plotPoints.length; i++) {
-      this.incrementPlotFlowPointHeight(i, this.timeFlowData.plotPoints[i].lineCount);
-
-      console.log(this.currentHeight);
-      this.context.lineTo(xMiddle, this.currentHeight);
-      this.context.stroke();
-      this.drawBeatFlowPoint(xMiddle, this.currentHeight);
-    }
-
-    this.setupTimepickerMargin();
-  }
-
-  private setupTimepickerMargin(): void {
-    this.timePickers.forEach(timePicker => {
+  private setupTimepickersMargin(): void {
+    this.timePickers.forEach((timePicker, i) => {
       let nativeElement = timePicker.timePicker.nativeElement;
       let plotPoint = this.timeFlowData.plotPoints.find(p => p.id === nativeElement.getAttribute('id'));
       if (plotPoint) {
-        nativeElement.parentElement.parentElement.setAttribute('style', `margin-bottom: ${this.getTimepickerContainerMargin(plotPoint.lineCount)}px`);
+        nativeElement.parentElement.parentElement.setAttribute('style', `margin-top: ${this.getTimepickerContainerMargin(i, plotPoint.lineCount)}px`);
       }
     });
   }
 
-  private getTimepickerContainerMargin(lineCount: number): number {
-    if (lineCount == 1) {
+  private getTimepickerContainerMargin(i: number, lineCount: number): number {
+    if (lineCount == 1 || i == 0) {
       return 0;
     }
 
-    return this.baseLineHeight * (lineCount - 1);
-  }
-
-  private drawBeatFlowPoint(x: number, y: number) {
-    this.context.beginPath();
-    this.context.moveTo(x, y);
-    this.context.arc(x, y, this.beatFlowPointRadius, 0, 2 * Math.PI, false);
-    this.context.fill();
-    this.context.closePath();
+    return this.timePickerBoxHeight * (lineCount - 1);
   }
 
   private incrementPlotFlowPointHeight(i: number, lineCount: number) {
+    
     if (i == 0) {
-      this.currentHeight = (this.baseLineHeight / 2);
+      this.currentHeight = (this.timePickerBoxHeight / 2);
       return;
     }
 
     if (lineCount == 1) {
-      this.currentHeight += this.baseLineHeight;
+      this.currentHeight += this.timePickerBoxHeight;
       return;
     }
 
-    console.log(lineCount - 1);
-    //fix here
-    this.currentHeight += (lineCount - 1) * this.baseLineHeight;
+
+    this.currentHeight += lineCount * this.timePickerBoxHeight;
   }
 }

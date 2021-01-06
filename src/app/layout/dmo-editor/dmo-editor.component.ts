@@ -115,19 +115,19 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     point1.order = 1; //start from 1!!!
     point1.id = 'some id 1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
-    point1.lineCount = 2;
+    point1.lineCount = 1;
 
     let point2 = new TimeFlowPointDto();
     point2.order = 2;
     point2.id = 'some id 2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
-    point2.lineCount = 3;
+    point2.lineCount = 1;
 
     let point3 = new TimeFlowPointDto(); 
     point3.order = 3;
     point3.id = 'some id 3';
     point3.time = new TimeDto().setAndGetTime('1', '12', '15');
-    point3.lineCount = 1;
+    point3.lineCount = 2;
 
     let point4 = new TimeFlowPointDto(); 
     point4.order = 4;
@@ -139,7 +139,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     point5.order = 5;
     point5.id = 'some id 5';
     point5.time = new TimeDto().setAndGetTime('3', '32', '44');
-    point5.lineCount = 1;
+    point5.lineCount = 3;
 
     let point6 = new TimeFlowPointDto(); 
     point6.order = 6;

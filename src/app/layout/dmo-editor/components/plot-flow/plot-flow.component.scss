@@ -1,37 +1,48 @@
-.canvas-wrapper {
+.plotflow {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    // max-width: 4rem;
+    height: 100%;
 
-    .time-tracker-container {
+    .time-pickers-container {
         flex: 1 1 3rem;
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
-        // background-color: red;
+        background-color: red;
 
-        // .test1 {
-        //     border: 1px solid red;
-        //     height: 100px;
-        //     width: 20px;;
-        // }
-        .plot-flow-height {
+        .time-picker-box {
             margin: 0;
             height: 2rem;
             display: flex;
-            // background-color: red;
+        }
+
+        h6 {
+            align-items: center;
         }
     }
     
-    .time-tracker-canvas {
+    .time-tracker-graph {
         background-color: royalblue;
-        //max-width: 1.5rem;
-        // margin-top: 0.5rem;
-        // width: 1.5rem;
-        // height: 100%;
-        // height: 300px;
-        flex-shrink: 0;
-        flex-grow: 0;
+        flex: 0 0 24px;
+
+        .graph-base {
+            // margin-top: 16px;
+            position:absolute;
+            z-index: 10;
+            height: 100%;
+
+            .start-end-coord {
+                fill: none;
+                stroke:black;
+                stroke-width: 4;
+            }
+
+            .graph-coord {
+                fill: none;
+                stroke:black;
+                stroke-width: 2;
+            }
+        }
     }
 }
