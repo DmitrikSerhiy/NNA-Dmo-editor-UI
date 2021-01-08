@@ -11,6 +11,8 @@ import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.s
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { TimeDto, TimeFlowDto, TimeFlowPointDto } from './models/editorDtos';
+import { EventEmitter } from '@angular/core';
+
 
 @Component({
   selector: 'app-dmo-editor',
@@ -26,6 +28,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   currentDmo: ShortDmoDto;
   beats: any[];
   plotFlow: TimeFlowDto;
+
+  addBeatEvent: EventEmitter<void>;
 
   constructor(
     private editorHub: EditorHub,
@@ -54,12 +58,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   public addBeat() {
-
+    this.addBeatEvent.emit();
   }
 
   
   //this is async method
   async createAndInitDmo() {
+    this.addBeatEvent = new EventEmitter<void>();
+
     let tempDmo = new ShortDmoDto('test name', 'test movie');
     tempDmo.id = 'some id';
     tempDmo.shortComment = 'some comment';

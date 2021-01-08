@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
 import { TimeDto, TimeFlowDto, TimeFlowPointDto } from '../../models/editorDtos';
@@ -21,6 +22,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private baseCoord = "";
 
   @Input() timeFlowData: TimeFlowDto;
+  @Input() addBeat: EventEmitter<void>;
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   @ViewChild(PlotPointDirective, {static: false}) plotPointsContainer: PlotPointDirective;
   @ViewChild('lastPickerBox', {static: false}) lastPickerBox: ElementRef;
@@ -47,6 +49,10 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.setupInitialTimepickersMargin();
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
+
+    this.addBeat.subscribe(next => {
+      console.log('Add beat');
+    });
   }
 
   timeSet($event: TimeFlowPointDto) {
