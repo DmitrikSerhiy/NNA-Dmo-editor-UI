@@ -1,3 +1,5 @@
-<svg class="plot-point" [attr.width]="plotPointContainerSize" [attr.height]="plotPointContainerSize">
-    <circle [attr.cx]="plotPointContainerSize/2" [attr.cy]="plotPointContainerSize/2" [attr.r]="radius" />
-</svg>
+<div #plotPointContainer>
+    <svg class="plot-point" [attr.width]="plotPointContainerSize" [attr.height]="plotPointContainerSize">
+        <circle [attr.cx]="plotPointContainerSize/2" [attr.cy]="plotPointContainerSize/2" [attr.r]="radius" />
+    </svg>
+</div>

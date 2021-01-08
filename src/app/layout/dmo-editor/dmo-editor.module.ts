@@ -9,14 +9,15 @@ import { InitialPopupComponent } from './components/initial-popup/initial-popup.
 import { PlotFlowComponent } from './components/plot-flow/plot-flow.component';
 import { TimePickerComponent } from './components/time-picker/time-picker.component';
 import { PlotPointComponent } from './components/plot-point/plot-point.component';
+import { PlotPointDirective } from './directives/plot-point.directive';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }
 ];
 
 @NgModule({
-  entryComponents: [InitialPopupComponent],
-  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent, PlotPointComponent],
+  entryComponents: [InitialPopupComponent, PlotPointComponent],
+  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent, PlotPointComponent, PlotPointDirective],
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -1,18 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-plot-point',
   templateUrl: './plot-point.component.html',
   styleUrls: ['./plot-point.component.scss']
 })
-export class PlotPointComponent {
+export class PlotPointComponent implements OnInit {
 
-  private radius;
-  private plotPointContainerSize: number;
+  private margin: string;
+  @ViewChild('plotPointContainer', {static: true}) plotPointContainer: ElementRef;
 
-  constructor() { 
-    this.radius  = 4;
-    this.plotPointContainerSize = 24;
+  public shift: number;
+  public radius : number;
+  public plotPointContainerSize: number;
+
+  constructor() { }
+  
+  ngOnInit(): void {
+    if (!this.shift) {
+      this.margin = 'margin-top: 0';
+    } else {
+      this.margin = `margin-top: ${this.shift}px`;
+    }
+
+    this.plotPointContainer.nativeElement.setAttribute('style', this.margin);
   }
 
 }

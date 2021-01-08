@@ -7,18 +7,16 @@
             [plotPoint]='plotPoint' 
             (timeSetEvent)="timeSet($event)">
         </app-time-picker>   
-        <h6 class="time-picker-box" *ngIf="timeFlowData.isFinished">End</h6>
+        <h6 #lastPickerBox class="time-picker-box" *ngIf="timeFlowData.isFinished">End</h6>
 
     </div>
     <div class="time-tracker-graph">
-        <svg class="graph-base" [attr.width]="plotFlowWidth">
+        <svg #graphBase class="graph-base" [attr.width]="plotFlowWidth">
             <polyline [attr.points]="startCoord" class="start-end-coord" />
-            <polyline [attr.points]="someShit" class="graph-coord" />
-            <polyline [attr.points]="endCoord" class="start-end-coord" />
+            <polyline [attr.points]="baseCoord" class="graph-coord" />
+            <polyline *ngIf="timeFlowData.isFinished" [attr.points]="endCoord" class="start-end-coord" />
         </svg>
-
-        <app-plot-point>
-        </app-plot-point>
+        <div appPlotPoint></div>
     </div>
 </div>
 
