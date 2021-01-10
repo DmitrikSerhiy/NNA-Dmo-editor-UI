@@ -101,3 +101,9 @@ export class TimeFlowDto {
     isFinished: boolean;
 }
 
+export class BeatDetailsDto {
+    id: string;
+    text: string;
+    lineCount: number;
+}
+

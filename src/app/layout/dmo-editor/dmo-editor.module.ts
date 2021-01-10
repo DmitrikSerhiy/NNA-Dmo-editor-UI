@@ -10,7 +10,7 @@ import { PlotFlowComponent } from './components/plot-flow/plot-flow.component';
 import { TimePickerComponent } from './components/time-picker/time-picker.component';
 import { PlotPointComponent } from './components/plot-point/plot-point.component';
 import { PlotPointDirective } from './directives/plot-point.directive';
-import { BeatContainerComponent } from './components/beat-container/beat-container.component';
+import { BeatContainerComponent } from './components/beats-container/beats-container.component';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }

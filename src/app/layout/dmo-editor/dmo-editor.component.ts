@@ -10,7 +10,7 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { TimeDto, TimeFlowDto, TimeFlowPointDto } from './models/editorDtos';
+import { BeatDetailsDto, TimeDto, TimeFlowDto, TimeFlowPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 
 
@@ -28,7 +28,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   currentDmo: ShortDmoDto;
   beats: any[];
   plotFlow: TimeFlowDto;
-  // beats: BeatDto;
+  beatsData: BeatDetailsDto[];
 
   addBeatEvent: EventEmitter<void>;
   removeBeatEvent: EventEmitter<void>;
@@ -93,9 +93,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     tempDmo.shortComment = 'some comment';
     this.initDmo(tempDmo);
     this.plotFlow = new TimeFlowDto();
-    this.plotFlow.plotPoints = this.setPlotPoints();
+    this.setPlotPointsAndBeats();
     this.plotFlow.isFinished = true;
     this.isDmoInfoSet = true;
+
+
 
     // const popupResult = await this.finalizePopup();
     // if (!popupResult) {
@@ -136,48 +138,63 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  setPlotPoints(): TimeFlowPointDto[] {
-    let plotPoints : TimeFlowPointDto[];
-    plotPoints = [];
+  setPlotPointsAndBeats(): void {
     let point1 = new TimeFlowPointDto();
     point1.order = 1; //start from 1!!!
-    point1.id = 'some id 1';
+    point1.id = 'dmoId_BeatId_PlotPointId1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
     point1.lineCount = 1;
 
     let point2 = new TimeFlowPointDto();
     point2.order = 2;
-    point2.id = 'some id 2';
+    point2.id = 'dmoId_BeatId_PlotPointId2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
     point2.lineCount = 1;
 
     let point3 = new TimeFlowPointDto(); 
     point3.order = 3;
-    point3.id = 'some id 3';
+    point3.id = 'dmoId_BeatId_PlotPointId3';
     point3.time = new TimeDto().setAndGetTime('1', '12', '15');
     point3.lineCount = 1;
 
-    let point4 = new TimeFlowPointDto(); 
-    point4.order = 4;
-    point4.id = 'some id 4';
-    point4.time = new TimeDto().setAndGetTime('2', '56', '00');
-    point4.lineCount = 1;
+    // let point4 = new TimeFlowPointDto(); 
+    // point4.order = 4;
+    // point4.id = 'some id 4';
+    // point4.time = new TimeDto().setAndGetTime('2', '56', '00');
+    // point4.lineCount = 1;
 
-    let point5 = new TimeFlowPointDto(); 
-    point5.order = 5;
-    point5.id = 'some id 5';
-    point5.time = new TimeDto().setAndGetTime('3', '32', '44');
-    point5.lineCount = 1;
+    // let point5 = new TimeFlowPointDto(); 
+    // point5.order = 5;
+    // point5.id = 'some id 5';
+    // point5.time = new TimeDto().setAndGetTime('3', '32', '44');
+    // point5.lineCount = 1;
 
-    let point6 = new TimeFlowPointDto(); 
-    point6.order = 6;
-    point6.id = 'some id 6';
-    point6.time = new TimeDto().setAndGetTime('3', '54', '36');
-    point6.lineCount = 1;
+    // let point6 = new TimeFlowPointDto(); 
+    // point6.order = 6;
+    // point6.id = 'some id 6';
+    // point6.time = new TimeDto().setAndGetTime('3', '54', '36');
+    // point6.lineCount = 1;
+    
+    this.plotFlow.plotPoints = [];
+    this.plotFlow.plotPoints.push(point1, point2, point3);//, point4, point5, point6);
 
-    plotPoints.push(point1, point2, point3, point4, point5, point6);
+    let details1 = new BeatDetailsDto();
+    details1.id = "dmoId_BeatId_PlotPointId1";
+    details1.lineCount = 1;
+    details1.text = 'Lorem Ipsum is simply dummy text of the  Lorem Ipsum has been the industrys standard dummy';
 
-    return plotPoints;
+    let details2 = new BeatDetailsDto();
+    details2.id = "dmoId_BeatId_PlotPointId2";
+    details2.lineCount = 1;
+    details2.text = 'text of the  Lorem Ipsum has been the industrys standard dummy';
+
+    let details3 = new BeatDetailsDto();
+    details3.id = "dmoId_BeatId_PlotPointId3";
+    details3.lineCount = 1;
+    details3.text = 'has been the industrys standard dummy';
+
+    this.beatsData = [];
+    this.beatsData.push(details1, details2, details3);
   }
 
   async loadDmo() {

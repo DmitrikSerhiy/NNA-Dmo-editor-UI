@@ -5,7 +5,7 @@
     background-image: url("/assets/editor_background.jpg");
 
     .controls-panel {
-        height: 2rem;
+        height: 30px;
         display: flex;
         justify-content: flex-start;
         
@@ -24,14 +24,20 @@
 
         .editor-plot-flow {
             flex: 0 0 85px;
-            // background-color: gray;
         }
         .editor-board {
             flex: 1 1 auto;
             margin-left: 1rem;;
 
             .editor-board-tools {
+                height: 30px;
                 display: flex;
+                align-items: center;
+                background-color: burlywood;
+            }
+
+            .beats-wrapper {
+                max-width: 676px;
             }
         }
     }

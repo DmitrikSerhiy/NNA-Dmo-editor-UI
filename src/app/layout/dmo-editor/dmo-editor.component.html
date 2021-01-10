@@ -9,12 +9,16 @@
             <app-plot-flow [timeFlowData]="plotFlow" [addBeat]="addBeatEvent" [removeBeat]="removeBeatEvent" [finishDMO]="finishDmoEvent"></app-plot-flow>
         </div>
         <div class="editor-board">
-            <div class="editor-board-tools"> <!-- Don't like such solution -->
+            <div class="editor-board-tools"> 
+                <!-- Don't like such solution. Maybe I should add here some beats counter or some dmo general info. Number of acts, structural elements etc. But not microsoft-word-like bunch of buttons, tools and other useless shit -->
                 <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
                 <button class="nna-button nna-button-primary" (click)='removeBeat()'>Remove beat</button>
                 <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
             </div>
-            <app-beat-container></app-beat-container>
+            
+            <div class="beats-wrapper" *ngIf="beatsData">
+                <app-beats-container [beatsData]="beatsData"></app-beats-container>
+            </div>
         </div>
     </div>
     

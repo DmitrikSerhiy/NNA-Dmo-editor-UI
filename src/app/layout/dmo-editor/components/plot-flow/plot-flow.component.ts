@@ -35,9 +35,9 @@ export class PlotFlowComponent implements  AfterViewInit  {
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver, 
     private cdRef:ChangeDetectorRef) { 
-    this.plotFlowWidth = 32;
-    this.plotPointContainerSize = 32;
-    this.timePickerBoxHeight = 32;
+    this.plotFlowWidth = 30;
+    this.plotPointContainerSize = 30;
+    this.timePickerBoxHeight = 30;
     this.plotPointRadius = 6;
     this.currentHeight = 0;
     this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
