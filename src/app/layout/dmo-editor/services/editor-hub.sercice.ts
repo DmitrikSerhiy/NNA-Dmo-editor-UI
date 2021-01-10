@@ -1,4 +1,4 @@
-import { PartialDmoUpdateDto, DmoDto, ShortDmoDto } from './../../models';
+import { UpdateDmoDetailsDto, DmoDto, ShortDmoDto } from './../../models';
 
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -72,13 +72,6 @@ export class EditorHub {
 
 
     // ----- editor bub methods ------
-
-    async partiallyUpdateDmo(dmoUpdate: PartialDmoUpdateDto) {
-        if (!this.isConnected) {
-            return;
-        }
-        await this.hubConnection.invoke('DmoUpdate', dmoUpdate);
-    }
 
     async loadShortDmo(dmoId: string) : Promise<EditorResponseDto> {
         if (!this.isConnected) {

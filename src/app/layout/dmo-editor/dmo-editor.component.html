@@ -6,10 +6,15 @@
     </div>
     <div class="editor-board-wrapper">
         <div class="editor-plot-flow" *ngIf="plotFlow">
-            <app-plot-flow [timeFlowData]="plotFlow" [addBeat]="addBeatEvent"></app-plot-flow>
+            <app-plot-flow [timeFlowData]="plotFlow" [addBeat]="addBeatEvent" [removeBeat]="removeBeatEvent" [finishDMO]="finishDmoEvent"></app-plot-flow>
         </div>
         <div class="editor-board">
-            <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
+            <div class="editor-board-tools"> <!-- Don't like such solution -->
+                <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
+                <button class="nna-button nna-button-primary" (click)='removeBeat()'>Remove beat</button>
+                <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
+            </div>
+            <app-beat-container></app-beat-container>
         </div>
     </div>
     

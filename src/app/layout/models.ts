@@ -30,7 +30,6 @@ export class DmoDto {
     dmoStatusId: number;
     shortComment: string;
     mark: number;
-    beats: BeatDto[];
 
     constructor() {}
 }
@@ -70,15 +69,7 @@ export class AddDmosToCollectionDto {
     dmos: DmosIdDto[];
 }
 
-export interface BeatDto {
-    id: string;
-    description: string;
-    order: number;
-    plotTimeSpot: Time;
-}
-
-export interface PartialDmoUpdateDto {
-    beats: BeatDto[];
+export interface UpdateDmoDetailsDto {
     id: string;
 }
 

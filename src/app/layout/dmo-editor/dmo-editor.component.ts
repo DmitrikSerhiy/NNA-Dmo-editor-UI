@@ -28,8 +28,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   currentDmo: ShortDmoDto;
   beats: any[];
   plotFlow: TimeFlowDto;
+  // beats: BeatDto;
 
   addBeatEvent: EventEmitter<void>;
+  removeBeatEvent: EventEmitter<void>;
+  finishDmoEvent: EventEmitter<void>;
 
   constructor(
     private editorHub: EditorHub,
@@ -57,14 +60,33 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     await this.closeEditorAndClearData();
   }
 
-  public addBeat() {
+  addBeat() {
+    let point7 = new TimeFlowPointDto();
+    point7.order = 7;
+    point7.id = 'some id 7';
+    point7.time =  new TimeDto().setAndGetTime('4', '15', '00');
+    point7.lineCount = 1;
+
+    this.plotFlow.plotPoints.push(point7);
     this.addBeatEvent.emit();
+  }
+
+  removeBeat() {
+    this.plotFlow.plotPoints.pop();
+    this.removeBeatEvent.emit();
+  }
+
+  finishDmo() {
+    this.plotFlow.isFinished = !this.plotFlow.isFinished;
+    this.finishDmoEvent.emit();
   }
 
   
   //this is async method
   async createAndInitDmo() {
     this.addBeatEvent = new EventEmitter<void>();
+    this.removeBeatEvent = new EventEmitter<void>();
+    this.finishDmoEvent = new EventEmitter<void>();
 
     let tempDmo = new ShortDmoDto('test name', 'test movie');
     tempDmo.id = 'some id';
@@ -121,37 +143,37 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     point1.order = 1; //start from 1!!!
     point1.id = 'some id 1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
-    point1.lineCount = 3;
+    point1.lineCount = 1;
 
     let point2 = new TimeFlowPointDto();
     point2.order = 2;
     point2.id = 'some id 2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
-    point2.lineCount = 4;
+    point2.lineCount = 1;
 
     let point3 = new TimeFlowPointDto(); 
     point3.order = 3;
     point3.id = 'some id 3';
     point3.time = new TimeDto().setAndGetTime('1', '12', '15');
-    point3.lineCount = 4;
+    point3.lineCount = 1;
 
     let point4 = new TimeFlowPointDto(); 
     point4.order = 4;
     point4.id = 'some id 4';
     point4.time = new TimeDto().setAndGetTime('2', '56', '00');
-    point4.lineCount = 4;
+    point4.lineCount = 1;
 
     let point5 = new TimeFlowPointDto(); 
     point5.order = 5;
     point5.id = 'some id 5';
     point5.time = new TimeDto().setAndGetTime('3', '32', '44');
-    point5.lineCount = 4;
+    point5.lineCount = 1;
 
     let point6 = new TimeFlowPointDto(); 
     point6.order = 6;
     point6.id = 'some id 6';
     point6.time = new TimeDto().setAndGetTime('3', '54', '36');
-    point6.lineCount = 4;
+    point6.lineCount = 1;
 
     plotPoints.push(point1, point2, point3, point4, point5, point6);
 

@@ -28,6 +28,11 @@
         }
         .editor-board {
             flex: 1 1 auto;
+            margin-left: 1rem;;
+
+            .editor-board-tools {
+                display: flex;
+            }
         }
     }
     

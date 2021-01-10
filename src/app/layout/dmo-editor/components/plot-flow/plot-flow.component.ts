@@ -22,7 +22,11 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private baseCoord = "";
 
   @Input() timeFlowData: TimeFlowDto;
+
   @Input() addBeat: EventEmitter<void>;
+  @Input() removeBeat: EventEmitter<void>;
+  @Input() finishDMO: EventEmitter<void>;
+  
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   @ViewChild(PlotPointDirective, {static: false}) plotPointsContainer: PlotPointDirective;
   @ViewChild('lastPickerBox', {static: false}) lastPickerBox: ElementRef;
@@ -50,8 +54,19 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
 
-    this.addBeat.subscribe(next => {
-      console.log('Add beat');
+    this.addBeat.subscribe(_ => {
+      this.renderPlotFrowGraph();
+      this.renderPlotPoints();
+    });
+
+    this.removeBeat.subscribe(_ => {
+      this.renderPlotFrowGraph();
+      this.renderPlotPoints();
+    });
+
+    this.finishDMO.subscribe(_ => {
+      this.renderPlotFrowGraph();
+      this.renderPlotPoints();
     });
   }
 
@@ -68,6 +83,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(PlotPointComponent);
     const viewContainerRef = this.plotPointsContainer.viewContainerRef;
 
+    viewContainerRef.clear();
     this.timeFlowData.plotPoints.forEach((plotPoint, i) => {
       let componentRef = viewContainerRef.createComponent<PlotPointComponent>(componentFactory);
       componentRef.instance.shift = this.setupPlotPointsMargin(plotPoint, i);
