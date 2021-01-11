@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { PlotPointDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-plot-point',
@@ -8,11 +9,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 export class PlotPointComponent implements OnInit {
 
   private margin: string;
+  private isPlotPointToolsIconVisible = false;
   @ViewChild('plotPointContainer', {static: true}) plotPointContainer: ElementRef;
 
   public shift: number;
   public radius : number;
   public plotPointContainerSize: number;
+  public plotPointData: PlotPointDto;
 
   constructor() { }
   
@@ -24,6 +27,10 @@ export class PlotPointComponent implements OnInit {
     }
 
     this.plotPointContainer.nativeElement.setAttribute('style', this.margin);
+  }
+
+  toggleToolsIcon(command: boolean) {
+    this.isPlotPointToolsIconVisible = command;
   }
 
 }

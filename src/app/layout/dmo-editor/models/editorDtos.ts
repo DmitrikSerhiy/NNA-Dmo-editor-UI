@@ -89,15 +89,15 @@ export class TimeValueDto {
 }
 
 
-export class TimeFlowPointDto {
+export class PlotPointDto {
     id: string;
     order: number;
     time: TimeDto;
     lineCount: number;
 }
 
-export class TimeFlowDto {
-    plotPoints: TimeFlowPointDto[];
+export class PlotFlowDto {
+    plotPoints: PlotPointDto[];
     isFinished: boolean;
 }
 

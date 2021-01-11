@@ -1,7 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
-import { TimeDto, TimeFlowDto, TimeFlowPointDto } from '../../models/editorDtos';
+import { TimeDto, PlotFlowDto, PlotPointDto } from '../../models/editorDtos';
 import { PlotPointComponent } from '../plot-point/plot-point.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 
@@ -21,11 +21,12 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private endCoord = "";
   private baseCoord = "";
 
-  @Input() timeFlowData: TimeFlowDto;
+  @Input() timeFlowData: PlotFlowDto;
 
   @Input() addBeat: EventEmitter<void>;
   @Input() removeBeat: EventEmitter<void>;
   @Input() finishDMO: EventEmitter<void>;
+  @Input() reRender: EventEmitter<void>;
   
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   @ViewChild(PlotPointDirective, {static: false}) plotPointsContainer: PlotPointDirective;
@@ -35,9 +36,9 @@ export class PlotFlowComponent implements  AfterViewInit  {
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver, 
     private cdRef:ChangeDetectorRef) { 
-    this.plotFlowWidth = 30;
-    this.plotPointContainerSize = 30;
-    this.timePickerBoxHeight = 30;
+    this.plotFlowWidth = 32;
+    this.plotPointContainerSize = 32;
+    this.timePickerBoxHeight = 32;
     this.plotPointRadius = 6;
     this.currentHeight = 0;
     this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
@@ -68,9 +69,15 @@ export class PlotFlowComponent implements  AfterViewInit  {
       this.renderPlotFrowGraph();
       this.renderPlotPoints();
     });
+
+    this.reRender.subscribe(_ => {
+      this.setupInitialTimepickersMargin();
+      this.renderPlotFrowGraph();
+      this.renderPlotPoints();
+    })
   }
 
-  timeSet($event: TimeFlowPointDto) {
+  timeSet($event: PlotPointDto) {
     // console.log($event);
     //todo: change time in timeFlowData and send it to further parent
   }
@@ -89,6 +96,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
       componentRef.instance.shift = this.setupPlotPointsMargin(plotPoint, i);
       componentRef.instance.radius = this.plotPointRadius;
       componentRef.instance.plotPointContainerSize = this.plotPointContainerSize;
+      componentRef.instance.plotPointData = plotPoint;
     });
 
     this.cdRef.detectChanges();
@@ -121,7 +129,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.cdRef.detectChanges();
   }
 
-    private setupPlotPointsMargin(plotPoint: TimeFlowPointDto, i: number): number {
+    private setupPlotPointsMargin(plotPoint: PlotPointDto, i: number): number {
       if (i == 0) {
         return this.plotPointContainerSize;
       }
@@ -135,6 +143,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     }
 
   private setupInitialTimepickersMargin(): void {
+    console.log('hello')
     this.timePickers.forEach((timePicker, i) => {
       let nativeElement = timePicker.timePicker.nativeElement;
       let plotPoint = this.timeFlowData.plotPoints.find(p => p.id === nativeElement.getAttribute('id'));
@@ -156,6 +165,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     }
 
     let previous = this.timeFlowData.plotPoints[i-1];
+    console.log((this.timePickerBoxHeight * previous.lineCount) - this.timePickerBoxHeight);
     return (this.timePickerBoxHeight * previous.lineCount) - this.timePickerBoxHeight;
   }
 }

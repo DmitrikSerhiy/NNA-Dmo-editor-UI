@@ -1,7 +1,6 @@
 .beats-container {
-    min-height: 30px;
+    min-height: 32px;
     border: none;
-    background-color: cyan;
     display: flex;
     flex-flow: column nowrap;
 
@@ -10,7 +9,8 @@
     }
 
     .beat {
-        min-height: 30px;
+        // background-color: bisque;
+        min-height: 32px;
         width: 100%;
         border: none;
 
@@ -22,6 +22,7 @@
 
         span {
             border: none;
+            white-space: pre-wrap;
             font: 14px 'Courier New', Courier, monospace; //this is open standart for screenplay text
             &:focus {
                 outline: none;

@@ -6,7 +6,13 @@
     </div>
     <div class="editor-board-wrapper">
         <div class="editor-plot-flow" *ngIf="plotFlow">
-            <app-plot-flow [timeFlowData]="plotFlow" [addBeat]="addBeatEvent" [removeBeat]="removeBeatEvent" [finishDMO]="finishDmoEvent"></app-plot-flow>
+            <app-plot-flow 
+                [timeFlowData]="plotFlow" 
+                [addBeat]="addBeatEvent" 
+                [removeBeat]="removeBeatEvent" 
+                [finishDMO]="finishDmoEvent"
+                [reRender]="reRenderPlotFlowEvent">
+            </app-plot-flow>
         </div>
         <div class="editor-board">
             <div class="editor-board-tools"> 
@@ -17,7 +23,11 @@
             </div>
             
             <div class="beats-wrapper" *ngIf="beatsData">
-                <app-beats-container [beatsData]="beatsData"></app-beats-container>
+                <app-beats-container 
+                    [beatsData]="beatsData" 
+                    (incrementLineCount)="lineIncremented($event)"
+                    (decrementLineCount)="lineDecremented($event)">
+                </app-beats-container>
             </div>
         </div>
     </div>

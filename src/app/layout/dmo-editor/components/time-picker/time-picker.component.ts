@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
+import { TimeDto, PlotPointDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-time-picker',
@@ -8,8 +8,8 @@ import { TimeDto, TimeFlowPointDto } from '../../models/editorDtos';
 })
 export class TimePickerComponent implements OnInit {
 
-  @Input() plotPoint: TimeFlowPointDto;
-  @Output() timeSetEvent = new EventEmitter<TimeFlowPointDto>();
+  @Input() plotPoint: PlotPointDto;
+  @Output() timeSetEvent = new EventEmitter<PlotPointDto>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
   private timeSet: TimeDto; //main field with data
@@ -131,7 +131,7 @@ export class TimePickerComponent implements OnInit {
     this.setTime(this.timeSet, false);
     this.isFieldValid = this.timeSet.isValid;
 
-    let plotPoint: TimeFlowPointDto = {
+    let plotPoint: PlotPointDto = {
       id: this.plotPoint.id,
       order: this.plotPoint.order, // todo: in case if I add draggability to the plot flow
       lineCount: this.plotPoint.lineCount, 

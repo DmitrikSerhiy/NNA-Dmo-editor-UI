@@ -1,3 +1,42 @@
 .plot-point-container {
-    background-color: chartreuse;
+    display: flex;
+    // background-color: aqua;
+
+    .plot-point  {
+        z-index: 20;
+        circle {
+            &:hover {
+                cursor: grab;
+            }
+        }
+    }
+    
+
+    .controls-icon {
+        margin: auto;
+
+        i {
+            border:none;
+
+
+            visibility: hidden;
+            &:hover {
+                cursor: pointer;
+            }
+            .visible {
+                visibility: visible;
+            }
+        }
+    }
+
+    .plot-counter {
+        font: 15px 'Courier New', Courier, monospace;
+        margin: auto;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+
+        &:hover {
+            cursor: default;
+        }
+    }
 }

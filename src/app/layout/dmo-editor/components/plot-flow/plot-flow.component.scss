@@ -9,11 +9,10 @@
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
-        // background-color: red;
 
         .time-picker-box {
             margin: 0;
-            height: 30px;
+            height: 32px;
             display: flex;
         }
 
@@ -23,7 +22,6 @@
     }
     
     .time-tracker-graph {
-        // background-color: royalblue;
         flex: 0 0 32px;
 
         .graph-base {

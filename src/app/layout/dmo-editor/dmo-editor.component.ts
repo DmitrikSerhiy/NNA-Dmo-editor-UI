@@ -10,7 +10,7 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDetailsDto, TimeDto, TimeFlowDto, TimeFlowPointDto } from './models/editorDtos';
+import { BeatDetailsDto, TimeDto, PlotFlowDto, PlotPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 
 
@@ -27,12 +27,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   initialPopup: MatDialogRef<InitialPopupComponent>;
   currentDmo: ShortDmoDto;
   beats: any[];
-  plotFlow: TimeFlowDto;
+  plotFlow: PlotFlowDto;
   beatsData: BeatDetailsDto[];
 
   addBeatEvent: EventEmitter<void>;
   removeBeatEvent: EventEmitter<void>;
   finishDmoEvent: EventEmitter<void>;
+  reRenderPlotFlowEvent: EventEmitter<void>;
 
   constructor(
     private editorHub: EditorHub,
@@ -60,8 +61,43 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     await this.closeEditorAndClearData();
   }
 
+
+  lineIncremented($event: BeatDetailsDto) {
+    this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
+      if (plotPoint.id == $event.id) {
+        plotPoint.lineCount = plotPoint.lineCount + 1;
+      }
+      return plotPoint;
+    });
+
+    this.beatsData = this.beatsData.map(beat => {
+      if (beat.id == $event.id) {
+        beat.lineCount = beat.lineCount + 1;
+      }
+      return beat;
+    });
+    this.reRenderPlotFlowEvent.emit();
+  }
+
+  lineDecremented($event: BeatDetailsDto) {
+    this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
+      if (plotPoint.id == $event.id) {
+        plotPoint.lineCount = plotPoint.lineCount - 1;
+      }
+      return plotPoint;
+    });
+
+    this.beatsData = this.beatsData.map(beat => {
+      if (beat.id == $event.id) {
+        beat.lineCount = beat.lineCount - 1;
+      }
+      return beat;
+    });
+    this.reRenderPlotFlowEvent.emit();
+  }
+  
   addBeat() {
-    let point7 = new TimeFlowPointDto();
+    let point7 = new PlotPointDto();
     point7.order = 7;
     point7.id = 'some id 7';
     point7.time =  new TimeDto().setAndGetTime('4', '15', '00');
@@ -87,12 +123,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.addBeatEvent = new EventEmitter<void>();
     this.removeBeatEvent = new EventEmitter<void>();
     this.finishDmoEvent = new EventEmitter<void>();
+    this.reRenderPlotFlowEvent = new EventEmitter<void>();
 
     let tempDmo = new ShortDmoDto('test name', 'test movie');
     tempDmo.id = 'some id';
     tempDmo.shortComment = 'some comment';
     this.initDmo(tempDmo);
-    this.plotFlow = new TimeFlowDto();
+    this.plotFlow = new PlotFlowDto();
     this.setPlotPointsAndBeats();
     this.plotFlow.isFinished = true;
     this.isDmoInfoSet = true;
@@ -139,19 +176,19 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   setPlotPointsAndBeats(): void {
-    let point1 = new TimeFlowPointDto();
+    let point1 = new PlotPointDto();
     point1.order = 1; //start from 1!!!
     point1.id = 'dmoId_BeatId_PlotPointId1';
     point1.time = new TimeDto().setAndGetTime('0', '05', '10');
     point1.lineCount = 1;
 
-    let point2 = new TimeFlowPointDto();
+    let point2 = new PlotPointDto();
     point2.order = 2;
     point2.id = 'dmoId_BeatId_PlotPointId2';
     point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
     point2.lineCount = 1;
 
-    let point3 = new TimeFlowPointDto(); 
+    let point3 = new PlotPointDto(); 
     point3.order = 3;
     point3.id = 'dmoId_BeatId_PlotPointId3';
     point3.time = new TimeDto().setAndGetTime('1', '12', '15');
@@ -181,7 +218,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     let details1 = new BeatDetailsDto();
     details1.id = "dmoId_BeatId_PlotPointId1";
     details1.lineCount = 1;
-    details1.text = 'Lorem Ipsum is simply dummy text of the  Lorem Ipsum has been the industrys standard dummy';
+    details1.text = 'Lorem Ipsum is simply dummy text of the  Lorem Ipsum has been the indust';
 
     let details2 = new BeatDetailsDto();
     details2.id = "dmoId_BeatId_PlotPointId2";
