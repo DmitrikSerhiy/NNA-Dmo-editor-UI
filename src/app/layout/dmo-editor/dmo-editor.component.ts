@@ -62,34 +62,34 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
 
-  lineIncremented($event: BeatDetailsDto) {
+  lineIncremented($event: any) {
     this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-      if (plotPoint.id == $event.id) {
-        plotPoint.lineCount = plotPoint.lineCount + 1;
+      if (plotPoint.id == $event.beatData.id) {
+        plotPoint.lineCount = $event.newLineCount;
       }
       return plotPoint;
     });
 
     this.beatsData = this.beatsData.map(beat => {
-      if (beat.id == $event.id) {
-        beat.lineCount = beat.lineCount + 1;
+      if (beat.id == $event.beatData.id) {
+        beat.lineCount = $event.newLineCount;
       }
       return beat;
     });
     this.reRenderPlotFlowEvent.emit();
   }
 
-  lineDecremented($event: BeatDetailsDto) {
+  lineDecremented($event: any) {
     this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-      if (plotPoint.id == $event.id) {
-        plotPoint.lineCount = plotPoint.lineCount - 1;
+      if (plotPoint.id == $event.beatData.id) {
+        plotPoint.lineCount = $event.newLineCount;
       }
       return plotPoint;
     });
 
     this.beatsData = this.beatsData.map(beat => {
-      if (beat.id == $event.id) {
-        beat.lineCount = beat.lineCount - 1;
+      if (beat.id == $event.beatData.id) {
+        beat.lineCount = $event.newLineCount;
       }
       return beat;
     });

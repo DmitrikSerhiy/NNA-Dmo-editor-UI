@@ -24,6 +24,7 @@
             border: none;
             white-space: pre-wrap;
             font: 14px 'Courier New', Courier, monospace; //this is open standart for screenplay text
+            line-height: 16px;
             &:focus {
                 outline: none;
             }

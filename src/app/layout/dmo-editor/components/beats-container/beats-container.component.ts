@@ -10,15 +10,15 @@ import { BeatDetailsDto } from '../../models/editorDtos';
 export class BeatContainerComponent implements OnInit {
 
   @Input() beatsData: BeatDetailsDto[];
-  @Output() incrementLineCount: EventEmitter<BeatDetailsDto>;
-  @Output() decrementLineCount: EventEmitter<BeatDetailsDto>;
+  @Output() incrementLineCount: EventEmitter<any>;
+  @Output() decrementLineCount: EventEmitter<any>;
   
-  private maxCharactersCountPerLine: number;
   private lineHeigth: number
+  private beatContrainerMinHeight: number;
 
   constructor() { 
-    this.maxCharactersCountPerLine = 80;
-    this.lineHeigth = 15;
+    this.lineHeigth = 16;
+    this.beatContrainerMinHeight = 32;
     this.incrementLineCount = new EventEmitter();
     this.decrementLineCount = new EventEmitter();
   }
@@ -36,8 +36,8 @@ export class BeatContainerComponent implements OnInit {
   }
 
   beatSet ($event, beatData: BeatDetailsDto) {
-    let divHeight = $event.target.offsetHeight;
-    let lines = Math.floor(divHeight / this.lineHeigth);
+    let spanHeight = $event.target.offsetHeight;
+    let lines = Math.ceil(spanHeight / this.lineHeigth);
     let newLineCount: number;
     
     if (lines <= 1 ) {
@@ -46,12 +46,21 @@ export class BeatContainerComponent implements OnInit {
       newLineCount = lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1;
     }
 
-    if (beatData.lineCount < newLineCount) {
-        this.incrementLineCount.emit(beatData);
-    } 
-    else if (beatData.lineCount > newLineCount) {
-        this.decrementLineCount.emit(beatData);
+    if (lines % 2 != 0) {
+      if ($event.target.parentNode.style.marginBottom == '0px') {
+        let margin = (this.beatContrainerMinHeight * newLineCount) - (lines * this.lineHeigth);
+        $event.target.parentNode.style.marginBottom = `${margin}px`;
+      }
+    } else {
+      $event.target.parentNode.style.marginBottom = '0px';
     }
+
+    if (beatData.lineCount < newLineCount) {
+        this.incrementLineCount.emit({beatData, newLineCount});
+
+    } else if (beatData.lineCount > newLineCount) {
+        this.decrementLineCount.emit({beatData, newLineCount});
+    } 
   }
 
   beatClick ($event: any) {
