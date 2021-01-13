@@ -62,7 +62,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
 
-  lineIncremented($event: any) {
+  lineCountChanged($event: any) {
     this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
       if (plotPoint.id == $event.beatData.id) {
         plotPoint.lineCount = $event.newLineCount;
@@ -77,23 +77,12 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       return beat;
     });
     this.reRenderPlotFlowEvent.emit();
+    //todo: change lineCount in beats
   }
 
-  lineDecremented($event: any) {
-    this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-      if (plotPoint.id == $event.beatData.id) {
-        plotPoint.lineCount = $event.newLineCount;
-      }
-      return plotPoint;
-    });
-
-    this.beatsData = this.beatsData.map(beat => {
-      if (beat.id == $event.beatData.id) {
-        beat.lineCount = $event.newLineCount;
-      }
-      return beat;
-    });
-    this.reRenderPlotFlowEvent.emit();
+  plotTimeChanged($event: any) {
+    console.log($event);
+    //todo: change plotPoint
   }
   
   addBeat() {
@@ -117,7 +106,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.finishDmoEvent.emit();
   }
 
-  
   //this is async method
   async createAndInitDmo() {
     this.addBeatEvent = new EventEmitter<void>();
@@ -154,25 +142,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     //   this.initDmo(response.data);
     //   this.sidebarManagerService.collapseSidebar();
     // }
-  }
-
-  async editCurrentDmo() {
-    const popupResult = await this.finalizePopup();
-    if (!popupResult) {
-      return;
-    }
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.updateShortDmo(popupResult);
-
-      if (this.handleResponse(response)) {
-        await this.loadDmo();
-      }
-
-    } catch (err) {
-      this.showUnhandledException(err);
-      return;
-    }
   }
 
   setPlotPointsAndBeats(): void {
@@ -232,6 +201,25 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     this.beatsData = [];
     this.beatsData.push(details1, details2, details3);
+  }
+
+  async editCurrentDmo() {
+    const popupResult = await this.finalizePopup();
+    if (!popupResult) {
+      return;
+    }
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.updateShortDmo(popupResult);
+
+      if (this.handleResponse(response)) {
+        await this.loadDmo();
+      }
+
+    } catch (err) {
+      this.showUnhandledException(err);
+      return;
+    }
   }
 
   async loadDmo() {

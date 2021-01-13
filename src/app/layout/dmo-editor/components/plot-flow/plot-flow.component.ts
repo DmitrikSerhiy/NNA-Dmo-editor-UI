@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
 import { TimeDto, PlotFlowDto, PlotPointDto } from '../../models/editorDtos';
@@ -27,7 +27,8 @@ export class PlotFlowComponent implements  AfterViewInit  {
   @Input() removeBeat: EventEmitter<void>;
   @Input() finishDMO: EventEmitter<void>;
   @Input() reRender: EventEmitter<void>;
-  
+  @Output() plotPointChanged: EventEmitter<any>;
+
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   @ViewChild(PlotPointDirective, {static: false}) plotPointsContainer: PlotPointDirective;
   @ViewChild('lastPickerBox', {static: false}) lastPickerBox: ElementRef;
@@ -42,6 +43,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.plotPointRadius = 6;
     this.currentHeight = 0;
     this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
+    this.plotPointChanged = new EventEmitter();
   }
 
   // ngOnInit() {
@@ -78,14 +80,11 @@ export class PlotFlowComponent implements  AfterViewInit  {
   }
 
   timeSet($event: PlotPointDto) {
-    // console.log($event);
-    //todo: change time in timeFlowData and send it to further parent
+    this.plotPointChanged.emit($event);
   }
 
 
-
-
-
+  
   private renderPlotPoints(): void {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(PlotPointComponent);
     const viewContainerRef = this.plotPointsContainer.viewContainerRef;

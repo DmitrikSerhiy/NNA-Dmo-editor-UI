@@ -10,8 +10,7 @@ import { BeatDetailsDto } from '../../models/editorDtos';
 export class BeatContainerComponent implements OnInit {
 
   @Input() beatsData: BeatDetailsDto[];
-  @Output() incrementLineCount: EventEmitter<any>;
-  @Output() decrementLineCount: EventEmitter<any>;
+  @Output() lineCountChanged: EventEmitter<any>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
@@ -19,8 +18,7 @@ export class BeatContainerComponent implements OnInit {
   constructor() { 
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
-    this.incrementLineCount = new EventEmitter();
-    this.decrementLineCount = new EventEmitter();
+    this.lineCountChanged = new EventEmitter();
   }
 
   ngOnInit() {
@@ -56,10 +54,10 @@ export class BeatContainerComponent implements OnInit {
     }
 
     if (beatData.lineCount < newLineCount) {
-        this.incrementLineCount.emit({beatData, newLineCount});
+        this.lineCountChanged.emit({beatData, newLineCount});
 
     } else if (beatData.lineCount > newLineCount) {
-        this.decrementLineCount.emit({beatData, newLineCount});
+        this.lineCountChanged.emit({beatData, newLineCount});
     } 
   }
 

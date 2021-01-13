@@ -11,7 +11,8 @@
                 [addBeat]="addBeatEvent" 
                 [removeBeat]="removeBeatEvent" 
                 [finishDMO]="finishDmoEvent"
-                [reRender]="reRenderPlotFlowEvent">
+                [reRender]="reRenderPlotFlowEvent"
+                (plotPointChanged)="plotTimeChanged($event)">
             </app-plot-flow>
         </div>
         <div class="editor-board">
@@ -25,8 +26,8 @@
             <div class="beats-wrapper" *ngIf="beatsData">
                 <app-beats-container 
                     [beatsData]="beatsData" 
-                    (incrementLineCount)="lineIncremented($event)"
-                    (decrementLineCount)="lineDecremented($event)">
+                    (changeLine)="changeLine($event)"
+                    (lineCountChanged)="lineCountChanged($event)">
                 </app-beats-container>
             </div>
         </div>
