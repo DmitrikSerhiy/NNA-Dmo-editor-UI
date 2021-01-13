@@ -39,6 +39,7 @@ export class ShortDmoDto {
     name: string;
     movieTitle: string;
     shortComment: string;
+    hasBeats: boolean;
 
     constructor(name: string, movieTitle: string) {
         this.name = name;

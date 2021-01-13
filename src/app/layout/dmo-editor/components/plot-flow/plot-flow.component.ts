@@ -1,5 +1,5 @@
 import { EventEmitter, Output } from '@angular/core';
-import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
 import { TimeDto, PlotFlowDto, PlotPointDto } from '../../models/editorDtos';
 import { PlotPointComponent } from '../plot-point/plot-point.component';
@@ -46,13 +46,19 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.plotPointChanged = new EventEmitter();
   }
 
-  // ngOnInit() {
-  //   if (this.timeFlowData.plotPoints.length > 0) {
-      
-  //   }
-  // }
-
   ngAfterViewInit(): void {
+    if (!this.timeFlowData) {
+      this.timeFlowData = new PlotFlowDto();
+      this.timeFlowData.isFinished = false;
+      this.timeFlowData.plotPoints = [];
+      let defaultPlotPoint = new PlotPointDto();
+      defaultPlotPoint.id = 'defaultId';
+      defaultPlotPoint.lineCount = 1;
+      defaultPlotPoint.order = 1;
+      defaultPlotPoint.time = new TimeDto().getDefaultDto();
+      this.timeFlowData.plotPoints.push(defaultPlotPoint);
+    }
+
     this.setupInitialTimepickersMargin();
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
@@ -142,7 +148,6 @@ export class PlotFlowComponent implements  AfterViewInit  {
     }
 
   private setupInitialTimepickersMargin(): void {
-    console.log('hello')
     this.timePickers.forEach((timePicker, i) => {
       let nativeElement = timePicker.timePicker.nativeElement;
       let plotPoint = this.timeFlowData.plotPoints.find(p => p.id === nativeElement.getAttribute('id'));
@@ -164,7 +169,6 @@ export class PlotFlowComponent implements  AfterViewInit  {
     }
 
     let previous = this.timeFlowData.plotPoints[i-1];
-    console.log((this.timePickerBoxHeight * previous.lineCount) - this.timePickerBoxHeight);
     return (this.timePickerBoxHeight * previous.lineCount) - this.timePickerBoxHeight;
   }
 }

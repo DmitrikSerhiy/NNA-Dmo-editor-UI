@@ -10,8 +10,10 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDetailsDto, TimeDto, PlotFlowDto, PlotPointDto } from './models/editorDtos';
+import { BeatDetailsDto, TimeDto, PlotFlowDto, PlotPointDto, BeatsDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
+import { concatMap, takeUntil, finalize } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -35,26 +37,34 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   finishDmoEvent: EventEmitter<void>;
   reRenderPlotFlowEvent: EventEmitter<void>;
 
+  private beatsLoading: boolean;
+  private unsubscribe$: Subject<void> = new Subject();
+
   constructor(
     private editorHub: EditorHub,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private toastr: Toastr,
     public matModule: MatDialog,
-    private sidebarManagerService: SidebarManagerService) { }
+    private sidebarManagerService: SidebarManagerService) { 
+      this.addBeatEvent = new EventEmitter<void>();
+      this.removeBeatEvent = new EventEmitter<void>();  
+      this.finishDmoEvent = new EventEmitter<void>();
+      this.reRenderPlotFlowEvent = new EventEmitter<void>();
+    }
 
   async ngOnInit() {
-    this.createAndInitDmo();
-    // this.isDmoInfoSet = false;
-    // this.isInitialPopupOpen = false;
-    // this.activatedRoute.queryParams.subscribe(params => {
-    //   this.dmoId = params['dmoId'];
-    // });
-    // if (this.dmoId) {
-    //   await this.loadDmo();
-    // } else {
-    //   await this.createAndInitDmo();
-    // }
+    this.isDmoInfoSet = false;
+    this.isInitialPopupOpen = false;
+    this.beatsLoading = true;
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.dmoId = params['dmoId'];
+    });
+    if (this.dmoId) {
+      await this.loadDmo();
+    } else {
+      await this.createAndInitDmo();
+    }
   }
 
   async ngOnDestroy() {
@@ -86,18 +96,18 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
   
   addBeat() {
-    let point7 = new PlotPointDto();
-    point7.order = 7;
-    point7.id = 'some id 7';
-    point7.time =  new TimeDto().setAndGetTime('4', '15', '00');
-    point7.lineCount = 1;
+    // let point7 = new PlotPointDto();
+    // point7.order = 7;
+    // point7.id = 'some id 7';
+    // point7.time =  new TimeDto().setAndGetTime('4', '15', '00');
+    // point7.lineCount = 1;
 
-    this.plotFlow.plotPoints.push(point7);
+    // this.plotFlow.plotPoints.push(point7);
     this.addBeatEvent.emit();
   }
 
   removeBeat() {
-    this.plotFlow.plotPoints.pop();
+    // this.plotFlow.plotPoints.pop();
     this.removeBeatEvent.emit();
   }
 
@@ -108,100 +118,93 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   //this is async method
   async createAndInitDmo() {
-    this.addBeatEvent = new EventEmitter<void>();
-    this.removeBeatEvent = new EventEmitter<void>();
-    this.finishDmoEvent = new EventEmitter<void>();
-    this.reRenderPlotFlowEvent = new EventEmitter<void>();
+    // let tempDmo = new ShortDmoDto('test name', 'test movie');
+    // tempDmo.id = 'some id';
+    // tempDmo.shortComment = 'some comment';
+    // this.initDmo(tempDmo);
+    // this.plotFlow = new PlotFlowDto();
+    // this.setPlotPointsAndBeats();
+    // this.plotFlow.isFinished = true;
+    // this.isDmoInfoSet = true;
 
-    let tempDmo = new ShortDmoDto('test name', 'test movie');
-    tempDmo.id = 'some id';
-    tempDmo.shortComment = 'some comment';
-    this.initDmo(tempDmo);
-    this.plotFlow = new PlotFlowDto();
-    this.setPlotPointsAndBeats();
-    this.plotFlow.isFinished = true;
-    this.isDmoInfoSet = true;
-
-
-
-    // const popupResult = await this.finalizePopup();
-    // if (!popupResult) {
-    //   return;
-    // }
-    // await this.editorHub.startConnection();
+    const popupResult = await this.finalizePopup();
+    if (!popupResult) {
+      return;
+    }
+    await this.editorHub.startConnection();
     
-    // let response: EditorResponseDto;
-    // try {
-    //   response = await this.editorHub.createDmo(popupResult);
-    // } catch (err) {
-    //   this.showUnhandledException(err);
-    //   return;
-    // }
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.createDmo(popupResult);
+    } catch (err) {
+      this.showUnhandledException(err);
+      return;
+    }
 
-    // if (this.handleResponse(response)) {
-    //   this.initDmo(response.data);
-    //   this.sidebarManagerService.collapseSidebar();
-    // }
+    if (this.handleResponse(response)) {
+      this.initDmo(response.data);
+      this.sidebarManagerService.collapseSidebar();
+    }
   }
 
-  setPlotPointsAndBeats(): void {
-    let point1 = new PlotPointDto();
-    point1.order = 1; //start from 1!!!
-    point1.id = 'dmoId_BeatId_PlotPointId1';
-    point1.time = new TimeDto().setAndGetTime('0', '05', '10');
-    point1.lineCount = 1;
+  // setPlotPointsAndBeats(): void {
+  //   let point1 = new PlotPointDto();
+  //   point1.order = 1; //start from 1!!!
+  //   point1.id = 'dmoId_BeatId_PlotPointId1';
+  //   point1.time = new TimeDto().setAndGetTime('0', '05', '10');
+  //   point1.lineCount = 1;
 
-    let point2 = new PlotPointDto();
-    point2.order = 2;
-    point2.id = 'dmoId_BeatId_PlotPointId2';
-    point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
-    point2.lineCount = 1;
+  //   let point2 = new PlotPointDto();
+  //   point2.order = 2;
+  //   point2.id = 'dmoId_BeatId_PlotPointId2';
+  //   point2.time =  new TimeDto().setAndGetTime('0', '07', '22');
+  //   point2.lineCount = 1;
 
-    let point3 = new PlotPointDto(); 
-    point3.order = 3;
-    point3.id = 'dmoId_BeatId_PlotPointId3';
-    point3.time = new TimeDto().setAndGetTime('1', '12', '15');
-    point3.lineCount = 1;
+  //   let point3 = new PlotPointDto(); 
+  //   point3.order = 3;
+  //   point3.id = 'dmoId_BeatId_PlotPointId3';
+  //   point3.time = new TimeDto().setAndGetTime('1', '12', '15');
+  //   point3.lineCount = 1;
 
-    // let point4 = new TimeFlowPointDto(); 
-    // point4.order = 4;
-    // point4.id = 'some id 4';
-    // point4.time = new TimeDto().setAndGetTime('2', '56', '00');
-    // point4.lineCount = 1;
+  //   // let point4 = new TimeFlowPointDto(); 
+  //   // point4.order = 4;
+  //   // point4.id = 'some id 4';
+  //   // point4.time = new TimeDto().setAndGetTime('2', '56', '00');
+  //   // point4.lineCount = 1;
 
-    // let point5 = new TimeFlowPointDto(); 
-    // point5.order = 5;
-    // point5.id = 'some id 5';
-    // point5.time = new TimeDto().setAndGetTime('3', '32', '44');
-    // point5.lineCount = 1;
+  //   // let point5 = new TimeFlowPointDto(); 
+  //   // point5.order = 5;
+  //   // point5.id = 'some id 5';
+  //   // point5.time = new TimeDto().setAndGetTime('3', '32', '44');
+  //   // point5.lineCount = 1;
 
-    // let point6 = new TimeFlowPointDto(); 
-    // point6.order = 6;
-    // point6.id = 'some id 6';
-    // point6.time = new TimeDto().setAndGetTime('3', '54', '36');
-    // point6.lineCount = 1;
+  //   // let point6 = new TimeFlowPointDto(); 
+  //   // point6.order = 6;
+  //   // point6.id = 'some id 6';
+  //   // point6.time = new TimeDto().setAndGetTime('3', '54', '36');
+  //   // point6.lineCount = 1;
     
-    this.plotFlow.plotPoints = [];
-    this.plotFlow.plotPoints.push(point1, point2, point3);//, point4, point5, point6);
+  //   this.plotFlow.plotPoints = [];
+  //   this.plotFlow.plotPoints.push(point1, point2, point3);//, point4, point5, point6);
 
-    let details1 = new BeatDetailsDto();
-    details1.id = "dmoId_BeatId_PlotPointId1";
-    details1.lineCount = 1;
-    details1.text = 'Lorem Ipsum is simply dummy text of the  Lorem Ipsum has been the indust';
+  //   let details1 = new BeatDetailsDto();
+  //   details1.id = "dmoId_BeatId_PlotPointId1";
+  //   details1.lineCount = 1;
+  //   details1.text = 'Lorem Ipsum is simply dummy text of the  Lorem Ipsum has been the indust';
 
-    let details2 = new BeatDetailsDto();
-    details2.id = "dmoId_BeatId_PlotPointId2";
-    details2.lineCount = 1;
-    details2.text = 'text of the  Lorem Ipsum has been the industrys standard dummy';
+  //   let details2 = new BeatDetailsDto();
+  //   details2.id = "dmoId_BeatId_PlotPointId2";
+  //   details2.lineCount = 1;
+  //   details2.text = 'text of the  Lorem Ipsum has been the industrys standard dummy';
 
-    let details3 = new BeatDetailsDto();
-    details3.id = "dmoId_BeatId_PlotPointId3";
-    details3.lineCount = 1;
-    details3.text = 'has been the industrys standard dummy';
+  //   let details3 = new BeatDetailsDto();
+  //   details3.id = "dmoId_BeatId_PlotPointId3";
+  //   details3.lineCount = 1;
+  //   details3.text = 'has been the industrys standard dummy';
 
-    this.beatsData = [];
-    this.beatsData.push(details1, details2, details3);
-  }
+  //   this.beatsData = [];
+  //   this.beatsData.push(details1, details2, details3);
+  // }
 
   async editCurrentDmo() {
     const popupResult = await this.finalizePopup();
@@ -235,6 +238,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     if (this.handleResponse(response)) {
       this.initDmo(response.data);
+
+      if (this.currentDmo.hasBeats) {
+        this.loadBeats();
+      } else {
+        this.beatsLoading = false;
+      }
+
       this.sidebarManagerService.collapseSidebar();
     }
   }
@@ -316,7 +326,23 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.dmoId = result.id;
     }
     this.currentDmo.shortComment = result.shortComment;
+    this.currentDmo.hasBeats = result.hasBeats;
     this.isDmoInfoSet = true;
+  }
+
+  private loadBeats() {
+    let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
+      .pipe(takeUntil(this.unsubscribe$));
+      
+    $initialLoad.subscribe({
+      next: (result: any) => { 
+        let beats: BeatsDto = Object.assign(new BeatsDto(), JSON.parse(result.beatsJson));
+        this.plotFlow = beats.plotFlowDto;
+        this.beatsData = beats.beatDetails;
+        this.beatsLoading = false;
+      },
+      error: (err) => { this.toastr.error(err); }
+    });
   }
 
   private async closeEditorAndClearData() {
@@ -327,6 +353,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.matModule.closeAll();
     this.initialPopup = null;
     this.currentDmo = null;
+
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
 }

@@ -107,3 +107,8 @@ export class BeatDetailsDto {
     lineCount: number;
 }
 
+export class BeatsDto {
+    plotFlowDto: PlotFlowDto;
+    beatDetails: BeatDetailsDto[];
+}
+

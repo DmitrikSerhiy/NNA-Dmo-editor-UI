@@ -2,21 +2,29 @@ import { UpdateDmoDetailsDto, DmoDto, ShortDmoDto } from './../../models';
 
 import { UserManager } from './../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 
 import * as signalR from '@microsoft/signalr';
 import { environment } from './../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
+import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditorHub {
+    serverUrl = environment.server_user
     private hubConnection: signalR.HubConnection;
     public get isConnected() : boolean {
         return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected
     }
 
-    constructor(private userManager: UserManager) { 
+    constructor(
+        private userManager: UserManager, 
+        private http: HttpClient,
+        private errorHandler: CustomErrorHandler) { 
         this.hubConnection = null;
     }
 
@@ -71,7 +79,7 @@ export class EditorHub {
     }
 
 
-    // ----- editor bub methods ------
+    // ----- editor websocket methods ------
 
     async loadShortDmo(dmoId: string) : Promise<EditorResponseDto> {
         if (!this.isConnected) {
@@ -108,5 +116,18 @@ export class EditorHub {
             return Promise.reject(err);
         }
     }
-    // ----- editor bub methods ------
+    // ----- editor websocket methods ------
+
+
+    // ----- editor http methods --------
+    initialBeatsLoad(dmoId: string): Observable<string> {
+        return this.http
+            .get(this.serverUrl + 'beats/initial/' + dmoId)
+            .pipe(
+                map((response: string) => response),
+                catchError(this.errorHandler.handle));
+    }
+
+
+    // ----- editor http methods --------
 }

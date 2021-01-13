@@ -19,12 +19,21 @@ export class BeatContainerComponent implements OnInit {
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.lineCountChanged = new EventEmitter();
+  
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    if (!this.beatsData) {
+      this.beatsData = [];
+      let defaultBeatDetails = new BeatDetailsDto();
+      defaultBeatDetails.id = 'default';
+      defaultBeatDetails.lineCount = 1;
+      defaultBeatDetails.text = '';
+
+      this.beatsData.push(defaultBeatDetails);
+    }
   }
 
- 
   beatPreset($event, beatData: BeatDetailsDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if ((key == 13 && !key.shiftKey) || key == 13) {    

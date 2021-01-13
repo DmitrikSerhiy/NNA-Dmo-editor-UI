@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { TimeDto, PlotPointDto } from '../../models/editorDtos';
+import { TimeDto, PlotPointDto, TimeValueDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-time-picker',
@@ -158,7 +158,12 @@ export class TimePickerComponent implements OnInit {
     if(!this.changesDetected) {
       return;
     }
-    this.timeSet = timeDto;
+    // console.log(timeDto);
+    // console.log(timeDto.hour);
+    // new TimeValueDto()
+    //fix this shit here
+    this.timeSet = new TimeDto().setAndGetTime(timeDto.hour.value, timeDto.minutes.value, timeDto.seconds.value);
+    // console.log(this.getTimeView(this.timeSet, editMode));
     this.timePicker.nativeElement.value = this.getTimeView(this.timeSet, editMode);
   }
   
@@ -176,7 +181,6 @@ export class TimePickerComponent implements OnInit {
     if (time.hour.hasValue && !time.minutes.hasValue && !time.seconds.hasValue) {
       return `${time.hour.value}:${time.minutes.defaultValue}:${time.seconds.defaultValue}`;
     }
-
     if (time.hour.hasValue && time.minutes.hasValue && !time.seconds.hasValue) {
       return `${time.hour.value}:${time.minutes.value}:${time.seconds.defaultValue}`;
     }

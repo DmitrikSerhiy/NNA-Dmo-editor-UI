@@ -11,6 +11,7 @@ import { TimePickerComponent } from './components/time-picker/time-picker.compon
 import { PlotPointComponent } from './components/plot-point/plot-point.component';
 import { PlotPointDirective } from './directives/plot-point.directive';
 import { BeatContainerComponent } from './components/beats-container/beats-container.component';
+import { MatProgressSpinnerModule } from '@angular/material';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }
@@ -24,7 +25,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     MatDialogModule,
-    MatTabsModule
+    MatTabsModule,
+    MatProgressSpinnerModule
   ]
 })
 export class DmoEditorModule { }

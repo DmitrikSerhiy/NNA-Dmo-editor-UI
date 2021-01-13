@@ -4,8 +4,8 @@
         <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
         <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
     </div>
-    <div class="editor-board-wrapper">
-        <div class="editor-plot-flow" *ngIf="plotFlow">
+    <div *ngIf="!beatsLoading" class="editor-board-wrapper">
+        <div class="editor-plot-flow">
             <app-plot-flow 
                 [timeFlowData]="plotFlow" 
                 [addBeat]="addBeatEvent" 
@@ -23,7 +23,7 @@
                 <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
             </div>
             
-            <div class="beats-wrapper" *ngIf="beatsData">
+            <div class="beats-wrapper">
                 <app-beats-container 
                     [beatsData]="beatsData" 
                     (changeLine)="changeLine($event)"
@@ -31,6 +31,10 @@
                 </app-beats-container>
             </div>
         </div>
+    </div>
+
+    <div *ngIf="beatsLoading" class="loader-container">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
     </div>
     
     <!-- <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
