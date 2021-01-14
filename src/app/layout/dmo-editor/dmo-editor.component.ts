@@ -14,6 +14,8 @@ import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto } from './models/editorD
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { EditorChangeDetectorService } from './services/editor-change-detector.service';
+import { ChangeType } from './models/changeTypes';
 
 
 @Component({
@@ -28,7 +30,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   isInitialPopupOpen: boolean;
   initialPopup: MatDialogRef<InitialPopupComponent>;
   currentDmo: ShortDmoDto;
-  beats: any[];
   plotFlow: PlotFlowDto;
   beatsData: BeatDetailsDto[];
 
@@ -46,7 +47,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastr: Toastr,
     public matModule: MatDialog,
-    private sidebarManagerService: SidebarManagerService) { 
+    private sidebarManagerService: SidebarManagerService,
+    private editorChangeDetectorService: EditorChangeDetectorService) { 
       this.addBeatEvent = new EventEmitter<void>();
       this.removeBeatEvent = new EventEmitter<void>();  
       this.finishDmoEvent = new EventEmitter<void>();
@@ -57,9 +59,17 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isDmoInfoSet = false;
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
+
+    this.editorChangeDetectorService.detector.subscribe((updates: Array<any>) => {
+      let newbeats = this.updateBeats(updates);
+      console.log(newbeats);
+      //todo: send to hub 
+    });
+
     this.activatedRoute.queryParams.subscribe(params => {
       this.dmoId = params['dmoId'];
     });
+
     if (this.dmoId) {
       await this.loadDmo();
     } else {
@@ -91,7 +101,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   plotTimeChanged($event: any) {
-    console.log($event);
+    this.editorChangeDetectorService.detect($event, ChangeType.plotPointTimeChanged);
     //todo: change plotPoint
   }
   
@@ -176,6 +186,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     await this.closeEditorAndClearData();
     this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
   }
+
+
+
 
   private async finalizePopup(): Promise<ShortDmoDto> {
     let popupData = null;
@@ -271,6 +284,48 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       error: (err) => { this.toastr.error(err); }
     });
   }
+
+  private updateBeats(changes: Array<any>) {
+    let beatsJson = new BeatsDto();
+    beatsJson.beatDetails = this.beatsData;
+    beatsJson.plotFlowDto = this.plotFlow;
+    
+    changes.forEach(change => {
+      if (change.changeType == ChangeType.beatTextChanged) {
+        beatsJson.beatDetails = this.beatsData.map(beat => {
+          if (beat.id == change.data.id) {
+            beat.text = change.data.text;
+          }
+          return beat;
+        })
+      }
+
+      if (change.changeType == ChangeType.plotPointTimeChanged) {
+        beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
+          if (plotPoint.id == change.plotPoint.id) {
+            plotPoint.time = plotPoint.time;
+          }
+          return plotPoint;
+        });
+      }
+
+    });
+
+
+
+
+    if (!beatsJson.beatDetails) {
+      beatsJson.beatDetails = this.beatsData;
+    }
+
+    if (!beatsJson.plotFlowDto) {
+      beatsJson.plotFlowDto = this.plotFlow;
+    }
+
+    return beatsJson;
+  }
+
+
 
   private async closeEditorAndClearData() {
     await this.editorHub.abortConnection();
