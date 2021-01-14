@@ -158,12 +158,8 @@ export class TimePickerComponent implements OnInit {
     if(!this.changesDetected) {
       return;
     }
-    // console.log(timeDto);
-    // console.log(timeDto.hour);
-    // new TimeValueDto()
-    //fix this shit here
-    this.timeSet = new TimeDto().setAndGetTime(timeDto.hour.value, timeDto.minutes.value, timeDto.seconds.value);
-    // console.log(this.getTimeView(this.timeSet, editMode));
+
+    this.timeSet = timeDto;
     this.timePicker.nativeElement.value = this.getTimeView(this.timeSet, editMode);
   }
   
