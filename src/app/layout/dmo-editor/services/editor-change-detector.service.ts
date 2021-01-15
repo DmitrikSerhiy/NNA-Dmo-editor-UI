@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { ChangeType } from './../models/changeTypes';
+import { from  } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,35 +15,42 @@ export class EditorChangeDetectorService {
 
   constructor() {
     this.hasChanges = false;
-    this.checkInterval = 2000;
+    this.checkInterval = 3000;
     this.detector = new EventEmitter();
     this.cnanges = [];
-    this.startDetection();
+    from(this.startDetectionAsync()).subscribe();
   }
 
 
-  detect(data: any, changeType: ChangeType): void {
-    this.cnanges.push({data, changeType});
+  detect(changeType: ChangeType): void {
+    this.cnanges.push(changeType);
     this.hasChanges = true;
-    console.log(this.hasChanges);
-    console.log(this.cnanges);
   }
 
-//fix here scope is not accessible
-  private startDetection() {
-    setInterval(function() { 
+  private async startDetectionAsync() {
 
-      if (!this.hasChanges) {
+    let initial = true;
+    function delay(ms: number) {
+      return new Promise( resolve => setTimeout(resolve, ms) );
+    }
+
+    do {
+      if (!initial) {
+        await delay(this.checkInterval);
+      } else {
+        initial = false;
+      }
+      
+      if (this.hasChanges === false) {
         console.log('nothing');
-        return;
+        continue;
       }  
-
-      this.sender.emit(this.cnanges);
+      
+      this.detector.emit(this.cnanges);
 
       this.cnanges = [];
       this.hasChanges = false;
 
-      console.log('change detected');
-    }, this.checkInterval);
+    } while (!initial);
   }
 }

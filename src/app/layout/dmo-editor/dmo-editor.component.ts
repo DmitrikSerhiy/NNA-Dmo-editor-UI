@@ -6,14 +6,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.sercice';
 
 import { Toastr } from '../../shared/services/toastr.service';
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+  import { Subject, from  } from 'rxjs';
 import { EditorChangeDetectorService } from './services/editor-change-detector.service';
 import { ChangeType } from './models/changeTypes';
 
@@ -24,21 +24,24 @@ import { ChangeType } from './models/changeTypes';
   styleUrls: ['./dmo-editor.component.scss']
 })
 export class DmoEditorComponent implements OnInit, OnDestroy {
-  @ViewChild('dmobit', { static: true }) dmobit: ElementRef;
-  dmoId: string;
-  isDmoInfoSet: boolean;
+
   isInitialPopupOpen: boolean;
   initialPopup: MatDialogRef<InitialPopupComponent>;
+  
+  // main fields
+  isDmoInfoSet: boolean;
+  beatsLoading: boolean;
+  dmoId: string;
   currentDmo: ShortDmoDto;
   plotFlow: PlotFlowDto;
   beatsData: BeatDetailsDto[];
 
+  // events
   addBeatEvent: EventEmitter<void>;
   removeBeatEvent: EventEmitter<void>;
   finishDmoEvent: EventEmitter<void>;
   reRenderPlotFlowEvent: EventEmitter<void>;
 
-  private beatsLoading: boolean;
   private unsubscribe$: Subject<void> = new Subject();
 
   constructor(
@@ -60,9 +63,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
-    this.editorChangeDetectorService.detector.subscribe((updates: Array<any>) => {
-      let newbeats = this.updateBeats(updates);
-      console.log(newbeats);
+    this.editorChangeDetectorService.detector.subscribe((updates: Array<ChangeType>) => {
+      console.log(this.plotFlow);
+      console.log(this.beatsData);
       //todo: send to hub 
     });
 
@@ -83,26 +86,12 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
   lineCountChanged($event: any) {
-    this.plotFlow.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-      if (plotPoint.id == $event.beatData.id) {
-        plotPoint.lineCount = $event.newLineCount;
-      }
-      return plotPoint;
-    });
-
-    this.beatsData = this.beatsData.map(beat => {
-      if (beat.id == $event.beatData.id) {
-        beat.lineCount = $event.newLineCount;
-      }
-      return beat;
-    });
+    this.updateBeats($event, ChangeType.lineCountChanged);
     this.reRenderPlotFlowEvent.emit();
-    //todo: change lineCount in beats
   }
 
   plotTimeChanged($event: any) {
-    this.editorChangeDetectorService.detect($event, ChangeType.plotPointTimeChanged);
-    //todo: change plotPoint
+    this.updateBeats($event, ChangeType.plotPointTimeChanged);
   }
   
   addBeat() {
@@ -285,44 +274,54 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateBeats(changes: Array<any>) {
+  private updateBeats(change: any, changeType: ChangeType) {
     let beatsJson = new BeatsDto();
-    beatsJson.beatDetails = this.beatsData;
-    beatsJson.plotFlowDto = this.plotFlow;
+    beatsJson.beatDetails = [ ...this.beatsData ];
+    beatsJson.plotFlowDto = { ...this.plotFlow };
     
-    changes.forEach(change => {
-      if (change.changeType == ChangeType.beatTextChanged) {
-        beatsJson.beatDetails = this.beatsData.map(beat => {
-          if (beat.id == change.data.id) {
-            beat.text = change.data.text;
-          }
-          return beat;
-        })
-      }
-
-      if (change.changeType == ChangeType.plotPointTimeChanged) {
-        beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-          if (plotPoint.id == change.plotPoint.id) {
-            plotPoint.time = plotPoint.time;
-          }
-          return plotPoint;
-        });
-      }
-
-    });
-
-
-
-
-    if (!beatsJson.beatDetails) {
-      beatsJson.beatDetails = this.beatsData;
+    if (changeType == ChangeType.none) {
+      return;
     }
 
-    if (!beatsJson.plotFlowDto) {
-      beatsJson.plotFlowDto = this.plotFlow;
+    if (changeType == ChangeType.beatTextChanged) {
+      beatsJson.beatDetails = this.beatsData.map(beat => {
+        if (beat.id == change.id) {
+          beat.text = change.text;
+        }
+        return beat;
+      });
+      this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
     }
 
-    return beatsJson;
+    if (changeType == ChangeType.plotPointTimeChanged) {
+      beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
+        if (plotPoint.id == change.id) {
+          plotPoint.time = change.time;
+        }
+        return plotPoint;
+      });
+      this.editorChangeDetectorService.detect(ChangeType.plotPointTimeChanged);
+    }
+
+    if (changeType == ChangeType.lineCountChanged) {
+      beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
+        if (plotPoint.id == change.beatData.id) {
+          plotPoint.lineCount = change.newLineCount;
+        }
+        return plotPoint;
+      });
+
+      beatsJson.beatDetails = this.beatsData.map(beat => {
+        if (beat.id == change.beatData.id) {
+          beat.lineCount = change.newLineCount;
+        }
+        return beat;
+      });
+      this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
+    }
+
+    this.beatsData = [...beatsJson.beatDetails];
+    this.plotFlow = { ...beatsJson.plotFlowDto };
   }
 
 
