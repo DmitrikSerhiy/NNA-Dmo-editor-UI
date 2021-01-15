@@ -1,5 +1,6 @@
 import { EventEmitter } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 import { BeatDetailsDto } from '../../models/editorDtos';
 
 @Component({
@@ -11,6 +12,7 @@ export class BeatContainerComponent implements OnInit {
 
   @Input() beatsData: BeatDetailsDto[];
   @Output() lineCountChanged: EventEmitter<any>;
+  @Output() beatsTextChanged: EventEmitter<any>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
@@ -19,7 +21,11 @@ export class BeatContainerComponent implements OnInit {
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.lineCountChanged = new EventEmitter();
-  
+    this.beatsTextChanged = new EventEmitter();
+    let obs = new Observable<any>();
+
+    let sdf = obs.subscribe({next: (_) => console.log('hello')});
+    //add some text tracker here
   }
 
   ngOnInit(): void {
