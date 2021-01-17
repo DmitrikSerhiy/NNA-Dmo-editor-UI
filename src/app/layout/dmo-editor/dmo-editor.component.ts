@@ -64,8 +64,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.beatsLoading = true;
 
     this.editorChangeDetectorService.detector.subscribe((updates: Array<ChangeType>) => {
-      console.log(this.plotFlow);
-      console.log(this.beatsData);
+      // console.log(this.plotFlow);
+      // console.log(this.beatsData);
       //todo: send to hub 
     });
 
@@ -88,6 +88,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   lineCountChanged($event: any) {
     this.updateBeats($event, ChangeType.lineCountChanged);
     this.reRenderPlotFlowEvent.emit();
+  }
+
+  beatsTextChanged($event: any) { 
+    this.updateBeats($event, ChangeType.beatTextChanged);
   }
 
   plotTimeChanged($event: any) {
@@ -318,6 +322,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
+    }
+
+    if (changeType == ChangeType.beatTextChanged) {
+      console.log(change);
     }
 
     this.beatsData = [...beatsJson.beatDetails];

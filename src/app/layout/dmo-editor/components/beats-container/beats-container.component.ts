@@ -1,7 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs';
 import { BeatDetailsDto } from '../../models/editorDtos';
+import { TextDetectorService } from '../../services/text-detector.service';
 
 @Component({
   selector: 'app-beats-container',
@@ -12,24 +12,24 @@ export class BeatContainerComponent implements OnInit {
 
   @Input() beatsData: BeatDetailsDto[];
   @Output() lineCountChanged: EventEmitter<any>;
-  @Output() beatsTextChanged: EventEmitter<any>;
+  @Output() beatsTextChanged: EventEmitter<any[]>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
 
-  constructor() { 
+  constructor(private textChangeDetector: TextDetectorService) { 
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.lineCountChanged = new EventEmitter();
     this.beatsTextChanged = new EventEmitter();
-    let obs = new Observable<any>();
-
-    let sdf = obs.subscribe({next: (_) => console.log('hello')});
-    //add some text tracker here
   }
 
   ngOnInit(): void {
-    if (!this.beatsData) {
+    this.textChangeDetector.textDetector.subscribe((changes: any[]) => {
+      this.beatsTextChanged.emit(changes)
+    });
+
+    if (!this.beatsData) { //todo: add logic to handle default beat id in back end
       this.beatsData = [];
       let defaultBeatDetails = new BeatDetailsDto();
       defaultBeatDetails.id = 'default';
@@ -49,6 +49,7 @@ export class BeatContainerComponent implements OnInit {
   }
 
   beatSet ($event, beatData: BeatDetailsDto) {
+    this.textChangeDetector.detect(beatData.id, $event.target.innerText);
     let spanHeight = $event.target.offsetHeight;
     let lines = Math.ceil(spanHeight / this.lineHeigth);
     let newLineCount: number;
