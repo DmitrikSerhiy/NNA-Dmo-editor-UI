@@ -26,7 +26,7 @@ export class BeatContainerComponent implements OnInit {
 
   ngOnInit(): void {
     this.textChangeDetector.textDetector.subscribe((changes: any[]) => {
-      this.beatsTextChanged.emit(changes)
+      this.beatsTextChanged.emit(changes);
     });
 
     if (!this.beatsData) { //todo: add logic to handle default beat id in back end

@@ -1,53 +1,50 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { from  } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TextDetectorService {
 
-  private hasChanges: boolean;
-  private checkInterval: number;
+  private state: number;
+  private delayCount: number;
   private changes: any[];
   public textDetector: EventEmitter<any>;
-  
+
+  private triggerDelay = function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
 
   constructor() { 
-    this.checkInterval = 1500;
-    this.hasChanges = false;
+    this.delayCount = 1500;
+    this.state = 0;
     this.changes = [];
     this.textDetector = new EventEmitter();
-    from(this.checkChanges()).subscribe();
   }
 
   public detect(beatId: string, newText: string): void {
-    this.hasChanges = true; 
-    this.changes.push({beatId, newText});
-  }
-
-
-  private async checkChanges() {
-    let initial = true;
-    function delay(ms: number) {
-      return new Promise( resolve => setTimeout(resolve, ms) );
+    this.state = this.state + 1; 
+    if (this.changes.some(change => change.beatId == beatId)) {
+      this.changes = this.changes.map(change => {
+        if (change.beatId == beatId) {
+          change.data = newText;
+          return change;
+        }
+        return change;
+      });
+    } else {
+      this.changes.push({beatId, data: newText});
     }
 
-    do {
-      if (!initial) {
-        await delay(this.checkInterval);
-      } else {
-        initial = false;
-      }
-      
-      if (this.hasChanges === false) {
-        console.log('text did not changed');
-        continue;
-      }  
-      
-      this.textDetector.emit(this.changes);
-      this.hasChanges = false;
-      this.changes = [];
+    this.pauseAndEmitChanges(this.state);
+  }
 
-    } while (!initial);
+  private pauseAndEmitChanges(state: number) {
+    this.triggerDelay(this.delayCount).then(() => {
+      if (this.state == state) {
+        this.textDetector.emit(this.changes);
+        this.state = 0;
+        this.changes = [];
+      }
+    })
   }
 }

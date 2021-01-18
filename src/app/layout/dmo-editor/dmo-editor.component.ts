@@ -63,7 +63,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
-    this.editorChangeDetectorService.detector.subscribe((updates: Array<ChangeType>) => {
+    this.editorChangeDetectorService.detector.subscribe((updates: Array<any>) => {
+      // console.log(updates);
       // console.log(this.plotFlow);
       // console.log(this.beatsData);
       //todo: send to hub 
@@ -180,9 +181,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
   }
 
-
-
-
   private async finalizePopup(): Promise<ShortDmoDto> {
     let popupData = null;
     if(this.currentDmo) {
@@ -285,19 +283,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     
     if (changeType == ChangeType.none) {
       return;
-    }
-
-    if (changeType == ChangeType.beatTextChanged) {
-      beatsJson.beatDetails = this.beatsData.map(beat => {
-        if (beat.id == change.id) {
-          beat.text = change.text;
-        }
-        return beat;
-      });
-      this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
-    }
-
-    if (changeType == ChangeType.plotPointTimeChanged) {
+    } else if (changeType == ChangeType.plotPointTimeChanged) {
       beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
         if (plotPoint.id == change.id) {
           plotPoint.time = change.time;
@@ -305,9 +291,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         return plotPoint;
       });
       this.editorChangeDetectorService.detect(ChangeType.plotPointTimeChanged);
-    }
-
-    if (changeType == ChangeType.lineCountChanged) {
+    } else if (changeType == ChangeType.lineCountChanged) {
       beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
         if (plotPoint.id == change.beatData.id) {
           plotPoint.lineCount = change.newLineCount;
@@ -322,10 +306,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
-    }
-
-    if (changeType == ChangeType.beatTextChanged) {
-      console.log(change);
+    }  else if (changeType == ChangeType.beatTextChanged) {
+      beatsJson.beatDetails = this.beatsData.map(beat => {
+        let changedBeat = change.find(b => b.beatId == beat.id);
+        if (changedBeat) {
+          beat.text = changedBeat.data;
+        }
+        return beat;
+      });
+      this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
     }
 
     this.beatsData = [...beatsJson.beatDetails];

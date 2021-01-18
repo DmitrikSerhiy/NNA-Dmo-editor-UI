@@ -42,7 +42,7 @@ export class EditorChangeDetectorService {
       }
       
       if (this.hasChanges === false) {
-        console.log('nothing');
+        // console.log('nothing');
         continue;
       }  
       
