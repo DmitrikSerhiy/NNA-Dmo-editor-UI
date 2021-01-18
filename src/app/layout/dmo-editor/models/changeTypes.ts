@@ -1,9 +1,9 @@
 export enum ChangeType {
-    none,
-    beatTextChanged,
-    plotPointTimeChanged,
-    lineCountChanged,
-    beatAdded,
-    beatRemoved,
-    dmoFinished
+    none = "none",
+    beatTextChanged = "beatTextChanged",
+    plotPointTimeChanged = "plotPointTimeChanged",
+    lineCountChanged = "lineCountChanged",
+    beatAdded = "beatAdded",
+    beatRemoved = "beatRemoved",
+    dmoFinished = "dmoFinished"
 }

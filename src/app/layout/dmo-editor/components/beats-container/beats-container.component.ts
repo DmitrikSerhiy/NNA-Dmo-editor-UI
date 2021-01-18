@@ -1,6 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BeatDetailsDto } from '../../models/editorDtos';
+import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
 import { TextDetectorService } from '../../services/text-detector.service';
 
 @Component({
@@ -13,15 +14,19 @@ export class BeatContainerComponent implements OnInit {
   @Input() beatsData: BeatDetailsDto[];
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() beatsTextChanged: EventEmitter<any[]>;
+  @Output() beatAdded: EventEmitter<any>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
 
-  constructor(private textChangeDetector: TextDetectorService) { 
+  constructor(
+    private textChangeDetector: TextDetectorService,
+    private dataGenerator: DefaultDataGeneratorService) { 
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.lineCountChanged = new EventEmitter();
     this.beatsTextChanged = new EventEmitter();
+    this.beatAdded = new EventEmitter();
   }
 
   ngOnInit(): void {
@@ -29,26 +34,28 @@ export class BeatContainerComponent implements OnInit {
       this.beatsTextChanged.emit(changes);
     });
 
-    if (!this.beatsData) { //todo: add logic to handle default beat id in back end
+    if (!this.beatsData) {
       this.beatsData = [];
-      let defaultBeatDetails = new BeatDetailsDto();
-      defaultBeatDetails.id = 'default';
-      defaultBeatDetails.lineCount = 1;
-      defaultBeatDetails.text = '';
-
-      this.beatsData.push(defaultBeatDetails);
+      this.beatsData.push(this.dataGenerator.createBeatWithDefaultData());
     }
   }
 
   beatPreset($event, beatData: BeatDetailsDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
-    if ((key == 13 && !key.shiftKey) || key == 13) {    
+    if ((key == 13 && !key.shiftKey) || key == 13) {  
       $event.preventDefault();
+      this.beatAdded.emit({ currentBeat: beatData });
       return;
     }
   }
 
   beatSet ($event, beatData: BeatDetailsDto) {
+    let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 13) {
+      $event.preventDefault();
+      return;
+    }
+
     this.textChangeDetector.detect(beatData.id, $event.target.innerText);
     let spanHeight = $event.target.offsetHeight;
     let lines = Math.ceil(spanHeight / this.lineHeigth);
@@ -93,8 +100,6 @@ export class BeatContainerComponent implements OnInit {
       sel.removeAllRanges();
       sel.addRange(range);
     }
-
-
   }
 
 }

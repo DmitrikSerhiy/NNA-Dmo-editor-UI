@@ -2,6 +2,7 @@ import { EventEmitter, Output } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
 import { TimeDto, PlotFlowDto, PlotPointDto } from '../../models/editorDtos';
+import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
 import { PlotPointComponent } from '../plot-point/plot-point.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 
@@ -23,8 +24,6 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   @Input() timeFlowData: PlotFlowDto;
 
-  @Input() addBeat: EventEmitter<void>;
-  @Input() removeBeat: EventEmitter<void>;
   @Input() finishDMO: EventEmitter<void>;
   @Input() reRender: EventEmitter<void>;
   @Output() plotPointChanged: EventEmitter<any>;
@@ -36,7 +35,8 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver, 
-    private cdRef:ChangeDetectorRef) { 
+    private cdRef:ChangeDetectorRef,
+    private dataGenerator: DefaultDataGeneratorService) { 
     this.plotFlowWidth = 32;
     this.plotPointContainerSize = 32;
     this.timePickerBoxHeight = 32;
@@ -51,27 +51,12 @@ export class PlotFlowComponent implements  AfterViewInit  {
       this.timeFlowData = new PlotFlowDto();
       this.timeFlowData.isFinished = false;
       this.timeFlowData.plotPoints = [];
-      let defaultPlotPoint = new PlotPointDto();
-      defaultPlotPoint.id = 'defaultId';
-      defaultPlotPoint.lineCount = 1;
-      defaultPlotPoint.order = 1;
-      defaultPlotPoint.time = new TimeDto().getDefaultDto();
-      this.timeFlowData.plotPoints.push(defaultPlotPoint);
+      this.timeFlowData.plotPoints.push(this.dataGenerator.createPlotPointWithDefaultData());
     }
 
     this.setupInitialTimepickersMargin();
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
-
-    this.addBeat.subscribe(_ => {
-      this.renderPlotFrowGraph();
-      this.renderPlotPoints();
-    });
-
-    this.removeBeat.subscribe(_ => {
-      this.renderPlotFrowGraph();
-      this.renderPlotPoints();
-    });
 
     this.finishDMO.subscribe(_ => {
       this.renderPlotFrowGraph();
@@ -134,18 +119,18 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.cdRef.detectChanges();
   }
 
-    private setupPlotPointsMargin(plotPoint: PlotPointDto, i: number): number {
-      if (i == 0) {
-        return this.plotPointContainerSize;
-      }
-
-      let previous = this.timeFlowData.plotPoints[i-1];
-      if (previous.lineCount > 1) {
-        return (this.plotPointContainerSize * previous.lineCount) - this.plotPointContainerSize;
-      }
-
-      return 0;
+  private setupPlotPointsMargin(plotPoint: PlotPointDto, i: number): number {
+    if (i == 0) {
+      return this.plotPointContainerSize;
     }
+
+    let previous = this.timeFlowData.plotPoints[i-1];
+    if (previous.lineCount > 1) {
+      return (this.plotPointContainerSize * previous.lineCount) - this.plotPointContainerSize;
+    }
+
+    return 0;
+  }
 
   private setupInitialTimepickersMargin(): void {
     this.timePickers.forEach((timePicker, i) => {

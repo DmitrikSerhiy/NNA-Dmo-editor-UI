@@ -103,6 +103,7 @@ export class PlotFlowDto {
 
 export class BeatDetailsDto {
     id: string;
+    order: number;
     text: string;
     lineCount: number;
 }

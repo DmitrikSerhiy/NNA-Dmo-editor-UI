@@ -10,7 +10,7 @@ export class EditorChangeDetectorService {
   private hasChanges: boolean;
   private checkInterval: number;
 
-  private cnanges: Array<any>;
+  private cnanges: Array<string>;
   public detector: EventEmitter<any>;
 
   constructor() {
@@ -23,7 +23,7 @@ export class EditorChangeDetectorService {
 
 
   detect(changeType: ChangeType): void {
-    this.cnanges.push(changeType);
+    this.cnanges.push(changeType.toString());
     this.hasChanges = true;
   }
 

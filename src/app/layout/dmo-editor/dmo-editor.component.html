@@ -3,13 +3,12 @@
     <div class="controls-panel">
         <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
         <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
+        <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
         <div class="editor-plot-flow">
             <app-plot-flow 
                 [timeFlowData]="plotFlow" 
-                [addBeat]="addBeatEvent" 
-                [removeBeat]="removeBeatEvent" 
                 [finishDMO]="finishDmoEvent"
                 [reRender]="reRenderPlotFlowEvent"
                 (plotPointChanged)="plotTimeChanged($event)">
@@ -17,10 +16,7 @@
         </div>
         <div class="editor-board">
             <div class="editor-board-tools"> 
-                <!-- Don't like such solution. Maybe I should add here some beats counter or some dmo general info. Number of acts, structural elements etc. But not microsoft-word-like bunch of buttons, tools and other useless shit -->
-                <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
-                <button class="nna-button nna-button-primary" (click)='removeBeat()'>Remove beat</button>
-                <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
+                Some usefull info should be here
             </div>
             
             <div class="beats-wrapper">
@@ -28,7 +24,8 @@
                     [beatsData]="beatsData" 
                     (changeLine)="changeLine($event)"
                     (lineCountChanged)="lineCountChanged($event)"
-                    (beatsTextChanged)="beatsTextChanged($event)">
+                    (beatsTextChanged)="beatsTextChanged($event)"
+                    (beatAdded)="beatAdded($event)">
                 </app-beats-container>
             </div>
         </div>

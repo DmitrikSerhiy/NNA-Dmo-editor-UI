@@ -10,12 +10,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto, DmoWithJson } from './models/editorDtos';
+import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto, DmoWithJson, PlotPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
   import { Subject } from 'rxjs';
 import { EditorChangeDetectorService } from './services/editor-change-detector.service';
 import { ChangeType } from './models/changeTypes';
+import { DefaultDataGeneratorService } from './services/default-data-generator.service';
 
 
 @Component({
@@ -37,8 +38,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   beatsData: BeatDetailsDto[];
 
   // events
-  addBeatEvent: EventEmitter<void>;
-  removeBeatEvent: EventEmitter<void>;
   finishDmoEvent: EventEmitter<void>;
   reRenderPlotFlowEvent: EventEmitter<void>;
 
@@ -51,9 +50,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private toastr: Toastr,
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService,
-    private editorChangeDetectorService: EditorChangeDetectorService) { 
-      this.addBeatEvent = new EventEmitter<void>();
-      this.removeBeatEvent = new EventEmitter<void>();  
+    private editorChangeDetectorService: EditorChangeDetectorService,
+    private dataGenerator: DefaultDataGeneratorService) { 
       this.finishDmoEvent = new EventEmitter<void>();
       this.reRenderPlotFlowEvent = new EventEmitter<void>();
     }
@@ -63,15 +61,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
-    this.editorChangeDetectorService.detector.subscribe(async (updates: Array<any>) => {
+    this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
+      await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
+      console.log('==================');
+      console.log('beats were updated');
       console.log(updates);
-      await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson())
-      // let converted = this.buildDmoWithBeatsJson();
-      // console.log(converted);
-      
-      // console.log(updates);
-      // console.log(this.plotFlow);
-      // console.log(this.beatsData);
+
+      console.log(this.plotFlow);
+      console.log(this.beatsData);
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -91,6 +88,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
   lineCountChanged($event: any) {
+    console.log('heere');
     this.updateBeats($event, ChangeType.lineCountChanged);
     this.reRenderPlotFlowEvent.emit();
   }
@@ -103,12 +101,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updateBeats($event, ChangeType.plotPointTimeChanged);
   }
   
-  addBeat() {
-    this.addBeatEvent.emit();
-  }
-
-  removeBeat() {
-    this.removeBeatEvent.emit();
+  beatAdded($event) {
+    this.updateBeats($event, ChangeType.beatAdded);
+    this.reRenderPlotFlowEvent.emit();
   }
 
   finishDmo() {
@@ -310,17 +305,41 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
-    }  else if (changeType == ChangeType.beatTextChanged) {
+    } else if (changeType == ChangeType.beatTextChanged) {
       beatsJson.beatDetails = this.beatsData.map(beat => {
         let changedBeat = change.find(b => b.beatId == beat.id);
-        if (changedBeat) {
+        if (changedBeat != undefined) {
           beat.text = changedBeat.data;
         }
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
+    } else if (changeType == ChangeType.beatAdded) {
+      let newPlotPoint = this.dataGenerator.createPlotPointWithDefaultData();
+      let newBeat = this.dataGenerator.createBeatWithDefaultData();
+      let newOrder = change.currentBeat.order + 1;
+      newPlotPoint.order = newOrder;
+      newBeat.order = newOrder;
+
+      beatsJson.beatDetails.splice(change.currentBeat.order, 0, newBeat);
+      beatsJson.plotFlowDto.plotPoints.splice(change.currentBeat.order, 0, newPlotPoint);
+
+      beatsJson.beatDetails.forEach((item, index) => {
+        if (index > change.currentBeat.order) {
+          item.order =  item.order + 1;
+        }
+      }); 
+
+      beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
+        if (index > change.currentBeat.order) {
+          item.order =  item.order + 1;
+        }
+      });
+      this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     }
 
+    console.log(beatsJson.beatDetails);
+    //fix dublication of inner text in tags
     this.beatsData = [...beatsJson.beatDetails];
     this.plotFlow = { ...beatsJson.plotFlowDto };
   }
@@ -339,7 +358,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     dmoWithJson.dmoId = this.dmoId;
     return dmoWithJson;
   }
-
 
   private async closeEditorAndClearData() {
     await this.editorHub.abortConnection();
