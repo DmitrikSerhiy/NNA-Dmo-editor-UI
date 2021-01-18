@@ -336,7 +336,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
         : value;
     });
-    dmoWithJson.beatId = this.dmoId;
+    dmoWithJson.dmoId = this.dmoId;
     return dmoWithJson;
   }
 

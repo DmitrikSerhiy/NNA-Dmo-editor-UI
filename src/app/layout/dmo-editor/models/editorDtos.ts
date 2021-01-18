@@ -113,7 +113,7 @@ export class BeatsDto {
 }
 
 export class DmoWithJson {
-    beatId: string;
+    dmoId: string;
     json: string;
 }
 
