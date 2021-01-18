@@ -10,6 +10,7 @@ import { environment } from './../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { Observable } from 'rxjs';
+import { DmoWithJson } from '../models/editorDtos';
 
 @Injectable({
   providedIn: 'root'
@@ -111,6 +112,18 @@ export class EditorHub {
         }
         try {
             var response = await this.hubConnection.invoke('UpdateShortDmo', dmo);
+            return Promise.resolve<EditorResponseDto>(response);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
+    async updateDmosJson(dmo: DmoWithJson): Promise<EditorResponseDto> {
+        if (!this.isConnected) {
+            return;
+        }
+        try {
+            var response = await this.hubConnection.invoke('UpdateDmosJson', dmo);
             return Promise.resolve<EditorResponseDto>(response);
         } catch (err) {
             return Promise.reject(err);

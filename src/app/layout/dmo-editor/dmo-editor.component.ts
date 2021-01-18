@@ -10,10 +10,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto } from './models/editorDtos';
+import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto, DmoWithJson } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-  import { Subject, from  } from 'rxjs';
+  import { Subject } from 'rxjs';
 import { EditorChangeDetectorService } from './services/editor-change-detector.service';
 import { ChangeType } from './models/changeTypes';
 
@@ -63,11 +63,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
-    this.editorChangeDetectorService.detector.subscribe((updates: Array<any>) => {
+    this.editorChangeDetectorService.detector.subscribe(async (updates: Array<any>) => {
+      console.log(updates);
+      await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson())
+      // let converted = this.buildDmoWithBeatsJson();
+      // console.log(converted);
+      
       // console.log(updates);
       // console.log(this.plotFlow);
       // console.log(this.beatsData);
-      //todo: send to hub 
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -321,6 +325,20 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.plotFlow = { ...beatsJson.plotFlowDto };
   }
 
+  private buildDmoWithBeatsJson() : DmoWithJson {
+    let beatsDto : BeatsDto = new BeatsDto();
+    beatsDto.beatDetails = this.beatsData;
+    beatsDto.plotFlowDto = this.plotFlow;
+    
+    let dmoWithJson : DmoWithJson = new DmoWithJson(); 
+    dmoWithJson.json = JSON.stringify(beatsDto, (key, value) => {
+      return key == "time"
+        ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
+        : value;
+    });
+    dmoWithJson.beatId = this.dmoId;
+    return dmoWithJson;
+  }
 
 
   private async closeEditorAndClearData() {

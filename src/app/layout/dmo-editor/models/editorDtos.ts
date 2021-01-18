@@ -112,3 +112,8 @@ export class BeatsDto {
     beatDetails: BeatDetailsDto[];
 }
 
+export class DmoWithJson {
+    beatId: string;
+    json: string;
+}
+
