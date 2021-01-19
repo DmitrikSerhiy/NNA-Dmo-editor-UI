@@ -45,6 +45,6 @@ export class TextDetectorService {
         this.state = 0;
         this.changes = [];
       }
-    })
+    });
   }
 }

@@ -28,6 +28,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   isInitialPopupOpen: boolean;
   initialPopup: MatDialogRef<InitialPopupComponent>;
+
+  beatsUpdating: boolean;
   
   // main fields
   isDmoInfoSet: boolean;
@@ -51,7 +53,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService,
     private editorChangeDetectorService: EditorChangeDetectorService,
-    private dataGenerator: DefaultDataGeneratorService) { 
+    private dataGenerator: DefaultDataGeneratorService) {
+      this.beatsUpdating = false; 
       this.finishDmoEvent = new EventEmitter<void>();
       this.reRenderPlotFlowEvent = new EventEmitter<void>();
     }
@@ -62,10 +65,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.beatsLoading = true;
 
     this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
+      this.beatsUpdating = true;
       await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
+      this.beatsUpdating = false;
+
       console.log('==================');
       console.log('beats were updated');
       console.log(updates);
+
 
       // console.log(this.plotFlow);
       // console.log(this.beatsData);
@@ -343,6 +350,19 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     } else if (changeType == ChangeType.beatRemoved) {
       beatsJson.beatDetails.splice(change.order - 1, 1);
       beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
+
+      beatsJson.beatDetails.forEach((item, index) => {
+        if (index >= change.order - 1) {
+          item.order =  item.order - 1;
+        }
+      }); 
+
+      beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
+        if (index >= change.order - 1) {
+          item.order =  item.order - 1;
+        }
+      });
+
       this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
     }
 

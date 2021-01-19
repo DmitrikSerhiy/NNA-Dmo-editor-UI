@@ -32,6 +32,11 @@
                 height: 32px;
                 display: flex;
                 align-items: center;
+
+                .info-icons {
+                    display: flex;
+                    align-items: center;
+                }
             }
 
             .beats-wrapper {
