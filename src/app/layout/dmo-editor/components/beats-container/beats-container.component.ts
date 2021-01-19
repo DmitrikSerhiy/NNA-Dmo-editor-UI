@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { ElementRef, EventEmitter, QueryList, ViewChildren } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BeatDetailsDto } from '../../models/editorDtos';
 import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
@@ -15,6 +15,7 @@ export class BeatContainerComponent implements OnInit {
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
+  @ViewChildren('beatText') beats: QueryList<ElementRef>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
@@ -32,6 +33,14 @@ export class BeatContainerComponent implements OnInit {
   ngOnInit(): void {
     this.textChangeDetector.textDetector.subscribe((changes: any[]) => {
       this.beatsTextChanged.emit(changes);
+
+      changes.forEach(change => {
+        this.beats.forEach(beat => {
+          if (beat.nativeElement.getAttribute('id') === change.beatId) {
+            beat.nativeElement.innerText = change.data; //some strange fix of text dublication
+          }
+        });
+      });
     });
 
     if (!this.beatsData) {

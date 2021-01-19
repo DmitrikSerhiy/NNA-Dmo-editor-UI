@@ -67,8 +67,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       console.log('beats were updated');
       console.log(updates);
 
-      console.log(this.plotFlow);
-      console.log(this.beatsData);
+      // console.log(this.plotFlow);
+      // console.log(this.beatsData);
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -338,8 +338,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     }
 
-    console.log(beatsJson.beatDetails);
-    //fix dublication of inner text in tags
     this.beatsData = [...beatsJson.beatDetails];
     this.plotFlow = { ...beatsJson.plotFlowDto };
   }

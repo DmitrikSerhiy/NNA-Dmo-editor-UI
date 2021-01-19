@@ -1,6 +1,7 @@
 <div class="beats-container" *ngIf="beatsData">
     <div class="beat" *ngFor="let beatData of beatsData" (click)="beatClick($event)">
-        <span type="text" contenteditable="true" 
+        <span #beatText [id]="beatData.id" class="beat-text-holder"
+            type="text" contenteditable="true" 
             (keyup)="beatSet($event, beatData)"
             (keydown)="beatPreset($event, beatData)">{{beatData.text}}</span>
     </div>
