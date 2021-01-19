@@ -88,7 +88,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
   lineCountChanged($event: any) {
-    console.log('heere');
     this.updateBeats($event, ChangeType.lineCountChanged);
     this.reRenderPlotFlowEvent.emit();
   }
@@ -342,10 +341,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       });
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     } else if (changeType == ChangeType.beatRemoved) {
-      // console.log('removed');
-      // console.log(change);
       beatsJson.beatDetails.splice(change.order - 1, 1);
       beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
+      this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
     }
 
     this.beatsData = [...beatsJson.beatDetails];
