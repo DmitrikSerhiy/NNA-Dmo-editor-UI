@@ -106,6 +106,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.reRenderPlotFlowEvent.emit();
   }
 
+  beatRemoved($event) {
+    this.updateBeats($event, ChangeType.beatRemoved);
+    this.reRenderPlotFlowEvent.emit();
+  }
+
   finishDmo() {
     this.plotFlow.isFinished = !this.plotFlow.isFinished;
     this.finishDmoEvent.emit();
@@ -336,6 +341,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
       });
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
+    } else if (changeType == ChangeType.beatRemoved) {
+      // console.log('removed');
+      // console.log(change);
+      beatsJson.beatDetails.splice(change.order - 1, 1);
+      beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
     }
 
     this.beatsData = [...beatsJson.beatDetails];

@@ -15,6 +15,7 @@ export class BeatContainerComponent implements OnInit {
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
+  @Output() beatRemoved: EventEmitter<any>;
   @ViewChildren('beatText') beats: QueryList<ElementRef>;
   
   private lineHeigth: number
@@ -28,6 +29,7 @@ export class BeatContainerComponent implements OnInit {
     this.lineCountChanged = new EventEmitter();
     this.beatsTextChanged = new EventEmitter();
     this.beatAdded = new EventEmitter();
+    this.beatRemoved = new EventEmitter();
   }
 
   ngOnInit(): void {
@@ -51,11 +53,13 @@ export class BeatContainerComponent implements OnInit {
 
   beatPreset($event, beatData: BeatDetailsDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
-    if ((key == 13 && !key.shiftKey) || key == 13) {  
+    if ((key == 13 && !key.shiftKey) || key == 13) { //enter or shift + enter
       $event.preventDefault();
       this.beatAdded.emit({ currentBeat: beatData });
       return;
     }
+
+
   }
 
   beatSet ($event, beatData: BeatDetailsDto) {
@@ -63,6 +67,14 @@ export class BeatContainerComponent implements OnInit {
     if (key == 13) {
       $event.preventDefault();
       return;
+    }
+
+    if (key == 8 || key == 46) {
+      if ($event.target.innerText.replace(/\s+/g, '').length == 0) {
+        $event.preventDefault();
+        this.beatRemoved.emit(beatData);
+        return;
+      }
     }
 
     this.textChangeDetector.detect(beatData.id, $event.target.innerText);
