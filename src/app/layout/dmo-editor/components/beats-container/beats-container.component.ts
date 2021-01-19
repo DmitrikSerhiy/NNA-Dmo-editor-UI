@@ -66,12 +66,14 @@ export class BeatContainerComponent implements OnInit {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13) {
       $event.preventDefault();
+      $event.target.parentNode.nextElementSibling.firstChild.focus();
       return;
     }
 
     if (key == 8 || key == 46) {
       if ($event.target.innerText.replace(/\s+/g, '').length == 0) {
         $event.preventDefault();
+        this.shiftCursor($event.target.parentNode.previousSibling);
         this.beatRemoved.emit(beatData);
         return;
       }
@@ -108,19 +110,23 @@ export class BeatContainerComponent implements OnInit {
   beatClick ($event: any) {
     if ($event.target.localName == 'div') {
       $event.target.children[0].focus();
-      var range = document.createRange();
-      var sel = window.getSelection();
-      
-      if ($event.target.children[0].innerText.length > 0) {
-        range.setStart($event.target.children[0], 1);
-      } else { 
-        range.setStart($event.target.children[0], 0);
-      }
-      range.collapse(true)
-
-      sel.removeAllRanges();
-      sel.addRange(range);
+      this.shiftCursor($event.target);
     }
+  }
+
+  private shiftCursor(element: any) {
+    var range = document.createRange();
+    var sel = window.getSelection();
+    
+    if (element.children[0].innerText.length > 0) {
+      range.setStart(element.children[0], 1);
+    } else { 
+      range.setStart(element.children[0], 0);
+    }
+    range.collapse(true)
+
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
 
 }
