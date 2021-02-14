@@ -128,6 +128,7 @@ export class TimePickerComponent implements OnInit {
 
   private setupAndSendValue() {
     this.changesDetected = true;
+    this.adjustMinutesAndSeconds();
     this.setTime(this.timeSet, false);
     this.isFieldValid = this.timeSet.isValid;
 
@@ -139,6 +140,24 @@ export class TimePickerComponent implements OnInit {
     }
 
     this.timeSetEvent.emit(plotPoint);
+  }
+
+  private adjustMinutesAndSeconds() {
+    if (this.timeSet.isValid) {
+      return;
+    }
+
+    if (+this.timeSet.minutes.value < 0) {
+      this.timeSet.minutes.setValue('0');
+    } else if (+this.timeSet.minutes.value > 60) {
+      this.timeSet.minutes.setValue('60');
+    }
+
+    if (+this.timeSet.seconds.value < 0) {
+      this.timeSet.seconds.setValue('0');
+    } else if (+this.timeSet.seconds.value > 60) {
+      this.timeSet.seconds.setValue('60');
+    }
   }
 
   private shiftCursor(): void {
