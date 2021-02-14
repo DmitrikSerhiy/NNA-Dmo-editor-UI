@@ -8,17 +8,6 @@ import { BeatDto, PlotPointDto } from '../models/editorDtos';
 export class DefaultDataGeneratorService {
 
   constructor(private userManager: UserManager) { }
-
-  
-  // public createPlotPointWithDefaultData(): any {
-  //   let defaultPlotPoint = new PlotPointDto();
-  //   defaultPlotPoint.id = `default_plotPointId_${this.userManager.getCurrentUser()}_${Math.floor(Math.random() * Math.floor(10000))}`;
-  //   defaultPlotPoint.lineCount = 1;
-  //   defaultPlotPoint.order = -1;
-  //   defaultPlotPoint.time = new PlotPointDto().getDefaultDto();
-    
-  //   return { id: defaultPlotPoint.id, order: defaultPlotPoint.order, time: defaultPlotPoint.time, lineCount: defaultPlotPoint.lineCount };
-  // }
   
   public createBeatWithDefaultData(): BeatDto {
     let defaultBeatDetails = new BeatDto();
@@ -29,12 +18,5 @@ export class DefaultDataGeneratorService {
     defaultBeatDetails.plotPoint = new PlotPointDto().getDefaultDto();
 
     return defaultBeatDetails;
-    // return { 
-    //   beatId: defaultBeatDetails.beatId, 
-    //   beatText: defaultBeatDetails.beatText, 
-    //   lineCount: defaultBeatDetails.lineCount, 
-    //   order: defaultBeatDetails.order,
-    //   plotPoint: defaultBeatDetails.plotPoint
-    // };
   }
 }

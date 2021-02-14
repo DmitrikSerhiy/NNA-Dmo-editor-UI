@@ -1,5 +1,3 @@
-import { Time } from '@angular/common';
-
 export enum RightMenues {
     dashboard = 'dashboard',
     dmoCollections = 'dmoCollections',

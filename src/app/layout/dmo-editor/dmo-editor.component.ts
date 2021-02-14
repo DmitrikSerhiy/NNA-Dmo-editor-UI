@@ -115,6 +115,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.reRenderPlotFlowEvent.emit();
   }
 
+  siblingBeatFocused($event) {
+    if ($event.type == 'next') {
+      console.log($event.fromBeat);
+    } else if ($event.type == 'previous') {
+      console.log($event.fromBeat);
+    }
+  }
+
   finishDmo() {
     this.currentDmo.isFinished = !this.currentDmo.isFinished;
     this.finishDmoEvent.emit();

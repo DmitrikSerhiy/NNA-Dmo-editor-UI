@@ -89,31 +89,6 @@ export class TimeValueDto {
     }
 }
 
-
-// export class PlotPointDto {
-//     id: string;
-//     order: number;
-//     time: PlotPointDto;
-//     lineCount: number;
-// }
-
-// export class PlotFlowDto {
-//     plotPoints: PlotPointDto[];
-//     isFinished: boolean;
-// }
-
-// export class BeatDetailsDto {
-//     id: string;
-//     order: number;
-//     text: string;
-//     lineCount: number;
-// }
-
-// export class DmoDto {
-//     plotFlowDto: PlotFlowDto;
-//     beatDetails: BeatDetailsDto[];
-// }
-
 export class BeatDto {
     beatId: string;
     order: number;

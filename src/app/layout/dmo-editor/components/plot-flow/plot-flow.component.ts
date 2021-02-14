@@ -1,7 +1,7 @@
 import { EventEmitter, Output } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
-import { BeatDto, DmoDto, PlotPointDto } from '../../models/editorDtos';
+import { BeatDto, DmoDto } from '../../models/editorDtos';
 import { PlotPointComponent } from '../plot-point/plot-point.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 

@@ -1,4 +1,3 @@
-import { InitialPopupComponent } from './dmo-editor/components/initial-popup/initial-popup.component';
 import { RightMenuGrabberComponent } from './../shared/components/right-menu-grabber/right-menu-grabber.component';
 import { SharedModule } from './../shared/shared.module';
 import { MatDialogModule } from '@angular/material/dialog';

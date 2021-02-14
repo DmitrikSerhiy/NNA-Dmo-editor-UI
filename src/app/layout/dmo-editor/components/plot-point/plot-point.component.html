@@ -1,6 +1,7 @@
 <div #plotPointContainer class="plot-point-container">
     <svg 
         class="plot-point" 
+        [attr.id]="plotPointId" 
         [attr.width]="plotPointContainerSize" 
         [attr.height]="plotPointContainerSize"             
         (mouseover)="toggleToolsIcon(true)"
@@ -8,7 +9,6 @@
         
         <circle 
             *ngIf="plotPointData" 
-            [attr.id]="plotPointId" 
             [attr.cx]="plotPointContainerSize/2" 
             [attr.cy]="plotPointContainerSize/2" 
             [attr.r]="radius" />

@@ -16,20 +16,21 @@ export class BeatContainerComponent implements OnInit {
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
   @Output() beatRemoved: EventEmitter<any>;
+  @Output() siblingBeatFocused: EventEmitter<any>;
   @ViewChildren('beatText') beats: QueryList<ElementRef>;
   
   private lineHeigth: number
   private beatContrainerMinHeight: number;
 
   constructor(
-    private textChangeDetector: TextDetectorService,
-    private dataGenerator: DefaultDataGeneratorService) { 
+    private textChangeDetector: TextDetectorService) { 
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.lineCountChanged = new EventEmitter();
     this.beatsTextChanged = new EventEmitter();
     this.beatAdded = new EventEmitter();
     this.beatRemoved = new EventEmitter();
+    this.siblingBeatFocused = new EventEmitter()
   }
 
   ngOnInit(): void {
@@ -54,24 +55,75 @@ export class BeatContainerComponent implements OnInit {
       return;
     }
 
+    if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+      if (key == 39) { // to the right
+        if (window.getSelection().focusOffset == beatData.beatText.length) {
+          console.log('next');
+          // to the next beat
+          this.siblingBeatFocused.emit({type: 'next', fromBeat: beatData});
+          $event.preventDefault();
+          return;
+        } 
+      } else if (key == 37) { // to the left
+        if (window.getSelection().focusOffset == 0) {
+          console.log('previous');
+          // to the previous beat
+          this.siblingBeatFocused.emit({type: 'previous', fromBeat: beatData});
+          $event.preventDefault();
+          return;
+        }
+      } else if (key == 38) { // up
+        if (window.getSelection().focusOffset == 0) {
+          console.log('previous');
+           // to the previous beat
+          this.siblingBeatFocused.emit({type: 'previous', fromBeat: beatData});
+          $event.preventDefault();
+          return;
+        }
+      } else if (key == 40) { // down
+        if (window.getSelection().focusOffset == beatData.beatText.length) {
+          console.log('next');
+          // to the next beat
+          this.siblingBeatFocused.emit({type: 'next', fromBeat: beatData});
+          $event.preventDefault();
+          return;
+        }
+      }
+
+
+    }
+
+    
+
 
   }
 
   beatSet ($event, beatData: BeatDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
-    if (key == 13) {
+
+    if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+      $event.preventDefault();
+      return;
+    }
+
+    if (key == 13) { // enter
       $event.preventDefault();
       $event.target.parentNode.nextElementSibling.firstChild.focus();
       return;
     }
 
-    if (key == 8 || key == 46) {
+    if (key == 8 || key == 46) { //delete or backspace
       if ($event.target.innerText.replace(/\s+/g, '').length == 0) {
         $event.preventDefault();
         this.shiftCursor($event.target.parentNode.previousSibling);
         this.beatRemoved.emit(beatData);
         return;
       }
+    }
+
+    if (this.currentDmo.beats.find(b => b.beatId == beatData.beatId).beatText == $event.target.innerText) { // no changes in text
+      $event.preventDefault();
+      return;
     }
 
     this.textChangeDetector.detect(beatData.beatId, $event.target.innerText);
