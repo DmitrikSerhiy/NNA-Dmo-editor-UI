@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { TimeDto, PlotPointDto, TimeValueDto } from '../../models/editorDtos';
+import { BeatDto, PlotPointDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-time-picker',
@@ -8,11 +8,11 @@ import { TimeDto, PlotPointDto, TimeValueDto } from '../../models/editorDtos';
 })
 export class TimePickerComponent implements OnInit {
 
-  @Input() plotPoint: PlotPointDto;
-  @Output() timeSetEvent = new EventEmitter<PlotPointDto>();
+  @Input() beatDto: BeatDto;
+  @Output() timeSetEvent = new EventEmitter<BeatDto>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
-  private timeSet: TimeDto; //main field with data
+  private timeSet: PlotPointDto; //main field with data
   private changesDetected: boolean;
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
@@ -20,9 +20,10 @@ export class TimePickerComponent implements OnInit {
   private pressedKeyCode: number;
   private isEnterKeyPressed: boolean;
   private isFieldValid: boolean;
+  private timePickerId: string;
 
   constructor() { 
-    this.timeSet = new TimeDto();
+    this.timeSet = new PlotPointDto();
     this.isKeyEventValid = false;
     this.isRemoveKeyPressed = false;
     this.changesDetected = true;
@@ -30,11 +31,10 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.plotPoint) {
-      this.changesDetected = true;
-      this.setTime(this.plotPoint.time, false);
-      this.isFieldValid = this.plotPoint.time.isValid;
-    }
+    this.timePickerId = `timePicker_${this.beatDto.beatId}`
+    this.changesDetected = true;
+    this.setTime(this.beatDto.plotPoint, false);
+    this.isFieldValid = this.beatDto.plotPoint.isValid;
   }
 
   pick(value: string): void {
@@ -102,7 +102,7 @@ export class TimePickerComponent implements OnInit {
     
   finalize(): void {
     if (!this.timeSet || this.timeSet.isEmpty) {
-      this.timeSet = new TimeDto().getDefaultDto();
+      this.timeSet = new PlotPointDto().getDefaultDto();
       this.setupAndSendValue();
       return;
     }
@@ -132,14 +132,10 @@ export class TimePickerComponent implements OnInit {
     this.setTime(this.timeSet, false);
     this.isFieldValid = this.timeSet.isValid;
 
-    let plotPoint: PlotPointDto = {
-      id: this.plotPoint.id,
-      order: this.plotPoint.order, // todo: in case if I add draggability to the plot flow
-      lineCount: this.plotPoint.lineCount, 
-      time: this.timeSet
-    }
+    let beatDto = { ...this.beatDto };
+    beatDto.plotPoint = this.timeSet;
 
-    this.timeSetEvent.emit(plotPoint);
+    this.timeSetEvent.emit(beatDto);
   }
 
   private adjustMinutesAndSeconds() {
@@ -173,7 +169,7 @@ export class TimePickerComponent implements OnInit {
     }
   }
 
-  private setTime(timeDto: TimeDto, editMode: boolean = true): void {
+  private setTime(timeDto: PlotPointDto, editMode: boolean = true): void {
     if(!this.changesDetected) {
       return;
     }
@@ -182,13 +178,13 @@ export class TimePickerComponent implements OnInit {
     this.timePicker.nativeElement.value = this.getTimeView(this.timeSet, editMode);
   }
   
-  private getTimeView(timeDto: TimeDto, editMode: boolean = true) : string {
+  private getTimeView(timeDto: PlotPointDto, editMode: boolean = true) : string {
     return editMode
       ? this.getTimeViewOnEditMode(timeDto)
       : this.getTimeViewOnDefaultMode(timeDto);
   }
 
-  private getTimeViewOnDefaultMode(time: TimeDto) : string {
+  private getTimeViewOnDefaultMode(time: PlotPointDto) : string {
     if (time.isEmpty) {
       return `${time.hour.defaultValue}:${time.minutes.defaultValue}:${time.seconds.defaultValue}`;
     }
@@ -203,7 +199,7 @@ export class TimePickerComponent implements OnInit {
     return `${time.hour.value}:${time.minutes.value}:${time.seconds.value}`;
   }
 
-  private getTimeViewOnEditMode(time: TimeDto) : string {
+  private getTimeViewOnEditMode(time: PlotPointDto) : string {
     if (time.isEmpty) {
       return '';
     }
@@ -219,8 +215,8 @@ export class TimePickerComponent implements OnInit {
     return `${time.hour.value}:${time.minutes.value}:${time.seconds.value}`;
   }
 
-  private parseInputTime(timeInput: string): TimeDto {
-    let timeDto = new TimeDto();
+  private parseInputTime(timeInput: string): PlotPointDto {
+    let timeDto = new PlotPointDto();
     if (!timeInput || timeInput.length <= 0) {
       return timeDto.getEmptyDto();
     } 

@@ -1,4 +1,5 @@
-export class TimeDto {
+
+export class PlotPointDto {
     private _hour: TimeValueDto;
     private _minutes: TimeValueDto;
     private _seconds: TimeValueDto;
@@ -46,7 +47,7 @@ export class TimeDto {
     }
 
     getDefaultDto() {
-        let timeDto = new TimeDto();
+        let timeDto = new PlotPointDto();
         timeDto._hour.setValue(timeDto._hour.defaultValue);
         timeDto._minutes.setValue(timeDto._minutes.defaultValue);
         timeDto._seconds.setValue(timeDto._seconds.defaultValue);
@@ -54,14 +55,14 @@ export class TimeDto {
     }
 
     getEmptyDto() {
-        let timeDto = new TimeDto();
+        let timeDto = new PlotPointDto();
         timeDto._hour.setValue('');
         timeDto._minutes.setValue('');
         timeDto._seconds.setValue('');
         return timeDto;
     }
 
-    setAndGetTime(hour: string, minutes: string, seconds: string) : TimeDto {
+    setAndGetTime(hour: string, minutes: string, seconds: string) : PlotPointDto {
         this.setHour(hour);
         this.setMinutes(minutes);
         this.setSeconds(seconds);
@@ -89,31 +90,46 @@ export class TimeValueDto {
 }
 
 
-export class PlotPointDto {
-    id: string;
+// export class PlotPointDto {
+//     id: string;
+//     order: number;
+//     time: PlotPointDto;
+//     lineCount: number;
+// }
+
+// export class PlotFlowDto {
+//     plotPoints: PlotPointDto[];
+//     isFinished: boolean;
+// }
+
+// export class BeatDetailsDto {
+//     id: string;
+//     order: number;
+//     text: string;
+//     lineCount: number;
+// }
+
+// export class DmoDto {
+//     plotFlowDto: PlotFlowDto;
+//     beatDetails: BeatDetailsDto[];
+// }
+
+export class BeatDto {
+    beatId: string;
     order: number;
-    time: TimeDto;
-    lineCount: number;
+    plotPoint: PlotPointDto;
+    beatText: string;
+    lineCount: number; //todo: remove
 }
 
-export class PlotFlowDto {
-    plotPoints: PlotPointDto[];
+export class DmoDto {
+    dmoId: string;
     isFinished: boolean;
+    statusString: string;
+    beats: BeatDto[];
 }
 
-export class BeatDetailsDto {
-    id: string;
-    order: number;
-    text: string;
-    lineCount: number;
-}
-
-export class BeatsDto {
-    plotFlowDto: PlotFlowDto;
-    beatDetails: BeatDetailsDto[];
-}
-
-export class DmoWithJson {
+export class DmoDtoAsJson {
     dmoId: string;
     json: string;
 }

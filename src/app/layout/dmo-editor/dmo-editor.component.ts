@@ -10,7 +10,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDetailsDto, TimeDto, PlotFlowDto, BeatsDto, DmoWithJson, PlotPointDto } from './models/editorDtos';
+import { BeatDto, DmoDto, DmoDtoAsJson, PlotPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
   import { Subject } from 'rxjs';
@@ -35,9 +35,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   isDmoInfoSet: boolean;
   beatsLoading: boolean;
   dmoId: string;
-  currentDmo: ShortDmoDto;
-  plotFlow: PlotFlowDto;
-  beatsData: BeatDetailsDto[];
+  currentShortDmo: ShortDmoDto;
+  currentDmo: DmoDto;
 
   // events
   finishDmoEvent: EventEmitter<void>;
@@ -72,10 +71,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       console.log('==================');
       console.log('beats were updated');
       console.log(updates);
+      console.log(this.currentDmo);
 
-
-      // console.log(this.plotFlow);
-      // console.log(this.beatsData);
+      
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -118,7 +116,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   finishDmo() {
-    this.plotFlow.isFinished = !this.plotFlow.isFinished;
+    this.currentDmo.isFinished = !this.currentDmo.isFinished;
     this.finishDmoEvent.emit();
   }
 
@@ -176,9 +174,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     if (this.handleResponse(response)) {
       this.initDmo(response.data);
 
-      if (this.currentDmo.hasBeats) {
+      if (this.currentShortDmo.hasBeats) {
         this.loadBeats();
       } else {
+        this.currentDmo.beats = [];
+        this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
         this.beatsLoading = false;
       }
 
@@ -193,8 +193,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   private async finalizePopup(): Promise<ShortDmoDto> {
     let popupData = null;
-    if(this.currentDmo) {
-      popupData = this.currentDmo;
+    if(this.currentShortDmo) {
+      popupData = this.currentShortDmo;
     }
     this.initialPopup = this.matModule.open(InitialPopupComponent, {
       data: popupData,
@@ -210,8 +210,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
     response.shortComment = popupResult.shortComment;
-    if(this.currentDmo && this.currentDmo.id) {
-      response.id = this.currentDmo.id;
+    if(this.currentShortDmo && this.currentShortDmo.id) {
+      response.id = this.currentShortDmo.id;
     }
 
     this.initialPopup = null;
@@ -256,14 +256,18 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private initDmo(result: ShortDmoDto) {
-    this.currentDmo = new ShortDmoDto(result.name, result.movieTitle);
+    this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
+    this.currentDmo = new DmoDto();
 
     if(result.id) {
-      this.currentDmo.id = result.id;
+      this.currentShortDmo.id = result.id;
       this.dmoId = result.id;
+      this.currentDmo.dmoId = result.id;
     }
-    this.currentDmo.shortComment = result.shortComment;
-    this.currentDmo.hasBeats = result.hasBeats;
+    this.currentShortDmo.shortComment = result.shortComment;
+    this.currentShortDmo.hasBeats = result.hasBeats;
+    this.currentDmo.beats = [];
+
     this.isDmoInfoSet = true;
   }
 
@@ -273,13 +277,16 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       
     $initialLoad.subscribe({
       next: (result: any) => { 
-        let beats: BeatsDto = Object.assign(new BeatsDto(), JSON.parse(result.beatsJson, (key, value) => {
-          return key == "time"
-            ? new TimeDto().setAndGetTime(value.hour, value.minutes, value.seconds)
+        let beats = Object.assign([], JSON.parse(result.beatsJson, (key, value) => {
+          return key == "plotPoint"
+            ? new PlotPointDto().setAndGetTime(value.hour, value.minutes, value.seconds)
             : value;
         }));
-        this.plotFlow = beats.plotFlowDto;
-        this.beatsData = beats.beatDetails;
+
+        this.currentDmo.dmoId = result.dmoId;
+        this.currentDmo.beats = beats;
+        this.currentDmo.isFinished = result.dmoStatusId == 1; //Completed
+        this.currentDmo.statusString = result.dmoStatus;
         this.beatsLoading = false;
       },
       error: (err) => { this.toastr.error(err); }
@@ -287,97 +294,92 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private updateBeats(change: any, changeType: ChangeType) {
-    let beatsJson = new BeatsDto();
-    beatsJson.beatDetails = [ ...this.beatsData ];
-    beatsJson.plotFlowDto = { ...this.plotFlow };
+    let copiedBeats = [ ...this.currentDmo.beats ];
     
     if (changeType == ChangeType.none) {
       return;
     } else if (changeType == ChangeType.plotPointTimeChanged) {
-      beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-        if (plotPoint.id == change.id) {
-          plotPoint.time = change.time;
+      copiedBeats = this.currentDmo.beats.map(beat => {
+        if (beat.beatId == change.beatId) {
+          beat.plotPoint = change.plotPoint;
         }
-        return plotPoint;
+        return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.plotPointTimeChanged);
     } else if (changeType == ChangeType.lineCountChanged) {
-      beatsJson.plotFlowDto.plotPoints = this.plotFlow.plotPoints.map(plotPoint => {
-        if (plotPoint.id == change.beatData.id) {
-          plotPoint.lineCount = change.newLineCount;
+      copiedBeats = this.currentDmo.beats.map(beat => {
+        if (beat.beatId == change.beatData.beatId) {
+          beat.lineCount = change.newLineCount;
         }
-        return plotPoint;
+        return beat;
       });
 
-      beatsJson.beatDetails = this.beatsData.map(beat => {
-        if (beat.id == change.beatData.id) {
+      copiedBeats = this.currentDmo.beats.map(beat => {
+        if (beat.beatId == change.beatData.beatId) {
           beat.lineCount = change.newLineCount;
         }
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
     } else if (changeType == ChangeType.beatTextChanged) {
-      beatsJson.beatDetails = this.beatsData.map(beat => {
-        let changedBeat = change.find(b => b.beatId == beat.id);
+      copiedBeats = this.currentDmo.beats.map(beat => {
+        let changedBeat = change.find(b => b.beatId == beat.beatId);
         if (changedBeat != undefined) {
-          beat.text = changedBeat.data;
+          beat.beatText = changedBeat.data;
         }
         return beat;
       });
       this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
     } else if (changeType == ChangeType.beatAdded) {
-      let newPlotPoint = this.dataGenerator.createPlotPointWithDefaultData();
+      // let newPlotPoint = this.dataGenerator.createPlotPointWithDefaultData();
+      // let newBeat = this.dataGenerator.createBeatWithDefaultData();
       let newBeat = this.dataGenerator.createBeatWithDefaultData();
       let newOrder = change.currentBeat.order + 1;
-      newPlotPoint.order = newOrder;
       newBeat.order = newOrder;
 
-      beatsJson.beatDetails.splice(change.currentBeat.order, 0, newBeat);
-      beatsJson.plotFlowDto.plotPoints.splice(change.currentBeat.order, 0, newPlotPoint);
+      copiedBeats.splice(change.currentBeat.order, 0, newBeat);
+      //beatsJson.plotFlowDto.plotPoints.splice(change.currentBeat.order, 0, newPlotPoint);
 
-      beatsJson.beatDetails.forEach((item, index) => {
+      copiedBeats.forEach((item, index) => {
         if (index > change.currentBeat.order) {
           item.order =  item.order + 1;
         }
       }); 
 
-      beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
-        if (index > change.currentBeat.order) {
-          item.order =  item.order + 1;
-        }
-      });
+      // beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
+      //   if (index > change.currentBeat.order) {
+      //     item.order =  item.order + 1;
+      //   }
+      // });
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     } else if (changeType == ChangeType.beatRemoved) {
-      beatsJson.beatDetails.splice(change.order - 1, 1);
-      beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
+      copiedBeats.splice(change.order - 1, 1);
+      // beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
 
-      beatsJson.beatDetails.forEach((item, index) => {
+      copiedBeats.forEach((item, index) => {
         if (index >= change.order - 1) {
           item.order =  item.order - 1;
         }
       }); 
 
-      beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
-        if (index >= change.order - 1) {
-          item.order =  item.order - 1;
-        }
-      });
+      // beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
+      //   if (index >= change.order - 1) {
+      //     item.order =  item.order - 1;
+      //   }
+      // });
 
       this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
     }
 
-    this.beatsData = [...beatsJson.beatDetails];
-    this.plotFlow = { ...beatsJson.plotFlowDto };
+    // this.beatsData = [...beatsJson.beatDetails];
+    // this.plotFlow = { ...beatsJson.plotFlowDto };
+    this.currentDmo.beats = [ ...copiedBeats ];
   }
 
-  private buildDmoWithBeatsJson() : DmoWithJson {
-    let beatsDto : BeatsDto = new BeatsDto();
-    beatsDto.beatDetails = this.beatsData;
-    beatsDto.plotFlowDto = this.plotFlow;
-    
-    let dmoWithJson : DmoWithJson = new DmoWithJson(); 
-    dmoWithJson.json = JSON.stringify(beatsDto, (key, value) => {
-      return key == "time"
+  private buildDmoWithBeatsJson() : DmoDtoAsJson {
+    let dmoWithJson : DmoDtoAsJson = new DmoDtoAsJson(); 
+    dmoWithJson.json = JSON.stringify(this.currentDmo.beats, (key, value) => {
+      return key == "plotPoint"
         ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
         : value;
     });
@@ -392,7 +394,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.matModule.closeAll();
     this.initialPopup = null;
-    this.currentDmo = null;
+    this.currentShortDmo = null;
 
     this.unsubscribe$.next();
     this.unsubscribe$.complete();

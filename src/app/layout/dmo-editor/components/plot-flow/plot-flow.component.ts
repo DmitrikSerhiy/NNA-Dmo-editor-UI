@@ -1,8 +1,7 @@
 import { EventEmitter, Output } from '@angular/core';
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PlotPointDirective } from '../../directives/plot-point.directive';
-import { TimeDto, PlotFlowDto, PlotPointDto } from '../../models/editorDtos';
-import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
+import { BeatDto, DmoDto, PlotPointDto } from '../../models/editorDtos';
 import { PlotPointComponent } from '../plot-point/plot-point.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 
@@ -22,7 +21,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private endCoord = "";
   private baseCoord = "";
 
-  @Input() timeFlowData: PlotFlowDto;
+  @Input() currentDmo: DmoDto;
 
   @Input() finishDMO: EventEmitter<void>;
   @Input() reRender: EventEmitter<void>;
@@ -35,8 +34,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver, 
-    private cdRef:ChangeDetectorRef,
-    private dataGenerator: DefaultDataGeneratorService) { 
+    private cdRef:ChangeDetectorRef) { 
     this.plotFlowWidth = 32;
     this.plotPointContainerSize = 32;
     this.timePickerBoxHeight = 32;
@@ -47,13 +45,6 @@ export class PlotFlowComponent implements  AfterViewInit  {
   }
 
   ngAfterViewInit(): void {
-    if (!this.timeFlowData) {
-      this.timeFlowData = new PlotFlowDto();
-      this.timeFlowData.isFinished = false;
-      this.timeFlowData.plotPoints = [];
-      this.timeFlowData.plotPoints.push(this.dataGenerator.createPlotPointWithDefaultData());
-    }
-
     this.setupInitialTimepickersMargin();
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
@@ -70,7 +61,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     })
   }
 
-  timeSet($event: PlotPointDto) {
+  timeSet($event: BeatDto) {
     this.plotPointChanged.emit($event);
   }
 
@@ -81,12 +72,12 @@ export class PlotFlowComponent implements  AfterViewInit  {
     const viewContainerRef = this.plotPointsContainer.viewContainerRef;
 
     viewContainerRef.clear();
-    this.timeFlowData.plotPoints.forEach((plotPoint, i) => {
+    this.currentDmo.beats.forEach((beatDto, i) => {
       let componentRef = viewContainerRef.createComponent<PlotPointComponent>(componentFactory);
-      componentRef.instance.shift = this.setupPlotPointsMargin(plotPoint, i);
+      componentRef.instance.shift = this.setupPlotPointsMargin(i);
       componentRef.instance.radius = this.plotPointRadius;
       componentRef.instance.plotPointContainerSize = this.plotPointContainerSize;
-      componentRef.instance.plotPointData = plotPoint;
+      componentRef.instance.plotPointData = beatDto;
     });
 
     this.cdRef.detectChanges();
@@ -95,21 +86,21 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private renderPlotFrowGraph(): void {
     this.currentHeight = this.timePickerBoxHeight;
 
-    this.timeFlowData.plotPoints.forEach(plotPoint => {
+    this.currentDmo.beats.forEach(beatDto => {
       this.currentHeight += this.timePickerBoxHeight;
-      if (plotPoint.lineCount > 1) {
-        this.currentHeight = this.currentHeight + (this.timePickerBoxHeight * (plotPoint.lineCount - 1));
+      if (beatDto.lineCount > 1) {
+        this.currentHeight = this.currentHeight + (this.timePickerBoxHeight * (beatDto.lineCount - 1));
       }
     });
 
-    if (this.timeFlowData.isFinished) {
+    if (this.currentDmo.isFinished) {
       this.currentHeight += this.timePickerBoxHeight;
     }
 
-    if (this.timeFlowData.isFinished) {
+    if (this.currentDmo.isFinished) {
       this.baseCoord = `${this.plotFlowWidth/2},${this.timePickerBoxHeight/2} ${this.plotFlowWidth/2},${this.currentHeight - this.timePickerBoxHeight/2}`;
     } else {
-      let lastLineCount = this.timeFlowData.plotPoints[this.timeFlowData.plotPoints.length - 1].lineCount;
+      let lastLineCount = this.currentDmo.beats[this.currentDmo.beats.length - 1].lineCount;
       let currentNotFinishedHeight = this.currentHeight - ((lastLineCount * this.plotPointContainerSize) - (this.plotPointContainerSize / 2));
       this.baseCoord = `${this.plotFlowWidth/2},${this.timePickerBoxHeight/2} ${this.plotFlowWidth/2},${currentNotFinishedHeight}`;
     }
@@ -119,12 +110,12 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.cdRef.detectChanges();
   }
 
-  private setupPlotPointsMargin(plotPoint: PlotPointDto, i: number): number {
+  private setupPlotPointsMargin(i: number): number {
     if (i == 0) {
       return this.plotPointContainerSize;
     }
 
-    let previous = this.timeFlowData.plotPoints[i-1];
+    let previous = this.currentDmo.beats[i-1];
     if (previous.lineCount > 1) {
       return (this.plotPointContainerSize * previous.lineCount) - this.plotPointContainerSize;
     }
@@ -135,14 +126,14 @@ export class PlotFlowComponent implements  AfterViewInit  {
   private setupInitialTimepickersMargin(): void {
     this.timePickers.forEach((timePicker, i) => {
       let nativeElement = timePicker.timePicker.nativeElement;
-      let plotPoint = this.timeFlowData.plotPoints.find(p => p.id === nativeElement.getAttribute('id'));
-      if (plotPoint) {
+      let beatDto = this.currentDmo.beats.find(p => `plotPoint_${p.beatId}` === nativeElement.getAttribute('id'));
+      if (beatDto) {
         nativeElement.parentElement.parentElement.setAttribute('style', `margin-top: ${this.getTimepickerContainerMargin(i)}px`);
       }
     });
 
-    if (this.timeFlowData.isFinished) {
-      let previousLineCount = this.timeFlowData.plotPoints[this.timeFlowData.plotPoints.length - 1].lineCount;
+    if (this.currentDmo.isFinished) {
+      let previousLineCount = this.currentDmo.beats[this.currentDmo.beats.length - 1].lineCount;
       let lastTimePickerBoxMargine = (previousLineCount * this.timePickerBoxHeight) - this.timePickerBoxHeight;
       this.lastPickerBox.nativeElement.setAttribute('style', `margin-top: ${lastTimePickerBoxMargine}px`);
     }
@@ -153,7 +144,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
       return 0;
     }
 
-    let previous = this.timeFlowData.plotPoints[i-1];
+    let previous = this.currentDmo.beats[i-1];
     return (this.timePickerBoxHeight * previous.lineCount) - this.timePickerBoxHeight;
   }
 }

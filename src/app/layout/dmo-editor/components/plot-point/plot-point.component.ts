@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { PlotPointDto } from '../../models/editorDtos';
+import { BeatDto } from '../../models/editorDtos';
 
 @Component({
   selector: 'app-plot-point',
@@ -15,7 +15,11 @@ export class PlotPointComponent implements OnInit {
   public shift: number;
   public radius : number;
   public plotPointContainerSize: number;
-  public plotPointData: PlotPointDto;
+  public plotPointData: BeatDto;
+
+  public get plotPointId() {
+    return `plotPoint_${this.plotPointData.beatId}`;
+  }
 
   constructor() { }
   

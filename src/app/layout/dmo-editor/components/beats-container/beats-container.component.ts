@@ -1,6 +1,6 @@
 import { ElementRef, EventEmitter, QueryList, ViewChildren } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { BeatDetailsDto } from '../../models/editorDtos';
+import { BeatDto, DmoDto } from '../../models/editorDtos';
 import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
 import { TextDetectorService } from '../../services/text-detector.service';
 
@@ -11,7 +11,7 @@ import { TextDetectorService } from '../../services/text-detector.service';
 })
 export class BeatContainerComponent implements OnInit {
 
-  @Input() beatsData: BeatDetailsDto[];
+  @Input() currentDmo: DmoDto;
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
@@ -38,20 +38,15 @@ export class BeatContainerComponent implements OnInit {
 
       changes.forEach(change => {
         this.beats.forEach(beat => {
-          if (beat.nativeElement.getAttribute('id') === change.beatId) {
+          if (beat.nativeElement.getAttribute('id') === `beat_${change.beatId}`) {
             beat.nativeElement.innerText = change.data; //some strange fix of text dublication
           }
         });
       });
     });
-
-    if (!this.beatsData) {
-      this.beatsData = [];
-      this.beatsData.push(this.dataGenerator.createBeatWithDefaultData());
-    }
   }
 
-  beatPreset($event, beatData: BeatDetailsDto) {
+  beatPreset($event, beatData: BeatDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if ((key == 13 && !key.shiftKey) || key == 13) { //enter or shift + enter
       $event.preventDefault();
@@ -62,7 +57,7 @@ export class BeatContainerComponent implements OnInit {
 
   }
 
-  beatSet ($event, beatData: BeatDetailsDto) {
+  beatSet ($event, beatData: BeatDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13) {
       $event.preventDefault();
@@ -79,7 +74,7 @@ export class BeatContainerComponent implements OnInit {
       }
     }
 
-    this.textChangeDetector.detect(beatData.id, $event.target.innerText);
+    this.textChangeDetector.detect(beatData.beatId, $event.target.innerText);
     let spanHeight = $event.target.offsetHeight;
     let lines = Math.ceil(spanHeight / this.lineHeigth);
     let newLineCount: number;
