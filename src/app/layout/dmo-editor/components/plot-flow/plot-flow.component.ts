@@ -55,7 +55,6 @@ export class PlotFlowComponent implements  AfterViewInit  {
     });
 
     this.reRender.subscribe(data => {
-      console.log(data);
       this.setupInitialTimepickersMargin();
       this.renderPlotFrowGraph();
       this.renderPlotPoints();
@@ -66,7 +65,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     })
   }
 
-  timeSet($event: BeatDto) {
+  timeSet($event: any) {
     this.plotPointChanged.emit($event);
   }
 

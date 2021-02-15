@@ -9,7 +9,7 @@ import { BeatDto, PlotPointDto } from '../../models/editorDtos';
 export class TimePickerComponent implements OnInit {
 
   @Input() beatDto: BeatDto;
-  @Output() timeSetEvent = new EventEmitter<BeatDto>();
+  @Output() timeSetEvent = new EventEmitter<any>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
   private timeSet: PlotPointDto; //main field with data
@@ -19,6 +19,7 @@ export class TimePickerComponent implements OnInit {
   private isArrowKeyPressed: boolean;
   private pressedKeyCode: number;
   private isEnterKeyPressed: boolean;
+  private isTabKeyPressed: boolean;
   private isFieldValid: boolean;
   private timePickerId: string;
 
@@ -64,7 +65,8 @@ export class TimePickerComponent implements OnInit {
         key != 8 && key != 46 &&   // delete and backspace
         key != 37 && key != 39 &&  // left and right arrows
         key != 13 &&               // enter
-        key != 32) {               // space
+        key != 32 &&               // space
+        key != 9) {                // tab
       event.preventDefault();
       this.isKeyEventValid = false;
       this.isRemoveKeyPressed = false;
@@ -93,6 +95,12 @@ export class TimePickerComponent implements OnInit {
       this.isEnterKeyPressed = false;
     }
 
+    if (key == 9) {
+      this.isTabKeyPressed = true;
+    } else {
+      this.isTabKeyPressed = false;
+    }
+
     if (this.isRemoveKeyPressed) {
       this.shiftCursor();
     }
@@ -101,7 +109,7 @@ export class TimePickerComponent implements OnInit {
   }
     
   finalize(): void {
-    if (!this.timeSet || this.timeSet.isEmpty) {
+    if (!this.timeSet || this.timeSet.isEmpty || this.isEnterKeyPressed || this.isTabKeyPressed) {
       this.timeSet = new PlotPointDto().getDefaultDto();
       this.setupAndSendValue();
       return;
@@ -135,7 +143,11 @@ export class TimePickerComponent implements OnInit {
     let beatDto = { ...this.beatDto };
     beatDto.plotPoint = this.timeSet;
 
-    this.timeSetEvent.emit(beatDto);
+    let focusBeat = this.isTabKeyPressed || this.isEnterKeyPressed;
+    this.timeSetEvent.emit({beat: beatDto, focusBeat: focusBeat});
+    
+    this.isTabKeyPressed = false;
+    this.isEnterKeyPressed = false;
   }
 
   private adjustMinutesAndSeconds() {

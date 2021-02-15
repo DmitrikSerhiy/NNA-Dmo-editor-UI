@@ -28,6 +28,7 @@
             <div class="beats-wrapper">
                 <app-beats-container 
                     [currentDmo]="currentDmo" 
+                    [focusBeat]="focusBeatEvent"
                     (changeLine)="changeLine($event)"
                     (lineCountChanged)="lineCountChanged($event)"
                     (beatsTextChanged)="beatsTextChanged($event)"

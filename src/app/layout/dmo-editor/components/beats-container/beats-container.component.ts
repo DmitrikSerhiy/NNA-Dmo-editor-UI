@@ -11,6 +11,7 @@ import { TextDetectorService } from '../../helpers/text-detector';
 export class BeatContainerComponent implements OnInit {
 
   @Input() currentDmo: DmoDto;
+  @Input() focusBeat: EventEmitter<any>;
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
@@ -31,6 +32,16 @@ export class BeatContainerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.focusBeat.subscribe(beatToFocus => {
+      this.beats.forEach(beat => {
+        if (beat.nativeElement.getAttribute('id') === `beat_${beatToFocus.beatId}`) {
+          beat.nativeElement.focus();
+          this.shiftCursorToEnd(beat.nativeElement, beatToFocus.beatText.length);
+          return;
+        }
+      });
+    });
+
     this.textChangeDetector.textDetector.subscribe((changes: any[]) => {
       this.beatsTextChanged.emit(changes);
 
@@ -168,21 +179,26 @@ export class BeatContainerComponent implements OnInit {
         let beatContainer = this.getBeatElement(clickedBeat.prev.data.beatId);
         beatContainer.nativeElement.focus();
 
-        let node = beatContainer.nativeElement.childNodes[0];
-        if (node) {
-          let selection = window.getSelection();
-          var range = document.createRange();
-          range.setStart(node, clickedBeat.prev.data.beatText.length);
-          range.collapse(true)
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
+        this.shiftCursorToEnd(beatContainer.nativeElement, clickedBeat.prev.data.beatText.length);
       }
     }
   }
 
   private getBeatElement(beatId: string): ElementRef {
     return this.beats.find(beat => beat.nativeElement.getAttribute('id') === `beat_${beatId}`);
+  }
+
+  private shiftCursorToEnd(nativeElement: any, textLength) {
+    let node = nativeElement.childNodes[0];
+    
+    if (node) {
+      let selection = window.getSelection();
+      var range = document.createRange();
+      range.setStart(node, textLength);
+      range.collapse(true)
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   }
 
   private shiftCursor(element: any) {
