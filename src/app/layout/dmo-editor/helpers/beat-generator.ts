@@ -5,7 +5,7 @@ import { BeatDto, PlotPointDto } from '../models/editorDtos';
 @Injectable({
   providedIn: 'root'
 })
-export class DefaultDataGeneratorService {
+export class BeatGeneratorService {
 
   constructor(private userManager: UserManager) { }
   

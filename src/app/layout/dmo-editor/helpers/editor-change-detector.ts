@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ChangeType } from './../models/changeTypes';
+import { ChangeType } from '../models/changeTypes';
 
 @Injectable({
   providedIn: 'root'

@@ -3,20 +3,22 @@ import { InitialPopupComponent } from './components/initial-popup/initial-popup.
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { EditorHub } from './services/editor-hub.sercice';
+import { EditorHub } from './services/editor-hub.service';
 
 import { Toastr } from '../../shared/services/toastr.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDto, DmoDto, DmoDtoAsJson, PlotPointDto } from './models/editorDtos';
+import { DmoDto, DmoDtoAsJson, PlotPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-  import { Subject } from 'rxjs';
-import { EditorChangeDetectorService } from './services/editor-change-detector.service';
+import { Subject } from 'rxjs';
+import { EditorChangeDetectorService } from './helpers/editor-change-detector';
 import { ChangeType } from './models/changeTypes';
-import { DefaultDataGeneratorService } from './services/default-data-generator.service';
+import { BeatGeneratorService } from './helpers/beat-generator';
+
+
 
 
 @Component({
@@ -52,7 +54,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService,
     private editorChangeDetectorService: EditorChangeDetectorService,
-    private dataGenerator: DefaultDataGeneratorService) {
+    private dataGenerator: BeatGeneratorService) {
       this.beatsUpdating = false; 
       this.finishDmoEvent = new EventEmitter<void>();
       this.reRenderPlotFlowEvent = new EventEmitter<void>();
@@ -113,14 +115,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   beatRemoved($event) {
     this.updateBeats($event, ChangeType.beatRemoved);
     this.reRenderPlotFlowEvent.emit();
-  }
-
-  siblingBeatFocused($event) {
-    if ($event.type == 'next') {
-      console.log($event.fromBeat);
-    } else if ($event.type == 'previous') {
-      console.log($event.fromBeat);
-    }
   }
 
   finishDmo() {
@@ -339,14 +333,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       });
       this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
     } else if (changeType == ChangeType.beatAdded) {
-      // let newPlotPoint = this.dataGenerator.createPlotPointWithDefaultData();
-      // let newBeat = this.dataGenerator.createBeatWithDefaultData();
       let newBeat = this.dataGenerator.createBeatWithDefaultData();
       let newOrder = change.currentBeat.order + 1;
       newBeat.order = newOrder;
 
       copiedBeats.splice(change.currentBeat.order, 0, newBeat);
-      //beatsJson.plotFlowDto.plotPoints.splice(change.currentBeat.order, 0, newPlotPoint);
 
       copiedBeats.forEach((item, index) => {
         if (index > change.currentBeat.order) {
@@ -354,15 +345,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
       }); 
 
-      // beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
-      //   if (index > change.currentBeat.order) {
-      //     item.order =  item.order + 1;
-      //   }
-      // });
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     } else if (changeType == ChangeType.beatRemoved) {
       copiedBeats.splice(change.order - 1, 1);
-      // beatsJson.plotFlowDto.plotPoints.splice(change.order - 1, 1);
 
       copiedBeats.forEach((item, index) => {
         if (index >= change.order - 1) {
@@ -370,17 +355,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
       }); 
 
-      // beatsJson.plotFlowDto.plotPoints.forEach((item, index) => {
-      //   if (index >= change.order - 1) {
-      //     item.order =  item.order - 1;
-      //   }
-      // });
-
       this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
     }
 
-    // this.beatsData = [...beatsJson.beatDetails];
-    // this.plotFlow = { ...beatsJson.plotFlowDto };
     this.currentDmo.beats = [ ...copiedBeats ];
   }
 

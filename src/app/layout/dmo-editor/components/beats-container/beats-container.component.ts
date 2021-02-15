@@ -1,8 +1,7 @@
 import { ElementRef, EventEmitter, QueryList, ViewChildren } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BeatDto, DmoDto } from '../../models/editorDtos';
-import { DefaultDataGeneratorService } from '../../services/default-data-generator.service';
-import { TextDetectorService } from '../../services/text-detector.service';
+import { TextDetectorService } from '../../helpers/text-detector';
 
 @Component({
   selector: 'app-beats-container',
@@ -16,7 +15,6 @@ export class BeatContainerComponent implements OnInit {
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
   @Output() beatRemoved: EventEmitter<any>;
-  @Output() siblingBeatFocused: EventEmitter<any>;
   @ViewChildren('beatText') beats: QueryList<ElementRef>;
   
   private lineHeigth: number
@@ -30,7 +28,6 @@ export class BeatContainerComponent implements OnInit {
     this.beatsTextChanged = new EventEmitter();
     this.beatAdded = new EventEmitter();
     this.beatRemoved = new EventEmitter();
-    this.siblingBeatFocused = new EventEmitter()
   }
 
   ngOnInit(): void {
@@ -58,44 +55,32 @@ export class BeatContainerComponent implements OnInit {
     if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
       if (key == 39) { // to the right
         if (window.getSelection().focusOffset == beatData.beatText.length) {
-          console.log('next');
-          // to the next beat
-          this.siblingBeatFocused.emit({type: 'next', fromBeat: beatData});
+          this.focusSibling('next', beatData);
           $event.preventDefault();
           return;
         } 
       } else if (key == 37) { // to the left
         if (window.getSelection().focusOffset == 0) {
-          console.log('previous');
-          // to the previous beat
-          this.siblingBeatFocused.emit({type: 'previous', fromBeat: beatData});
+          this.focusSibling('previous', beatData);
           $event.preventDefault();
           return;
         }
       } else if (key == 38) { // up
         if (window.getSelection().focusOffset == 0) {
-          console.log('previous');
-           // to the previous beat
-          this.siblingBeatFocused.emit({type: 'previous', fromBeat: beatData});
+          this.focusSibling('previous', beatData);
           $event.preventDefault();
           return;
         }
       } else if (key == 40) { // down
         if (window.getSelection().focusOffset == beatData.beatText.length) {
-          console.log('next');
-          // to the next beat
-          this.siblingBeatFocused.emit({type: 'next', fromBeat: beatData});
+          this.focusSibling('next', beatData);
           $event.preventDefault();
           return;
         }
       }
-
-
     }
 
     
-
-
   }
 
   beatSet ($event, beatData: BeatDto) {
@@ -159,6 +144,41 @@ export class BeatContainerComponent implements OnInit {
       $event.target.children[0].focus();
       this.shiftCursor($event.target);
     }
+  }
+
+
+  private focusSibling(type: string, beat: BeatDto) {
+    let list = this.currentDmo.getBeatsAsLinkedList();
+    let clickedBeat = list.search(n => n.beatId == beat.beatId);
+    if (clickedBeat == null) {
+      return;
+    }
+
+    if (type == 'next') {
+      if (clickedBeat.next != null) {
+        this.getBeatElement(clickedBeat.next.data.beatId).nativeElement.focus();
+      }
+    } else if (type == 'previous') {
+      if (clickedBeat.prev != null) {
+        let beatContainer = this.getBeatElement(clickedBeat.prev.data.beatId);
+        beatContainer.nativeElement.focus();
+
+
+        let node = beatContainer.nativeElement.childNodes[0];
+        if (node) {
+          let selection = window.getSelection();
+          var range = document.createRange();
+          range.setStart(node, clickedBeat.prev.data.beatText.length);
+          range.collapse(true)
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+    }
+  }
+
+  private getBeatElement(beatId: string): ElementRef {
+    return this.beats.find(beat => beat.nativeElement.getAttribute('id') === `beat_${beatId}`);
   }
 
   private shiftCursor(element: any) {

@@ -1,3 +1,4 @@
+import { DmoList } from "../helpers/dmo-list";
 
 export class PlotPointDto {
     private _hour: TimeValueDto;
@@ -102,6 +103,19 @@ export class DmoDto {
     isFinished: boolean;
     statusString: string;
     beats: BeatDto[];
+
+    public getBeatsAsLinkedList() : DmoList<BeatDto> {
+        let list = new DmoList<BeatDto>();
+        if (!this.beats || this.beats.length == 0) {
+            return list;
+        }
+
+        this.beats.forEach(beat => {
+            list.insertEnd(beat);
+        });
+
+        return list;
+    }
 }
 
 export class DmoDtoAsJson {
