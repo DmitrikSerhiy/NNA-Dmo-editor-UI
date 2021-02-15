@@ -53,31 +53,8 @@ export class BeatContainerComponent implements OnInit {
     }
 
     if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
-      if (key == 39) { // to the right
-        if (window.getSelection().focusOffset == beatData.beatText.length) {
-          this.focusSibling('next', beatData);
-          $event.preventDefault();
-          return;
-        } 
-      } else if (key == 37) { // to the left
-        if (window.getSelection().focusOffset == 0) {
-          this.focusSibling('previous', beatData);
-          $event.preventDefault();
-          return;
-        }
-      } else if (key == 38) { // up
-        if (window.getSelection().focusOffset == 0) {
-          this.focusSibling('previous', beatData);
-          $event.preventDefault();
-          return;
-        }
-      } else if (key == 40) { // down
-        if (window.getSelection().focusOffset == beatData.beatText.length) {
-          this.focusSibling('next', beatData);
-          $event.preventDefault();
-          return;
-        }
-      }
+      this.shiftCursorOnArrowKeyPressed(key, $event, beatData);
+      return;
     }
 
     
@@ -97,7 +74,7 @@ export class BeatContainerComponent implements OnInit {
       return;
     }
 
-    if (key == 8 || key == 46) { //delete or backspace
+    if (key == 8 || key == 46) { // delete or backspace
       if ($event.target.innerText.replace(/\s+/g, '').length == 0) {
         $event.preventDefault();
         this.shiftCursor($event.target.parentNode.previousSibling);
@@ -147,6 +124,34 @@ export class BeatContainerComponent implements OnInit {
   }
 
 
+  private shiftCursorOnArrowKeyPressed(key, $event, beat: BeatDto) {
+    if (key == 39) { // to the right
+      if (window.getSelection().focusOffset == beat.beatText.length) {
+        this.focusSibling('next', beat);
+        $event.preventDefault();
+        return;
+      } 
+    } else if (key == 37) { // to the left
+      if (window.getSelection().focusOffset == 0) {
+        this.focusSibling('previous', beat);
+        $event.preventDefault();
+        return;
+      }
+    } else if (key == 38) { // up
+      if (window.getSelection().focusOffset == 0) {
+        this.focusSibling('previous', beat);
+        $event.preventDefault();
+        return;
+      }
+    } else if (key == 40) { // down
+      if (window.getSelection().focusOffset == beat.beatText.length) {
+        this.focusSibling('next', beat);
+        $event.preventDefault();
+        return;
+      }
+    }
+  }
+
   private focusSibling(type: string, beat: BeatDto) {
     let list = this.currentDmo.getBeatsAsLinkedList();
     let clickedBeat = list.search(n => n.beatId == beat.beatId);
@@ -162,7 +167,6 @@ export class BeatContainerComponent implements OnInit {
       if (clickedBeat.prev != null) {
         let beatContainer = this.getBeatElement(clickedBeat.prev.data.beatId);
         beatContainer.nativeElement.focus();
-
 
         let node = beatContainer.nativeElement.childNodes[0];
         if (node) {

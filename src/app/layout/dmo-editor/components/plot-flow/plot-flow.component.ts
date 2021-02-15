@@ -23,7 +23,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   @Input() currentDmo: DmoDto;
 
-  @Input() finishDMO: EventEmitter<void>;
+  @Input() finishDMO: EventEmitter<any>;
   @Input() reRender: EventEmitter<void>;
   @Output() plotPointChanged: EventEmitter<any>;
 
@@ -54,10 +54,15 @@ export class PlotFlowComponent implements  AfterViewInit  {
       this.renderPlotPoints();
     });
 
-    this.reRender.subscribe(_ => {
+    this.reRender.subscribe(data => {
+      console.log(data);
       this.setupInitialTimepickersMargin();
       this.renderPlotFrowGraph();
       this.renderPlotPoints();
+
+      if (data) {
+        this.focusNextTimePicker(data.fromBeat);
+      }
     })
   }
 
@@ -66,6 +71,22 @@ export class PlotFlowComponent implements  AfterViewInit  {
   }
 
 
+  private focusNextTimePicker(beatId: string) {
+    let currBeat = this.currentDmo.getBeatsAsLinkedList().search(b => b.beatId == beatId);
+    if (!currBeat) {
+      return;
+    }
+    
+    this.timePickers.forEach(picker => {
+      let nativeElement = picker.timePicker.nativeElement;
+      if (`timePicker_${currBeat.next.data.beatId}` === nativeElement.getAttribute('id')) {;
+        nativeElement.value = '';
+        nativeElement.focus();
+        return;
+      }
+
+    });
+  }
   
   private renderPlotPoints(): void {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(PlotPointComponent);

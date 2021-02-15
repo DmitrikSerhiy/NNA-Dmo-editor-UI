@@ -42,7 +42,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   // events
   finishDmoEvent: EventEmitter<void>;
-  reRenderPlotFlowEvent: EventEmitter<void>;
+  reRenderPlotFlowEvent: EventEmitter<any>;
+  focusPickerEvent: EventEmitter<any>;
 
   private unsubscribe$: Subject<void> = new Subject();
 
@@ -57,7 +58,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private dataGenerator: BeatGeneratorService) {
       this.beatsUpdating = false; 
       this.finishDmoEvent = new EventEmitter<void>();
-      this.reRenderPlotFlowEvent = new EventEmitter<void>();
+      this.reRenderPlotFlowEvent = new EventEmitter<any>();
+      this.focusPickerEvent = new EventEmitter<any>();
     }
 
   async ngOnInit() {
@@ -74,8 +76,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       console.log('beats were updated');
       console.log(updates);
       console.log(this.currentDmo);
-
-      
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -109,7 +109,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   
   beatAdded($event) {
     this.updateBeats($event, ChangeType.beatAdded);
-    this.reRenderPlotFlowEvent.emit();
+    this.reRenderPlotFlowEvent.emit({fromBeat: $event.currentBeat.beatId});
   }
 
   beatRemoved($event) {
