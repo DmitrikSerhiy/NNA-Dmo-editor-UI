@@ -36,6 +36,20 @@
                 .info-icons {
                     display: flex;
                     align-items: center;
+
+                    .spinner-wrapper {
+                        position: relative;
+                        width: 0px;
+                        .cloud-spinner {
+                            position: absolute;
+                            left: 5px;
+                            top: -6px;
+                        }
+                    }
+                    mat-progress-spinner { 
+                        position: relative;
+                        left: 19px;
+                    }
                 }
             }
 
