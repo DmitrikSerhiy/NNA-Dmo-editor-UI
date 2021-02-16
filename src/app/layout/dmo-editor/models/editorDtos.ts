@@ -69,6 +69,24 @@ export class PlotPointDto {
         this.setSeconds(seconds);
         return this;
     }
+
+    equals(timeSet: PlotPointDto): boolean {
+        if (timeSet.isDefault && this.isDefault) {
+            return true;
+        }
+
+        if ((!timeSet.seconds.hasValue || timeSet.seconds.isDefault) && (!this.seconds.hasValue || this.seconds.isDefault) ) {
+            if ((!timeSet.minutes.hasValue || timeSet.minutes.isDefault) && (!this.minutes.hasValue || this.minutes.isDefault) ) {
+                if ((!timeSet.hour.hasValue || timeSet.hour.isDefault) && (!this.hour.hasValue || this.hour.isDefault) ) {
+                    return true;
+                }
+            }
+        } 
+
+        return timeSet.minutes.value == this.minutes.value && 
+            timeSet.seconds.value == this.seconds.value && 
+            timeSet.hour.value == this.hour.value
+    }
 }
 
 export class TimeValueDto {
@@ -81,7 +99,11 @@ export class TimeValueDto {
     get defaultValue(): string { return this._defaultValue; }
     
     get hasValue(): boolean {
-        return this.value != '' ;
+        return this.value != '';
+    }
+
+    get isDefault() :boolean {
+        return this.value == this._defaultValue;
     }
 
     constructor(defaultValue: string) {

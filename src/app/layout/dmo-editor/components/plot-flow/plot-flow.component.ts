@@ -85,6 +85,39 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.plotPointChanged.emit($event);
   }
 
+  focusSiblingTimePicker($event: any) {
+    let currBeat = this.currentDmo.getBeatsAsLinkedList().search(b => b.beatId == $event.beatId);
+    if (!currBeat) {
+      return;
+    }
+
+    let timePickerIdToFocus = '';
+    if ($event.pickerToFocus == 'prev') {
+      if (!currBeat.prev) {
+        return;
+      }
+      timePickerIdToFocus = currBeat.prev.data.beatId;
+    } else if ($event.pickerToFocus == 'next') {
+      if (!currBeat.next) {
+        return;
+      }
+      timePickerIdToFocus = currBeat.next.data.beatId;
+    }
+
+    this.timePickers.forEach(picker => {
+      let nativeElement = picker.timePicker.nativeElement;
+      if (`timePicker_${timePickerIdToFocus}` === nativeElement.getAttribute('id')) {;
+        nativeElement.focus();
+        if ($event.position != -1) {
+          nativeElement.setSelectionRange($event.position, $event.position);
+        } else {
+          nativeElement.setSelectionRange(7, 7);
+        }
+        return;
+      }
+    });
+  }
+
 
   private focusNextTimePicker(beatId: string) {
     let currBeat = this.currentDmo.getBeatsAsLinkedList().search(b => b.beatId == beatId);

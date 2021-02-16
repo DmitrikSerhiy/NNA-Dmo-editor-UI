@@ -5,7 +5,8 @@
         <app-time-picker #timePickers *ngFor="let beatDto of currentDmo.beats;" 
             class="time-picker-box"
             [beatDto]='beatDto' 
-            (timeSetEvent)="timeSet($event)">
+            (timeSetEvent)="timeSet($event)"
+            (focusSiblingTimePicker)="focusSiblingTimePicker($event)">
         </app-time-picker>   
         <h6 #lastPickerBox class="time-picker-box" *ngIf="currentDmo.isFinished">End</h6>
 

@@ -10,9 +10,11 @@ export class TimePickerComponent implements OnInit {
 
   @Input() beatDto: BeatDto;
   @Output() timeSetEvent = new EventEmitter<any>();
+  @Output() focusSiblingTimePicker = new EventEmitter<any>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
   private timeSet: PlotPointDto; //main field with data
+  private initialTimeSet: PlotPointDto;
   private changesDetected: boolean;
   private isKeyEventValid: boolean;
   private isRemoveKeyPressed: boolean;
@@ -22,6 +24,8 @@ export class TimePickerComponent implements OnInit {
   private isTabKeyPressed: boolean;
   private isFieldValid: boolean;
   private timePickerId: string;
+  private clickedKeyCode: number;
+  private currentCursorPosition: number;
 
   public get plotPointData() {
     return this.timeSet;
@@ -33,12 +37,14 @@ export class TimePickerComponent implements OnInit {
     this.isRemoveKeyPressed = false;
     this.changesDetected = true;
     this.isFieldValid = true;
+    this.currentCursorPosition = -1;
   }
 
   ngOnInit() {
     this.timePickerId = `timePicker_${this.beatDto.beatId}`
     this.changesDetected = true;
     this.setTime(this.beatDto.plotPoint, false);
+    this.initialTimeSet = this.beatDto.plotPoint;
     this.isFieldValid = this.beatDto.plotPoint.isValid;
   }
 
@@ -48,7 +54,7 @@ export class TimePickerComponent implements OnInit {
     }
 
     if (this.isArrowKeyPressed) {
-      this.shiftCursor();
+      this.shiftCursorOnColon();
       return;
     }
 
@@ -67,14 +73,16 @@ export class TimePickerComponent implements OnInit {
     if ((key < 48 || key > 57) &&  // numbers
         (key < 97 || key > 107) && // numbers on numeric keyboard
         key != 8 && key != 46 &&   // delete and backspace
-        key != 37 && key != 39 &&  // left and right arrows
         key != 13 &&               // enter
         key != 32 &&               // space
-        key != 9) {                // tab
+        key != 9 &&                // tab
+        !(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
       event.preventDefault();
       this.isKeyEventValid = false;
       this.isRemoveKeyPressed = false;
       this.changesDetected = false;
+      this.isEnterKeyPressed = false;
+      this.isTabKeyPressed = false;
       return;
     }
 
@@ -85,6 +93,16 @@ export class TimePickerComponent implements OnInit {
       this.isRemoveKeyPressed = false;
     }
     
+    if (key == 38 || key == 40) {
+      event.preventDefault();
+      if (key == 38) { // up
+        this.focusSiblingTimePicker.emit({beatId: this.beatDto.beatId, pickerToFocus: 'prev', position: this.currentCursorPosition});
+      } else if (key == 40) { // down
+        this.focusSiblingTimePicker.emit({beatId: this.beatDto.beatId, pickerToFocus: 'next', position: this.currentCursorPosition});
+      }
+      return;
+    }
+
     if (key == 37 || key == 39) {
       this.isArrowKeyPressed = true;
       this.changesDetected = false;
@@ -106,14 +124,15 @@ export class TimePickerComponent implements OnInit {
     }
 
     if (this.isRemoveKeyPressed) {
-      this.shiftCursor();
-    }
+      this.shiftCursorOnColon();
+    } 
 
     this.isKeyEventValid = true;
+    this.clickedKeyCode = key;
   }
     
   finalize(): void {
-    if (!this.timeSet || this.timeSet.isEmpty || this.isEnterKeyPressed || this.isTabKeyPressed) {
+    if (!this.timeSet || this.timeSet.isEmpty) {
       this.timeSet = new PlotPointDto().getDefaultDto();
       this.setupAndSendValue();
       return;
@@ -129,7 +148,7 @@ export class TimePickerComponent implements OnInit {
       if (this.timeSet.seconds.value.length == 1) {
         this.timeSet.seconds.setValue(`${this.timeSet.seconds.value}0`);
       }
-    }
+    } 
 
     this.setupAndSendValue();
   }
@@ -151,7 +170,11 @@ export class TimePickerComponent implements OnInit {
     beatDto.plotPoint = this.timeSet;
 
     let focusBeat = this.isTabKeyPressed || this.isEnterKeyPressed;
-    this.timeSetEvent.emit({beat: beatDto, focusBeat: focusBeat});
+    let noChanges = this.initialTimeSet.equals(this.timeSet);
+
+    this.timeSetEvent.emit({beat: beatDto, focusBeat: focusBeat, noChanges: noChanges});
+    this.initialTimeSet = this.timeSet;
+
     
     this.isTabKeyPressed = false;
     this.isEnterKeyPressed = false;
@@ -175,8 +198,9 @@ export class TimePickerComponent implements OnInit {
     }
   }
 
-  private shiftCursor(): void {
+  private shiftCursorOnColon(): void {
     let start = this.timePicker.nativeElement.selectionStart;
+    this.currentCursorPosition = start;
     if (this.pressedKeyCode == 37 || this.pressedKeyCode == 8 ) { // left or backspace
       if (start == 5 || start == 2) {
         this.timePicker.nativeElement.setSelectionRange(start - 1, start - 1);
@@ -195,6 +219,18 @@ export class TimePickerComponent implements OnInit {
 
     this.timeSet = timeDto;
     this.timePicker.nativeElement.value = this.getTimeView(this.timeSet, editMode);
+
+    if (this.currentCursorPosition != -1 && this.isRemoveKeyPressed) {
+      if (this.clickedKeyCode == 8) { // backspace
+        if (this.currentCursorPosition != 0) {
+          this.timePicker.nativeElement.setSelectionRange(this.currentCursorPosition - 1, this.currentCursorPosition - 1);
+        }
+      } else if (this.clickedKeyCode == 46) { // delete
+        if (this.currentCursorPosition != 7) {
+          this.timePicker.nativeElement.setSelectionRange(this.currentCursorPosition, this.currentCursorPosition);
+        }
+      }
+    }
   }
   
   private getTimeView(timeDto: PlotPointDto, editMode: boolean = true) : string {
