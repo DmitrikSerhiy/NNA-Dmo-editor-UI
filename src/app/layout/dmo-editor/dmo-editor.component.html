@@ -11,6 +11,7 @@
                 [currentDmo]="currentDmo" 
                 [finishDMO]="finishDmoEvent"
                 [reRender]="reRenderPlotFlowEvent"
+                [focusTimpePicker]="focusTimpePickerEvent"
                 (plotPointChanged)="plotTimeChanged($event)">
             </app-plot-flow>
         </div>
@@ -33,7 +34,8 @@
                     (lineCountChanged)="lineCountChanged($event)"
                     (beatsTextChanged)="beatsTextChanged($event)"
                     (beatAdded)="beatAdded($event)"
-                    (beatRemoved)="beatRemoved($event)">
+                    (beatRemoved)="beatRemoved($event)"
+                    (focusTimePicker)="focusTimePicker($event)">
                 </app-beats-container>
             </div>
         </div>

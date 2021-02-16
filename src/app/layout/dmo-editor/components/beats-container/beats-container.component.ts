@@ -16,6 +16,7 @@ export class BeatContainerComponent implements OnInit {
   @Output() beatsTextChanged: EventEmitter<any[]>;
   @Output() beatAdded: EventEmitter<any>;
   @Output() beatRemoved: EventEmitter<any>;
+  @Output() focusTimePicker: EventEmitter<any>;
   @ViewChildren('beatText') beats: QueryList<ElementRef>;
   
   private lineHeigth: number
@@ -25,10 +26,11 @@ export class BeatContainerComponent implements OnInit {
     private textChangeDetector: TextDetectorService) { 
     this.lineHeigth = 16;
     this.beatContrainerMinHeight = 32;
-    this.lineCountChanged = new EventEmitter();
-    this.beatsTextChanged = new EventEmitter();
-    this.beatAdded = new EventEmitter();
-    this.beatRemoved = new EventEmitter();
+    this.lineCountChanged = new EventEmitter<any>();
+    this.beatsTextChanged = new EventEmitter<any[]>();
+    this.beatAdded = new EventEmitter<any>();
+    this.beatRemoved = new EventEmitter<any>();
+    this.focusTimePicker = new EventEmitter<any>();
   }
 
   ngOnInit(): void {
@@ -144,7 +146,7 @@ export class BeatContainerComponent implements OnInit {
       } 
     } else if (key == 37) { // to the left
       if (window.getSelection().focusOffset == 0) {
-        this.focusSibling('previous', beat);
+        this.focusSibling('timepicker', beat);
         $event.preventDefault();
         return;
       }
@@ -181,6 +183,8 @@ export class BeatContainerComponent implements OnInit {
 
         this.shiftCursorToEnd(beatContainer.nativeElement, clickedBeat.prev.data.beatText.length);
       }
+    } else if (type == 'timepicker') {
+      this.focusTimePicker.emit({beatId: clickedBeat.data.beatId});
     }
   }
 

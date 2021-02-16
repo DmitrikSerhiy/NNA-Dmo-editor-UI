@@ -44,6 +44,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   finishDmoEvent: EventEmitter<void>;
   reRenderPlotFlowEvent: EventEmitter<any>;
   focusBeatEvent: EventEmitter<any>;
+  focusTimpePickerEvent: EventEmitter<any>;
 
   private unsubscribe$: Subject<void> = new Subject();
 
@@ -60,6 +61,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.finishDmoEvent = new EventEmitter<void>();
       this.reRenderPlotFlowEvent = new EventEmitter<any>();
       this.focusBeatEvent = new EventEmitter<any>();
+      this.focusTimpePickerEvent = new EventEmitter<any>();
     }
 
   async ngOnInit() {
@@ -118,6 +120,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   beatRemoved($event) {
     this.updateBeats($event, ChangeType.beatRemoved);
     this.reRenderPlotFlowEvent.emit();
+  }
+
+  focusTimePicker($event) {
+    this.focusTimpePickerEvent.emit($event.beatId);
   }
 
   finishDmo() {

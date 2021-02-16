@@ -25,6 +25,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   @Input() finishDMO: EventEmitter<any>;
   @Input() reRender: EventEmitter<void>;
+  @Input() focusTimpePicker: EventEmitter<any>;
   @Output() plotPointChanged: EventEmitter<any>;
 
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
@@ -45,6 +46,21 @@ export class PlotFlowComponent implements  AfterViewInit  {
   }
 
   ngAfterViewInit(): void {
+    this.focusTimpePicker.subscribe(beatId => {
+
+      this.timePickers.forEach(picker => {
+        let nativeElement = picker.timePicker.nativeElement;
+        if (`timePicker_${beatId}` === nativeElement.getAttribute('id')) {;
+          if (picker.plotPointData.isDefault) {
+            picker.clearPicker();
+          }
+          nativeElement.focus();
+          return;
+        }
+      });
+
+    });
+
     this.setupInitialTimepickersMargin();
     this.renderPlotFrowGraph();
     this.renderPlotPoints();
@@ -79,7 +95,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.timePickers.forEach(picker => {
       let nativeElement = picker.timePicker.nativeElement;
       if (`timePicker_${currBeat.next.data.beatId}` === nativeElement.getAttribute('id')) {;
-        nativeElement.value = '';
+        picker.clearPicker();
         nativeElement.focus();
         return;
       }

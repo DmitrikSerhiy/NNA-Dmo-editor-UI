@@ -23,6 +23,10 @@ export class TimePickerComponent implements OnInit {
   private isFieldValid: boolean;
   private timePickerId: string;
 
+  public get plotPointData() {
+    return this.timeSet;
+  }
+
   constructor() { 
     this.timeSet = new PlotPointDto();
     this.isKeyEventValid = false;
@@ -130,7 +134,10 @@ export class TimePickerComponent implements OnInit {
     this.setupAndSendValue();
   }
 
-
+  clearPicker() {
+    this.timeSet = new PlotPointDto();
+    this.timePicker.nativeElement.value = '';
+  }
 
   
 
