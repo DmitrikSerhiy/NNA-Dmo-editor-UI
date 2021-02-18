@@ -23,6 +23,7 @@ export class BeatContainerComponent implements OnInit {
   private beatContrainerMinHeight: number;
 
   private commandKeyIsPressed: boolean;
+  private allowBeatRemoved: boolean;
 
   constructor(
     private textChangeDetector: TextDetectorService) { 
@@ -34,7 +35,8 @@ export class BeatContainerComponent implements OnInit {
     this.beatRemoved = new EventEmitter<any>();
     this.focusTimePicker = new EventEmitter<any>();
 
-    this.commandKeyIsPressed == false;
+    this.commandKeyIsPressed = false;
+    this.allowBeatRemoved = false;
   }
 
   ngOnInit(): void {
@@ -54,7 +56,12 @@ export class BeatContainerComponent implements OnInit {
       // changes.forEach(change => {
       //   this.beats.forEach(beat => {
       //     if (beat.nativeElement.getAttribute('id') === `beat_${change.beatId}`) {
-      //       do something useful here
+
+      //       //beat.nativeElement.innerText = change.data;
+      //       console.log(beat.nativeElement.innerText);
+      //       console.log(change.data);
+      //       console.log(beat.nativeElement.innerText == change.data )
+      //       //do something useful here wtfff
       //     }
       //   });
       // });
@@ -74,11 +81,11 @@ export class BeatContainerComponent implements OnInit {
       return;
     }
 
-    if (($event.ctrlKey && key == 90) || ($event.ctrlKey && key == 89) ) { // ctrl + z or ctrl + y
-      this.commandKeyIsPressed == true;
-    } else {
-      this.commandKeyIsPressed == false;
-    }
+    // if (($event.ctrlKey && key == 90) || ($event.ctrlKey && key == 89) ) { // ctrl + z or ctrl + y
+    //   this.commandKeyIsPressed == true;
+    // } else {
+    //   this.commandKeyIsPressed == false;
+    // }
   }
 
   beatSet ($event, beatData: BeatDto) {
@@ -95,21 +102,32 @@ export class BeatContainerComponent implements OnInit {
       return;
     }
 
+    let text = $event.target.innerText;
+    let beatId = beatData.beatId;
+
     if (key == 8 || key == 46) { // delete or backspace
-      if ($event.target.innerText.replace(/\s+/g, '').length == 0) {
+      if (text.replace(/\s+/g, '').length == 0 && beatData.order != 1) {
+        if (!this.allowBeatRemoved) {
+          this.allowBeatRemoved = true;
+          return;
+        }
+
         $event.preventDefault();
-        this.shiftCursor($event.target.parentNode.previousSibling);
         this.beatRemoved.emit(beatData);
+        this.shiftCursor($event.target.parentNode.previousSibling);
         return;
       }
+    } else {
+      this.allowBeatRemoved = false;
     }
 
-    if (this.currentDmo.beats.find(b => b.beatId == beatData.beatId).beatText == $event.target.innerText) { // no changes in text
+    if (this.currentDmo.beats.find(b => b.beatId == beatId).beatText == text) { // no changes in text
       $event.preventDefault();
       return;
     }
 
-    this.textChangeDetector.detect(beatData.beatId, $event.target.innerText);
+    this.textChangeDetector.detect(beatId, text);
+
     let spanHeight = $event.target.offsetHeight;
     let lines = Math.ceil(spanHeight / this.lineHeigth);
     let newLineCount: number;
@@ -216,6 +234,9 @@ export class BeatContainerComponent implements OnInit {
     var range = document.createRange();
     var sel = window.getSelection();
     
+    if (!element.children) {
+      return;
+    }
     if (element.children[0].innerText.length > 0) {
       range.setStart(element.children[0], 1);
     } else { 

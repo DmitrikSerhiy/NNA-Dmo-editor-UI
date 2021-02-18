@@ -39,13 +39,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   dmoId: string;
   currentShortDmo: ShortDmoDto;
   currentDmo: DmoDto;
-  currentDmoToSend: DmoDto;
+  //currentDmoToSend: DmoDto;
 
   // events
   finishDmoEvent: EventEmitter<void>;
   reRenderPlotFlowEvent: EventEmitter<any>;
   focusBeatEvent: EventEmitter<any>;
   focusTimpePickerEvent: EventEmitter<any>;
+
+  //private shouldSyncCurrDmo: boolean;
 
   private unsubscribe$: Subject<void> = new Subject();
 
@@ -69,6 +71,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isDmoInfoSet = false;
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
+    //this.shouldSyncCurrDmo = false;
 
     this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
       this.beatsUpdating = true;
@@ -134,7 +137,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   finishDmo() {
     this.currentDmo.isFinished = !this.currentDmo.isFinished;
-    this.currentDmoToSend.isFinished = !this.currentDmoToSend.isFinished;
+    //this.currentDmoToSend.isFinished = !this.currentDmoToSend.isFinished;
     this.finishDmoEvent.emit();
   }
 
@@ -155,6 +158,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     if (this.handleResponse(response)) {
       this.initDmo(response.data);
+      this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+      this.beatsLoading = false;
       this.sidebarManagerService.collapseSidebar();
     }
   }
@@ -276,18 +281,18 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   private initDmo(result: ShortDmoDto) {
     this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
     this.currentDmo = new DmoDto();
-    this.currentDmoToSend = new DmoDto();
+    //this.currentDmoToSend = new DmoDto();
 
-    if(result.id) {
+    if (result.id) {
       this.currentShortDmo.id = result.id;
       this.dmoId = result.id;
       this.currentDmo.dmoId = result.id;
-      this.currentDmoToSend.dmoId = result.id;
+      //this.currentDmoToSend.dmoId = result.id;
     }
     this.currentShortDmo.shortComment = result.shortComment;
     this.currentShortDmo.hasBeats = result.hasBeats;
     this.currentDmo.beats = [];
-    this.currentDmoToSend.beats = [];
+    //this.currentDmoToSend.beats = [];
 
     this.isDmoInfoSet = true;
   }
@@ -309,7 +314,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         this.currentDmo.isFinished = result.dmoStatusId == 1; //Completed
         this.currentDmo.statusString = result.dmoStatus;
 
-        this.currentDmoToSend = this.currentDmo;
+        // this.currentDmoToSend.dmoId = this.currentDmo.dmoId;
+        // this.currentDmoToSend.beats = this.currentDmo.beats;
+        // this.currentDmoToSend.isFinished = this.currentDmo.isFinished;
+        // this.currentDmoToSend.statusString = this.currentDmo.statusString;
+
         this.beatsLoading = false;
       },
       error: (err) => { this.toastr.error(err); }
@@ -317,8 +326,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private updateBeats(change: any, changeType: ChangeType) {    
-    let copiedBeats = Object.assign([], this.currentDmo.beats);
-    this.currentDmoToSend.beats = copiedBeats;
+    let copiedBeats = [ ...this.currentDmo.beats ]
+    //Object.assign([], this.currentDmo.beats);
+    // this.currentDmoToSend.beats = copiedBeats;
 
     if (changeType == ChangeType.none) {
       return;
@@ -329,6 +339,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
         return beat;
       });
+      // this.shouldSyncCurrDmo = true;
       this.editorChangeDetectorService.detect(ChangeType.plotPointTimeChanged);
     } else if (changeType == ChangeType.lineCountChanged) {
       copiedBeats = copiedBeats.map(beat => {
@@ -344,21 +355,25 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
         return beat;
       });
+      //this.shouldSyncCurrDmo = true;
       this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
     } else if (changeType == ChangeType.beatTextChanged) {
 
-      copiedBeats.forEach((beat: BeatDto, index) => {
+      copiedBeats = copiedBeats.map((beat: BeatDto, index) => {
         let changedBeat = change.find(b => b.beatId == beat.beatId);
         if (changedBeat != undefined) {          
-          let newBeat = new BeatDto().copyFrom(beat);
-          newBeat.beatText = changedBeat.data;
+          beat.beatText = changedBeat.data;
+          console.log(changedBeat.data);
+          // let newBeat = new BeatDto().copyFrom(beat);
+          // newBeat.beatText = changedBeat.data;
           // it does not change original currntDmo object because of issue with text field focus
-          this.currentDmoToSend.beats[index] = newBeat;
+          // this.currentDmoToSend.beats[index] = newBeat;
           return beat;
         }
         return beat;
       });
 
+      //this.shouldSyncCurrDmo = false;
       this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
     } else if (changeType == ChangeType.beatAdded) {
       let newBeat = this.dataGenerator.createBeatWithDefaultData();
@@ -373,6 +388,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
       }); 
 
+      //this.shouldSyncCurrDmo = true;
       this.editorChangeDetectorService.detect(ChangeType.beatAdded);
     } else if (changeType == ChangeType.beatRemoved) {
       copiedBeats.splice(change.order - 1, 1);
@@ -383,18 +399,24 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
         }
       }); 
 
+      //this.shouldSyncCurrDmo = true;
       this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
     }
-    this.currentDmoToSend.beats = copiedBeats;    
+    //this.currentDmoToSend.beats = copiedBeats;    
+    this.currentDmo.beats = [ ...copiedBeats ];
+    // if (this.shouldSyncCurrDmo = true) {
+    //   this.syncCurrDmo();
+    // }
   }
 
-  private syncCurrDmo() {
-    this.currentDmo = this.currentDmoToSend;
-  }
+  // private syncCurrDmo() {
+  //   this.currentDmo = this.currentDmoToSend;
+  //   this.shouldSyncCurrDmo = false;
+  // }
 
   private buildDmoWithBeatsJson() : DmoDtoAsJson {
     let dmoWithJson : DmoDtoAsJson = new DmoDtoAsJson(); 
-    dmoWithJson.json = JSON.stringify(this.currentDmoToSend.beats, (key, value) => {
+    dmoWithJson.json = JSON.stringify(this.currentDmo.beats, (key, value) => {
       return key == "plotPoint"
         ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
         : value;
