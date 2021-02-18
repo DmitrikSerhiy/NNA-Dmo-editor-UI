@@ -11,6 +11,7 @@ export class TimePickerComponent implements OnInit {
   @Input() beatDto: BeatDto;
   @Output() timeSetEvent = new EventEmitter<any>();
   @Output() focusSiblingTimePicker = new EventEmitter<any>();
+  @Output() focusCurrentBeat = new EventEmitter<any>();
   @ViewChild('timePicker', { static: true }) timePicker: ElementRef;
 
   private timeSet: PlotPointDto; //main field with data
@@ -104,6 +105,11 @@ export class TimePickerComponent implements OnInit {
     }
 
     if (key == 37 || key == 39) {
+      if (key == 39 && this.timePicker.nativeElement.selectionStart == 7) {
+        this.focusCurrentBeat.emit({beat: this.beatDto});
+        event.preventDefault();
+        return;
+      }
       this.isArrowKeyPressed = true;
       this.changesDetected = false;
     } else {

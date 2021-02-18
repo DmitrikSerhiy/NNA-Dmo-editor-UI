@@ -111,6 +111,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updateBeats($event, ChangeType.beatTextChanged);
   }
 
+  focusCurrentBeatFromPicker($event: any) {
+    this.focusBeatEvent.emit($event.beat)
+  }
+
   plotTimeChanged($event: any) {
     if (!$event.noChanges) {
       this.updateBeats($event.beat, ChangeType.plotPointTimeChanged);

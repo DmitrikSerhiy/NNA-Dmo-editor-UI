@@ -12,7 +12,8 @@
                 [finishDMO]="finishDmoEvent"
                 [reRender]="reRenderPlotFlowEvent"
                 [focusTimpePicker]="focusTimpePickerEvent"
-                (plotPointChanged)="plotTimeChanged($event)">
+                (plotPointChanged)="plotTimeChanged($event)"
+                (focusCurrentBeatFromPicker)="focusCurrentBeatFromPicker($event)">
             </app-plot-flow>
         </div>
         <div class="editor-board">

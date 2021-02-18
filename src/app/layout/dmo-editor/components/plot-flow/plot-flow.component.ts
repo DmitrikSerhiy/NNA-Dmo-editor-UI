@@ -27,6 +27,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
   @Input() reRender: EventEmitter<void>;
   @Input() focusTimpePicker: EventEmitter<any>;
   @Output() plotPointChanged: EventEmitter<any>;
+  @Output() focusCurrentBeatFromPicker: EventEmitter<any>;
 
   @ViewChildren('timePickers') timePickers: QueryList<TimePickerComponent>;
   @ViewChild(PlotPointDirective, {static: false}) plotPointsContainer: PlotPointDirective;
@@ -43,6 +44,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     this.currentHeight = 0;
     this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
     this.plotPointChanged = new EventEmitter();
+    this.focusCurrentBeatFromPicker = new EventEmitter();
   }
 
   ngAfterViewInit(): void {
@@ -83,6 +85,10 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
   timeSet($event: any) {
     this.plotPointChanged.emit($event);
+  }
+
+  focusCurrentBeat($event: any) {
+    this.focusCurrentBeatFromPicker.emit($event);
   }
 
   focusSiblingTimePicker($event: any) {

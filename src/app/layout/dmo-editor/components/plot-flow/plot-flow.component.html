@@ -6,7 +6,8 @@
             class="time-picker-box"
             [beatDto]='beatDto' 
             (timeSetEvent)="timeSet($event)"
-            (focusSiblingTimePicker)="focusSiblingTimePicker($event)">
+            (focusSiblingTimePicker)="focusSiblingTimePicker($event)"
+            (focusCurrentBeat)="focusCurrentBeat($event)">
         </app-time-picker>   
         <h6 #lastPickerBox class="time-picker-box" *ngIf="currentDmo.isFinished">End</h6>
 
