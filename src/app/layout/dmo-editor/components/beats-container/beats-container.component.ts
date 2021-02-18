@@ -22,6 +22,8 @@ export class BeatContainerComponent implements OnInit {
   private lineHeigth: number
   private beatContrainerMinHeight: number;
 
+  private commandKeyIsPressed: boolean;
+
   constructor(
     private textChangeDetector: TextDetectorService) { 
     this.lineHeigth = 16;
@@ -31,6 +33,8 @@ export class BeatContainerComponent implements OnInit {
     this.beatAdded = new EventEmitter<any>();
     this.beatRemoved = new EventEmitter<any>();
     this.focusTimePicker = new EventEmitter<any>();
+
+    this.commandKeyIsPressed == false;
   }
 
   ngOnInit(): void {
@@ -59,7 +63,7 @@ export class BeatContainerComponent implements OnInit {
 
   beatPreset($event, beatData: BeatDto) {
     let key = $event.which || $event.keyCode || $event.charCode;
-    if ((key == 13 && !key.shiftKey) || key == 13) { //enter or shift + enter
+    if ( key == 13) { // enter
       $event.preventDefault();
       this.beatAdded.emit({ currentBeat: beatData });
       return;
@@ -70,7 +74,11 @@ export class BeatContainerComponent implements OnInit {
       return;
     }
 
-    
+    if (($event.ctrlKey && key == 90) || ($event.ctrlKey && key == 89) ) { // ctrl + z or ctrl + y
+      this.commandKeyIsPressed == true;
+    } else {
+      this.commandKeyIsPressed == false;
+    }
   }
 
   beatSet ($event, beatData: BeatDto) {
