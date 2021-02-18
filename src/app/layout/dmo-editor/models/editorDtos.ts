@@ -118,6 +118,16 @@ export class BeatDto {
     plotPoint: PlotPointDto;
     beatText: string;
     lineCount: number; //todo: remove
+
+    public copyFrom(original: BeatDto) {
+        let beat = new BeatDto();
+        beat.beatId = original.beatId;
+        beat.order = original.order;
+        beat.plotPoint = original.plotPoint;
+        beat.beatText = original.beatText;
+        beat.lineCount = original.lineCount;
+        return beat;
+    }
 }
 
 export class DmoDto {

@@ -38,7 +38,7 @@ export class BeatContainerComponent implements OnInit {
       this.beats.forEach(beat => {
         if (beat.nativeElement.getAttribute('id') === `beat_${beatToFocus.beatId}`) {
           beat.nativeElement.focus();
-          this.shiftCursorToEnd(beat.nativeElement, beatToFocus.beatText.length);
+          this.focusNodeAtPosition(beat.nativeElement, beatToFocus.beatText.length);
           return;
         }
       });
@@ -47,13 +47,13 @@ export class BeatContainerComponent implements OnInit {
     this.textChangeDetector.textDetector.subscribe((changes: any[]) => {
       this.beatsTextChanged.emit(changes);
 
-      changes.forEach(change => {
-        this.beats.forEach(beat => {
-          if (beat.nativeElement.getAttribute('id') === `beat_${change.beatId}`) {
-            beat.nativeElement.innerText = change.data; //some strange fix of text dublication
-          }
-        });
-      });
+      // changes.forEach(change => {
+      //   this.beats.forEach(beat => {
+      //     if (beat.nativeElement.getAttribute('id') === `beat_${change.beatId}`) {
+      //       do something useful here
+      //     }
+      //   });
+      // });
     });
   }
 
@@ -181,7 +181,7 @@ export class BeatContainerComponent implements OnInit {
         let beatContainer = this.getBeatElement(clickedBeat.prev.data.beatId);
         beatContainer.nativeElement.focus();
 
-        this.shiftCursorToEnd(beatContainer.nativeElement, clickedBeat.prev.data.beatText.length);
+        this.focusNodeAtPosition(beatContainer.nativeElement, clickedBeat.prev.data.beatText.length);
       }
     } else if (type == 'timepicker') {
       this.focusTimePicker.emit({beatId: clickedBeat.data.beatId});
@@ -192,9 +192,8 @@ export class BeatContainerComponent implements OnInit {
     return this.beats.find(beat => beat.nativeElement.getAttribute('id') === `beat_${beatId}`);
   }
 
-  private shiftCursorToEnd(nativeElement: any, textLength) {
+  private focusNodeAtPosition(nativeElement: any, textLength) {
     let node = nativeElement.childNodes[0];
-    
     if (node) {
       let selection = window.getSelection();
       var range = document.createRange();
