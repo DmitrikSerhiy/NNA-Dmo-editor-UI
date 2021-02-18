@@ -106,12 +106,16 @@ export class PlotFlowComponent implements  AfterViewInit  {
 
     this.timePickers.forEach(picker => {
       let nativeElement = picker.timePicker.nativeElement;
-      if (`timePicker_${timePickerIdToFocus}` === nativeElement.getAttribute('id')) {;
+      if (`timePicker_${timePickerIdToFocus}` === nativeElement.getAttribute('id')) {
         nativeElement.focus();
-        if ($event.position != -1) {
-          nativeElement.setSelectionRange($event.position, $event.position);
+        if (picker.plotPointData.isDefault) {
+          picker.clearPicker();
         } else {
-          nativeElement.setSelectionRange(7, 7);
+          if ($event.position != -1) {
+            nativeElement.setSelectionRange($event.position, $event.position);
+          } else {
+            nativeElement.setSelectionRange(7, 7);
+          }
         }
         return;
       }
