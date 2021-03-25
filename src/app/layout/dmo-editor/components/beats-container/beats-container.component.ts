@@ -162,7 +162,6 @@ export class BeatContainerComponent implements OnInit {
     }
   }
 
-
   private shiftCursorOnArrowKeyPressed(key, $event, beat: BeatDto) {
     if (key == 39) { // to the right
       if (window.getSelection().focusOffset == beat.beatText.length) {
