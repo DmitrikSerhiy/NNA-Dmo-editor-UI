@@ -21,4 +21,3 @@ artifacts:
         - assets/**/*
         - '**/*'
     base-directory: 'dist*'
-    discard-paths: yes
