@@ -5,6 +5,6 @@
         placeholder="h:mm:ss" 
         (keydown)="setKeyMetaData($event)"
         (keyup)="pick(timePicker.value)"
-        (focusout)="finalize(timePicker.value)"
+        (focusout)="finalize()"
         [ngClass]="{invalid: !isFieldValid}"/>
 </div>

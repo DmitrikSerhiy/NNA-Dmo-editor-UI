@@ -11,15 +11,15 @@ import { TimePickerComponent } from '../time-picker/time-picker.component';
   styleUrls: ['./plot-flow.component.scss']
 })
 export class PlotFlowComponent implements  AfterViewInit  {
-  private plotFlowWidth: number;
+  plotFlowWidth: number;
   private plotPointContainerSize: number;
   private currentHeight: number;
   private timePickerBoxHeight: number;
   private plotPointRadius: number;
 
-  private startCoord = ""
-  private endCoord = "";
-  private baseCoord = "";
+  startCoord = ""
+  endCoord = "";
+  baseCoord = "";
 
   @Input() currentDmo: DmoDto;
 

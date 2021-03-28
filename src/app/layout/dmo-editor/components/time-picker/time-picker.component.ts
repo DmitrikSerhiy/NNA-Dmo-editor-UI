@@ -23,8 +23,8 @@ export class TimePickerComponent implements OnInit {
   private pressedKeyCode: number;
   private isEnterKeyPressed: boolean;
   private isTabKeyPressed: boolean;
-  private isFieldValid: boolean;
-  private timePickerId: string;
+  isFieldValid: boolean;
+  timePickerId: string;
   private clickedKeyCode: number;
   private currentCursorPosition: number;
 

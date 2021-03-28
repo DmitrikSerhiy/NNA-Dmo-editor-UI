@@ -9,7 +9,7 @@ import { BeatDto } from '../../models/editorDtos';
 export class PlotPointComponent implements OnInit {
 
   private margin: string;
-  private isPlotPointToolsIconVisible = false;
+  isPlotPointToolsIconVisible = false;
   @ViewChild('plotPointContainer', {static: true}) plotPointContainer: ElementRef;
 
   public shift: number;
