@@ -81,7 +81,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       console.log('==================');
       console.log('beats were updated');
       console.log(updates);
-      console.log(this.currentDmo);
+      console.log(this.currentDmo.beats);
 
     });
 
@@ -302,11 +302,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       
     $initialLoad.subscribe({
       next: (result: any) => { 
-        let beats = Object.assign([], JSON.parse(result.beatsJson, (key, value) => {
-          return key == "plotPoint"
-            ? new PlotPointDto().setAndGetTime(value.hour, value.minutes, value.seconds)
-            : value;
-        }));
+        let beats = Object.assign([], JSON.parse(result.beatsJson, this.selectBeatsFromString));
 
         this.currentDmo.dmoId = result.dmoId;
         this.currentDmo.beats = beats;
@@ -320,97 +316,91 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private updateBeats(change: any, changeType: ChangeType) {    
-    let copiedBeats = JSON.parse(JSON.stringify(this.currentDmo.beats, (key, value) => {
-        return key == "plotPoint"
-          ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
-          : value;
-      }), (key, value) => {
-        return key == "plotPoint"
-          ? new PlotPointDto().setAndGetTime(value.hour, value.minutes, value.seconds)
-          : value;
-      });
-      //todo: make some extension for deserialization
+    let copiedBeats = this.copyBeats(this.currentDmo.beats);
 
-    if (changeType == ChangeType.none) {
-      return;
-    } else if (changeType == ChangeType.plotPointTimeChanged) {
-      copiedBeats = copiedBeats.map(beat => {
-        if (beat.beatId == change.beatId) {
-          beat.plotPoint = change.plotPoint;
-        }
-        return beat;
-      });
-      this.shouldSyncCurrDmo = true;
-      this.editorChangeDetectorService.detect(ChangeType.plotPointTimeChanged);
-    } else if (changeType == ChangeType.lineCountChanged) {
-      copiedBeats = copiedBeats.map(beat => {
-        if (beat.beatId == change.beatData.beatId) {
-          beat.lineCount = change.newLineCount;
-        }
-        return beat;
-      });
-
-      copiedBeats = copiedBeats.map(beat => {
-        if (beat.beatId == change.beatData.beatId) {
-          beat.lineCount = change.newLineCount;
-        }
-        return beat;
-      });
-      this.shouldSyncCurrDmo = true;
-      this.editorChangeDetectorService.detect(ChangeType.lineCountChanged);
-    } else if (changeType == ChangeType.beatTextChanged) {
-
-      copiedBeats = copiedBeats.map((beat: BeatDto, index) => {
-        let changedBeat = change.find(b => b.beatId == beat.beatId);
-        if (changedBeat != undefined) {          
-          beat.beatText = changedBeat.data;
+    switch (changeType) { 
+      case ChangeType.plotPointTimeChanged: {
+        copiedBeats.forEach(beat => {
+          if (beat.beatId == change.beatId) {
+            beat.plotPoint = change.plotPoint;
+          }
           return beat;
-        }
-        return beat;
-      });
-
-      this.shouldSyncCurrDmo = true;
-      this.editorChangeDetectorService.detect(ChangeType.beatTextChanged);
-    } else if (changeType == ChangeType.beatAdded) {
-      let newBeat = this.dataGenerator.createBeatWithDefaultData();
-      let newOrder = change.currentBeat.order + 1;
-      newBeat.order = newOrder;
-
-      copiedBeats.splice(change.currentBeat.order, 0, newBeat);
-
-      copiedBeats.forEach((item, index) => {
-        if (index > change.currentBeat.order) {
-          item.order =  item.order + 1;
-        }
-      }); 
-
-      this.shouldSyncCurrDmo = true;
-      this.editorChangeDetectorService.detect(ChangeType.beatAdded);
-    } else if (changeType == ChangeType.beatRemoved) {
-      copiedBeats.splice(change.order - 1, 1);
-
-      copiedBeats.forEach((item, index) => {
-        if (index >= change.order - 1) {
-          item.order =  item.order - 1;
-        }
-      }); 
-
-      this.shouldSyncCurrDmo = true;
-      this.editorChangeDetectorService.detect(ChangeType.beatRemoved);
+        });
+        this.updateCurrDmo(copiedBeats);
+        break;
+      } case ChangeType.lineCountChanged: {
+        copiedBeats.forEach(beat => {
+          if (beat.beatId == change.beatData.beatId) {
+            beat.lineCount = change.newLineCount;
+          }
+          return beat;
+        });
+        this.updateCurrDmo(copiedBeats);
+        break;
+      } case ChangeType.beatAdded: {
+        let newBeat = this.dataGenerator.createBeatWithDefaultData();
+        let newOrder = change.currentBeat.order + 1;
+        newBeat.order = newOrder;
+  
+        copiedBeats.splice(change.currentBeat.order, 0, newBeat);
+        copiedBeats.forEach((item, index) => {
+          if (index > change.currentBeat.order) {
+            item.order =  item.order + 1;
+          }
+        });
+        this.updateCurrDmo(copiedBeats);
+        break;
+      } case ChangeType.beatRemoved: {
+        copiedBeats.splice(change.order - 1, 1);
+        copiedBeats.forEach((item, index) => {
+          if (index >= change.order - 1) {
+            item.order =  item.order - 1;
+          }
+        }); 
+        this.updateCurrDmo(copiedBeats);
+        break;
+      } case ChangeType.beatTextChanged: {
+        copiedBeats.forEach((beat: BeatDto) => {
+          let changedBeat = change.find(b => b.beatId == beat.beatId);
+          if (changedBeat != undefined) {          
+            beat.beatText = changedBeat.data;
+            return beat;
+          }
+          return beat;
+        });
+        this.updateCurrDmo(copiedBeats);
+        break;
+      } default: { return; }
     }
-    
-    if (this.shouldSyncCurrDmo) {
-      this.beatsToSend = copiedBeats;
-    }
+
+    this.beatsToSend = this.copyBeats(copiedBeats);
+    console.log(`${changeType} added to array`);
+    this.editorChangeDetectorService.detect(changeType);
   }
+
+  private updateCurrDmo(beats: BeatDto[]) {
+    this.currentDmo.beats = this.copyBeats(beats);
+  }
+
+  private copyBeats(beats: BeatDto[]) {
+    return JSON.parse(JSON.stringify(beats, this.selectBeats), this.selectBeatsFromString);
+  }
+
+  private selectBeats = (key, value) => {
+    return key == "plotPoint"
+      ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
+      : value;
+  };
+
+  private selectBeatsFromString = (key, value) => {
+    return key == "plotPoint"
+      ? new PlotPointDto().setAndGetTime(value.hour, value.minutes, value.seconds)
+      : value;
+  };
 
   private buildDmoWithBeatsJson() : DmoDtoAsJson {
     let dmoWithJson : DmoDtoAsJson = new DmoDtoAsJson(); 
-    dmoWithJson.json = JSON.stringify(this.beatsToSend, (key, value) => {
-      return key == "plotPoint"
-        ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
-        : value;
-    });
+    dmoWithJson.json = JSON.stringify(this.beatsToSend, this.selectBeats);
     dmoWithJson.dmoId = this.dmoId;
     return dmoWithJson;
   }

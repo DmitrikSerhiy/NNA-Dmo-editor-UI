@@ -137,6 +137,9 @@ export class PlotFlowComponent implements  AfterViewInit  {
     
     this.timePickers.forEach(picker => {
       let nativeElement = picker.timePicker.nativeElement;
+      if (!currBeat.next) {
+        return;
+      }
       if (`timePicker_${currBeat.next.data.beatId}` === nativeElement.getAttribute('id')) {;
         picker.clearPicker();
         nativeElement.focus();

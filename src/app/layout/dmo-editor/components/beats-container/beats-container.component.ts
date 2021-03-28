@@ -98,8 +98,10 @@ export class BeatContainerComponent implements OnInit {
 
     if (key == 13) { // enter
       $event.preventDefault();
-      $event.target.parentNode.nextElementSibling.firstChild.focus();
-      return;
+      if ($event.target.parentNode.nextElementSibling) {
+        $event.target.parentNode.nextElementSibling.firstChild.focus();
+        return;
+      }
     }
 
     let text = $event.target.innerText;
@@ -161,6 +163,16 @@ export class BeatContainerComponent implements OnInit {
       this.shiftCursor($event.target);
     }
   }
+
+  // beatLeave($event, beatData: BeatDto) {
+  //   //console.log($event);
+
+  //   if ($event.relatedTarget == null){
+  //     console.log(window.getSelection());
+  //   }
+
+
+  // }
 
   private shiftCursorOnArrowKeyPressed(key, $event, beat: BeatDto) {
     if (key == 39) { // to the right

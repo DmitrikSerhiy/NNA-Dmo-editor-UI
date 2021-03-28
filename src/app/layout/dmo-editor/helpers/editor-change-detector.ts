@@ -17,7 +17,7 @@ export class EditorChangeDetectorService {
   }
 
   constructor() {
-    this.checkInterval = 3000;
+    this.checkInterval = 10000;
     this.detector = new EventEmitter();
     this.state = 0;
     this.changes = [];

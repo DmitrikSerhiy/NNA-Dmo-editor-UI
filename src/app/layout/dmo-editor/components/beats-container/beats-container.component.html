@@ -3,6 +3,8 @@
         <span #beatText [id]="'beat_' + beatData.beatId" class="beat-text-holder"
             type="text" contenteditable="true" placeholder="beat details"
             (keyup)="beatSet($event, beatData)"
-            (keydown)="beatPreset($event, beatData)">{{beatData.beatText}}</span>
+            (keydown)="beatPreset($event, beatData)">
+            {{beatData.beatText}}
+        </span>
     </div>
 </div>
