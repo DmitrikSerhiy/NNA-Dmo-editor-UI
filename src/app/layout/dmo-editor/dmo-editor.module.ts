@@ -12,6 +12,8 @@ import { PlotPointComponent } from './components/plot-point/plot-point.component
 import { PlotPointDirective } from './directives/plot-point.directive';
 import { BeatContainerComponent } from './components/beats-container/beats-container.component';
 import { MatProgressSpinnerModule } from '@angular/material';
+import { BeatsFlowComponent } from './components/beats-flow/beats-flow.component';
+import { PlotPointsFlowComponent } from './components/plot-points-flow/plot-points-flow.component';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }
@@ -19,7 +21,7 @@ const routes: Routes = [
 
 @NgModule({
   entryComponents: [InitialPopupComponent, PlotPointComponent],
-  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent, PlotPointComponent, PlotPointDirective, BeatContainerComponent],
+  declarations: [DmoEditor, InitialPopupComponent, PlotFlowComponent, TimePickerComponent, PlotPointComponent, PlotPointDirective, BeatContainerComponent, BeatsFlowComponent, PlotPointsFlowComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

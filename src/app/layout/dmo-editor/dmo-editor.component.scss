@@ -15,6 +15,31 @@
         button:not(:first-child) {
             margin-left: 0.5rem;
         }
+
+        .editor-board-tools {
+            height: 32px;
+            display: flex;
+            align-items: center;
+
+            .info-icons {
+                display: flex;
+                align-items: center;
+
+                .spinner-wrapper {
+                    position: relative;
+                    width: 0px;
+                    .cloud-spinner {
+                        position: absolute;
+                        left: 5px;
+                        top: -6px;
+                    }
+                }
+                mat-progress-spinner { 
+                    position: relative;
+                    left: 19px;
+                }
+            }
+        }
     }
 
     .editor-board-wrapper {
@@ -22,41 +47,30 @@
         flex-flow: row nowrap;
         min-height: 100vh;
 
-        .editor-plot-flow {
-            flex: 0 0 85px;
+        
+        app-plot-points-flow {
+            flex: 0 0 2rem;
+            background-color: blueviolet;
         }
-        .editor-board {
+
+        app-beats-flow {
             flex: 1 1 auto;
-
-            .editor-board-tools {
-                height: 32px;
-                display: flex;
-                align-items: center;
-
-                .info-icons {
-                    display: flex;
-                    align-items: center;
-
-                    .spinner-wrapper {
-                        position: relative;
-                        width: 0px;
-                        .cloud-spinner {
-                            position: absolute;
-                            left: 5px;
-                            top: -6px;
-                        }
-                    }
-                    mat-progress-spinner { 
-                        position: relative;
-                        left: 19px;
-                    }
-                }
-            }
-
-            .beats-wrapper {
-                max-width: 676px;
-            }
+            background-color: cadetblue;
         }
+
+
+        // .editor-plot-flow {
+        //     flex: 0 0 85px;
+        // }
+        // .editor-board {
+        //     flex: 1 1 auto;
+
+
+
+        //     .beats-wrapper {
+        //         max-width: 676px;
+        //     }
+        // }
     }
     
 }
