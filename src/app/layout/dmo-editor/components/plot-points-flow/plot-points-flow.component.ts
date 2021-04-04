@@ -45,16 +45,17 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
 
   ngAfterViewInit(): void {
-    this.plotPoints = [ ...this.initialPlotPoints]; // remove binding
+    this.plotPoints = [ ...this.initialPlotPoints]; // remove binding //check out it later maybe use json deserialize
     this.graphHeigth = this.initialGraphHeigth;
     this.isDataLoaded = true;
+    // console.log(this.plotPoints);
 
     this.setupGraph();
     this.setupSubscription();
   }
 
 
-  private setupSubscription() {
+  private setupSubscription(): void {
     this.updateGraph.subscribe(update => {
 
       this.plotPoints = [ ...update.newplotPoints]
@@ -65,15 +66,15 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     });
   }
 
-  private setupGraph() {
+  private setupGraph(): void {
     this.cdRef.detectChanges();
     this.setupPlotPointsMargin();
     this.setupCoord();
     this.cdRef.detectChanges();
-    this.plotPointsSet.emit({elements: this.plotPointsElements, plotPoints: this.plotPoints});
+    this.plotPointsSet.emit({elements: this.plotPointsElements});
   }
 
-  private setupCoord() {
+  private setupCoord(): void {
     this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
     this.endCoord = `0,${this.graphHeigth} ${this.plotFlowWidth},${this.graphHeigth}`;
     this.baseCoord = `${this.timePickerBoxHeight/2},${this.timePickerBoxHeight/2} ${this.timePickerBoxHeight/2},${this.graphHeigth}`;
@@ -82,10 +83,15 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   private setupPlotPointsMargin(): void {
     this.plotPointsElements.forEach((plotPoint, i) => {
       let nativeElement = plotPoint.nativeElement.firstChild;
-      if ( this.plotPoints.find(p => p.beatId === nativeElement.getAttribute('id'))) {
+      if (this.plotPoints.find(p => p.beatId === this.selectBeatId(nativeElement))) {
         nativeElement.parentElement.setAttribute('style', `margin-bottom: ${this.calculatePlotPointMargin(i)}px`);
       }
     });
+  }
+
+  private selectBeatId(plotPoint: any): string {
+    let plotPointSyfix = 'plot_point_';
+    return plotPoint.getAttribute('id').substring(plotPointSyfix.length);
   }
 
   private calculatePlotPointMargin(i: number): number {

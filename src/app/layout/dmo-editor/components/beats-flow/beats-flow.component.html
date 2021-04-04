@@ -1,0 +1,22 @@
+<div *ngIf="isDataLoaded" class="beats-container">
+
+    <div class="beats-header">
+        <span>Start</span>
+    </div>
+    <div class="beat-container" *ngFor="let beat of beats;">
+        <div class="time-picker-container">
+            <input #timePickers class="time-picker" 
+                [id]="'time_picker_' + beat.beatId"
+                maxlength='7' type="text" autocomplete="off" spellcheck = false    
+                placeholder="h:mm:ss" 
+                (keydown)="setTimePickerKeyMetaData($event)"
+                (keyup)="setTimePickerValue($event)"
+                (focusout)="finalizeTimePicker($event)" 
+                />
+
+
+        </div>
+    </div>
+
+
+</div>

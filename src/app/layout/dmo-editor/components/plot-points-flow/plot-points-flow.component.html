@@ -3,7 +3,7 @@
         <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;" >
             <svg 
                 class="plot-point" 
-                [attr.id]="plotPoint.beatId" 
+                [attr.id]="'plot_point_' + plotPoint.beatId"
                 [attr.width]="plotPointContainerSize" 
                 [attr.height]="plotPointContainerSize">
                 

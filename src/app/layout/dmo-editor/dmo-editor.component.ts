@@ -327,7 +327,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   selectPlotPointsIds() {
-    return this.plotPointsData.elements.map(b => b.nativeElement.firstChild.getAttribute('id'));
+    let plotPointSufix = 'plot_point_';
+    return this.plotPointsData.elements.map(b => b.nativeElement.firstChild.getAttribute('id').substring(plotPointSufix.length));
   }
 
   private buildDto() {
@@ -366,6 +367,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     return dmo;
   }
 
+
+
   addBeat() {
     let beatsData: any[] = [];
     this.selectPlotPointsIds().forEach((beatId, i) => {
@@ -396,16 +399,24 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: true, graphHeigth: 300});
   }
 
+  buildBeatsData() {
+    let plotPointsData: NnaBeatDto[] = [];
 
-
-  buildPlotPointsData() {
-    let beatsData: any[] = [];
-
-    this.initialDmoDto.beats.map(b=> b.beatId).forEach((beatId, i) => {
-      beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    this.initialDmoDto.beats.map(b => b).forEach((beatDto: NnaBeatDto, i) => {
+      plotPointsData.push(beatDto);
     });
 
-    return beatsData;
+    return plotPointsData;
+  }
+
+  buildPlotPointsData() {
+    let plotPointsData: any[] = [];
+
+    this.initialDmoDto.beats.map(b=> b.beatId).forEach((beatId, i) => {
+      plotPointsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    });
+
+    return plotPointsData;
   }
 
   calculatePlotPointsGraphHeigth() {
