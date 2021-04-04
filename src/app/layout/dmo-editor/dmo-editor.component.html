@@ -3,7 +3,10 @@
     <div class="controls-panel">
         <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
         <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
-        <!-- <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button> -->
+        <button class="nna-button nna-button-primary" (click)='addBeat()'>Add beat</button>
+        <button class="nna-button nna-button-primary" (click)='removeBeat()'>Remove beat</button>
+        <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish</button>
+
         <div class="editor-board-tools"> 
             <div class="info-icons">
                 <div class="spinner-wrapper" *ngIf="beatsUpdating">
@@ -15,8 +18,12 @@
         </div>
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
-       <app-plot-points-flow>
-
+       <app-plot-points-flow 
+            [initialPlotPoints]="buildPlotPointsData()" 
+            [isDmoFinished]="initialDmoDto.isFinished" 
+            [initialGraphHeigth]="calculatePlotPointsGraphHeigth()"
+            [updateGraph]="updateGraphEvent"
+            (plotPointsSet)="plotPointsSet($event)">
        </app-plot-points-flow>
        
        <app-beats-flow>

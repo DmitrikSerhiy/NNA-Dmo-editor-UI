@@ -1,0 +1,38 @@
+.plot-points-graph-container {
+    height: 100%;
+
+    .plot-points {
+        position:absolute;
+        margin-top: 2rem;
+        z-index: 10;
+        flex: 0 0 2rem;
+        flex-direction: column;
+
+        .plot-point-container {
+            .plot-point  {
+                circle {
+                    &:hover {
+                        cursor: grab;
+                    }
+                }
+            }
+        }
+    }
+
+    .plot-points-graph {
+        position:absolute;
+        height: 100%;
+
+        .start-end-coord {
+            fill: none;
+            stroke:black;
+            stroke-width: 4;
+        }
+
+        .graph-coord {
+            fill: none;
+            stroke:black;
+            stroke-width: 2;
+        }
+    }
+}

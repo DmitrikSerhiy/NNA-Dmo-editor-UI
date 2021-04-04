@@ -180,7 +180,7 @@ export class PlotFlowComponent implements  AfterViewInit  {
     }
 
     if (this.currentDmo.isFinished) {
-      this.baseCoord = `${this.plotFlowWidth/2},${this.timePickerBoxHeight/2} ${this.plotFlowWidth/2},${this.currentHeight - this.timePickerBoxHeight/2}`;
+        
     } else {
       let lastLineCount = this.currentDmo.beats[this.currentDmo.beats.length - 1].lineCount;
       let currentNotFinishedHeight = this.currentHeight - ((lastLineCount * this.plotPointContainerSize) - (this.plotPointContainerSize / 2));

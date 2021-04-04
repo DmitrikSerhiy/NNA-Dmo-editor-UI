@@ -1,1 +1,24 @@
-<p>plot-points-flow works!</p>
+<div *ngIf="isDataLoaded" class="plot-points-graph-container">
+    <div class="plot-points">
+        <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;" >
+            <svg 
+                class="plot-point" 
+                [attr.id]="plotPoint.beatId" 
+                [attr.width]="plotPointContainerSize" 
+                [attr.height]="plotPointContainerSize">
+                
+                <circle 
+                    [attr.cx]="plotPointContainerSize/2" 
+                    [attr.cy]="plotPointContainerSize/2" 
+                    [attr.r]="plotPointRadius" />
+            </svg>
+        </div>
+    </div>
+
+    <svg class="plot-points-graph" [attr.width]="plotPointContainerSize">
+        <polyline [attr.points]="startCoord" class="start-end-coord" />
+        <polyline [attr.points]="baseCoord" class="graph-coord" />
+        <polyline *ngIf="isDmoFinished" [attr.points]="endCoord" class="start-end-coord" />
+    </svg>
+</div>
+

@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
 
 import { Toastr } from '../../shared/services/toastr.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, QueryList } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
@@ -44,12 +44,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   //beatsToSend: BeatDto[];
 
   // events
+  updateGraphEvent: EventEmitter<any>;
   // finishDmoEvent: EventEmitter<void>;
   // reRenderPlotFlowEvent: EventEmitter<any>;
   // focusBeatEvent: EventEmitter<any>;
   // focusTimpePickerEvent: EventEmitter<any>;
 
   //private shouldSyncCurrDmo: boolean;
+
+  private plotPointsData: any;
 
   private unsubscribe$: Subject<void> = new Subject();
 
@@ -64,6 +67,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     //private dataGenerator: BeatGeneratorService
     ) {
       this.beatsUpdating = false; 
+      this.updateGraphEvent = new EventEmitter<any>();
       // this.finishDmoEvent = new EventEmitter<void>();
       // this.reRenderPlotFlowEvent = new EventEmitter<any>();
       // this.focusBeatEvent = new EventEmitter<any>();
@@ -202,13 +206,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     if (this.handleResponse(response)) {
       this.initDmo(response.data);
 
-      if (this.currentShortDmo.hasBeats) {
-        this.loadBeats();
-      } else {
-        // this.currentDmo.beats = [];
-        // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
-        this.beatsLoading = false;
-      }
+      this.loadBeats();
+      // if (this.currentShortDmo.hasBeats) {
+      //   this.loadBeats();
+      // } else {
+      //   // this.currentDmo.beats = [];
+      //   // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+      // }
 
       this.sidebarManagerService.collapseSidebar();
     }
@@ -318,6 +322,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  plotPointsSet(plotPoints) {
+    this.plotPointsData = plotPoints;
+  }
+
+  selectPlotPointsIds() {
+    return this.plotPointsData.elements.map(b => b.nativeElement.firstChild.getAttribute('id'));
+  }
+
   private buildDto() {
     let dmo = new NnaDmoDto();
     
@@ -352,6 +364,52 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     dmo.statusString = "some status";
     dmo.beats = beats
     return dmo;
+  }
+
+  addBeat() {
+    let beatsData: any[] = [];
+    this.selectPlotPointsIds().forEach((beatId, i) => {
+      beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    });
+
+    beatsData.push({beatId: 'c3f27580-c727-4513-810b-3d595bc08956', lineCount: 1, order: 2});//generate plot point id
+    this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: false, graphHeigth: 300});
+  }
+
+  removeBeat() {
+    let beatsData: any[] = [];
+    this.selectPlotPointsIds().forEach((beatId, i) => {
+      beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    });
+
+    beatsData.pop()
+    this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: false, graphHeigth: 300});
+  }
+
+  
+  finishDmo() {
+    let beatsData: any[] = [];
+    this.selectPlotPointsIds().forEach((beatId, i) => {
+      beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    });
+
+    this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: true, graphHeigth: 300});
+  }
+
+
+
+  buildPlotPointsData() {
+    let beatsData: any[] = [];
+
+    this.initialDmoDto.beats.map(b=> b.beatId).forEach((beatId, i) => {
+      beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
+    });
+
+    return beatsData;
+  }
+
+  calculatePlotPointsGraphHeigth() {
+    return 300;
   }
 
   // private updateBeats(change: any, changeType: ChangeType) {    
