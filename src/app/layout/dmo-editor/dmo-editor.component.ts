@@ -79,6 +79,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
+    this.initialDmoDto = this.buildDto();
+    this.beatsLoading = false;
+    this.isDmoInfoSet = true;
+
     //this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
       // this.beatsUpdating = true;
       // await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
@@ -96,11 +100,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.dmoId = params['dmoId'];
     });
 
-    if (this.dmoId) {
-      await this.loadDmo();
-    } else {
-      await this.createAndInitDmo();
-    }
+    // if (this.dmoId) {
+    //   await this.loadDmo();
+    // } else {
+    //   await this.createAndInitDmo();
+    // }
+
+    await this.loadDmo();
   }
 
   async ngOnDestroy() {
@@ -193,29 +199,29 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   async loadDmo() {
-    await this.editorHub.startConnection();
 
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.loadShortDmo(this.dmoId);
-    } catch(err) {
-      this.showUnhandledException(err);
-      return;
-    }
+    // await this.editorHub.startConnection();
 
-    if (this.handleResponse(response)) {
-      this.initDmo(response.data);
+    // let response: EditorResponseDto;
+    // try {
+    //   response = await this.editorHub.loadShortDmo(this.dmoId);
+    // } catch(err) {
+    //   this.showUnhandledException(err);
+    //   return;
+    // }
 
-      this.loadBeats();
-      // if (this.currentShortDmo.hasBeats) {
-      //   this.loadBeats();
-      // } else {
-      //   // this.currentDmo.beats = [];
-      //   // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
-      // }
+    // if (this.handleResponse(response)) {
+    //   this.initDmo(response.data);
 
-      this.sidebarManagerService.collapseSidebar();
-    }
+    //   if (this.currentShortDmo.hasBeats) {
+    //     this.loadBeats();
+    //   } else {
+    //     // this.currentDmo.beats = [];
+    //     // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+    //   }
+
+    //   this.sidebarManagerService.collapseSidebar();
+    // }
   }
 
   async closeEditor() {
@@ -388,7 +394,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     beatsData.pop()
     this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: false, graphHeigth: 300});
   }
-
   
   finishDmo() {
     let beatsData: any[] = [];

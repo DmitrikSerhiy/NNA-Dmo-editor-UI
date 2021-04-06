@@ -33,9 +33,54 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.cdRef.detectChanges();
   }
 
-  // -------- time picker
 
-  setupTimePickerValues(): void {
+
+
+  // -------- [start] time picker
+
+  setTimePickerKeyMetaData(event: any): void {
+    let key = event.which || event.keyCode || event.charCode;
+    if (((key < 48 || key > 59) &&  // numbers
+        (key < 96 || key > 105)) && // numbers on numeric keyboard
+        key != 8 && key != 46 &&    // delete and backspace
+        key != 13 &&                // enter
+        key != 32 &&                // space
+        key != 9 &&                 // tab
+        !(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
+      event.preventDefault();
+      return;
+    }
+
+    if (key == 8 || key == 46 ) {
+      event.preventDefault();
+      this.shiftCursorOnColon(event.target, key);
+      return;
+    }
+
+    if (this.replaceNextSpaceWithCharacter(event.target, +event.key[0])) {
+      event.preventDefault();
+      return;
+    }
+  }
+
+  setTimePickerValue(event: any): void {
+    let key = event.which || event.keyCode || event.charCode;
+    if (key == 8 || key == 46 ) {
+      this.replaceRemovedCharacterWithSpace(event.target, key);
+      return;
+    }
+  }
+
+  finalizeTimePicker(event: any): void {
+    if (!event.target.value) {
+      event.target.value = this.defaultTimePickerValue;
+      return;
+    }
+    
+    event.target.value = this.fillEmtpyTimeDto(event.target.value)
+  }
+
+  private setupTimePickerValues(): void {
     this.timePickersElements.forEach((picker) => {
       let beat = this.beats.find(b => b.beatId == this.selectBeatId(picker));
       if (!beat) {
@@ -43,13 +88,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
       }
 
       picker.nativeElement.value = this.getTimeView(beat.time, true);
-
-      // console.log(beat);
-      // console.log(picker.nativeElement);
     });
   }
-
-
 
   private adjustMinutesAndSeconds(time: NnaBeatTimeDto): NnaBeatTimeDto {
     if (time.hours < 0) {
@@ -101,65 +141,28 @@ export class BeatsFlowComponent implements AfterViewInit  {
     return picker.nativeElement.getAttribute('id').substring(beatSufix.length);
   }
 
-  setTimePickerKeyMetaData(event: any): void {
-    let key = event.which || event.keyCode || event.charCode;
-    if (((key < 48 || key > 59) &&  // numbers
-        (key < 96 || key > 105)) && // numbers on numeric keyboard
-        key != 8 && key != 46 &&    // delete and backspace
-        key != 13 &&                // enter
-        key != 32 &&                // space
-        key != 9 &&                 // tab
-        !(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
-      event.preventDefault();
-      return;
+  private fillEmtpyTimeDto(value: string): string {
+    let time = value.replace(/:+/g, '');
+    time = time.replace(/ +/g, '0');
+
+    switch (time.length) {
+      case 1: return `${time}:00:00`;
+      case 2: return `${time[0]}:${time[1]}0:00`;
+      case 3: return `${time[0]}:${time[1]}${time[2]}:00`;
+      case 4: return `${time[0]}:${time[1]}${time[2]}:${time[3]}0`;
+      case 5: return `${time[0]}:${time[1]}${time[2]}:${time[3]}${time[4]}`;
+      default: return this.defaultTimePickerValue;
     }
   }
 
-  setTimePickerValue(event: any): void {
-    let key = event.which || event.keyCode || event.charCode;
-    if ((key == 37 || key == 38 || key == 39 || key == 40)) {
-      this.shiftCursorOnColon(event.target, key);
-      return;
-    }
-
-    let timeDto = this.convertTimeToDto(event.target.value);
-    event.target.value = this.getTimeView(timeDto, false);
-    console.log(timeDto);
-    // console.log(value);
-
-  }
-
-  finalizeTimePicker(event: any) {
-    if (!event.target.value) {
-      event.target.value = this.defaultTimePickerValue;
-      return;
-    }
-    
-    //picker.nativeElement.value = this.getTimeView(beat.time);
-
-    // if (this.timeSet.minutes.hasValue) {
-    //   if (this.timeSet.minutes.value.length == 1) {
-    //     this.timeSet.minutes.setValue(`${this.timeSet.minutes.value}0`);
-    //   }
-    // }
-
-    // if (this.timeSet.seconds.hasValue) {
-    //   if (this.timeSet.seconds.value.length == 1) {
-    //     this.timeSet.seconds.setValue(`${this.timeSet.seconds.value}0`);
-    //   }
-    // } 
-
-    // this.setupAndSendValue();
-  }
-
-  private convertTimeToDto(value: string) {
+  private convertTimeToDto(value: string): NnaBeatTimeDto {
     let time = value.replace(/:+/g, '');
     time = time.replace(/ +/g, '0');
     
     var timeDto = new NnaBeatTimeDto();
-    timeDto.hours = -1;
-    timeDto.minutes = -1;
-    timeDto.seconds = -1;
+    timeDto.hours = 0;
+    timeDto.minutes = 0;
+    timeDto.seconds = 0;
 
     if (time.length == 1) {
       timeDto.hours = +time[0];
@@ -184,6 +187,53 @@ export class BeatsFlowComponent implements AfterViewInit  {
     return timeDto;
   }
 
+  private replaceNextSpaceWithCharacter(nativeElement: any, value: number) : boolean {
+    if (Number.isNaN(value)) {
+      return false;
+    }
+
+    let start = nativeElement.selectionStart;
+    let initialValue = nativeElement.value;
+    if (start == initialValue.length) {
+      return false;
+    }
+
+    if (start == 1 || start == 4) {
+      start = start + 1;
+    }
+
+    if (initialValue[start] != " ") {
+      return false;
+    }
+
+    nativeElement.value = this.replaceWith(initialValue, start, value.toString());
+    nativeElement.setSelectionRange(start + 1, start + 1);
+    return true;
+  }
+
+  private replaceRemovedCharacterWithSpace(nativeElement: any, key: number) {
+    let start = nativeElement.selectionStart;
+    let initialValue = nativeElement.value;
+    if (key == 8) { //backspace
+      if (start == 0) {
+        return;
+      }
+      nativeElement.value = this.replaceWith(initialValue, start -1, " ");
+      nativeElement.setSelectionRange(start - 1, start - 1);
+    } else if (key == 46) { //delete
+      if (start == 7) {
+        return;
+      }
+      nativeElement.value = this.replaceWith(initialValue, start, " ");
+      nativeElement.setSelectionRange(start, start);
+    }
+    
+  }
+
+  private replaceWith(value: string, index: number, replace: string) {
+    return `${value.substr(0, index)}${replace}${value.substr(index + 1)}`;
+  }
+
   private shiftCursorOnColon(nativeElement: any, key: number): void {
     let start = nativeElement.selectionStart;
     if (key == 37 || key == 8 ) { // left or backspace
@@ -197,12 +247,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
     }
   }
 
-  // --------
-
-  // private selectBeatsIds() {
-  //   let beatSufix = 'time_picker_';
-  //   return this.timePickersElements.map(b => b.nativeElement.getAttribute('id').substring(beatSufix.length));
-  // }
-
+  // -------- [end]  time picker
 
 }

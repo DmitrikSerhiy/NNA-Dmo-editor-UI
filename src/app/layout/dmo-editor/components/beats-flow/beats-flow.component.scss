@@ -1,5 +1,3 @@
-
-
 .beats-container {
     min-height: 32px;
     border: none;
@@ -78,40 +76,37 @@
             .time-picker[type="number"] {
                 -moz-appearance: textfield;
             }
+
+                .time-picker-field-container {
+                    // background-color: bisque;
+                    margin-left: 3rem;
+                    min-height: 32px;
+                    width: 100%;
+                    border: none;
+            
+                    display: flex;
+                    align-items: center;
+                    &:focus {
+                        outline: none;
+                    }
+            
+                    .time-picker-field {
+                        border: none;
+                        white-space: pre-wrap;
+                        font: 14px 'Courier New', Courier, monospace;
+                        line-height: 16px;
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+            
+                    [contenteditable][placeholder]:empty:after {
+                        content: attr(placeholder);
+                        position: absolute;
+                        color: gray;
+                        background-color: transparent;
+                      }
+                }
         }
     }
 }
-
-    // &:hover {
-    //     cursor: text;
-    // }
-
-    // .beat {
-    //     // background-color: bisque;
-    //     min-height: 32px;
-    //     width: 100%;
-    //     border: none;
-
-    //     display: flex;
-    //     align-items: center;
-    //     &:focus {
-    //         outline: none;
-    //     }
-
-    //     .beat-text-holder {
-    //         border: none;
-    //         white-space: pre-wrap;
-    //         font: 14px 'Courier New', Courier, monospace; //this is open standart for screenplay text
-    //         line-height: 16px;
-    //         &:focus {
-    //             outline: none;
-    //         }
-    //     }
-
-    //     [contenteditable][placeholder]:empty:before {
-    //         content: attr(placeholder);
-    //         position: absolute;
-    //         color: gray;
-    //         background-color: transparent;
-    //       }
-    // }
