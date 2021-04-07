@@ -1,20 +1,26 @@
+$editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart for screenplay text
 .beats-container {
     min-height: 32px;
     border: none;
     display: flex;
     flex-flow: column nowrap;
 
-    .beats-header {
+    .beats-header, .beats-footer {
         height: 32px;
         margin: auto 1rem;
         display: flex;
         align-items: center;
-
-        font: 14px 'Courier New', Courier, monospace; 
+        font: $editor-font;
     }
+
     .beat-container {
         min-height: 32px;
+        display: flex;
+
+        // [start]   ------- time-picker 
+
         .time-picker-container {
+            flex: 0 0 70px;
             max-height: 32px;
             height: 32px;
             display: flex;
@@ -59,7 +65,8 @@
                 padding: 0;
                 width: 70px;
                 height: 20px;
-                font: 1.8ch 'Courier New', Courier, monospace;
+                font: $editor-font;
+                font-size: 1.8ch;
                 background: transparent;
         
                 &:focus {
@@ -93,7 +100,7 @@
                     .time-picker-field {
                         border: none;
                         white-space: pre-wrap;
-                        font: 14px 'Courier New', Courier, monospace;
+                        font: $editor-font;
                         line-height: 16px;
                         &:focus {
                             outline: none;
@@ -108,5 +115,53 @@
                       }
                 }
         }
+
+        // [end]     ------- time-picker
+
+        // [start]   ------- beat-data-holder 
+
+        .beat-data-holder-container {
+            width: 676px;
+            max-width: 676px;
+            flex: 1 1 100%;
+            border: none;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+
+            &:hover {
+                cursor: text;
+            }
+
+            background-color: darkkhaki;
+            .beat-data-holder {
+                margin-left: 1rem;
+                background-color: gold;
+                width: 100%;
+
+                border: none;
+                white-space: pre-wrap;
+                font: $editor-font;
+                line-height: 16px;
+
+                &:hover {
+                    cursor: text;
+                }
+
+                &:focus {
+                    outline: none;
+                }
+
+                [contenteditable][placeholder]:empty:before {
+                    content: attr(placeholder);
+                    position: absolute;
+                    color: gray;
+                    background-color: transparent;
+                  }
+            }
+        }
+
+        // [end]   ------- beat-data-holder 
     }
 }

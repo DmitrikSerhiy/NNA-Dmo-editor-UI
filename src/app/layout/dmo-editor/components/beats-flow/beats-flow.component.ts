@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { NnaBeatTimeDto } from '../../models/dmo-dtos';
 
 @Component({
@@ -9,16 +9,27 @@ import { NnaBeatTimeDto } from '../../models/dmo-dtos';
 export class BeatsFlowComponent implements AfterViewInit  {
 
   @Input() initialBeats: any[];
+  @Output() beatsSet: EventEmitter<any>;
 
   isDataLoaded: boolean;
   beats: any[];
 
   private defaultTimePickerValue = '0:00:00';
+  private beatLineHeigth: number
+  private beatContrainerMinHeight: number;
+  private onDownLines: any;
+  private onUpLines: any;
 
   @ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
+  @ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
   constructor(private cdRef: ChangeDetectorRef) {
     this.isDataLoaded = false;
+    this.beatsSet = new EventEmitter<any>();
+    this.beatLineHeigth = 16;
+    this.beatContrainerMinHeight = 32;
+    this.onDownLines = [];
+    this.onUpLines = [];
    }
 
 
@@ -30,11 +41,115 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.cdRef.detectChanges();
 
     this.setupTimePickerValues();
+    this.setupBeatDataHolderValues();
     this.cdRef.detectChanges();
+
+    this.selectBeatsData();
   }
 
 
+  private selectBeatsData() {
+    this.beatsSet.emit({timePickers: this.timePickersElements, beats: this.beatDataHolderElements});
+  }
 
+
+  // -------- [start] beat data holders
+
+  beatContainerClick($event: any): void {
+    if ($event.target.className == 'beat-data-holder-container') {
+      $event.target.children[0].focus();
+      this.shiftCursorToTheEndBeatText($event.target);
+    }
+  }
+
+  setBeatKeyMetaData($event: any): void {
+    
+    this.onDownLines = this.calculateLineCount($event);
+  }
+
+  setBeatValue($event: any): void {
+
+    this.onUpLines = this.calculateLineCount($event);
+
+
+    this.checkLineCounts();
+  }
+
+  finalizeBeat($event: any): void {
+
+  }
+
+  private checkLineCounts() {
+    let lastUp = this.onUpLines;
+    let lastDown = this.onDownLines;
+    if (lastDown.lines < lastUp.lines ) {
+      if (lastDown.lines != 1 && lastUp.lines != 2) {
+        //add
+        console.log(`changed add line count ${lastDown.newLineCount}. Lines ${lastDown.lines}`);
+      }
+    } else if (lastDown.lines > lastUp.lines) {
+      if (lastDown.lines != 2 &&  lastUp.lines != 1) {
+        //remove
+        console.log(`changed remove line count ${lastDown.newLineCount}. Lines ${lastDown.lines}`);
+      }
+    }
+  }
+
+  private setupBeatMargin($event: any, calculatedLines: any): void {
+    if (calculatedLines.lines % 2 != 0) {
+      if ($event.target.parentNode.style.marginBottom == '0px' && calculatedLines.lines != 1) {
+        let margin = (this.beatContrainerMinHeight * calculatedLines.newLineCount) - (calculatedLines.lines * this.beatLineHeigth);
+        $event.target.parentNode.style.marginBottom = `${margin}px`;
+      }
+    } else {
+      $event.target.parentNode.style.marginBottom = '0px';
+    }
+  }
+
+  private calculateLineCount($event: any): any {
+    let spanHeight = $event.target.offsetHeight;
+    let lines = Math.ceil(spanHeight / this.beatLineHeigth);
+
+    return lines <= 1
+      ? { newLineCount: 1, lines: lines }
+      : { newLineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
+  }
+
+  private setupBeatDataHolderValues(): void {
+    this.beatDataHolderElements.forEach((beatDataHolder) => {
+      let beat = this.beats.find(b => b.beatId == this.selectBeatIdFromBeatDataHolder(beatDataHolder));
+      if (!beat) {
+        return;
+      }
+
+      beatDataHolder.nativeElement.innerHTML = beat.text
+    });
+  }
+
+  private selectBeatIdFromBeatDataHolder(picker: ElementRef): string {
+    let beatSufix = 'beat_';
+    return picker.nativeElement.getAttribute('id').substring(beatSufix.length);
+  }
+
+  private shiftCursorToTheEndBeatText(element: any) {
+    var range = document.createRange();
+    var sel = window.getSelection();
+    
+    if (!element.children) {
+      return;
+    }
+    if (element.children[0].innerText.length > 0) {
+      range.setStart(element.children[0], 1);
+    } else { 
+      range.setStart(element.children[0], 0);
+    }
+    range.collapse(true)
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  // -------- [end] beat data holders
 
   // -------- [start] time picker
 
@@ -82,7 +197,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   private setupTimePickerValues(): void {
     this.timePickersElements.forEach((picker) => {
-      let beat = this.beats.find(b => b.beatId == this.selectBeatId(picker));
+      let beat = this.beats.find(b => b.beatId == this.selectBeatIdFromTimePicker(picker));
       if (!beat) {
         return;
       }
@@ -136,7 +251,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
     return `${time.hours}:${time.minutes}:${time.seconds}`;
   }
 
-  private selectBeatId(picker: ElementRef): string {
+  private selectBeatIdFromTimePicker(picker: ElementRef): string {
     let beatSufix = 'time_picker_';
     return picker.nativeElement.getAttribute('id').substring(beatSufix.length);
   }

@@ -53,6 +53,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   //private shouldSyncCurrDmo: boolean;
 
   private plotPointsData: any;
+  private beatsData: any;
 
   private unsubscribe$: Subject<void> = new Subject();
 
@@ -105,8 +106,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     // } else {
     //   await this.createAndInitDmo();
     // }
-
-    await this.loadDmo();
   }
 
   async ngOnDestroy() {
@@ -200,28 +199,28 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   async loadDmo() {
 
-    // await this.editorHub.startConnection();
+    await this.editorHub.startConnection();
 
-    // let response: EditorResponseDto;
-    // try {
-    //   response = await this.editorHub.loadShortDmo(this.dmoId);
-    // } catch(err) {
-    //   this.showUnhandledException(err);
-    //   return;
-    // }
+    let response: EditorResponseDto;
+    try {
+      response = await this.editorHub.loadShortDmo(this.dmoId);
+    } catch(err) {
+      this.showUnhandledException(err);
+      return;
+    }
 
-    // if (this.handleResponse(response)) {
-    //   this.initDmo(response.data);
+    if (this.handleResponse(response)) {
+      this.initDmo(response.data);
 
-    //   if (this.currentShortDmo.hasBeats) {
-    //     this.loadBeats();
-    //   } else {
-    //     // this.currentDmo.beats = [];
-    //     // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
-    //   }
+      if (this.currentShortDmo.hasBeats) {
+        this.loadBeats();
+      } else {
+        // this.currentDmo.beats = [];
+        // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+      }
 
-    //   this.sidebarManagerService.collapseSidebar();
-    // }
+      this.sidebarManagerService.collapseSidebar();
+    }
   }
 
   async closeEditor() {
@@ -326,6 +325,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       },
       error: (err) => { this.toastr.error(err); }
     });
+  }
+
+  beatsSet(beats) {
+    this.beatsData = beats;
   }
 
   plotPointsSet(plotPoints) {

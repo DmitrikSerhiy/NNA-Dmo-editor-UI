@@ -3,7 +3,9 @@
     <div class="beats-header">
         <span>Start</span>
     </div>
+
     <div class="beat-container" *ngFor="let beat of beats;">
+        
         <div class="time-picker-container">
             <input #timePickers class="time-picker" 
                 [id]="'time_picker_' + beat.beatId"
@@ -14,8 +16,24 @@
                 (focusout)="finalizeTimePicker($event)"/>
         </div>
 
+        <div class="beat-data-holder-container" (click)="beatContainerClick($event)">
+            <div #beatDataHolders class="beat-data-holder"
+                [id]="'beat_' + beat.beatId"
+                type="text" contenteditable="true" placeholder="beat details"
+                (keyup)="setBeatValue($event)"
+                (keydown)="setBeatKeyMetaData($event)"
+                (focusout)="finalizeBeat($event)">
+            </div>
+        </div>
+
+
+
         
     </div>
 
+    
+    <div class="beats-footer">
+        <span>End</span>
+    </div>
 
 </div>
