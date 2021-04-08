@@ -43,12 +43,12 @@ export class BeatsFlowComponent implements AfterViewInit  {
   ngAfterViewInit(): void {
     this.beats = [ ...this.initialBeats];
 
-
     this.isDataLoaded = true;
     this.cdRef.detectChanges();
 
     this.setupTimePickerValues();
     this.setupBeatDataHolderValuesAndMetaData();
+    this.setupLastBeatMargin();
     this.cdRef.detectChanges();
 
 
@@ -71,14 +71,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   setBeatKeyMetaData($event: any): void {
-    
+  
     this.onDownLines = this.calculateLineCount($event.target);
+
   }
 
   setBeatValue($event: any): void {
 
     this.onUpLines = this.calculateLineCount($event.target);
-
 
     this.checkLineCounts($event.target);
   }
@@ -92,16 +92,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
     let lastDown = this.onDownLines;
 
     if (lastDown.lines < lastUp.lines ) {
-      if (lastDown.lines != 1 && lastUp.lines != 2) {
         this.lineCountChanged.emit({beatId: this.selectBeatIdFromBeatDataHolder(element), newLineCount: lastUp});
-        // console.log(`changed add line count ${lastUp.newLineCount}. Lines ${lastUp.lines}`);
-      }
     } else if (lastDown.lines > lastUp.lines) {
-      if (lastDown.lines != 2 &&  lastUp.lines != 1) {
         this.lineCountChanged.emit({beatId: this.selectBeatIdFromBeatDataHolder(element), newLineCount: lastUp});
-        // console.log(`changed remove line count ${lastUp.newLineCount}. Lines ${lastUp.lines}`);
-      }
     }
+  }
+
+  private setupLastBeatMargin() {
+    this.beatDataHolderElements.last.nativeElement.parentNode.style.marginBottom = '0px';
   }
 
   private setupBeatMargin($event: any, calculatedLines: any): void {
@@ -120,8 +118,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
     let lines = Math.ceil(spanHeight / this.beatLineHeigth);
 
     return lines <= 1
-      ? { newLineCount: 1, lines: lines }
-      : { newLineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
+      ? { lineCount: 1, lines: lines }
+      : { lineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
   }
 
   private setupBeatDataHolderValuesAndMetaData(): void {

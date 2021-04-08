@@ -34,7 +34,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   beatsUpdating: boolean;
   
-  // main fields
+  // initial fields
   isDmoInfoSet: boolean;
   beatsLoading: boolean;
   dmoId: string;
@@ -300,6 +300,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   plotPointsSet(plotPoints): void {
     this.plotPointElements = plotPoints.elements;
+    console.log('plotPoints rendered');
   }
 
   buildBeatsData() {
@@ -334,7 +335,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   lineCountChanged(change: any) {
-    console.log(change);
+    this.beatsIds.forEach((beatId, i) => {
+      if (beatId == change.beatId) {
+        this.beatsMetaData[i] = { lineCount: change.newLineCount.lineCount, lines: change.newLineCount.lines };
+        return;
+      }
+    });
+
+    this.updatePlotPoints();
   }
 
 
@@ -368,13 +376,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     let beat1 = new NnaBeatDto();
     beat1.beatId = "5164A99B-2C5C-4081-95AC-14F5237E1473";
     beat1.order = 0;
-    beat1.text = "some beat details";
+    beat1.text = "second beat details ome beat details some beat details some beat detailssome beat details some beat detailssome beat details some beat details some beat detailssome beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai";
     beat1.time = time1;
 
     let beat2 = new NnaBeatDto();
     beat2.beatId = "5164A99B-2C5C-4081-95AC-14F5237E9023";
     beat2.order = 1;
-    beat2.text = "second beat details";
+    beat2.text = "some beat details some beat details some beat details some beat details some beat details some beat detailssome beat details some beat details some beat details some beat detailssome beat details some beat detailssome beat details some beat details some beat detailssome beat detailssome beat details  some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai";
     beat2.time = time2;
     
     let beats : NnaBeatDto[] = [];

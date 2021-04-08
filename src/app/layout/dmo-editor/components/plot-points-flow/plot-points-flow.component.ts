@@ -42,11 +42,11 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
 
   ngAfterViewInit(): void {
-    this.plotPoints = [ ...this.initialPlotPoints]; // remove binding //check out it later maybe use json deserialize
+    this.plotPoints = [ ...this.initialPlotPoints]; // remove binding. check out it later maybe use json deserialize
     this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
     this.isDataLoaded = true;
 
-    this.setupGraph();
+    this.renderGraph();
     this.setupSubscription();
   }
 
@@ -55,13 +55,13 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
       this.plotPoints = [ ...update.newplotPoints]
       this.isDmoFinished = update.isFinished;
-      this.graphHeigth = this.calculateGraphHeigth(this.plotPoints)
+      this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
 
-      this.setupGraph();
+      this.renderGraph();
     });
   }
 
-  private setupGraph(): void {
+  private renderGraph(): void {
     this.cdRef.detectChanges();
     this.setupPlotPointsMargin();
     this.setupCoord();
@@ -76,15 +76,28 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   }
 
   private calculateGraphHeigth(plotPoints: any[]): string {
-    let lineCounts: number = 0;
-    plotPoints.forEach(pp => {
-      lineCounts = lineCounts + pp.plotPointMetaData.newLineCount;
-    });
-  
-    let heigth = (lineCounts * this.plotPointContainerSize) + (lineCounts * this.defaultBeatMarginBottom) + this.initialGraphTopMargin - this.defaultBeatMarginBottom; 
+    let heigth: number = 0;
     
+    plotPoints.forEach((pp, i) => {
+      if (plotPoints.length != i+1) {
+        heigth += (this.plotPointContainerSize * pp.plotPointMetaData.lineCount);
+        heigth += this.defaultBeatMarginBottom;
+
+        if (pp.plotPointMetaData.lines % 2 != 0) {
+          heigth -= this.defaultBeatMarginBottom;
+        }
+
+      } else {
+        heigth += this.plotPointContainerSize;
+      }
+    });
+
+    heigth += this.initialGraphTopMargin;
+ 
     if (this.isDmoFinished) {
-      heigth = heigth + this.plotPointContainerSize + this.defaultBeatMarginBottom;
+      let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
+
+      heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize) - this.defaultBeatMarginBottom;
     }
 
     return heigth.toString();
@@ -105,7 +118,10 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   }
 
   private calculatePlotPointMargin(i: number): number {
-    return (this.plotPointContainerSize * this.plotPoints[i].plotPointMetaData.newLineCount) - this.plotPointContainerSize + this.defaultBeatMarginBottom;
+    if (this.plotPoints[i].plotPointMetaData.lines == 1 || this.plotPoints[i].plotPointMetaData.lines == 2) {
+      return this.defaultBeatMarginBottom;
+    }
+    return (this.plotPointContainerSize / 2) * (this.plotPoints[i].plotPointMetaData.lines - 2) + this.defaultBeatMarginBottom;
   }
 
 
