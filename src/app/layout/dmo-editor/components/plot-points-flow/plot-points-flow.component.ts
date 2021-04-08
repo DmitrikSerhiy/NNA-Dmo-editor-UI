@@ -9,18 +9,17 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
   @Input() initialPlotPoints: any[]; //{beatId: string, lineCount: number, order: number}
   @Input() isDmoFinished: boolean;
-  @Input() initialGraphHeigth: string;
   @Input() updateGraph: EventEmitter<any>;
   @Output() plotPointsSet: EventEmitter<any>;
 
   isDataLoaded: boolean;
   plotPoints: any[];
-  
 
   private plotPointContainerSize: number;
+  private defaultBeatMarginBottom: number;
   private currentHeight: number;
-  private timePickerBoxHeight: number;
   private plotPointRadius: number;
+  private initialGraphTopMargin: number;
   
   graphHeigth: string;
   plotFlowWidth: number;
@@ -30,14 +29,12 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
   @ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 
-
-
   constructor(private cdRef: ChangeDetectorRef) { 
     this.isDataLoaded = false;
-
     this.plotFlowWidth = 32;
     this.plotPointContainerSize = 32;
-    this.timePickerBoxHeight = 32;
+    this.initialGraphTopMargin = 16;
+    this.defaultBeatMarginBottom = 16;
     this.plotPointRadius = 6;
     this.currentHeight = 0;
     this.plotPointsSet = new EventEmitter<any>();
@@ -46,21 +43,19 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
   ngAfterViewInit(): void {
     this.plotPoints = [ ...this.initialPlotPoints]; // remove binding //check out it later maybe use json deserialize
-    this.graphHeigth = this.initialGraphHeigth;
+    this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
     this.isDataLoaded = true;
-    // console.log(this.plotPoints);
 
     this.setupGraph();
     this.setupSubscription();
   }
-
 
   private setupSubscription(): void {
     this.updateGraph.subscribe(update => {
 
       this.plotPoints = [ ...update.newplotPoints]
       this.isDmoFinished = update.isFinished;
-      this.graphHeigth = update.graphHeigth;
+      this.graphHeigth = this.calculateGraphHeigth(this.plotPoints)
 
       this.setupGraph();
     });
@@ -75,9 +70,24 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   }
 
   private setupCoord(): void {
-    this.startCoord = `0,${this.timePickerBoxHeight/2} ${this.plotFlowWidth},${this.timePickerBoxHeight/2}`;
+    this.startCoord = `0,${this.plotPointContainerSize/2} ${this.plotFlowWidth},${this.plotPointContainerSize/2}`;
     this.endCoord = `0,${this.graphHeigth} ${this.plotFlowWidth},${this.graphHeigth}`;
-    this.baseCoord = `${this.timePickerBoxHeight/2},${this.timePickerBoxHeight/2} ${this.timePickerBoxHeight/2},${this.graphHeigth}`;
+    this.baseCoord = `${this.plotPointContainerSize/2},${this.plotPointContainerSize/2} ${this.plotPointContainerSize/2},${this.graphHeigth}`;
+  }
+
+  private calculateGraphHeigth(plotPoints: any[]): string {
+    let lineCounts: number = 0;
+    plotPoints.forEach(pp => {
+      lineCounts = lineCounts + pp.plotPointMetaData.newLineCount;
+    });
+  
+    let heigth = (lineCounts * this.plotPointContainerSize) + (lineCounts * this.defaultBeatMarginBottom) + this.initialGraphTopMargin - this.defaultBeatMarginBottom; 
+    
+    if (this.isDmoFinished) {
+      heigth = heigth + this.plotPointContainerSize + this.defaultBeatMarginBottom;
+    }
+
+    return heigth.toString();
   }
 
   private setupPlotPointsMargin(): void {
@@ -95,7 +105,7 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   }
 
   private calculatePlotPointMargin(i: number): number {
-    return this.timePickerBoxHeight * this.plotPoints[i].lineCount - this.timePickerBoxHeight;
+    return (this.plotPointContainerSize * this.plotPoints[i].plotPointMetaData.newLineCount) - this.plotPointContainerSize + this.defaultBeatMarginBottom;
   }
 
 

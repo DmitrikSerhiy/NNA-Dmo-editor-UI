@@ -19,17 +19,18 @@
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
        <app-plot-points-flow 
+            *ngIf="beatWasSet"
             [initialPlotPoints]="buildPlotPointsData()" 
-            [isDmoFinished]="initialDmoDto.isFinished" 
-            [initialGraphHeigth]="calculatePlotPointsGraphHeigth()"
+            [isDmoFinished]="isDmoFinised"
             [updateGraph]="updateGraphEvent"
             (plotPointsSet)="plotPointsSet($event)">
        </app-plot-points-flow>
        
        <app-beats-flow 
-        [initialBeats]="buildBeatsData()"
-        (beatsSet)="beatsSet($event)">
-
+            [initialBeats]="buildBeatsData()"
+            [isDmoFinished]="isDmoFinised"
+            (beatsSet)="beatsSet($event)"
+            (lineCountChanged)="lineCountChanged($event)">
        </app-beats-flow>
 
         <!-- <div class="editor-plot-flow">
