@@ -83,7 +83,7 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
         heigth += (this.plotPointContainerSize * pp.plotPointMetaData.lineCount);
         heigth += this.defaultBeatMarginBottom;
 
-        if (pp.plotPointMetaData.lines % 2 != 0) {
+        if (pp.plotPointMetaData.lines % 2 != 0 && pp.plotPointMetaData.lines != 1) {
           heigth -= this.defaultBeatMarginBottom;
         }
 
