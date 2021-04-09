@@ -27,12 +27,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
   private onDownLines: any;
   private onUpLines: any;
   private valueBeforeRemove: string;
+  private shiftIsPressed: boolean;
 
   @ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
   @ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
   constructor(private cdRef: ChangeDetectorRef) {
     this.isDataLoaded = false;
+    this.shiftIsPressed = false;
     this.beatsSet = new EventEmitter<any>();
     this.lineCountChanged = new EventEmitter<any>();
     this.addBeat = new EventEmitter<any>();
@@ -70,8 +72,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
       } else {
         this.setupBeats();
       }
-
-
   
       this.setupEditorCallback();
     });
@@ -132,16 +132,23 @@ export class BeatsFlowComponent implements AfterViewInit  {
       return;
     }
     
+    if (key == 16) { // shift
+      this.shiftIsPressed = true;
+    } 
+
     if (key == 13) { // enter
-      $event.preventDefault();
-      this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
-      return;
+      if (this.shiftIsPressed == false) {
+        $event.preventDefault();
+        this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
+        return;
+      }
     }
 
     if (key == 9) { // tab
       $event.preventDefault();
       return;
     }
+
 
     if (key == 8 || key == 46) { // delete or backspace
       this.valueBeforeRemove = $event.target.innerHTML;
@@ -153,14 +160,19 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   setBeatValue($event: any): void {
     let key = $event.which || $event.keyCode || $event.charCode;
-    
     if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
       return;
     }
 
+    if (key == 16) { // shift
+      this.shiftIsPressed = false;
+    }
+
     if (key == 13) { // enter
-      $event.preventDefault();
-      return;
+      if (!this.shiftIsPressed) {
+        $event.preventDefault();
+        return;
+      }
     }
     
     if (key == 9) { // tab
