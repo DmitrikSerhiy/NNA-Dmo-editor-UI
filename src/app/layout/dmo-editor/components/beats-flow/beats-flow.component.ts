@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
-import { NnaBeatTimeDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto } from '../../models/dmo-dtos';
 
 @Component({
   selector: 'app-beats-flow',
@@ -10,8 +10,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   @Input() initialBeats: any[];
   @Input() isDmoFinished: boolean;
+  @Input() updateBeatsEvent: EventEmitter<any>;
   @Output() beatsSet: EventEmitter<any>;
   @Output() lineCountChanged: EventEmitter<any>;
+  @Output() addBeat: EventEmitter<any>;
 
   isDataLoaded: boolean;
   beats: any[];
@@ -31,6 +33,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.isDataLoaded = false;
     this.beatsSet = new EventEmitter<any>();
     this.lineCountChanged = new EventEmitter<any>();
+    this.addBeat = new EventEmitter<any>();
     this.beatLineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.onDownLines = [];
@@ -44,22 +47,40 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.beats = [ ...this.initialBeats];
 
     this.isDataLoaded = true;
-    this.cdRef.detectChanges();
 
+
+    this.setupBeats();
+    this.setupEditorCallback();
+
+    this.setupSubscription();
+  }
+
+  private setupSubscription() {
+    this.updateBeatsEvent.subscribe(update => {
+      this.beats = [...update.beats]
+      this.isDmoFinished = update.isFinished;
+
+      this.setupBeats();
+      this.setupEditorCallback();
+    });
+  }
+
+  private setupBeats() {
+    this.cdRef.detectChanges();
     this.setupTimePickerValues();
     this.setupBeatDataHolderValuesAndMetaData();
     this.setupLastBeatMargin();
     this.cdRef.detectChanges();
-
-
-    this.beatsSet.emit({
-        timePickers: this.timePickersElements, 
-        beats: this.beatDataHolderElements, 
-        beatMetadata: this.beatsMetaData,
-        beatsIds: this.beatsIds
-      });
   }
 
+  private setupEditorCallback() {
+    this.beatsSet.emit({
+      timePickers: this.timePickersElements, 
+      beats: this.beatDataHolderElements, 
+      beatMetadata: this.beatsMetaData,
+      beatsIds: this.beatsIds
+    });
+  }
 
   // -------- [start] beat data holders
 
@@ -71,12 +92,23 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   setBeatKeyMetaData($event: any): void {
-  
+    let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 13) { // enter
+      $event.preventDefault();
+      this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
+      return;
+    }
+
     this.onDownLines = this.calculateLineCount($event.target);
 
   }
 
   setBeatValue($event: any): void {
+    let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 13) { // enter
+      $event.preventDefault();
+      return;
+    }
 
     this.onUpLines = this.calculateLineCount($event.target);
 
@@ -123,6 +155,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   private setupBeatDataHolderValuesAndMetaData(): void {
+    this.beatsMetaData = [];
+    this.beatsIds = [];
+
     this.beatDataHolderElements.forEach((beatDataHolder) => {
       let beat = this.beats.find(b => b.beatId == this.selectBeatIdFromBeatDataHolder(beatDataHolder.nativeElement));
       if (!beat) {
@@ -206,63 +241,115 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   private setupTimePickerValues(): void {
     this.timePickersElements.forEach((picker) => {
-      let beat = this.beats.find(b => b.beatId == this.selectBeatIdFromTimePicker(picker));
+      let beat = this.beats.find((b: NnaBeatDto)=> b.beatId == this.selectBeatIdFromTimePicker(picker));
       if (!beat) {
         return;
       }
 
-      picker.nativeElement.value = this.getTimeView(beat.time, true);
+      picker.nativeElement.value = this.adjastSingleMinutesAndSeconds(this.getTimeView(beat.time, true));;
     });
   }
 
-  private adjustMinutesAndSeconds(time: NnaBeatTimeDto): NnaBeatTimeDto {
-    if (time.hours < 0) {
-      time.hours = 0;
-    } else if (time.hours > 9) {
-      time.hours = 9;
+  private adjustInvalidMinutesAndSeconds(time: NnaBeatTimeDto): NnaBeatTimeDto {
+    if (time.hours != null) {
+      if (time.hours < 0) {
+        time.hours = 0;
+      } else if (time.hours > 9) {
+        time.hours = 9;
+      }
     }
 
-    if (time.minutes < 0) {
-      time.minutes = 0;
-    } else if (time.minutes > 60) {
-      time.minutes = 60;
+    if (time.minutes != null) {
+      if (time.minutes < 0) {
+        time.minutes = 0;
+      } else if (time.minutes > 60) {
+        time.minutes = 60;
+      }
     }
 
-    if (time.seconds < 0) {
-      time.seconds = 0;
-    } else if (time.seconds > 60) {
-      time.seconds = 60;
+    if (time.seconds != null) {
+      if (time.seconds < 0) {
+        time.seconds = 0;
+      } else if (time.seconds > 60) {
+        time.seconds = 60;
+      }
     }
     return time;
   }
 
   private getTimeView(time: NnaBeatTimeDto, adjast: boolean): string {
-    if (!time) {
+    if (time == null) {
       return this.defaultTimePickerValue;
     }
 
-    if (time.hours && !time.minutes && !time.seconds) {
-      if (adjast) {
-        time = this.adjustMinutesAndSeconds(time);
-      }
-      return `${time.hours}:00:00`;
-    }
-    if (time.hours && time.minutes && !time.seconds) {
-      if (adjast) {
-        time = this.adjustMinutesAndSeconds(time);
-      }
-      return `${time.hours}:${time.minutes}:00`;
+    if (time.hours == null && time.minutes == null && time.seconds == null) {
+      return this.defaultTimePickerValue;
     }
 
     if (adjast) {
-      time = this.adjustMinutesAndSeconds(time);
+      time = this.adjustInvalidMinutesAndSeconds(time);
     }
-    return `${time.hours}:${time.minutes}:${time.seconds}`;
+
+    let timeString: string = '';
+    if (time.hours == null) {
+      timeString += '0:';
+    } else {
+      timeString += `${time.hours}:`;
+    }
+
+    if (time.minutes == null) {
+      timeString += '00:';
+    } else {
+      timeString += `${time.minutes}:`;
+    }
+
+    if (time.seconds == null) {
+      timeString += '00';
+    } else {
+      timeString += `${time.seconds}`;
+    }
+
+    return timeString;
   }
 
   private selectBeatIdFromTimePicker(picker: ElementRef): string {
     let beatSufix = 'time_picker_';
     return picker.nativeElement.getAttribute('id').substring(beatSufix.length);
+  }
+
+  private adjastSingleMinutesAndSeconds(time: string): string {
+    let minutesAndSeconds = time.split(":").slice(-2);
+    let timeString: string = `${time[0]}:`;
+    
+    if (minutesAndSeconds[0].length == 1) {
+      timeString += `0${minutesAndSeconds[0]}:`;
+    } else {
+      timeString += `${minutesAndSeconds[0]}:`;
+    }
+
+    if (minutesAndSeconds[1].length == 1) {
+      timeString += `0${minutesAndSeconds[1]}`;
+    } else {
+      timeString += `${minutesAndSeconds[1]}`;
+    }
+
+    return timeString;
+  }
+
+  private fillSingleMinutesAndSeconds(time: NnaBeatTimeDto): string {
+    let timeString: string = `${time.hours}:`;
+    if (time.minutes > 0 && time.minutes < 10) {
+      timeString += `0${time.minutes}:`;
+    } else {
+      timeString += `${time.minutes}:`;
+    } 
+
+    if (time.seconds > 0 && time.seconds < 10) {
+      timeString += `0${time.seconds}`;
+    } else {
+      timeString += `${time.seconds}`;
+    } 
+    return timeString;
   }
 
   private fillEmtpyTimeDto(value: string): string {
@@ -271,44 +358,12 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
     switch (time.length) {
       case 1: return `${time}:00:00`;
-      case 2: return `${time[0]}:${time[1]}0:00`;
+      case 2: return `${time[0]}:0${time[1]}:00`;
       case 3: return `${time[0]}:${time[1]}${time[2]}:00`;
-      case 4: return `${time[0]}:${time[1]}${time[2]}:${time[3]}0`;
+      case 4: return `${time[0]}:${time[1]}${time[2]}:0${time[3]}`;
       case 5: return `${time[0]}:${time[1]}${time[2]}:${time[3]}${time[4]}`;
       default: return this.defaultTimePickerValue;
     }
-  }
-
-  private convertTimeToDto(value: string): NnaBeatTimeDto {
-    let time = value.replace(/:+/g, '');
-    time = time.replace(/ +/g, '0');
-    
-    var timeDto = new NnaBeatTimeDto();
-    timeDto.hours = 0;
-    timeDto.minutes = 0;
-    timeDto.seconds = 0;
-
-    if (time.length == 1) {
-      timeDto.hours = +time[0];
-      return timeDto;
-    } else if (time.length > 1 && time.length <= 3) {
-      timeDto.hours = +time[0];
-      if (time.length == 2) {
-        timeDto.minutes = +time[1];
-      } else {
-        timeDto.minutes = +`${time[1]}${time[2]}`;
-      }
-      return timeDto;
-    }
-
-    timeDto.hours = +time[0];
-    timeDto.minutes = +`${time[1]}${time[2]}`;
-    if (time.length == 4) {
-      timeDto.seconds = +time[3];
-    } else {
-      timeDto.seconds = +`${time[3]}${time[4]}`;
-    }
-    return timeDto;
   }
 
   private replaceNextSpaceWithCharacter(nativeElement: any, value: number) : boolean {

@@ -45,6 +45,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   // events
   updateGraphEvent: EventEmitter<any>;
+  updateBeatsEvent: EventEmitter<any>;
 
   // ------ [start] not state
   private isDmoFinised: boolean;
@@ -64,13 +65,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     private toastr: Toastr,
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
     // private editorChangeDetectorService: EditorChangeDetectorService,
-    //private dataGenerator: BeatGeneratorService
+    private dataGenerator: BeatGeneratorService
     ) {
       this.beatsUpdating = false; 
       this.beatWasSet = false;
       this.updateGraphEvent = new EventEmitter<any>();
+      this.updateBeatsEvent = new EventEmitter<any>();
       this.beatsMetaData = [];
       this.beatsIds = [];
     }
@@ -90,11 +92,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       // await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
       // this.beatsToSend = [];
       // this.beatsUpdating = false;
-
-      // console.log('==================');
-      // console.log('beats were updated');
-      // console.log(updates);
-      // console.log(this.currentDmo.beats);
 
     //});
 
@@ -290,6 +287,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   beatsSet(calculatedBeats: any): void {
     console.log(calculatedBeats);
+    console.log('beat set');
     this.beatElements = calculatedBeats.beats;
     this.timePickerElements = calculatedBeats.timePickers;
     this.beatsMetaData = calculatedBeats.beatMetadata
@@ -326,15 +324,29 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
 
+  selectBeatDtos(): NnaBeatDto[] {
+    return this.beatElements.map((beatElement, i) => {
+  
+      let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
+      let beat: NnaBeatDto = {
+        beatId: beatId,
+        order: i,
+        text: beatElement.nativeElement.innerHTML,
+        time: this.buildTimeDtoFromBeat(beatId)
+      }
+      return beat;
+    });
+  }
+
 
   // ------- [start] CRUD
   
-  finishDmo() {
+  finishDmo(): void {
     this.isDmoFinised = !this.isDmoFinised;
     this.updatePlotPoints();
   }
 
-  lineCountChanged(change: any) {
+  lineCountChanged(change: any): void {
     this.beatsIds.forEach((beatId, i) => {
       if (beatId == change.beatId) {
         this.beatsMetaData[i] = { lineCount: change.newLineCount.lineCount, lines: change.newLineCount.lines };
@@ -345,6 +357,22 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updatePlotPoints();
   }
 
+  addBeat(fromBeat: any): void {
+    let indexToInsert: number;
+    this.beatsIds.forEach((beatId, i) => {
+      if (beatId == fromBeat.beatIdFrom) {
+        indexToInsert = i;
+        return;
+      }
+    });
+
+    let beats = this.selectBeatDtos();
+    beats.splice(indexToInsert + 1, 0 , this.dataGenerator.createNnaBeatWithDefaultData())
+    beats = this.orderBeats(beats);
+
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised });
+    this.updatePlotPoints();
+  }
 
   private updatePlotPoints() {
     let newPlotPoints = []
@@ -357,21 +385,86 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
  // ------- [end] CRUD
 
+  private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
+    let shouldIncrement: boolean = false;
+    beats.forEach((beat, i) => {
+      if (beat.order == -1) {
+        beat.order = i - 1;
+        shouldIncrement = true;
+      }
+      if (shouldIncrement) {
+        beat.order = beat.order + 1;
+      }
+    });
+    return beats;
+  } 
 
+  private buildTimeDtoFromBeat(beatId: string): NnaBeatTimeDto {
+    let selectedTimePickerElement: any;
+    this.timePickerElements.forEach(timePicker => {
+      if (this.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
+        selectedTimePickerElement = timePicker.nativeElement;
+        return;
+      }
+    })
+    
+    return this.convertTimeToDto(selectedTimePickerElement.value);
+  }
 
+  private selectBeatIdFromBeatDataHolder(nativeElement: any): string {
+    let beatSufix = 'beat_';
+    return nativeElement.getAttribute('id').substring(beatSufix.length);
+  }
+
+  private selectBeatIdFromTimePicker(nativeElement: any): string {
+    let beatSufix = 'time_picker_';
+    return nativeElement.getAttribute('id').substring(beatSufix.length);
+  }
   
+  private convertTimeToDto(value: string): NnaBeatTimeDto {
+    let time = value.replace(/:+/g, '');
+    time = time.replace(/ +/g, '0');
+    
+    var timeDto = new NnaBeatTimeDto();
+    timeDto.hours = 0;
+    timeDto.minutes = 0;
+    timeDto.seconds = 0;
+
+    if (time.length == 1) {
+      timeDto.hours = +time[0];
+      return timeDto;
+    } else if (time.length > 1 && time.length <= 3) {
+      timeDto.hours = +time[0];
+      if (time.length == 2) {
+        timeDto.minutes = +time[1];
+      } else {
+        timeDto.minutes = +`${time[1]}${time[2]}`;
+      }
+      return timeDto;
+    }
+
+    timeDto.hours = +time[0];
+    timeDto.minutes = +`${time[1]}${time[2]}`;
+    if (time.length == 4) {
+      timeDto.seconds = +time[3];
+    } else {
+      timeDto.seconds = +`${time[3]}${time[4]}`;
+    }
+    return timeDto;
+  }
+
   private buildDto() {
     let dmo = new NnaDmoDto();
     
     let time1 = new NnaBeatTimeDto();
     time1.hours = 0;
-    time1.minutes = 13;
-    time1.seconds = 25;
+    time1.minutes = 9;
+    time1.seconds = 13;
 
     let time2 = new NnaBeatTimeDto();
-    time2.hours = 0;
-    time2.minutes = 15;
-    time2.seconds = 40;
+    time2.hours = 1;
+    time2.minutes = 18;
+    time2.seconds = 10;
 
     let beat1 = new NnaBeatDto();
     beat1.beatId = "5164A99B-2C5C-4081-95AC-14F5237E1473";
@@ -475,7 +568,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   //   }
 
   //   this.beatsToSend = this.copyBeats(copiedBeats);
-  //   console.log(`${changeType} added to array`);
   //   this.editorChangeDetectorService.detect(changeType);
   // }
 

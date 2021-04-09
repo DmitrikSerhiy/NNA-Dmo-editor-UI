@@ -47,6 +47,7 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     this.isDataLoaded = true;
 
     this.renderGraph();
+    this.setupEditorCallback();
     this.setupSubscription();
   }
 
@@ -58,6 +59,7 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
       this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
 
       this.renderGraph();
+      this.setupEditorCallback();
     });
   }
 
@@ -66,6 +68,9 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     this.setupPlotPointsMargin();
     this.setupCoord();
     this.cdRef.detectChanges();
+  }
+
+  private setupEditorCallback() {
     this.plotPointsSet.emit({elements: this.plotPointsElements});
   }
 

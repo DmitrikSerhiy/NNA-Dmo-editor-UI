@@ -29,7 +29,9 @@
        <app-beats-flow 
             [initialBeats]="buildBeatsData()"
             [isDmoFinished]="isDmoFinised"
+            [updateBeatsEvent]="updateBeatsEvent"
             (beatsSet)="beatsSet($event)"
+            (addBeat)="addBeat($event)"
             (lineCountChanged)="lineCountChanged($event)">
        </app-beats-flow>
 
