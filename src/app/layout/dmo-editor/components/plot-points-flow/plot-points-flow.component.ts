@@ -7,7 +7,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 })
 export class PlotPointsFlowComponent implements  AfterViewInit  {
 
-  @Input() initialPlotPoints: any[]; //{beatId: string, lineCount: number, order: number}
+  @Input() initialPlotPoints: any[];
   @Input() isDmoFinished: boolean;
   @Input() updateGraph: EventEmitter<any>;
   @Output() plotPointsSet: EventEmitter<any>;
@@ -17,7 +17,6 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
   private plotPointContainerSize: number;
   private defaultBeatMarginBottom: number;
-  private currentHeight: number;
   private plotPointRadius: number;
   private initialGraphTopMargin: number;
   
@@ -36,7 +35,6 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     this.initialGraphTopMargin = 16;
     this.defaultBeatMarginBottom = 16;
     this.plotPointRadius = 6;
-    this.currentHeight = 0;
     this.plotPointsSet = new EventEmitter<any>();
   }
 
@@ -50,6 +48,9 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     this.setupEditorCallback();
     this.setupSubscription();
   }
+
+  //#region  general settings
+
 
   private setupSubscription(): void {
     this.updateGraph.subscribe(update => {
@@ -70,6 +71,10 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     this.cdRef.detectChanges();
   }
 
+  //#endregion
+
+
+  //#region plot points graph
   private setupEditorCallback() {
     this.plotPointsSet.emit({elements: this.plotPointsElements});
   }
@@ -129,5 +134,5 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     return (this.plotPointContainerSize / 2) * (this.plotPoints[i].plotPointMetaData.lines - 2) + this.defaultBeatMarginBottom;
   }
 
-
+  //#endregion
 }

@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
-import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 
 @Component({
   selector: 'app-beats-flow',
@@ -50,16 +50,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   ngAfterViewInit(): void {
     this.beats = [ ...this.initialBeats];
-
     this.isDataLoaded = true;
-
 
     this.setupBeats();
     this.setupEditorCallback();
-
     this.setupSubscription();
   }
 
+  //#region general settings
   private setupSubscription() {
     this.updateBeatsEvent.subscribe(update => {
       this.beats = [...update.beats]
@@ -83,9 +81,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.setupBeatDataHolderValuesAndMetaData();
     this.setupLastBeatMargin();
     this.cdRef.detectChanges();
-
-    console.log(timePickerToFocus);
-    console.log(beatIdToFocus);
 
     if (timePickerToFocus != null) {
       this.beatsIds.forEach((beatId, i) => {
@@ -116,7 +111,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
     });
   }
 
-  // -------- [start] beat data holders
+  //#endregion
+
+
+  //#region beat data holders
 
   beatContainerClick($event: any): void {
     if ($event.target.className == 'beat-data-holder-container') {
@@ -317,11 +315,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
     sel.addRange(range);
   }
 
-  // -------- [end] beat data holders
+  //#endregion
 
 
-
-  // -------- [start] time picker
+  //#region time picker
 
   setTimePickerKeyMetaData(event: any): void {
     let key = event.which || event.keyCode || event.charCode;
@@ -614,6 +611,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
     }
   }
 
-  // -------- [end]  time picker
+  //#endregion
 
 }

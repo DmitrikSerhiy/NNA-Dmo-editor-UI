@@ -2,25 +2,17 @@ import { ShortDmoDto } from './../models';
 import { InitialPopupComponent } from './components/initial-popup/initial-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { EditorHub } from './services/editor-hub.service';
-
 import { Toastr } from '../../shared/services/toastr.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
-import { BeatDto, DmoDto, DmoDtoAsJson, PlotPointDto } from './models/editorDtos';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { EditorChangeDetectorService } from './helpers/editor-change-detector';
-// import { ChangeType } from './models/changeTypes';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto } from './models/dmo-dtos';
-
-
-
 
 @Component({
   selector: 'app-dmo-editor',
@@ -112,6 +104,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
 
+  //#region general settings
 
   async createAndInitDmo() {
     const popupResult = await this.finalizePopup();
@@ -285,6 +278,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  //#endregion
+
+
+  //#region initial load
+
   beatsSet(calculatedBeats: any): void {
     console.log(calculatedBeats);
     console.log('beat set');
@@ -335,10 +333,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  //#endregion
 
 
-
-  // ------- [start] CRUD
+  //#region CRUD
   
   finishDmo(): void {
     this.isDmoFinised = !this.isDmoFinised;
@@ -406,9 +404,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updateGraphEvent.emit({newplotPoints: newPlotPoints, isFinished: this.isDmoFinised});
   }
 
- // ------- [end] CRUD
+  //#endregion
 
 
+  //#region helpers
 
   private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
     let shouldIncrement: boolean = false;
@@ -516,91 +515,24 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     return dmo;
   }
 
-    // addBeat() {
-  //   let beatsData: any[] = [];
-  //   this.selectPlotPointsIds().forEach((beatId, i) => {
-  //     beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
-  //   });
+  private async closeEditorAndClearData() {
+    await this.editorHub.abortConnection();
+    this.dmoId = '';
+    this.isDmoInfoSet = false;
+    this.isInitialPopupOpen = false;
+    this.matModule.closeAll();
+    this.initialPopup = null;
+    this.currentShortDmo = null;
 
-  //   beatsData.push({beatId: 'c3f27580-c727-4513-810b-3d595bc08956', lineCount: 1, order: 2});//generate plot point id
-  //   this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: false, graphHeigth: 300});
-  // }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
-  // removeBeat() {
-  //   let beatsData: any[] = [];
-  //   this.selectPlotPointsIds().forEach((beatId, i) => {
-  //     beatsData.push({beatId: beatId, lineCount: 2, order: i}); // calculate lineCount here
-  //   });
+  //#endregion
 
-  //   beatsData.pop()
-  //   this.updateGraphEvent.emit({newplotPoints: beatsData, isFinished: false, graphHeigth: 300});
-  // }
 
-  // private updateBeats(change: any, changeType: ChangeType) {    
-  //   let copiedBeats = this.copyBeats(this.currentDmo.beats);
 
-  //   switch (changeType) { 
-  //     case ChangeType.plotPointTimeChanged: {
-  //       copiedBeats.forEach(beat => {
-  //         if (beat.beatId == change.beatId) {
-  //           beat.plotPoint = change.plotPoint;
-  //         }
-  //         return beat;
-  //       });
-  //       this.updateCurrDmo(copiedBeats);
-  //       break;
-  //     } case ChangeType.lineCountChanged: {
-  //       copiedBeats.forEach(beat => {
-  //         if (beat.beatId == change.beatData.beatId) {
-  //           beat.lineCount = change.newLineCount;
-  //         }
-  //         return beat;
-  //       });
-  //       this.updateCurrDmo(copiedBeats);
-  //       break;
-  //     } case ChangeType.beatAdded: {
-  //       let newBeat = this.dataGenerator.createBeatWithDefaultData();
-  //       let newOrder = change.currentBeat.order + 1;
-  //       newBeat.order = newOrder;
-  
-  //       copiedBeats.splice(change.currentBeat.order, 0, newBeat);
-  //       copiedBeats.forEach((item, index) => {
-  //         if (index > change.currentBeat.order) {
-  //           item.order =  item.order + 1;
-  //         }
-  //       });
-  //       this.updateCurrDmo(copiedBeats);
-  //       break;
-  //     } case ChangeType.beatRemoved: {
-  //       copiedBeats.splice(change.order - 1, 1);
-  //       copiedBeats.forEach((item, index) => {
-  //         if (index >= change.order - 1) {
-  //           item.order =  item.order - 1;
-  //         }
-  //       }); 
-  //       this.updateCurrDmo(copiedBeats);
-  //       break;
-  //     } case ChangeType.beatTextChanged: {
-  //       copiedBeats.forEach((beat: BeatDto) => {
-  //         let changedBeat = change.find(b => b.beatId == beat.beatId);
-  //         if (changedBeat != undefined) {          
-  //           beat.beatText = changedBeat.data;
-  //           return beat;
-  //         }
-  //         return beat;
-  //       });
-  //       this.updateCurrDmo(copiedBeats);
-  //       break;
-  //     } default: { return; }
-  //   }
 
-  //   this.beatsToSend = this.copyBeats(copiedBeats);
-  //   this.editorChangeDetectorService.detect(changeType);
-  // }
-
-  // private updateCurrDmo(beats: BeatDto[]) {
-  //   this.currentDmo.beats = this.copyBeats(beats);
-  // }
 
   // private copyBeats(beats: BeatDto[]) {
   //   return JSON.parse(JSON.stringify(beats, this.selectBeats), this.selectBeatsFromString);
@@ -624,56 +556,4 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   //   dmoWithJson.dmoId = this.dmoId;
   //   return dmoWithJson;
   // }
-
-  private async closeEditorAndClearData() {
-    await this.editorHub.abortConnection();
-    this.dmoId = '';
-    this.isDmoInfoSet = false;
-    this.isInitialPopupOpen = false;
-    this.matModule.closeAll();
-    this.initialPopup = null;
-    this.currentShortDmo = null;
-
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
-  
-  // lineCountChanged($event: any) {
-  //   this.updateBeats($event, ChangeType.lineCountChanged);
-  //   this.reRenderPlotFlowEvent.emit();
-  // }
-
-  // beatsTextChanged($event: any) { 
-  //   this.updateBeats($event, ChangeType.beatTextChanged);
-  // }
-
-  // focusCurrentBeatFromPicker($event: any) {
-  //   this.focusBeatEvent.emit($event.beat)
-  // }
-
-  // plotTimeChanged($event: any) {
-  //   if (!$event.noChanges) {
-  //     this.updateBeats($event.beat, ChangeType.plotPointTimeChanged);
-  //   }
-  
-  //   if ($event.focusBeat) {
-  //     this.focusBeatEvent.emit($event.beat)
-  //   }
-  // }
-  
-  // beatAdded($event) {
-  //   this.updateBeats($event, ChangeType.beatAdded);
-  //   this.reRenderPlotFlowEvent.emit({fromBeat: $event.currentBeat.beatId});
-  // }
-
-  // beatRemoved($event) {
-  //   this.updateBeats($event, ChangeType.beatRemoved);
-  //   this.reRenderPlotFlowEvent.emit();
-  // }
-
-  // focusTimePicker($event) {
-  //   this.focusTimpePickerEvent.emit($event.beatId);
-  // }
-
 }

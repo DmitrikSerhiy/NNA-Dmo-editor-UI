@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ChangeType } from '../models/changeTypes';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +23,7 @@ export class EditorChangeDetectorService {
   }
 
 
-  detect(changeType: ChangeType): void {
+  detect(changeType: any): void {
     this.state = this.state + 1; 
     this.changes.push(changeType.toString());
     this.pauseAndEmitChanges(this.state)
