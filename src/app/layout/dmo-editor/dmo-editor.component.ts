@@ -488,7 +488,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     let beat1 = new NnaBeatDto();
     beat1.beatId = "5164A99B-2C5C-4081-95AC-14F5237E1473";
     beat1.order = 0;
-    beat1.text = "second beat details ome beat details some beat details some beat detailssome beat details some beat detailssome beat details some beat details some beat detailssome beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai";
+    beat1.text = "second eat detailssomeme beat details soails  ome ome beat detailssome beat detai";
     beat1.time = time1;
 
     let beat2 = new NnaBeatDto();

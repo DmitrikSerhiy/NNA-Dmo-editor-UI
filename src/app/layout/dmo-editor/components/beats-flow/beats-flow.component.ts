@@ -90,12 +90,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
   beatContainerClick($event: any): void {
     if ($event.target.className == 'beat-data-holder-container') {
       $event.target.children[0].focus();
-      this.shiftCursorToTheEndBeatText($event.target);
+      this.shiftCursorToTheEndOfChildren($event.target);
     }
   }
 
   setBeatKeyMetaData($event: any): void {
     let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+        this.focusNextPreviousBeat(key, $event);
+      return;
+    }
+    
     if (key == 13) { // enter
       $event.preventDefault();
       this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
@@ -112,6 +117,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   setBeatValue($event: any): void {
     let key = $event.which || $event.keyCode || $event.charCode;
+    
+    if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+      return;
+    }
+
     if (key == 13) { // enter
       $event.preventDefault();
       return;
@@ -135,6 +145,38 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   finalizeBeat($event: any): void {
 
+  }
+
+  private focusNextPreviousBeat(key: number, $event: any): void {
+    if (key == 38 || key == 37) { // up or left
+      if (document.getSelection().focusOffset == 0) {
+        this.beatsIds.forEach((beatId, i) => {
+          if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
+            if (i != 0) {
+              let element = this.beatDataHolderElements.toArray()[i - 1].nativeElement.parentElement; 
+              $event.preventDefault();
+              this.shiftCursorToTheEndOfChildren(element);
+              return;
+            }
+          }
+        });
+      }
+      return;
+    } else if (key == 40 || key == 39) { // down or right
+       if (document.getSelection().focusOffset == $event.target.innerHTML.length || document.getSelection().focusOffset == 1) { // weird bug with focusOffset == 1 after focus from lower beat
+        this.beatsIds.forEach((beatId, i) => {
+          if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
+            if (i != this.beatsIds.length - 1) {
+              let element = this.beatDataHolderElements.toArray()[i + 1].nativeElement.parentElement; 
+              $event.preventDefault();
+              this.shiftCursorToTheEndOfChildren(element);
+              return;
+            }
+          }
+        });
+      }
+      return;
+    }
   }
 
   private checkLineCounts(element: any) {
@@ -193,14 +235,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
     return beatHolder.getAttribute('id').substring(beatSufix.length);
   }
 
-  private shiftCursorToTheEndBeatText(element: any) {
+  private shiftCursorToTheEndOfChildren(element: any) {
     var range = document.createRange();
     var sel = window.getSelection();
     
     if (!element.children) {
       return;
     }
-    if (element.children[0].innerText.length > 0) {
+
+    if (element.children[0].innerHTML.length > 0) {
       range.setStart(element.children[0], 1);
     } else { 
       range.setStart(element.children[0], 0);
