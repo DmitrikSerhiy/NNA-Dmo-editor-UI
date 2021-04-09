@@ -97,13 +97,18 @@ export class BeatsFlowComponent implements AfterViewInit  {
   setBeatKeyMetaData($event: any): void {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
-        this.focusNextPreviousBeat(key, $event);
+      this.focusNextPreviousBeat(key, $event);
       return;
     }
     
     if (key == 13) { // enter
       $event.preventDefault();
       this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
+      return;
+    }
+
+    if (key == 9) { // tab
+      $event.preventDefault();
       return;
     }
 
@@ -126,8 +131,12 @@ export class BeatsFlowComponent implements AfterViewInit  {
       $event.preventDefault();
       return;
     }
-
     
+    if (key == 9) { // tab
+      $event.preventDefault();
+      return;
+    }
+
     if (key == 8 || key == 46) { // delete or backspace
       let text = $event.target.innerHTML;
       if (text.replace(/\s+/g, '').length == 0 && this.beatsIds.length != 1) {
@@ -148,7 +157,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   private focusNextPreviousBeat(key: number, $event: any): void {
-    if (key == 38 || key == 37) { // up or left
+    if (key == 38) { // up 
       if (document.getSelection().focusOffset == 0) {
         this.beatsIds.forEach((beatId, i) => {
           if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
@@ -176,6 +185,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
         });
       }
       return;
+    } else if (key == 37) {
+      if (document.getSelection().focusOffset == 0) {
+        this.beatsIds.forEach((beatId, i) => {
+          if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
+            let element = this.timePickersElements.toArray()[i].nativeElement;
+            element.focus();
+            element.setSelectionRange(1,1);
+            return;
+          }
+        })
+      }
     }
   }
 
@@ -256,6 +276,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   // -------- [end] beat data holders
 
+
+
   // -------- [start] time picker
 
   setTimePickerKeyMetaData(event: any): void {
@@ -265,8 +287,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
         key != 8 && key != 46 &&    // delete and backspace
         key != 13 &&                // enter
         key != 32 &&                // space
-        key != 9 &&                 // tab
+        key == 9 &&                 // tab
         !(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
+      event.preventDefault();
+      return;
+    }
+
+    if (key == 13) {
+      this.focusSiblingBeat(event);
       event.preventDefault();
       return;
     }
@@ -274,6 +302,18 @@ export class BeatsFlowComponent implements AfterViewInit  {
     if (key == 8 || key == 46 ) {
       event.preventDefault();
       this.shiftCursorOnColon(event.target, key);
+      return;
+    }
+
+    if (key == 39 && event.target.selectionStart == 7) {
+      this.focusSiblingBeat(event);
+      event.preventDefault();
+      return;
+    }
+
+    if (key == 40 || key == 38) {
+      this.focusPreviousNextTimePicker(event, key);
+      event.preventDefault();
       return;
     }
 
@@ -285,6 +325,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   setTimePickerValue(event: any): void {
     let key = event.which || event.keyCode || event.charCode;
+    if (key == 13) {
+      event.preventDefault();
+      return;
+    }
+
     if (key == 8 || key == 46 ) {
       this.replaceRemovedCharacterWithSpace(event.target, key);
       return;
@@ -300,9 +345,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
     event.target.value = this.fillEmtpyTimeDto(event.target.value)
   }
 
+  prepareTimePicker(event: any): void {
+    if (event.target.value == this.defaultTimePickerValue) {
+      event.target.value = " :  :  ";
+    }
+  }
+
   private setupTimePickerValues(): void {
     this.timePickersElements.forEach((picker) => {
-      let beat = this.beats.find((b: NnaBeatDto)=> b.beatId == this.selectBeatIdFromTimePicker(picker));
+      let beat = this.beats.find((b: NnaBeatDto)=> b.beatId == this.selectBeatIdFromTimePicker(picker.nativeElement));
       if (!beat) {
         return;
       }
@@ -373,9 +424,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
     return timeString;
   }
 
-  private selectBeatIdFromTimePicker(picker: ElementRef): string {
+  private selectBeatIdFromTimePicker(nativeElement: any): string {
     let beatSufix = 'time_picker_';
-    return picker.nativeElement.getAttribute('id').substring(beatSufix.length);
+    return nativeElement.getAttribute('id').substring(beatSufix.length);
   }
 
   private adjastSingleMinutesAndSeconds(time: string): string {
@@ -472,6 +523,39 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   private replaceWith(value: string, index: number, replace: string) {
     return `${value.substr(0, index)}${replace}${value.substr(index + 1)}`;
+  }
+
+  private focusSiblingBeat($event: any) {
+    this.beatsIds.forEach((beatId, i) => {
+      if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
+        let element = this.beatDataHolderElements.toArray()[i].nativeElement.parentElement; 
+        this.shiftCursorToTheEndOfChildren(element);
+        return;
+      
+      }
+    });
+  }
+
+  private focusPreviousNextTimePicker($event, key) {
+    if (key == 38) { // up
+      this.beatsIds.forEach((beatId, i) => {
+        if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
+          if (i != 0) {
+            this.timePickersElements.toArray()[i - 1].nativeElement.focus(); 
+            return;
+          }
+        }
+      });
+    } else if (key == 40) { // down
+      this.beatsIds.forEach((beatId, i) => {
+        if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
+          if (i != this.beatsIds.length - 1) {
+            this.timePickersElements.toArray()[i + 1].nativeElement.focus(); 
+            return;
+          }
+        }
+      });
+    }
   }
 
   private shiftCursorOnColon(nativeElement: any, key: number): void {

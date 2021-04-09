@@ -13,7 +13,8 @@
                 placeholder="h:mm:ss" 
                 (keydown)="setTimePickerKeyMetaData($event)"
                 (keyup)="setTimePickerValue($event)"
-                (focusout)="finalizeTimePicker($event)"/>
+                (focusout)="finalizeTimePicker($event)"
+                (focusin)="prepareTimePicker($event)"/>
         </div>
 
         <div class="beat-data-holder-container" (click)="beatContainerClick($event)">
