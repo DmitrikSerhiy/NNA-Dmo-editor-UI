@@ -34,33 +34,6 @@
             (lineCountChanged)="lineCountChanged($event)">
        </app-beats-flow>
 
-        <!-- <div class="editor-plot-flow">
-            <app-plot-flow 
-                [currentDmo]="currentDmo" 
-                [finishDMO]="finishDmoEvent"
-                [reRender]="reRenderPlotFlowEvent"
-                [focusTimpePicker]="focusTimpePickerEvent"
-                (plotPointChanged)="plotTimeChanged($event)"
-                (focusCurrentBeatFromPicker)="focusCurrentBeatFromPicker($event)">
-            </app-plot-flow>
-        </div>
-
-        <div class="editor-board">
-
-            
-            <div class="beats-wrapper">
-                <app-beats-container 
-                    [currentDmo]="currentDmo" 
-                    [focusBeat]="focusBeatEvent"
-                    (changeLine)="changeLine($event)"
-                    (lineCountChanged)="lineCountChanged($event)"
-                    (beatsTextChanged)="beatsTextChanged($event)"
-                    (beatAdded)="beatAdded($event)"
-                    (beatRemoved)="beatRemoved($event)"
-                    (focusTimePicker)="focusTimePicker($event)">
-                </app-beats-container>
-            </div>
-        </div> -->
     </div>
 
     <div *ngIf="beatsLoading" class="loader-container">
