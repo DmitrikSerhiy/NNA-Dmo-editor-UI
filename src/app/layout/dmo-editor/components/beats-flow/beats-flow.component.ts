@@ -14,6 +14,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
   @Output() beatsSet: EventEmitter<any>;
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() addBeat: EventEmitter<any>;
+  @Output() removeBeat: EventEmitter<any>;
 
   isDataLoaded: boolean;
   beats: any[];
@@ -25,6 +26,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
   private beatContrainerMinHeight: number;
   private onDownLines: any;
   private onUpLines: any;
+  private valueBeforeRemove: string;
 
   @ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
   @ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
@@ -34,6 +36,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.beatsSet = new EventEmitter<any>();
     this.lineCountChanged = new EventEmitter<any>();
     this.addBeat = new EventEmitter<any>();
+    this.removeBeat = new EventEmitter<any>();
     this.beatLineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.onDownLines = [];
@@ -99,6 +102,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
       return;
     }
 
+    if (key == 8 || key == 46) { // delete or backspace
+      this.valueBeforeRemove = $event.target.innerHTML;
+    }
+
     this.onDownLines = this.calculateLineCount($event.target);
 
   }
@@ -108,6 +115,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
     if (key == 13) { // enter
       $event.preventDefault();
       return;
+    }
+
+    
+    if (key == 8 || key == 46) { // delete or backspace
+      let text = $event.target.innerHTML;
+      if (text.replace(/\s+/g, '').length == 0 && this.beatsIds.length != 1) {
+        if (this.valueBeforeRemove == '') {
+          this.removeBeat.emit({beatIdToRemove: this.selectBeatIdFromBeatDataHolder($event.target)});
+          return;
+        }
+      }
     }
 
     this.onUpLines = this.calculateLineCount($event.target);

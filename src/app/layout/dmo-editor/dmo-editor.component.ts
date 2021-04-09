@@ -374,6 +374,23 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.updatePlotPoints();
   }
 
+  removeBeat(fromBeat: any): void {
+    let indexToRemove: number;
+    this.beatsIds.forEach((beatId, i) => {
+      if (beatId == fromBeat.beatIdToRemove) {
+        indexToRemove = i;
+        return;
+      }
+    });
+
+    let beats = this.selectBeatDtos();
+    beats.splice(indexToRemove, 1);
+    beats = this.orderBeats(beats);
+
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised });
+    this.updatePlotPoints();
+  }
+
   private updatePlotPoints() {
     let newPlotPoints = []
     this.beatsIds.forEach((beatId, i) => {
@@ -391,6 +408,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       if (beat.order == -1) {
         beat.order = i - 1;
         shouldIncrement = true;
+      } else {
+        beat.order = i;
       }
       if (shouldIncrement) {
         beat.order = beat.order + 1;
