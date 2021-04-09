@@ -321,10 +321,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     return plotPointsData;
   }
 
-
-
-
-  selectBeatDtos(): NnaBeatDto[] {
+  private selectBeatDtos(): NnaBeatDto[] {
     return this.beatElements.map((beatElement, i) => {
   
       let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
@@ -337,6 +334,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       return beat;
     });
   }
+
+
 
 
   // ------- [start] CRUD
@@ -367,10 +366,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     });
 
     let beats = this.selectBeatDtos();
-    beats.splice(indexToInsert + 1, 0 , this.dataGenerator.createNnaBeatWithDefaultData())
+    let newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
+    beats.splice(indexToInsert + 1, 0 , newBeat)
     beats = this.orderBeats(beats);
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised });
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId });
     this.updatePlotPoints();
   }
 
@@ -387,7 +387,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     beats.splice(indexToRemove, 1);
     beats = this.orderBeats(beats);
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised });
+    let beatIdToFocus = indexToRemove == 0 
+      ? 0
+      : indexToRemove - 1;
+
+      console.log(beatIdToFocus);
+
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus] });
     this.updatePlotPoints();
   }
 
@@ -401,6 +407,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
  // ------- [end] CRUD
+
+
 
   private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
     let shouldIncrement: boolean = false;

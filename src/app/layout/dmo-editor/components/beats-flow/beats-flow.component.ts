@@ -63,17 +63,48 @@ export class BeatsFlowComponent implements AfterViewInit  {
       this.beats = [...update.beats]
       this.isDmoFinished = update.isFinished;
 
-      this.setupBeats();
+      if (update.timePickerToFocus) {
+        this.setupBeats(update.timePickerToFocus, null);
+      } else if (update.beatIdToFocus) {
+        this.setupBeats(null, update.beatIdToFocus);
+      } else {
+        this.setupBeats();
+      }
+
+
+  
       this.setupEditorCallback();
     });
   }
 
-  private setupBeats() {
+  private setupBeats(timePickerToFocus: string = null, beatIdToFocus: string = null) {
     this.cdRef.detectChanges();
     this.setupTimePickerValues();
     this.setupBeatDataHolderValuesAndMetaData();
     this.setupLastBeatMargin();
     this.cdRef.detectChanges();
+
+    console.log(timePickerToFocus);
+    console.log(beatIdToFocus);
+
+    if (timePickerToFocus != null) {
+      this.beatsIds.forEach((beatId, i) => {
+        if (beatId == timePickerToFocus) {
+          let element = this.timePickersElements.toArray()[i].nativeElement;
+          element.focus();
+          element.setSelectionRange(0,0);
+          return;
+        }
+      });
+    } else if (beatIdToFocus != null) {
+      this.beatsIds.forEach((beatId, i) => {
+        if (beatId == beatIdToFocus) {
+          let element = this.beatDataHolderElements.toArray()[i].nativeElement.parentElement;
+          this.shiftCursorToTheEndOfChildren(element);
+          return;
+        }
+      });
+    }
   }
 
   private setupEditorCallback() {
