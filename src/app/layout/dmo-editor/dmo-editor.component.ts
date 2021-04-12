@@ -303,6 +303,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.beatWasSet = true;
     this.cdRef.detectChanges();
 
+
+
     if (callbackResult.lastAction != null) {
       await this.syncBeats(callbackResult.lastAction);
     }
@@ -333,17 +335,27 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   private selectBeatDtos(): NnaBeatDto[] {
-    return this.beatElements.map((beatElement, i) => {
-  
-      let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
-      let beat: NnaBeatDto = {
-        beatId: beatId,
-        order: i,
-        text: beatElement.nativeElement.innerHTML,
-        time: this.buildTimeDtoFromBeat(beatId)
-      }
-      return beat;
+    // console.log(this.beatsMetaData);
+    // let dtos = this.beatElements
+      // .filter((element, i) => {
+      //   if (this.beatsMetaData[i].isDirty == true) {
+      //     this.beatsMetaData[i].isDirty = undefined;
+      //     return true;
+      //   }
+      //   return false;
+      // })
+      return this.beatElements.map((beatElement, i) => {
+        let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
+        let beat: NnaBeatDto = {
+          beatId: beatId,
+          order: i,
+          text: beatElement.nativeElement.innerHTML,
+          time: this.buildTimeDtoFromBeat(beatId)
+        }
+        return beat;
     });
+    // console.log(this.beatsMetaData);
+    // return dtos;
   }
 
   //#endregion

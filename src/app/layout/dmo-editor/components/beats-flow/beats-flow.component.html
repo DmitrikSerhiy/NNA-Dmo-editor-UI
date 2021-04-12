@@ -4,7 +4,7 @@
         <span>Start</span>
     </div>
 
-    <div class="beat-container" *ngFor="let beat of beats;">
+    <div class="beat-container" *ngFor="let beat of beats; let i = index">
         
         <div class="time-picker-container">
             <input #timePickers class="time-picker" 
@@ -12,7 +12,7 @@
                 maxlength='7' type="text" autocomplete="off" spellcheck = false    
                 placeholder="h:mm:ss" 
                 (keydown)="setTimePickerKeyMetaData($event)"
-                (keyup)="setTimePickerValue($event)"
+                (keyup)="setTimePickerValue($event, i)"
                 (focusout)="finalizeTimePicker($event)"
                 (focusin)="prepareTimePicker($event)"/>
         </div>
@@ -23,7 +23,8 @@
                 type="text" contenteditable="true" placeholder="beat details"
                 (keyup)="setBeatValue($event)"
                 (keydown)="setBeatKeyMetaData($event)"
-                (focusout)="finalizeBeat($event)">
+                (focusout)="finalizeBeat($event)"
+                (input)="beatChanged($event, i)">
             </div>
         </div>
 

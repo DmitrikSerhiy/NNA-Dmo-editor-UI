@@ -234,6 +234,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
     }
   }
 
+  beatChanged($event: any, index: number): void {
+    this.beatsMetaData[index].isDirty = true;
+  }
+
   private focusNextPreviousBeat(key: number, $event: any): void {
     if (key == 38) { // up 
       if (document.getSelection().focusOffset == 0) {
@@ -374,25 +378,25 @@ export class BeatsFlowComponent implements AfterViewInit  {
       return;
     }
 
-    if (key == 13) {
+    if (key == 13) { // enter
       this.focusSiblingBeat(event);
       event.preventDefault();
       return;
     }
 
-    if (key == 8 || key == 46 ) {
+    if (key == 8 || key == 46 ) { // delete and backspace
       event.preventDefault();
       this.shiftCursorOnColon(event.target, key);
       return;
     }
 
-    if (key == 39 && event.target.selectionStart == 7) {
+    if (key == 39 && event.target.selectionStart == 7) { // left and right arrows 
       this.focusSiblingBeat(event);
       event.preventDefault();
       return;
     }
 
-    if (key == 40 || key == 38) {
+    if (key == 40 || key == 38) { // up and down arrow
       this.focusPreviousNextTimePicker(event, key);
       event.preventDefault();
       return;
@@ -404,16 +408,22 @@ export class BeatsFlowComponent implements AfterViewInit  {
     }
   }
 
-  setTimePickerValue(event: any): void {
+  setTimePickerValue(event: any, index: number): void {
     let key = event.which || event.keyCode || event.charCode;
-    if (key == 13) {
+    if (key == 13) { // enter
       event.preventDefault();
       return;
     }
 
-    if (key == 8 || key == 46 ) {
+    if (key == 8 || key == 46 ) { // backspace and delete
       this.replaceRemovedCharacterWithSpace(event.target, key);
-      return;
+    }
+
+    if ((key >= 48 && key <= 59)  || // numbers
+        (key >= 96 && key <= 105) || // numbers on numeric keyboard
+         key == 32 ||                // space
+        (key == 8 || key == 46)) {   // backspace and delete
+          this.beatsMetaData[index].isDirty = true;
     }
   }
 
