@@ -12,7 +12,7 @@ import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto } from './models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson } from './models/dmo-dtos';
 
 @Component({
   selector: 'app-dmo-editor',
@@ -43,9 +43,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   private isDmoFinised: boolean;
   private beatsMetaData: any[];
   private beatsIds: string[];
-  private plotPointElements: QueryList<ElementRef>; //elements
-  private beatElements: QueryList<ElementRef>; //elements
-  private timePickerElements: QueryList<ElementRef>; //elements
+  private plotPointElements: QueryList<ElementRef>;   //elements
+  private beatElements: QueryList<ElementRef>;        //elements
+  private timePickerElements: QueryList<ElementRef>;  //elements
    // ------ [end] not state
 
   private unsubscribe$: Subject<void> = new Subject();
@@ -58,8 +58,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     public matModule: MatDialog,
     private sidebarManagerService: SidebarManagerService,
     private cdRef: ChangeDetectorRef,
-    // private editorChangeDetectorService: EditorChangeDetectorService,
     private dataGenerator: BeatGeneratorService
+    // private editorChangeDetectorService: EditorChangeDetectorService,
+
     ) {
       this.beatsUpdating = false; 
       this.beatWasSet = false;
@@ -74,15 +75,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     this.isInitialPopupOpen = false;
     this.beatsLoading = true;
 
-    this.initialDmoDto = this.buildDto();
-    this.isDmoFinised = this.initialDmoDto.isFinished;
-    this.beatsLoading = false;
-    this.isDmoInfoSet = true;
-
     //this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
       // this.beatsUpdating = true;
       // await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
-      // this.beatsToSend = [];
       // this.beatsUpdating = false;
 
     //});
@@ -91,12 +86,22 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       this.dmoId = params['dmoId'];
     });
 
-    // if (this.dmoId) {
-    //   await this.loadDmo();
-    // } else {
-    //   await this.createAndInitDmo();
-    // }
+    if (this.dmoId) {
+      await this.loadDmo();
+    } else {
+      await this.createAndInitDmo();
+    }
   }
+
+
+  async syncBeats(source: string) {
+    console.log(`sync from ${source}`);
+    let prepared = this.buildDmoWithBeatsJson();
+    console.log('prepared for saving');
+    console.log(prepared);
+    await this.editorHub.updateDmosJson(prepared);
+  }
+
 
   async ngOnDestroy() {
     await this.closeEditorAndClearData();
@@ -123,7 +128,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
     if (this.handleResponse(response)) {
       this.initDmo(response.data);
-      //this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+      this.createInitialDmo();
+
       this.beatsLoading = false;
       this.sidebarManagerService.collapseSidebar();
     }
@@ -166,17 +172,23 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       if (this.currentShortDmo.hasBeats) {
         this.loadBeats();
       } else {
-        // this.currentDmo.beats = [];
-        // this.currentDmo.beats.push(this.dataGenerator.createBeatWithDefaultData());
+        this.createInitialDmo();
+        this.sidebarManagerService.collapseSidebar();
       }
-
-      this.sidebarManagerService.collapseSidebar();
     }
   }
 
   async closeEditor() {
     await this.closeEditorAndClearData();
     this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
+  }
+
+  private createInitialDmo() {
+    this.initialDmoDto = new NnaDmoDto();
+    this.initialDmoDto.beats = [];
+    this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+    this.initialDmoDto.isFinished = false;
+    this.initialDmoDto.statusString = 'In progress';
   }
 
   private async finalizePopup(): Promise<ShortDmoDto> {
@@ -245,17 +257,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   private initDmo(result: ShortDmoDto) {
     this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
-    //this.currentDmo = new DmoDto();
 
     if (result.id) {
       this.currentShortDmo.id = result.id;
       this.dmoId = result.id;
-      //this.currentDmo.dmoId = result.id;
     }
     this.currentShortDmo.shortComment = result.shortComment;
     this.currentShortDmo.hasBeats = result.hasBeats;
-    //this.currentDmo.beats = [];
-
     this.isDmoInfoSet = true;
   }
 
@@ -265,14 +273,18 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
       
     $initialLoad.subscribe({
       next: (result: any) => { 
-        //let beats = Object.assign([], JSON.parse(result.beatsJson, this.selectBeatsFromString));
+        this.initialDmoDto = new NnaDmoDto();
+        this.initialDmoDto.beats = [];
 
-        // this.currentDmo.dmoId = result.dmoId;
-        // this.currentDmo.beats = result.beatsJson;
-        // this.currentDmo.isFinished = result.dmoStatusId == 1; //Completed
-        // this.currentDmo.statusString = result.dmoStatus;
-        this.initialDmoDto = this.buildDto();
+        let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
+
+        this.initialDmoDto.beats = beats;
+        this.initialDmoDto.isFinished = result.dmoStatusId == 1; //Completed
+        this.initialDmoDto.dmoId = result.dmoId;
+        this.initialDmoDto.statusString = result.dmoStatus;
+
         this.beatsLoading = false;
+        this.sidebarManagerService.collapseSidebar();
       },
       error: (err) => { this.toastr.error(err); }
     });
@@ -283,20 +295,21 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   //#region initial load
 
-  beatsSet(calculatedBeats: any): void {
-    console.log(calculatedBeats);
-    console.log('beat set');
-    this.beatElements = calculatedBeats.beats;
-    this.timePickerElements = calculatedBeats.timePickers;
-    this.beatsMetaData = calculatedBeats.beatMetadata
-    this.beatsIds = calculatedBeats.beatsIds;
+  async beatsSet(callbackResult: any): Promise<void> {
+    this.beatElements = callbackResult.beats;
+    this.timePickerElements = callbackResult.timePickers;
+    this.beatsMetaData = callbackResult.beatMetadata
+    this.beatsIds = callbackResult.beatsIds;
     this.beatWasSet = true;
     this.cdRef.detectChanges();
+
+    if (callbackResult.lastAction != null) {
+      await this.syncBeats(callbackResult.lastAction);
+    }
   }
 
-  plotPointsSet(plotPoints): void {
-    this.plotPointElements = plotPoints.elements;
-    console.log('plotPoints rendered');
+  plotPointsSet(callbackResult): void {
+    this.plotPointElements = callbackResult.elements;
   }
 
   buildBeatsData() {
@@ -368,7 +381,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     beats.splice(indexToInsert + 1, 0 , newBeat)
     beats = this.orderBeats(beats);
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId });
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add' });
     this.updatePlotPoints();
   }
 
@@ -391,7 +404,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
       console.log(beatIdToFocus);
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus] });
+    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove' });
     this.updatePlotPoints();
   }
 
@@ -479,40 +492,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     return timeDto;
   }
 
-  private buildDto() {
-    let dmo = new NnaDmoDto();
-    
-    let time1 = new NnaBeatTimeDto();
-    time1.hours = 0;
-    time1.minutes = 9;
-    time1.seconds = 13;
-
-    let time2 = new NnaBeatTimeDto();
-    time2.hours = 1;
-    time2.minutes = 18;
-    time2.seconds = 10;
-
-    let beat1 = new NnaBeatDto();
-    beat1.beatId = "5164A99B-2C5C-4081-95AC-14F5237E1473";
-    beat1.order = 0;
-    beat1.text = "second eat detailssomeme beat details soails  ome ome beat detailssome beat detai";
-    beat1.time = time1;
-
-    let beat2 = new NnaBeatDto();
-    beat2.beatId = "5164A99B-2C5C-4081-95AC-14F5237E9023";
-    beat2.order = 1;
-    beat2.text = "some beat details some beat details some beat details some beat details some beat details some beat detailssome beat details some beat details some beat details some beat detailssome beat details some beat detailssome beat details some beat details some beat detailssome beat detailssome beat details  some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai some beat detailssome beat details  ome beat details some beat details some beat detailssome beat detai";
-    // beat2.time = time2;
-    
-    let beats : NnaBeatDto[] = [];
-    beats.push(beat1);
-    beats.push(beat2);
-
-    dmo.dmoId = "5164A99B-2C5C-4081-95AC-14F5237E1341";
-    dmo.isFinished = false;
-    dmo.statusString = "some status";
-    dmo.beats = beats
-    return dmo;
+  private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
+    let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
+    dmoWithJson.json = JSON.stringify(this.selectBeatDtos());
+    dmoWithJson.dmoId = this.dmoId;
+    return dmoWithJson;
   }
 
   private async closeEditorAndClearData() {
@@ -529,31 +513,4 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   //#endregion
-
-
-
-
-
-  // private copyBeats(beats: BeatDto[]) {
-  //   return JSON.parse(JSON.stringify(beats, this.selectBeats), this.selectBeatsFromString);
-  // }
-
-  // private selectBeats = (key, value) => {
-  //   return key == "plotPoint"
-  //     ? { hour: value.hour.value, minutes: value.minutes.value, seconds: value.seconds.value }
-  //     : value;
-  // };
-
-  // private selectBeatsFromString = (key, value) => {
-  //   return key == "plotPoint"
-  //     ? new PlotPointDto().setAndGetTime(value.hour, value.minutes, value.seconds)
-  //     : value;
-  // };
-
-  // private buildDmoWithBeatsJson() : DmoDtoAsJson {
-  //   let dmoWithJson : DmoDtoAsJson = new DmoDtoAsJson(); 
-  //   dmoWithJson.json = JSON.stringify(this.beatsToSend, this.selectBeats);
-  //   dmoWithJson.dmoId = this.dmoId;
-  //   return dmoWithJson;
-  // }
 }

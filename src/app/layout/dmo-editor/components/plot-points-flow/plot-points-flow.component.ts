@@ -87,13 +87,15 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 
   private calculateGraphHeigth(plotPoints: any[]): string {
     let heigth: number = 0;
+    let allLines: number = 0;
     
     plotPoints.forEach((pp, i) => {
+      allLines += pp.plotPointMetaData.lines;
       if (plotPoints.length != i+1) {
         heigth += (this.plotPointContainerSize * pp.plotPointMetaData.lineCount);
         heigth += this.defaultBeatMarginBottom;
 
-        if (pp.plotPointMetaData.lines % 2 != 0 && pp.plotPointMetaData.lines != 1) {
+        if (pp.plotPointMetaData.lines % 2 != 0 && pp.plotPointMetaData.lines > 2) {
           heigth -= this.defaultBeatMarginBottom;
         }
 
@@ -107,7 +109,11 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
     if (this.isDmoFinished) {
       let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
 
-      heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize) - this.defaultBeatMarginBottom;
+      heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize);
+
+      if (latsPlotPoint.lines % 2 != 0 && latsPlotPoint.lines > 2) {
+        heigth -= this.defaultBeatMarginBottom;
+      }
     }
 
     return heigth.toString();

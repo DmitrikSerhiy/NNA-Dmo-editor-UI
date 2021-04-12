@@ -10,6 +10,7 @@ import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { Observable } from 'rxjs';
+import { NnaDmoWithBeatsAsJson } from '../models/dmo-dtos';
 
 @Injectable({
   providedIn: 'root'
@@ -117,17 +118,17 @@ export class EditorHub {
         }
     }
 
-    // async updateDmosJson(dmo: DmoDtoAsJson): Promise<EditorResponseDto> {
-    //     if (!this.isConnected) {
-    //         return;
-    //     }
-    //     try {
-    //         var response = await this.hubConnection.invoke('UpdateDmosJson', dmo);
-    //         return Promise.resolve<EditorResponseDto>(response);
-    //     } catch (err) {
-    //         return Promise.reject(err);
-    //     }
-    // }
+    async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<EditorResponseDto> {
+        if (!this.isConnected) {
+            return;
+        }
+        try {
+            var response = await this.hubConnection.invoke('UpdateDmosJson', dmo);
+            return Promise.resolve<EditorResponseDto>(response);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
     // ----- editor websocket methods ------
 
 

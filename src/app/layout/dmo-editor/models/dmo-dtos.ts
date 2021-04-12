@@ -33,3 +33,8 @@ export class NnaBeatTimeDto {
     minutes: number;
     seconds: number;
 }
+
+export class NnaDmoWithBeatsAsJson {
+    dmoId: string;
+    json: string; 
+}

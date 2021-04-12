@@ -4,6 +4,9 @@
         <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
         <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
         <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
+        <!-- <button class="nna-button nna-button-primary" (click)='save()'>Save</button> -->
+
+        <p *ngIf="!beatsLoading">dmo status:  {{this.initialDmoDto.statusString}}  </p>
 
         <div class="editor-board-tools"> 
             <div class="info-icons">
@@ -30,6 +33,7 @@
             [updateBeatsEvent]="updateBeatsEvent"
             (beatsSet)="beatsSet($event)"
             (addBeat)="addBeat($event)"
+            (syncBeats)="syncBeats($event)"
             (removeBeat)="removeBeat($event)"
             (lineCountChanged)="lineCountChanged($event)">
        </app-beats-flow>

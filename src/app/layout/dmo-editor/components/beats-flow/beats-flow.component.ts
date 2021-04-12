@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { time } from 'console';
 import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 
 @Component({
@@ -15,6 +16,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
   @Output() lineCountChanged: EventEmitter<any>;
   @Output() addBeat: EventEmitter<any>;
   @Output() removeBeat: EventEmitter<any>;
+  @Output() syncBeats: EventEmitter<any>;
 
   isDataLoaded: boolean;
   beats: any[];
@@ -22,6 +24,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
   private beatsIds: string[];
   private beatsMetaData: any[];
   private defaultTimePickerValue = '0:00:00';
+  private defaultEmptyTimePickerValue = ' :  :  ';
   private beatLineHeigth: number
   private beatContrainerMinHeight: number;
   private onDownLines: any;
@@ -39,6 +42,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.lineCountChanged = new EventEmitter<any>();
     this.addBeat = new EventEmitter<any>();
     this.removeBeat = new EventEmitter<any>();
+    this.syncBeats = new EventEmitter<any>();
     this.beatLineHeigth = 16;
     this.beatContrainerMinHeight = 32;
     this.onDownLines = [];
@@ -52,30 +56,51 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.beats = [ ...this.initialBeats];
     this.isDataLoaded = true;
 
-    this.setupBeats();
+    this.setupBeats(null, null, true);
     this.setupEditorCallback();
     this.setupSubscription();
   }
 
   //#region general settings
+
   private setupSubscription() {
     this.updateBeatsEvent.subscribe(update => {
       this.beats = [...update.beats]
       this.isDmoFinished = update.isFinished;
 
       if (update.timePickerToFocus) {
-        this.setupBeats(update.timePickerToFocus, null);
+        this.setupBeats(update.timePickerToFocus, null, false);
       } else if (update.beatIdToFocus) {
-        this.setupBeats(null, update.beatIdToFocus);
+        this.setupBeats(null, update.beatIdToFocus, false);
       } else {
-        this.setupBeats();
+        this.setupBeats(null, null, false);
       }
   
-      this.setupEditorCallback();
+      if (update.actionName != null) {
+        this.setupEditorCallback(update.actionName);
+      } else {
+        this.setupEditorCallback();
+      }
+      
     });
   }
 
-  private setupBeats(timePickerToFocus: string = null, beatIdToFocus: string = null) {
+  private focusLastIfInitial() {
+      let lastTimePickerElement = this.timePickersElements.last.nativeElement;
+      let lastBeatElement = this.beatDataHolderElements.last.nativeElement;
+      if (!lastBeatElement.innerHTML) {
+        if (lastTimePickerElement.value == this.defaultTimePickerValue) {
+          lastTimePickerElement.focus();
+          lastTimePickerElement.setSelectionRange(0,0);
+        } else {
+          lastBeatElement.focus();
+        }
+      } else {
+        this.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
+      }
+  }
+
+  private setupBeats(timePickerToFocus: string = null, beatIdToFocus: string = null, isInitial: boolean = false) {
     this.cdRef.detectChanges();
     this.setupTimePickerValues();
     this.setupBeatDataHolderValuesAndMetaData();
@@ -99,15 +124,18 @@ export class BeatsFlowComponent implements AfterViewInit  {
           return;
         }
       });
+    } else if (isInitial) {
+      this.focusLastIfInitial();
     }
   }
 
-  private setupEditorCallback() {
+  private setupEditorCallback(lastAction: string = null) {
     this.beatsSet.emit({
       timePickers: this.timePickersElements, 
       beats: this.beatDataHolderElements, 
       beatMetadata: this.beatsMetaData,
-      beatsIds: this.beatsIds
+      beatsIds: this.beatsIds,
+      lastAction: lastAction
     });
   }
 
@@ -194,7 +222,16 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   finalizeBeat($event: any): void {
+    if ($event.relatedTarget == null) {
+      this.syncBeats.emit('beat');
+    } else {
+      let timePickerId = this.selectBeatIdFromTimePicker($event.relatedTarget);
+      let beatId = this.selectBeatIdFromBeatDataHolder($event.target);
 
+      if (beatId != timePickerId) {
+        this.syncBeats.emit('beat');
+      }
+    }
   }
 
   private focusNextPreviousBeat(key: number, $event: any): void {
@@ -293,7 +330,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   private selectBeatIdFromBeatDataHolder(beatHolder: any): string {
     let beatSufix = 'beat_';
-    return beatHolder.getAttribute('id').substring(beatSufix.length);
+    let id = beatHolder.getAttribute('id');
+    if (!id) {
+      return null;
+    }
+    return id.substring(beatSufix.length);
   }
 
   private shiftCursorToTheEndOfChildren(element: any) {
@@ -377,17 +418,22 @@ export class BeatsFlowComponent implements AfterViewInit  {
   }
 
   finalizeTimePicker(event: any): void {
-    if (!event.target.value) {
-      event.target.value = this.defaultTimePickerValue;
-      return;
+    event.target.value = this.fillEmtpyTimeDto(event.target.value);
+    if (event.relatedTarget == null) {
+      this.syncBeats.emit('timePicker');
+    } else {
+      let beatId = this.selectBeatIdFromTimePicker(event.target);
+      let timePickerId = this.selectBeatIdFromBeatDataHolder(event.relatedTarget);
+
+      if (beatId != timePickerId) {
+        this.syncBeats.emit('timePicker');
+      }
     }
-    
-    event.target.value = this.fillEmtpyTimeDto(event.target.value)
   }
 
   prepareTimePicker(event: any): void {
     if (event.target.value == this.defaultTimePickerValue) {
-      event.target.value = " :  :  ";
+      event.target.value = this.defaultEmptyTimePickerValue;
     }
   }
 
@@ -466,7 +512,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
   private selectBeatIdFromTimePicker(nativeElement: any): string {
     let beatSufix = 'time_picker_';
-    return nativeElement.getAttribute('id').substring(beatSufix.length);
+    let id = nativeElement.getAttribute('id');
+    if (!id) {
+      return null;
+    }
+    return id.substring(beatSufix.length);
   }
 
   private adjastSingleMinutesAndSeconds(time: string): string {
