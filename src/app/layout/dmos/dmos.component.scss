@@ -1,3 +1,6 @@
+@import "src/styles/colors.scss";
+@import "src/styles/fonts-mixins.scss";
+
 .dmos-page {
   .dmo-loader-container {
     display: flex;
@@ -34,41 +37,6 @@
         padding-left: 2.5rem;
         &:focus {
           background-color: unset;
-        }
-      }
-    }
-  }
-
-  .dmos-table-wrapper {
-    table {
-      width: 100%;
-
-      .hoverable-element {
-        padding: 0.75rem;
-        cursor: pointer;
-      }
-      .hoverable-element:hover {
-        background: #f1f5f7;
-      }
-
-      .hoverable-element:active {
-        background: #c9d6dc;
-      }
-
-      ::ng-deep .mat-sort-header-container {
-        button {
-          outline: none;
-        }
-      }
-
-      .table-cell {
-        padding-left: 24px;
-      }
-
-      .clicked-row {
-        background: #c9d6dc;
-        &:hover {
-          background: #c9d6dc;
         }
       }
     }

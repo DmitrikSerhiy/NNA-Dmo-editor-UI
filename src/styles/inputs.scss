@@ -1,29 +1,24 @@
 @import "colors.scss";
 @import "fonts-mixins.scss";
 
-.nna-input-group {
-    position: relative;
-    padding: 15px 0 0;
-    margin-top: 10px;
-    width: 100%;
-
-    @keyframes inputIn {
-        from { background-size: 0% 1px; }
-        to   { background-size: 100% 1px }
-      }
-
-    @keyframes inputOut {
-        from { background-size: 100% 1px; }
-        to   { background-size: 0% 1px }
-    }
-
+@mixin nna-input-base() {
     .nna-input {
+        @keyframes inputIn {
+            from { background-size: 0% 1px; }
+            to   { background-size: 100% 1px }
+        }
+
+        @keyframes inputOut {
+            from { background-size: 100% 1px; }
+            to   { background-size: 0% 1px }
+        }
+
         background-color: transparent;
         border: none;
         outline: none;
         padding: 0;
         margin: 0;
-        padding: 7px 0;
+        // padding: 6px 0;
         width: 100%;
         max-width: 100%;
         vertical-align: bottom;
@@ -47,8 +42,32 @@
             background-position: bottom 0px left 0px;
             animation-delay: 150ms;
             animation-name: inputIn;
+            outline: none;
+            box-shadow: none;
+            border-radius: 0;
+            border-bottom: none !important;
         }
     }
+}
+
+@include nna-input-base();
+
+.nna-input {
+    padding: 0;
+    font-size: 1rem;
+}
+
+.nna-input-group {
+    position: relative;
+    padding: 15px 0 0;
+    margin-top: 10px;
+    width: 100%;
+
+    textarea {
+        margin-top: 14px !important;
+    }
+
+    @include nna-input-base();
 
     .nna-input {
         &::placeholder {
@@ -72,10 +91,6 @@
     }
       
     .nna-input:focus {
-        padding-bottom: 6px;  
-        border-width: 3px;
-        border-image-slice: 1;
-        
         ~ .nna-input-label {
             position: absolute;
             top: 0;

@@ -2,6 +2,7 @@
 @import "styles/buttons.scss";
 @import "styles/fonts-mixins.scss";
 @import "styles/inputs.scss";
+@import "styles/table.scss";
 
 
 .validation-wrapper {
@@ -31,6 +32,7 @@ html, body {
     @include primary-heading-font();
   }
 }
+
 
 
 

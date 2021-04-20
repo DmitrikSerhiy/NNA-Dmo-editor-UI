@@ -76,18 +76,7 @@
 }
 
 .nna-diabled-button {    
-    &:hover {
-        cursor: not-allowed;
-    }
-
-    i {
-        &:hover {
-            cursor: not-allowed;
-        }
-        &::before {
-            cursor: not-allowed;
-        }
-    }
+    pointer-events: none;
 }
 
 .nna-icon-button {

@@ -1,5 +1,8 @@
+@import "src/styles/colors.scss";
+@import "src/styles/fonts-mixins.scss";
+
 .dmo-collections {
-  border-bottom-width: 0;
+  border: none;
 
   @mixin collection-item {
     padding: 0.75rem 1.25rem;
@@ -7,7 +10,7 @@
     color: #000;
     display: flex;
     &:hover {
-      background-color: #f1f5f7;
+      // background-color: #f1f5f7;
       cursor: pointer;
     }
   }
@@ -30,10 +33,21 @@
 
   .collection-buttons-row {
     display: flex;
+    // border-bottom: 1px solid rgba(0,0,0,.125);
     .add-collection-button {
+      padding: 0 !important;
+      align-items: center;
       height: 40px;
-      @include collection-item;
+      @include collection-item();
+      @include primary-action-font();
       justify-content: flex-start;
+      display: flex;
+
+      .control-icon {
+        color: $primary-color;
+        margin-left: 1.1rem;
+        margin-right: .3rem;
+      }
     }
     .add-collection-button-partial-width {
       flex-basis: 80%;
@@ -51,12 +65,10 @@
 
         input {
           flex: 1 1 70%;
+          padding-left: 1.4rem;
         }
         button {
           margin: auto 5px;
-        }
-        .bg-secondary {
-          margin-right: 1.5rem;
         }
       }
       .validation-wrapper {
@@ -72,6 +84,7 @@
 
       justify-content: center;
       i {
+        color: $primary-color;
         margin: auto;
       }
     }
@@ -80,10 +93,9 @@
     width: 100%;
     display: flex;
     padding: 0;
-    border-width: 0px 0px 1px 0px;
-    border-radius: 0;
+    border: none;
+
     &:hover {
-      background-color: #f1f5f7;
       cursor: pointer;
 
       .remove-icon {
@@ -98,6 +110,7 @@
       padding: 0.75rem 1.25rem;
       width: 100%;
       display: flex;
+      @include secondary-font();
 
       .dmo-count {
         margin-left: auto;
@@ -110,8 +123,7 @@
       position: absolute;
       padding: 0.75rem 1.25rem;
       right: 0;
-      border: 1px black;
-      border-radius: 50%;
+      top: -5px;
       display: none;
       margin-left: auto;
       margin-right: 0.4rem;

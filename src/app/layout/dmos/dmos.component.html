@@ -15,13 +15,13 @@
 
         <div class="search-container">
             <i class="fa fa-search text-muted"></i>
-            <input type="text" class="form-control input-underline-light search-input" (focus)="resetSelected()"
+            <input type="text" class="form-control nna-input search-input" (focus)="resetSelected()"
                 placeholder="dmo, movie, rating etc." (keyup)="applyDmosFilter($event)" autocomplete="off">
         </div>
     </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class='dmos-table-wrapper'>
 
-        <table mat-table [dataSource]="dmosTable" #dmosSorter="matSort" matSort>
+        <table mat-table class="nna-table" [dataSource]="dmosTable" #dmosSorter="matSort" matSort>
 
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef class="hoverable-element"> </th>

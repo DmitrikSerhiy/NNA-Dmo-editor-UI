@@ -3,8 +3,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-remove-dmo-popup',
-  templateUrl: './remove-dmo-popup.component.html',
-  styleUrls: ['./remove-dmo-popup.component.scss']
+  templateUrl: './remove-dmo-popup.component.html'
 })
 export class RemoveDmoPopupComponent implements OnInit {
 

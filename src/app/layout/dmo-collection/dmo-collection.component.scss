@@ -1,9 +1,6 @@
 .collection-page {
   .collection-table-wrapper {
 
-
-
-
     .table-details {
       display: flex;
 
@@ -109,38 +106,7 @@
       }
     }
 
-    table {
-      width: 100%;
 
-      .hoverable-element {
-        padding: 0.75rem;
-        cursor: pointer;
-      }
-      .hoverable-element:hover {
-        background: #f1f5f7;
-      }
-
-      .hoverable-element:active {
-        background: #c9d6dc;
-      }
-
-      ::ng-deep .mat-sort-header-container {
-        button {
-          outline: none;
-        }
-      }
-
-      .table-cell {
-        padding-left: 24px;
-      }
-
-      .clicked-row {
-        background: #c9d6dc;
-        &:hover {
-          background: #c9d6dc;
-        }
-      }
-    }
   }
 
   .empty-collection-placeholder {

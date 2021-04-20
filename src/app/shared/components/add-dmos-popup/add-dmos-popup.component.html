@@ -1,15 +1,15 @@
-<div class="dmos-modal">
+<div class="base-modal">
     <div class="dmos-table-wrapper" [hidden]="dmosCount < 1">
-        <div mat-dialog-title>
-            <h4 class="modal-title" id="modal-basic-title">Add DMOs to '{{collectionName}}' collection</h4>
+        <div class="base-modal-header">
+            <p>Add DMO to '{{collectionName}}' collection</p>
         </div>
-        <div [hidden]="!dmos" mat-dialog-content class="dmos-table-container">
+        <div [hidden]="!dmos" class="base-modal-body dmos-table-container">
             <div class="search-container">
                 <i class="fa fa-search text-muted"></i>
-                <input type="text" class="form-control input-underline-light search-input"
+                <input type="text" class="form-control nna-input search-input"
                     placeholder="dmo name or movie title" (keyup)="applyDmosFilter($event)" autocomplete="off">
             </div>
-            <table mat-table [dataSource]="dmosTable" #dmosSort="matSort" matSort>
+            <table mat-table class="nna-table" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
                 <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef class="column-header">
                         <mat-checkbox (change)="$event ? dmosTableToggle() : null"
@@ -41,18 +41,18 @@
             <mat-paginator #dmosPaginator [length]="dmosCount" [pageSize]="10" showFirstLastButtons></mat-paginator>
         </div>
 
-        <div class="modal-footer" mat-dialog-actions>
-            <button type="button" class="nna-button nna-button-secondary" (click)="onClose(false)">Cancel</button>
-            <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Add</button>
+        <div class="base-modal-footer">
+            <button type="button" class="nna-button-secondary" (click)="onClose(false)">Cancel</button>
+            <button type="button" class="nna-button-primary" (click)="onClose(true)">Add</button>
         </div>
     </div>
-    <div class="no-dmos-wrapper" [hidden]="dmosCount >= 1">
-        <div class="modal-message" mat-dialog-title>
-            <h5 class="modal-title">There's no DMO which you could add to this collection.</h5>
-            <h5 class="modal-title">Try to create new one</h5>
-        </div>
-        <div class="modal-footer" mat-dialog-actions>
-            <button type="button" class="nna-button nna-button-primary centred" (click)="onClose(false)">Ok</button>
-        </div>
+
+    <div class="base-modal-body" [hidden]="dmosCount >= 1">
+        <p>There's no DMO which you could add to this collection.</p>
+        <p>Try to create new one</p>
     </div>
+    <div class="base-modal-footer" [hidden]="dmosCount >= 1">
+        <button type="button" class="nna-button-primary" (click)="onClose(false)">Ok</button>
+    </div>
+
 </div>

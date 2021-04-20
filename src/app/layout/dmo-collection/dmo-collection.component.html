@@ -23,7 +23,7 @@
                     </button>
                     <div [hidden]="showEditForm || !showSearchContainer" class="search-container">
                         <i class="fa fa-search text-muted"></i>
-                        <input type="text" class="form-control input-underline-light search-input" (focus)="resetSelected()"
+                        <input type="text" class="form-control nna-input search-input" (focus)="resetSelected()"
                             placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off" 
                             (mouseout)="toggleSearchContainer($event)">
                     </div>
@@ -33,7 +33,7 @@
 
                     <div class="edit-collection-name">
                         <input #editCollectionNameField type="text" name="collectionName" formControlName="collectionName"
-                            class="form-control input-underline-light search-input" placeholder="collection name"
+                            class="form-control nna-input search-input" placeholder="collection name"
                             autocomplete="off">
 
                         <button type="submit" [disabled]="!editCollectionNameForm.valid" class='nna-icon-button nna-button-primary'
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <table mat-table [dataSource]="collectionTable" #collectionSort="matSort" matSort>
+        <table mat-table class="nna-table" [dataSource]="collectionTable" #collectionSort="matSort" matSort>
 
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef class="hoverable-element"> </th>

@@ -1,0 +1,50 @@
+
+.nna-table {
+    width: 100%;
+  
+    .mat-header-row {
+        @include primary-action-font();
+        div button:focus {
+            outline: none;
+        }
+    }
+  
+    .hoverable-element {
+      padding: 0.75rem;
+      cursor: pointer;
+      padding-left: 24px;
+  
+      td {
+        border: none;
+      }
+    }
+  
+    ::ng-deep .mat-sort-header-container {
+      button {
+        outline: none;
+      }
+    }
+  
+    .table-cell {
+      padding-left: 24px;
+    }
+  
+    .mat-row {
+      @include secondary-font();
+    }
+  
+    .clicked-row {
+      background: $input-underline-gradient, $input-underline-gradient;
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      background-position: bottom, top;
+  
+      td {
+        border: none;
+      }
+    }
+  }
+  
+  .mat-paginator {
+    @include primary-action-font();
+  }

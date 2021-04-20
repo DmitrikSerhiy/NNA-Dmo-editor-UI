@@ -9,13 +9,13 @@
         <div class="collection-buttons-row">
             <div [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }"
                 class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton">
-                <i class="fa fa-plus control-icon" aria-hidden="true"> <span>new collection</span></i>
+                <i class="fa fa-plus control-icon" aria-hidden="true"></i>  <span>  create collection</span>
             </div>
 
             <form [formGroup]="addCollectionForm" (ngSubmit)="onAddCollection()" [hidden]="showAddButton" autocomplete="off">
                 <div class="add-collection-form">
                     <input id="collectionNameField" #collectionNameField type="text" name="collectionName" formControlName="collectionName"
-                        class="form-control input-underline-light" placeholder="name">
+                        class="form-control nna-input" placeholder=" collection name">
                     <button type="submit" [disabled]="!addCollectionForm.valid" class='nna-icon-button nna-button-primary'
                         [ngClass]="{'nna-diabled-button': !addCollectionForm.valid}">
                         <i class="fa fa-check"aria-hidden="true"></i>
