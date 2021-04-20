@@ -1,0 +1,91 @@
+@import "colors.scss";
+@import "fonts-mixins.scss";
+
+.nna-input-group {
+    position: relative;
+    padding: 15px 0 0;
+    margin-top: 10px;
+    width: 100%;
+
+    @keyframes inputIn {
+        from { background-size: 0% 1px; }
+        to   { background-size: 100% 1px }
+      }
+
+    @keyframes inputOut {
+        from { background-size: 100% 1px; }
+        to   { background-size: 0% 1px }
+    }
+
+    .nna-input {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        padding: 0;
+        margin: 0;
+        padding: 7px 0;
+        width: 100%;
+        max-width: 100%;
+        vertical-align: bottom;
+        box-sizing: content-box;
+        background: $input-underline-gradient;
+        background-repeat: no-repeat;
+        background-size: 0% 1px;
+        background-position: bottom -1px left 0px;
+
+        animation-direction: normal;
+        animation-duration: 150ms;
+        animation-fill-mode: forwards;
+        animation-timing-function: linear;
+
+        transition: background-position 1ms 150ms !important;
+        animation-name: inputOut;
+
+        @include secondary-font-for-input();
+
+        &:focus {
+            background-position: bottom 0px left 0px;
+            animation-delay: 150ms;
+            animation-name: inputIn;
+        }
+    }
+
+    .nna-input {
+        &::placeholder {
+          color: transparent;
+        }
+      
+        &:placeholder-shown ~ .nna-input-label {
+          @include secondary-font-for-input-active-label();
+          cursor: text;
+          top: 30px;
+        }
+    }
+      
+    .nna-input-label {
+        position: absolute;
+        top: 0;
+        display: block;
+        transition: 0.2s;
+        @include secondary-font-for-input-label();
+        color: gray;
+    }
+      
+    .nna-input:focus {
+        padding-bottom: 6px;  
+        border-width: 3px;
+        border-image-slice: 1;
+        
+        ~ .nna-input-label {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 0.2s;
+            @include secondary-font-for-input-label();
+            color: black;
+            // background: linear-gradient(45deg,#F7C23B 0px, #F7C23B 40%,#F0CEC4 40%,#9B00D1 100%);
+            // background-clip: text;
+            // -webkit-text-fill-color: transparent;
+        }
+    }
+}

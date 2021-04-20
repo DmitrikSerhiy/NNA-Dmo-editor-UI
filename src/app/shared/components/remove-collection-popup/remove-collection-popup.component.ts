@@ -3,8 +3,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-remove-collection-popup',
-  templateUrl: './remove-collection-popup.component.html',
-  styleUrls: ['./remove-collection-popup.component.scss']
+  templateUrl: './remove-collection-popup.component.html'
 })
 export class RemoveCollectionPopupComponent implements OnInit {
 

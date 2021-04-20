@@ -1,0 +1,130 @@
+@import "colors.scss";
+@import "fonts-mixins.scss";
+
+.nna-button-primary {
+    display: flex;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: baseline;
+    align-items: center;
+    text-decoration: none;
+    outline: none;
+
+    min-height: 1em;
+    height: 1.6rem;
+    font-size: 0.6rem;
+    line-height: 1em;
+
+    @include primary-action-font();
+
+    background-color: $primary-color;
+    border-style: solid;
+    border-width: 1px;
+
+    border-image: $button-border-gradient;
+
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+
+    &:active {
+        color: $primary-color;
+        background-color: $secondary-color;
+        outline: 1px solid $secondary-color;
+        outline-offset: -1px;
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.nna-button-secondary {
+    display: flex;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: baseline;
+    align-items: center;
+    text-decoration: none;
+    outline: none;
+
+    min-height: 1em;
+    height: 1.6rem;
+    font-size: 0.6rem;
+    line-height: 1em;
+
+    @include primary-action-font();
+
+    background-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+
+    border-image: $button-border-gradient;
+
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+
+    &:active {
+        color: $primary-color;
+        background-color: $secondary-color;
+        outline: 1px solid $secondary-color;
+        outline-offset: -1px;
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.nna-diabled-button {    
+    &:hover {
+        cursor: not-allowed;
+    }
+
+    i {
+        &:hover {
+            cursor: not-allowed;
+        }
+        &::before {
+            cursor: not-allowed;
+        }
+    }
+}
+
+.nna-icon-button {
+    display: flex;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: baseline;
+    align-items: center;
+    text-decoration: none;
+    
+    min-height: 1em;
+    height: 1.6rem;
+    font-size: 0.6rem;
+    line-height: 1em;
+    
+    background-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    
+    border-image: $button-border-gradient;
+
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+
+    &:active {
+        color: $primary-color;
+        background-color: $secondary-color;
+        outline: 1px solid $secondary-color;
+        outline-offset: -1px;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    i {
+        margin: auto;
+        color: #000;
+    }
+}

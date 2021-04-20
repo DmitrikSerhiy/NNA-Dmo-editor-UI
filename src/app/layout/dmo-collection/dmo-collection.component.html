@@ -13,7 +13,7 @@
                         (click)="onAddDmo()">
                         <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
                     </button>
-                    <button type="button" [hidden]="showEditForm" class='nna-icon-button bg-secondary'
+                    <button type="button" [hidden]="showEditForm" class='nna-icon-button'
                         (click)='onRemoveCollection()'>
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
@@ -40,7 +40,7 @@
                             [ngClass]="{'nna-diabled-button': !editCollectionNameForm.valid}">
                             <i class="fa fa-check" aria-hidden="true"></i>
                         </button>
-                        <button type="button" class='nna-icon-button bg-secondary' (click)="hideEditCollectionNameForm()">
+                        <button type="button" class='nna-icon-button' (click)="hideEditCollectionNameForm()">
                             <i class="fa fa-times" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -113,6 +113,20 @@
         </table>
 
         <mat-paginator #collectionPaginator [length]="collectionLength" [pageSize]="15" showFirstLastButtons></mat-paginator>
+
+        <div class="experimental">
+            <button class="nna-button-primary">Primary</button>
+            <button class="nna-button-secondary">Secondary</button>
+            <button class="nna-icon-button"><i class="fa fa-check"aria-hidden="true"></i></button>
+
+            <div class="nna-input-group">
+                <input type="input" class="nna-input" placeholder="placeholder" name="name" id='name' />
+                <label for="name" class="nna-input-label">placeholder with lable</label>
+            </div>
+
+            <button class="nna-button-primary" (click)='onRemoveCollection()'>Open modal</button>
+        </div>
+        
     </div>
 
     <div class="empty-collection-placeholder" [hidden]="collectionLength != 0">

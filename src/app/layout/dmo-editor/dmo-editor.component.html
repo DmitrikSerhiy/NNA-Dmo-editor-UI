@@ -19,18 +19,6 @@
         </div>
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
-        
-        <div class="experimental">
-            <button class="primary1">Primary</button>
-            <button class="secondary1">Secondary1</button>
-            <button class="icon1"><i class="fa fa-check"aria-hidden="true"></i></button>
-
-            <div class="primary-input-group">
-                <input type="input" class="input-primary" placeholder="placeholder" name="name" id='name' />
-                <label for="name" class="input-primary-label">placeholder with lable</label>
-            </div>
-        </div>
-
        <app-plot-points-flow 
             *ngIf="beatWasSet"
             [initialPlotPoints]="buildPlotPointsData()" 

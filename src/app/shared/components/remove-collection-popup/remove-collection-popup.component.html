@@ -1,4 +1,4 @@
-<div class="delete-collection-modal">
+<!-- <div class="delete-collection-modal">
     <div class="modal-header" mat-dialog-title>
         <h4 class="modal-title" id="modal-basic-title">Delete collection</h4>
     </div>
@@ -9,5 +9,20 @@
     <div class="modal-footer" mat-dialog-actions>
         <button type="button" class="nna-button nna-button-secondary" (click)="onClose(false)">Cancel</button>
         <button type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Delete</button>
+    </div>
+</div> -->
+
+
+<div class="base-modal">
+    <div class="base-modal-header">
+        <p>Delete collection</p>
+    </div>
+    <div class="base-modal-body">
+        <p> Are you sure you want to delete '{{collectionName}}' collection?</p>
+        <p> Don't worry, this action won't remove your DMOs.</p>
+    </div>
+    <div class="base-modal-footer">
+        <button type="button" class="nna-button-secondary" (click)="onClose(false)">Cancel</button>
+        <button type="button" class="nna-button-primary" (click)="onClose(true)">Delete</button>
     </div>
 </div>

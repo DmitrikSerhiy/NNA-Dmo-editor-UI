@@ -1,0 +1,27 @@
+
+@mixin secondary-font() {
+    //this is open standart for screenplay text
+    font: 14px 'Courier New', Courier, monospace; 
+    line-height: 1.4em;
+}  
+
+@mixin secondary-font-for-input {
+    font: 1.3rem 'Courier New', Courier, monospace; 
+}
+
+@mixin secondary-font-for-input-active-label {
+    font: 1.3rem 'Comfortaa';
+}
+
+@mixin secondary-font-for-input-label {
+    font: 1rem 'Comfortaa';
+}
+
+@mixin primary-heading-font() {
+    font: 22px 'Comfortaa';
+}
+
+@mixin primary-action-font() {
+    font: 14px 'Comfortaa';
+}
+  
