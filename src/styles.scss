@@ -7,7 +7,7 @@
 
 .validation-wrapper {
   margin-top: 0.2rem;
-  height: 0.8rem;
+  height: 1.4rem !important;
 
   .validation-container {
     height: 0.8rem;
@@ -16,8 +16,9 @@
     }
   }
 }
+
 .validation-text {
-  color: #ff8c00;
+  color: $validation-color;
 }
 
 html, body {
@@ -30,6 +31,175 @@ html, body {
 
   .primary-heading-font {
     @include primary-heading-font();
+  }
+}
+
+.spinner-wrapper {
+  width: 100px;
+  height: 100px;
+  background-color: blanchedalmond;
+  position: relative;
+
+
+  .spinner {
+    display: block;
+    animation-fill-mode: none;
+    animation: default-spinner 1s;
+
+    position: absolute;
+    width: 100px;
+    height: 100px;
+
+    .graph-line {
+      position: absolute;
+      height: 0px;
+      width: 1px;
+      background: #000;
+      left: calc(45% + 4px);
+    }
+
+    .line-first-move {
+      animation: line-move .150s forwards;
+    }
+
+    .line-second-move {
+      top: calc(20% + 4px);
+      height: 1px;
+      width: 0px; 
+      transform: rotate(37deg);
+      transform-origin: top left;
+      animation: line-second-move .150s forwards .300s;
+    }
+
+    .line-third-move {
+      top: 40%; left: calc(65% + 5px);
+      animation: line-third-move .150s forwards .450s;
+    }
+
+    .line-fourth-move {
+      top: calc(60% - 3px); left: calc(60% + 12px);
+      height: 0px;
+      width: 1px; 
+      transform: rotate(52deg);
+      transform-origin: top left;
+      animation: line-fourth-move .150s forwards .600s;
+    }
+
+    .line-fifth-move {
+      top: calc(80% - 12px);
+      animation: line-fifth-move .150s forwards .750s;
+    }
+    
+    .blob {
+      position: absolute;
+      background: #000;
+      
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      left: 44%;
+    }
+    
+    .blob-initial {
+      top: 0;
+    }
+
+    .blob-initial-move {
+      animation: blob-initial-move .150s forwards;
+    }
+
+    .blob-first-move {
+      opacity: 0;
+      top: calc(20% + 10px); bottom: 80%;
+      animation: blob-first-move .150s forwards .300s;
+    }
+
+    .blob-second-move {
+      opacity: 0;
+      top: calc(40% - 6px); bottom: calc(60% - 3px); left: 65%;
+      animation: blob-second-move .150s forwards .450s;
+    }
+
+    .blob-third-move {
+      opacity: 0;
+      top: calc(60% - 12px); bottom: calc(40% - 6px); left: 65%;
+      animation: blob-third-move .150s forwards .600s;
+    }
+
+    .blob-fourth-move {
+      opacity: 0;
+      top: calc(80% - 12px); bottom: calc(20% - 12px);
+      animation: blob-fourth-move .150s forwards .750s;
+    }
+  }
+}
+
+@keyframes default-spinner {
+  0% { display: none; }
+  100% { display: block; }
+}
+
+@keyframes line-fifth-move {
+  from { height: 0px; }
+  to { height: calc((100% / 4)) }
+}
+
+@keyframes line-fourth-move {
+  from { height: 0px; }
+  to { height: calc(100% / 4) }
+}
+
+@keyframes line-third-move {
+  from { height: 0px; }
+  to { height: 20%; }
+}
+
+@keyframes line-second-move {
+  from { width: 0px; }
+  to { width: calc(100% / 4) }
+}
+
+@keyframes line-move {
+  from { height: 0px;}
+  to { height: 20%; }
+}
+
+@keyframes blob-fourth-move {
+  0% { top: calc(80% - 12px); bottom: calc(20% - 12px); opacity: 1 }
+  100% { top: calc(100% - 12px); bottom: 0; opacity: 1 }
+}
+
+@keyframes blob-third-move {
+  0% { top: calc(60% - 6px); bottom: calc(40% - 6px); left: 65%; opacity: 1  }
+  100% { top: calc(80% - 12px); bottom: calc(20% - 12px); left: 44%; opacity: 1  }
+}
+
+@keyframes blob-second-move {
+  0% { top: calc(40% - 6px); bottom: calc(60% - 6px); left: 65%; opacity: 1 }
+  100% { top: calc(60% - 6px); bottom: calc(40% - 6px); left: 65%; opacity: 1 }
+}
+
+@keyframes blob-initial-move {
+  0% { top: 0; bottom: calc(100% - 12px); opacity: 1  }
+  100% { top: 20%; bottom: 80%; opacity: 1 }
+}
+
+@keyframes blob-first-move {
+  0% { top: 20%; bottom: 80%; opacity: 1 }
+  100% { top: calc(40% - 6px); bottom: calc(60% - 6px); left: 65%; opacity: 1  }
+}
+
+@keyframes graph-base {
+  from {height: 0;}
+  to {height: 100%;}
+}
+
+@keyframes blob-spinner-mover-1 {
+  0% {
+    top: 0;
+  }
+  25% {
+    top: 25%;
   }
 }
 
