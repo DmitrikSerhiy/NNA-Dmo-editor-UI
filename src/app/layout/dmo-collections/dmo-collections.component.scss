@@ -10,24 +10,7 @@
     color: #000;
     display: flex;
     &:hover {
-      // background-color: #f1f5f7;
       cursor: pointer;
-    }
-  }
-
-  .loader-container {
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    opacity: 0.3;
-    display: flex;
-    align-items: center;
-    margin-top: 3rem;
-
-    :first-child {
-      margin: auto;
     }
   }
 
@@ -130,13 +113,8 @@
     }
   }
 
-  .collections-placeholder {
-    display: flex;
-    justify-content: center;
-    div {
-        margin: auto;
-        margin-top: 4rem;
-    }
+  .info-message {
+    margin-top: 4rem;
   }
 
   .collection-item:last-child {

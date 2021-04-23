@@ -1,6 +1,9 @@
 <div class="dmos-page">
-    <div *ngIf="isDmosLoadings" class="dmo-loader-container">  
-        <mat-progress-spinner diameter="70" mode="indeterminate"></mat-progress-spinner>
+    <div *ngIf="isDmosLoadings">  
+        <app-nna-spinner></app-nna-spinner>
+    </div>
+    <div *ngIf="shouldShowDmosTable && dmosCount == 0" class="info-message">
+        You have no DMO. Try to create one.
     </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class="dmos-table-details">
         <div *ngIf="selectedDmo" class="dmo-info">

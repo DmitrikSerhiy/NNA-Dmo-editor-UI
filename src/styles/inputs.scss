@@ -75,7 +75,7 @@
         }
       
         &:placeholder-shown ~ .nna-input-label {
-          @include secondary-font-for-input-active-label();
+          @include primary-font-for-input-active-label();
           cursor: text;
           top: 30px;
         }
@@ -86,7 +86,7 @@
         top: 0;
         display: block;
         transition: 0.2s;
-        @include secondary-font-for-input-label();
+        @include primary-font-for-input-label();
         color: gray;
     }
       
@@ -96,7 +96,7 @@
             top: 0;
             display: block;
             transition: 0.2s;
-            @include secondary-font-for-input-label();
+            @include primary-font-for-input-label();
             color: black;
             // background: linear-gradient(45deg,#F7C23B 0px, #F7C23B 40%,#F0CEC4 40%,#9B00D1 100%);
             // background-clip: text;

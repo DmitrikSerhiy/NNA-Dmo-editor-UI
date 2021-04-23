@@ -2,12 +2,12 @@
     <div class="card-header">
         <i class="fa fa-list" aria-hidden="true"></i> Decomposed movie object collentions
     </div>
-    <div *ngIf="isFormProcessing" class="loader-container">
-        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <div *ngIf="isFormProcessing" class="dmo-collections-spinner">
+        <app-nna-spinner></app-nna-spinner>
     </div>
     <div class="card-body p-0">
         <div class="collection-buttons-row">
-            <div [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }"
+            <div *ngIf="!isFormProcessing" [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }"
                 class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton">
                 <i class="fa fa-plus control-icon" aria-hidden="true"></i>  <span>  create collection</span>
             </div>
@@ -54,8 +54,8 @@
             </div>
         </div>
     </div>
-    <div *ngIf="dmoLists && !dmoLists.length" class="collections-placeholder">
-        <div> You have no collection yet</div>
+    <div *ngIf="dmoLists && !dmoLists.length" class="info-message">
+        You have no collection yet
     </div>
 
 </div>

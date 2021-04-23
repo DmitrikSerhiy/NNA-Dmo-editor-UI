@@ -9,13 +9,15 @@ import { InitialPopupComponent } from './components/initial-popup/initial-popup.
 import { MatProgressSpinnerModule } from '@angular/material';
 import { BeatsFlowComponent } from './components/beats-flow/beats-flow.component';
 import { PlotPointsFlowComponent } from './components/plot-points-flow/plot-points-flow.component';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { NnaSpinnerComponent } from 'src/app/shared/components/nna-spinner/nna-spinner.component';
 
 const routes: Routes = [
   { path: '', component: DmoEditor }
 ];
 
 @NgModule({
-  entryComponents: [InitialPopupComponent],
+  entryComponents: [InitialPopupComponent, NnaSpinnerComponent],
   declarations: [DmoEditor, InitialPopupComponent, BeatsFlowComponent, PlotPointsFlowComponent],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatDialogModule,
     MatTabsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    SharedModule
   ]
 })
 export class DmoEditorModule { }

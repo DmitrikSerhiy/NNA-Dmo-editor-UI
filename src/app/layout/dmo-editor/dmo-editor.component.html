@@ -40,8 +40,8 @@
 
     </div>
 
-    <div *ngIf="beatsLoading" class="loader-container">
-        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <div *ngIf="beatsLoading">
+        <app-nna-spinner></app-nna-spinner>
     </div>
     
     <!-- <mat-tab-group [disableRipple]="true" [dynamicHeight]="true" animationDuration="0ms">
