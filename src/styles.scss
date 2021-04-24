@@ -54,6 +54,14 @@ html, body {
   }
 }
 
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  background-color: $primary-color !important;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $primary-color;
+}
+
 .mat-dialog-container {
   border-radius: 0 !important;
   border-style: solid !important;

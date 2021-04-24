@@ -12,13 +12,13 @@
             <table mat-table class="nna-table" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
                 <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef class="column-header">
-                        <mat-checkbox (change)="$event ? dmosTableToggle() : null"
+                        <mat-checkbox  (change)="$event ? dmosTableToggle() : null"
                             [checked]="selectedDmo.hasValue() && isAllDmoSelected()"
                             [indeterminate]="selectedDmo.hasValue() && !isAllDmoSelected()">
                         </mat-checkbox>
                     </th>
                     <td mat-cell *matCellDef="let row" class="dmo-cell">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectedDmo.toggle(row) : null"
+                        <mat-checkbox  (click)="$event.stopPropagation()" (change)="$event ? selectedDmo.toggle(row) : null"
                             [checked]="selectedDmo.isSelected(row)">
                         </mat-checkbox>
                     </td>

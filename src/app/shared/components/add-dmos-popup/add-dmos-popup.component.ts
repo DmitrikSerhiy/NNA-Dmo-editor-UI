@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DmoCollectionDto, ShortDmoDto } from '../../../layout/models';
-import { Component, OnInit, ViewChild, Input, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Inject, OnDestroy } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -12,7 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: './add-dmos-popup.component.html',
   styleUrls: ['./add-dmos-popup.component.scss']
 })
-export class AddDmosPopupComponent implements OnInit {
+export class AddDmosPopupComponent implements OnInit, OnDestroy {
   dmosTable: MatTableDataSource<ShortDmoDto>;
   dmos: ShortDmoDto[];
   collectionName: string;
@@ -37,14 +37,17 @@ export class AddDmosPopupComponent implements OnInit {
     this.initializeDmosTable();
   }
 
-  onClose(shoulSave: boolean) {
-    if (!shoulSave) {
-      this.resetDmosTable();
+  ngOnDestroy(): void {
+    this.resetDmosTable();
+  }
+
+
+  onClose(shouldSave: boolean) {
+    if (!shouldSave) {
       this.dialogRef.close();
       return;
     }
     const result = this.selectedDmo.selected;
-    this.resetDmosTable();
     this.dialogRef.close(result);
   }
 
