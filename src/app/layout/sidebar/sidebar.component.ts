@@ -29,32 +29,48 @@ export class SidebarComponent implements OnInit {
     this.sidebarState = this.sidebarManagerService.IsOpen;
   }
 
+  onLoggedout() {
+    this.userManager.logout();
+  }
+
   toggleSidebar() {
-    this.sidebarManagerService.toggleSidebar();
+    if (this.isAuthorized) {
+      this.sidebarManagerService.toggleSidebar();
+    }
   }
 
   sendDmoCollectionsEvent() {
-    this.currestSidebarService.setMenu(SidebarTabs.dmoCollections);
-    this.toggleRightMenu$.emit(RightMenues.dmoCollections);
+    if (this.isAuthorized) {
+      this.currestSidebarService.setMenu(SidebarTabs.dmoCollections);
+      this.toggleRightMenu$.emit(RightMenues.dmoCollections);
+    }
   }
 
   sendTestEvent() {
-    this.currestSidebarService.setMenu(SidebarTabs.test);
-    this.toggleRightMenu$.emit(RightMenues.test);
+    if (this.isAuthorized) {
+      this.currestSidebarService.setMenu(SidebarTabs.test);
+      this.toggleRightMenu$.emit(RightMenues.test);
+    }
   }
 
   sendDmosEvent() {
-    this.currestSidebarService.setMenu(SidebarTabs.dmos);
-    this.toggleRightMenu$.emit(RightMenues.dmos);
+    if (this.isAuthorized) {
+      this.currestSidebarService.setMenu(SidebarTabs.dmos);
+      this.toggleRightMenu$.emit(RightMenues.dmos);
+    }
   }
 
   sendDashboardEvent() {
-    this.currestSidebarService.setMenu(SidebarTabs.dashboard);
-    this.toggleRightMenu$.emit(RightMenues.dashboard);
+    if (this.isAuthorized) {
+      this.currestSidebarService.setMenu(SidebarTabs.dashboard);
+      this.toggleRightMenu$.emit(RightMenues.dashboard);
+    }
   }
 
   sendDmoEvent() {
-    this.currestSidebarService.setMenu(SidebarTabs.dmo);
-    this.toggleRightMenu$.emit(RightMenues.dmo);
+    if (this.isAuthorized) {
+      this.currestSidebarService.setMenu(SidebarTabs.dmo);
+      this.toggleRightMenu$.emit(RightMenues.dmo);
+    }
   }
 }

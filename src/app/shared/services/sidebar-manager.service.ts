@@ -15,7 +15,7 @@ export class SidebarManagerService {
   }
 
   constructor() {
-    this._isOpen = false;
+    this._isOpen = true;
     // this._isOpen = true;
     this.sidebar = new BehaviorSubject<boolean>(true);
     this.sidebarObserver$ = this.sidebar.asObservable();

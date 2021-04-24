@@ -6,6 +6,8 @@ import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
+import { Router } from '@angular/router';
+import { UserManager } from '../shared/services/user-manager';
 
 @Component({
     selector: 'app-layout',
@@ -20,12 +22,15 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     currentUserFriendlyMenuName: string;
     rightMenuIsClosing$: Observable<void>;
     rightMenuIsOpening$ = new EventEmitter<void>();
+    isAuthorized = false;
 
     constructor(
         private collectionService: CollectionsManagerService,
         private currentSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService,
-        public sidebarManagerService: SidebarManagerService) { }
+        public sidebarManagerService: SidebarManagerService,
+        private router: Router,
+        private userManager: UserManager) { }
 
     ngOnInit() { 
         this.collectionService.setCollectionId('');
@@ -33,7 +38,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         this.rightMenuIsClosing$ = this.rightMenu.closedStart;
-        this.currentSidebarService.setMenu(SidebarTabs.dashboard);
+        // this.currentSidebarService.setMenu(SidebarTabs.dashboard);
     }
 
     closeByBackdrop() {

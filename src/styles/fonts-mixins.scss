@@ -8,6 +8,11 @@
     font: 1.3rem 'Courier New', Courier, monospace; 
 }
 
+@mixin primary-font-for-sidebar {
+    font: 1rem 'Comfortaa';
+    line-height: 1.5rem;
+}
+
 @mixin primary-font-for-input-active-label {
     font: 1.3rem 'Comfortaa';
 }
