@@ -1,7 +1,8 @@
-<div *ngIf="shouldbeShown" class="right-menu-grabber-container nna-button-primary" (click)="toggleRightMenu()" title={{userFriendlyMenuName}}>
+<div *ngIf="shouldbeShown" class="right-menu-grabber-container nna-button-secondary" (click)="toggleRightMenu()">
     <div [ngSwitch]="menuName" class="right-menu-grabber">
+        
         <i class="fa fa-arrow-left" aria-hidden="true"></i> 
-        <i class="fa fa-list" *ngSwitchCase="'dmoCollections'"></i>
-        <i class="fa fa-plus" *ngSwitchCase="'test'"></i>
+        <div *ngSwitchCase="'dmoCollections'"> {{userFriendlyMenuName}} </div> 
+        <div *ngSwitchCase="'test'"> {{userFriendlyMenuName}} </div> 
     </div>
 </div>

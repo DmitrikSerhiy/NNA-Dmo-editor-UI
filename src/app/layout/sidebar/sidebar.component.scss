@@ -23,6 +23,7 @@
     transition: all 0.2s ease-in-out;
     color: black;
 
+
     .with-collapse-button {
         margin-bottom: 48px;
     } 
@@ -31,6 +32,12 @@
         display: flex;
         justify-content: left;
         animation: logo-initial 2s forwards;
+
+        background: $sidebar-border;
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        background-position: bottom;
+
 
         img {
             margin: 0.7rem 0;
@@ -105,7 +112,7 @@
                 span {
                     display: inline !important;
                 }
-                width: 236px;
+                width: 235px;
                 background-color: $primary-color !important;
             }
         }
@@ -201,19 +208,22 @@
 
 
 .auth-blocks {
-    bottom: 49px;
+    bottom: 47px;
     display: flex;
     justify-content: center;
     padding: 0;
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -ms-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
+
+    &:hover {
+        width: 235px !important;
+        display: flex !important;
+        a span {
+            display: inline;
+        }
+    }
 
     .auth-block {
         display: flex;
-        height: 48px;
+        height: 47px;
         flex: 1 1 50%;
         
         .nav-link {
@@ -230,7 +240,14 @@
         flex: 1 1 100% !important;
         display: flex;
         justify-content: left !important;
+
+        background: $sidebar-border;
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        background-position: bottom;
+
         &:hover {
+            width: 235px !important;
             display: flex !important;
             a span {
                 display: inline;
@@ -246,7 +263,6 @@
 }
 
 .toggle-button {
-    border-top: 1px solid $primary-color;
     bottom: 0;
     i {
         align-self: center;

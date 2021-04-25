@@ -29,6 +29,10 @@
     font: 22px 'Comfortaa';
 }
 
+@mixin primary-font-for-right-menu-grabber() {
+    font: 18px 'Comfortaa';
+}
+
 @mixin primary-action-font() {
     font: 14px 'Comfortaa';
 }

@@ -33,7 +33,7 @@
 
     </div>
 
-    <div class="bottom-blocks auth-blocks" [ngClass]="{'top-auth-buttons' : !isAuthorized}" [ngClass]="{collapsed : !sidebarState}">
+    <div class="bottom-blocks auth-blocks" [ngClass]="{'top-auth-buttons' : !isAuthorized, 'collapsed' : !sidebarState}">
         <div class="auth-block main" *ngIf='isAuthorized' >
             <a class="nav-link" (click)="onLoggedout()">
                 <i class="fa fa-fw fa-power-off"></i> 

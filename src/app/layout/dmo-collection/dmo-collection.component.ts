@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from './../../shared/services/toastr.service';
 import { DmoCollectionDto, DmoCollectionShortDto, AddDmosToCollectionDto,
    DmosIdDto, ShortDmoCollectionDto, SidebarTabs, ShortDmoDto } from './../models';
-import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -16,6 +16,7 @@ import { concatMap, map, takeUntil, finalize } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { DmoCollectionsService } from 'src/app/shared/services/dmo-collections.service';
 import { MatDialog } from '@angular/material/dialog';
+import { RightMenuGrabberService } from 'src/app/shared/services/right-menu-grabber.service';
 
 @Component({
   selector: 'app-dmo-collection',
@@ -46,7 +47,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   constructor(
     private dmoCollectionService: DmoCollectionsService,
-    private route: ActivatedRoute,
     public matModule: MatDialog,
     private toastr: Toastr,
     private router: Router,
@@ -58,13 +58,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
     });
 
-    this.route.params.subscribe(p => {
-      if (!p['id']) {
-        this.dmoSubscription.unsubscribe();
-        return;
-      }
-      this.dmoSubscription = this.loadDmos();
-    });
+    this.dmoSubscription = this.loadDmos();
   }
 
   ngOnDestroy(): void {
@@ -117,7 +111,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const collectionId = this.route.snapshot.paramMap.get('id');
+      const collectionId = this.collectionManager.getCurrentCollectionId();
       const updateCollectionName$ = this.dmoCollectionService.updateCollectionName(collectionId, newCollectionName);
       const getCollectionName$ = this.dmoCollectionService.getCollectionName(collectionId);
 
@@ -145,7 +139,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     const collectionWithDmo = new ShortDmoCollectionDto();
     collectionWithDmo.collectionName = this.currentDmoCollection.collectionName;
 
-    const collectionId = this.route.snapshot.paramMap.get('id');
+    const collectionId = this.collectionManager.getCurrentCollectionId();
     await this.dmoCollectionService.getExcludedDmos(collectionId).toPromise()
       .then((dmos: ShortDmoDto[]) => collectionWithDmo.dmos = 
         dmos.map(d => { 
@@ -247,7 +241,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   private loadDmos() {
     this.resetCollectionTable();
-    const collectionId = this.route.snapshot.paramMap.get('id');
+    const collectionId = this.collectionManager.getCurrentCollectionId();
     return this.dmoCollectionService.getWithDmos(collectionId)
       .subscribe({
         next: (response: DmoCollectionDto) => {

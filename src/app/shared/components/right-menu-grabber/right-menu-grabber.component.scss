@@ -1,19 +1,19 @@
+@import "src/styles/colors.scss";
+@import "src/styles/fonts-mixins.scss";
+
 .right-menu-grabber-container {
     position: fixed;
-    background-color: #1678c2;
-    right: -1.2rem;
+    right: -1.1rem;
     top: 4.5rem;
     z-index: 1000;
-    color: #fff;
-    border-top-left-radius: 32px;
-    border-bottom-left-radius: 32px;
     height: 1.8rem;
     display: flex;
+    transition: right 0.4s;
+    @include primary-font-for-right-menu-grabber();
+    
 
     &:hover {
         cursor: pointer;
-        background-color: #0c61a0;
-        color: #fff;
         right: 0rem;
     }
 
@@ -21,8 +21,16 @@
         margin: auto;
         display: flex;
 
+        div {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding-bottom: 29px;
+            margin-right: -1px;
+        }
+
         i {
             padding-left: 4px;
+            padding-top: 4px;
         }
 
         .fa-list {

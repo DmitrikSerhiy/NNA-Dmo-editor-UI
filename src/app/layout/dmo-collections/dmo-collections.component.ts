@@ -50,8 +50,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     private toastr: Toastr,
     private router: Router,
     public matModule: MatDialog,
-    private collectionManager: CollectionsManagerService,
-    private route: ActivatedRoute) { }
+    private collectionManager: CollectionsManagerService) { }
 
 
   ngOnInit() {
@@ -64,12 +63,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
     this.addCollectionForm = new FormGroup({
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
-    });
-
-    this.route.params.subscribe(p => {
-      if (!p['id']) {
-        this.collectionManager.setCollectionId('');
-      }
     });
 
     this.collectionManager.currentCollectionObserver
@@ -113,7 +106,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
   openCollection(id: string) {
     this.closeRightMenu.emit();
-    this.router.navigate(['/dmoCollection', { id: id }]);
+    this.router.navigateByUrl(`/dmoCollection?collectionId=${id}`);
   }
 
   onAddCollection() {

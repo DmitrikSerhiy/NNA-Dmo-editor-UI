@@ -14,9 +14,15 @@
     }
   }
 
+  .collections-header {
+    background: $input-underline-gradient;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    background-position: bottom;
+  }
+
   .collection-buttons-row {
     display: flex;
-    // border-bottom: 1px solid rgba(0,0,0,.125);
     .add-collection-button {
       padding: 0 !important;
       align-items: center;

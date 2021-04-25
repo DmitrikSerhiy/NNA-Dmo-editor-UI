@@ -5,6 +5,7 @@ $validation-color: #BF0404;
 
 $button-border-gradient: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%) 1;
 $input-underline-gradient: repeating-linear-gradient(90deg,$primary-color 0px,$intermidiate-color 40%,$secondary-color 100%);
+$sidebar-border: repeating-linear-gradient(90deg, rgba($primary-color, 0.01) 0px,$intermidiate-color 50%,$secondary-color 100%);
 
 $background-spinner-gradient: radial-gradient(circle,  $primary-color  0%, $intermidiate-color 60%, $secondary-color  100%);
 $border-spinner-gradient: linear-gradient($primary-color 0%, $intermidiate-color 60%, $secondary-color 100%);

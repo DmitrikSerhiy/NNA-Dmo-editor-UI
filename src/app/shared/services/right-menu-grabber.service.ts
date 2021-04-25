@@ -20,10 +20,16 @@ export class RightMenuGrabberService {
     this.shouldShowGrabberSource.next(false);
   }
 
-  async isGrabbershouldBeShown() {
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    await delay(1000)
+  async isGrabbershouldBeShown(delay: boolean = true) {
+    if (delay) {
+      await this.sleep(1000);
+    }
+
     return this.shouldShowGrabber;
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   constructor() { }

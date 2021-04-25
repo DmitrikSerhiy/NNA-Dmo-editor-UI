@@ -3,11 +3,12 @@ import { CurrentSidebarService } from './../shared/services/current-sidebar.serv
 import { CollectionsManagerService } from './../shared/services/collections-manager.service';
 import { Observable } from 'rxjs';
 import { RightMenues, SidebarTabs } from './models';
-import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { UserManager } from '../shared/services/user-manager';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-layout',
@@ -22,23 +23,43 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     currentUserFriendlyMenuName: string;
     rightMenuIsClosing$: Observable<void>;
     rightMenuIsOpening$ = new EventEmitter<void>();
-    isAuthorized = false;
+    isAuthorized: boolean = false;
+    isGrabbershouldBeShown: boolean = false;
 
     constructor(
         private collectionService: CollectionsManagerService,
         private currentSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService,
         public sidebarManagerService: SidebarManagerService,
-        private router: Router,
-        private userManager: UserManager) { }
+        private route: ActivatedRoute,
+        private cd: ChangeDetectorRef) { }
 
     ngOnInit() { 
-        this.collectionService.setCollectionId('');
+        this.rightMenuGrabberService.shouldShowGrabber$.subscribe({
+            next: async () => this.isGrabbershouldBeShown = await this.rightMenuGrabberService.isGrabbershouldBeShown()
+          });
+          this.route.queryParams.subscribe(param => {
+            if (!param.collectionId) {
+              this.collectionService.setCollectionId('');
+            } else if (param.collectionId) {
+              this.collectionService.setCollectionId(param.collectionId);
+              this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.dmoCollections);
+              this.currentMenuName = RightMenues.dmoCollections;
+              this.rightMenuIsClosing$ = this.rightMenu.closedStart;
+              this.rightMenuGrabberService.showGrabber();
+            }
+        });
     }
 
     ngAfterViewInit(): void {
+        this.route.queryParams.subscribe(param => {
+            if (!param.collectionId) {
+            
+            } else if (param.collectionId) {
+                this.currentSidebarService.setMenu(SidebarTabs.dmoCollections);
+            }
+        });
         this.rightMenuIsClosing$ = this.rightMenu.closedStart;
-        // this.currentSidebarService.setMenu(SidebarTabs.dashboard);
     }
 
     closeByBackdrop() {
