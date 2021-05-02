@@ -5,7 +5,7 @@
   border: none;
 
   @mixin collection-item {
-    padding: 0.75rem 1.25rem;
+    padding: .75rem .75rem;
     text-decoration: none;
     color: #000;
     display: flex;
@@ -34,7 +34,7 @@
 
       .control-icon {
         color: $primary-color;
-        margin-left: 1.1rem;
+        margin-left: .65rem;
         margin-right: .5rem;
       }
     }
@@ -98,14 +98,13 @@
       text-decoration: none;
       color: #000;
       outline: none;
-      padding: 0.75rem 1.25rem;
+      padding: .75rem .75rem;
       width: 100%;
       display: flex;
       @include font-secondary-info();
 
       .dmo-count {
         margin-left: auto;
-        margin-right: 4rem;
       }
     }
 

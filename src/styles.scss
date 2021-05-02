@@ -4,6 +4,20 @@
 @import "styles/inputs.scss";
 @import "styles/table.scss";
 
+* {
+  box-sizing: border-box; 
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html, body {
+  @include font-primary-info();
+  height: 100%;
+  margin: 0;
+  font-size: 16px;
+}
 
 .validation-wrapper {
   margin-top: 0.2rem;
@@ -12,7 +26,8 @@
   .validation-container {
     height: 0.8rem;
     p {
-      margin-bottom: 0;
+      margin: 0;
+      @include font-primary-info();
     }
   }
 }
@@ -21,11 +36,6 @@
   color: $validation-color;
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
-  font-size: 16px;
-}
 
 .info-message {
   width: 100%;

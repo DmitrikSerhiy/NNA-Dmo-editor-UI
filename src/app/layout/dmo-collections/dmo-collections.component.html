@@ -3,7 +3,6 @@
     <div *ngIf="isFormProcessing" class="dmo-collections-spinner">
         <app-nna-spinner></app-nna-spinner>
     </div>
-    <div class="card-body p-0">
         <div class="collection-buttons-row">
             <div *ngIf="!isFormProcessing"  class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton"
                 [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }">
@@ -51,7 +50,7 @@
                 <!-- <div class="remove-icon" (click)="onDeleteCollection(dmoList)"><i class="fa fa-trash"></i></div> -->
             </div>
         </div>
-    </div>
+
     <div *ngIf="dmoLists && !dmoLists.length" class="info-message">
         You have no collection yet
     </div>
