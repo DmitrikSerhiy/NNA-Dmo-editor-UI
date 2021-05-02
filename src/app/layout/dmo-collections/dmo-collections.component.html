@@ -5,15 +5,16 @@
     </div>
     <div class="card-body p-0">
         <div class="collection-buttons-row">
-            <div *ngIf="!isFormProcessing" [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }"
-                class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton">
-                <i class="fa fa-plus control-icon" aria-hidden="true"></i>  <span>  create collection</span>
+            <div *ngIf="!isFormProcessing"  class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton"
+                [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }">
+                <i class="fa fa-plus control-icon" aria-hidden="true"></i>
+                <span>create collection</span>
             </div>
 
             <form [formGroup]="addCollectionForm" (ngSubmit)="onAddCollection()" [hidden]="showAddButton" autocomplete="off">
                 <div class="add-collection-form">
                     <input id="collectionNameField" #collectionNameField type="text" name="collectionName" formControlName="collectionName"
-                        class="form-control nna-input" placeholder=" collection name">
+                        class="form-control nna-input" placeholder="collection name">
                     <button type="submit" [disabled]="!addCollectionForm.valid" class='nna-icon-button nna-button-primary'
                         [ngClass]="{'nna-diabled-button': !addCollectionForm.valid}">
                         <i class="fa fa-check"aria-hidden="true"></i>
@@ -22,8 +23,7 @@
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
-                    class="validation-wrapper">
+                <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)" class="validation-wrapper">
                     <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
                         class="validation-container">
                         <div *ngIf="collectionName.errors.required">
@@ -48,7 +48,7 @@
                 <div class="list-group-item-link" (click)="openCollection(dmoList.id)">
                     &#9679; {{ dmoList.collectionName }} <span class="dmo-count" [hidden]="dmoList.dmoCount < 1">{{ dmoList.dmoCount }}</span>
                 </div>
-                <div class="remove-icon" (click)="onDeleteCollection(dmoList)"><i class="fa fa-trash"></i></div>
+                <!-- <div class="remove-icon" (click)="onDeleteCollection(dmoList)"><i class="fa fa-trash"></i></div> -->
             </div>
         </div>
     </div>

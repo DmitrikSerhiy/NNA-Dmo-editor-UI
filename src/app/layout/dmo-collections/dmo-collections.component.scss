@@ -26,7 +26,7 @@
     .add-collection-button {
       padding: 0 !important;
       align-items: center;
-      height: 40px;
+      height: 60px;
       @include collection-item();
       @include font-primary-info();
       justify-content: flex-start;
@@ -35,7 +35,7 @@
       .control-icon {
         color: $primary-color;
         margin-left: 1.1rem;
-        margin-right: .3rem;
+        margin-right: .5rem;
       }
     }
     .add-collection-button-partial-width {
@@ -45,7 +45,8 @@
       flex-basis: 100%;
     }
     form {
-      min-height: 40px;
+      margin-top: 10px;
+      min-height: 50px;
       width: 100%;
       padding: 0;
       .add-collection-form {
@@ -54,10 +55,11 @@
 
         input {
           flex: 1 1 70%;
-          padding-left: 1.4rem;
+          padding-left: .8rem;
+          margin-top: 2px;
         }
         button {
-          margin: auto 5px;
+          margin: auto .2rem;
         }
       }
       .validation-wrapper {
@@ -67,7 +69,7 @@
       }
     }
     .filter-collection-button {
-      height: 40px;
+      height: 60px;
       flex-basis: 20%;
       @include collection-item;
 
@@ -110,7 +112,7 @@
     .remove-icon {
       z-index: 5;
       position: absolute;
-      padding: 0.75rem 1.25rem;
+      padding: 0.75rem .5rem;
       right: 0;
       top: -5px;
       display: none;

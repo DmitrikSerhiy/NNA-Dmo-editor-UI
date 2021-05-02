@@ -34,17 +34,20 @@ html, body {
   justify-content: center;
 
   @include font-primary-info();
+
+  button {
+    margin-left: .5rem;
+    margin-right: .5rem;
+  }
 }
 
 .spinner-container {
   z-index: 1000;
 }
 
-.dmo-collections-spinner {
-  .spinner-container {
-    width: 340px !important;
-    left: unset !important;
-  }
+.dmo-collections-spinner .spinner-container {
+  width: 235px !important;
+  left: unset !important;
 }
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {

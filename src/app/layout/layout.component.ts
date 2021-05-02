@@ -7,8 +7,6 @@ import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, ChangeDetect
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { UserManager } from '../shared/services/user-manager';
-import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-layout',
@@ -88,12 +86,13 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         } else if ($event === RightMenues.dashboard) {
             this.rightMenuGrabberService.hideGrabber();
             this.collectionService.setCollectionId('');
-        } else if ($event === RightMenues.test) {
-            this.currentMenuName = RightMenues.test;
-            this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu($event);
-            this.rightMenuGrabberService.showGrabber();
-            this.toggleRightMenu = $event;
         }
+        //  else if ($event === RightMenues.test) {
+        //     this.currentMenuName = RightMenues.test;
+        //     this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu($event);
+        //     this.rightMenuGrabberService.showGrabber();
+        //     this.toggleRightMenu = $event;
+        // }
     }
 
     openRightMenuByGrabber($event) {
@@ -103,7 +102,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private getCurrentUserFriendlyRightMenu(menu: RightMenues) {
         switch (menu) {
             case RightMenues.dmoCollections: return 'DMO collections';
-            case RightMenues.test: return 'Test'
+            // case RightMenues.test: return 'Test'
             default: return '';
         }
     }

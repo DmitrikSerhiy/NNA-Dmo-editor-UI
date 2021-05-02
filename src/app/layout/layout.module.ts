@@ -16,7 +16,6 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { DmoCollectionsComponent } from './dmo-collections/dmo-collections.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestRightMenuComponent } from './test-right-menu/test-right-menu.component';
-import { NnaSpinnerComponent } from '../shared/components/nna-spinner/nna-spinner.component';
 
 const routes: Routes = [{
     path: '',
