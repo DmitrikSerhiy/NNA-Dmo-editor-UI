@@ -1,39 +1,22 @@
+$primary-font: 'Comfortaa', sans-serif;
+$secondary-font: 'Courier New', Courier, monospace; //this is open standart for screenplay text
 
-@mixin secondary-font() {
-    font: 14px 'Courier New', Courier, monospace;      //this is open standart for screenplay text
-    line-height: 1.4em;
-}  
-
-@mixin secondary-font-for-input {
-    font: 1.3rem 'Courier New', Courier, monospace; 
+@mixin font-primary-heading {
+    font-family: $primary-font;
+    font-style: normal;
+    font-size: 1.375rem; // 22px
 }
 
-@mixin primary-font-for-sidebar {
-    font: 1rem 'Comfortaa';
-    line-height: 1.5rem;
+@mixin font-primary-info {
+    font-family: $primary-font;
+    font-style: normal;
+    font-size: .875rem; // 14px
 }
 
-@mixin primary-font-for-input-active-label {
-    font: 1.3rem 'Comfortaa';
+@mixin font-secondary-info {
+    font-family: $secondary-font;
+    font-style: normal;
+    font-size: .875rem; // 14px
 }
 
-@mixin primary-font-for-input-label {
-    font: 1rem 'Comfortaa';
-}
 
-@mixin primary-font-for-info-message {
-    font: 1.2rem 'Comfortaa';
-}
-
-@mixin primary-heading-font() {
-    font: 22px 'Comfortaa';
-}
-
-@mixin primary-font-for-right-menu-grabber() {
-    font: 18px 'Comfortaa';
-}
-
-@mixin primary-action-font() {
-    font: 14px 'Comfortaa';
-}
-  

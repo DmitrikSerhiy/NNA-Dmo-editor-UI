@@ -3,7 +3,7 @@
     width: 100%;
   
     .mat-header-row {
-        @include primary-action-font();
+        @include font-primary-info();
         div button:focus {
             outline: none;
         }
@@ -30,7 +30,7 @@
     }
   
     .mat-row {
-      @include secondary-font();
+      @include font-secondary-info();
     }
   
     .clicked-row {
@@ -46,5 +46,22 @@
   }
   
   .mat-paginator {
-    @include primary-action-font();
+    @include font-primary-info();
+  }
+
+  .mat-paginator .mat-paginator-outer-container .mat-paginator-container .mat-paginator-range-actions button {
+    @include nna-button();
+    width: 1.3rem;
+    height: 1.3rem;
+    display: flex;
+    justify-content: center;
+
+    svg {
+      width: 20px;
+    }
+
+
+    &:focus {
+      outline: none;
+    }
   }

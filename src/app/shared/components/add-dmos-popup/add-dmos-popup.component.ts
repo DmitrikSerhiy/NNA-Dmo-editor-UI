@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DmoCollectionDto, ShortDmoDto } from '../../../layout/models';
-import { Component, OnInit, ViewChild, Input, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Inject, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -12,7 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: './add-dmos-popup.component.html',
   styleUrls: ['./add-dmos-popup.component.scss']
 })
-export class AddDmosPopupComponent implements OnInit, OnDestroy {
+export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   dmosTable: MatTableDataSource<ShortDmoDto>;
   dmos: ShortDmoDto[];
   collectionName: string;
@@ -28,13 +28,18 @@ export class AddDmosPopupComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialogRef: MatDialogRef<AddDmosPopupComponent>,
+    private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: DmoCollectionDto) {
        this.dmos = data.dmos;
        this.collectionName = data.collectionName;
       }
 
-  ngOnInit() {
+  ngAfterViewInit(): void {
     this.initializeDmosTable();
+  }
+
+  ngOnInit() {
+    
   }
 
   ngOnDestroy(): void {
@@ -86,5 +91,6 @@ export class AddDmosPopupComponent implements OnInit, OnDestroy {
     this.dmosTable.paginator = this.dmosPaginator;
     this.dmosTable.sort = this.dmosSorter;
     this.dmosCount = this.dmos.length;
+    this.cd.detectChanges();
   }
 }

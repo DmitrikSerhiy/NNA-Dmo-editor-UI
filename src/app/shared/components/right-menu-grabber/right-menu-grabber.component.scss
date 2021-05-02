@@ -3,15 +3,14 @@
 
 .right-menu-grabber-container {
     position: fixed;
-    right: -1.1rem;
-    top: 4.5rem;
-    z-index: 1000;
-    height: 1.8rem;
+    right: -1.2rem;
+    top: 14rem;
+    z-index: 800;
     display: flex;
     transition: right 0.4s;
-    @include primary-font-for-right-menu-grabber();
+    border-right: 0;
+    @include font-primary-info();
     
-
     &:hover {
         cursor: pointer;
         right: 0rem;
@@ -26,11 +25,14 @@
             transform: rotate(180deg);
             padding-bottom: 29px;
             margin-right: -1px;
+            user-select: none;
         }
 
         i {
             padding-left: 4px;
-            padding-top: 4px;
+            padding-top: 2px;
+            user-select: none;
+            margin: unset;
         }
 
         .fa-list {

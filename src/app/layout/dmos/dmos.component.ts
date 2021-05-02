@@ -5,10 +5,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Toastr } from './../../shared/services/toastr.service';
 import { DmosService } from '../../shared/services/dmos.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { concatMap, takeUntil, finalize, catchError } from 'rxjs/operators';
+import { concatMap, takeUntil, catchError } from 'rxjs/operators';
 import { ShortDmoDto } from '../models';
 
 @Component({
@@ -16,7 +16,7 @@ import { ShortDmoDto } from '../models';
   templateUrl: './dmos.component.html',
   styleUrls: ['./dmos.component.scss']
 })
-export class DmosComponent implements OnInit, OnDestroy {
+export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isDmosLoadings = true;
   allDmos: ShortDmoDto[];
@@ -34,10 +34,15 @@ export class DmosComponent implements OnInit, OnDestroy {
     private dmosService: DmosService,
     private toastr: Toastr,
     public matModule: MatDialog,
-    private router: Router) { }
+    private router: Router,
+    private cd: ChangeDetectorRef) { }
+
+  ngAfterViewInit(): void {
+    this.handleDMOSubscription(this.loadDmos());
+  }
 
   ngOnInit() {
-    this.handleDMOSubscription(this.loadDmos());
+    
   }
 
   ngOnDestroy(): void {
@@ -117,6 +122,7 @@ export class DmosComponent implements OnInit, OnDestroy {
     this.dmosTableColumns = null;
     this.dmosCount = 0;
     this.selectedDmo = null;
+    this.cd.detectChanges();
   }
 
   private initializeDmosTable(dmos: ShortDmoDto[]) {
@@ -126,5 +132,6 @@ export class DmosComponent implements OnInit, OnDestroy {
     this.dmosTableColumns = ['name', 'movieTitle', 'dmoStatus', 'shortComment', 'mark'];
     this.dmosCount = dmos.length;
     this.shouldShowDmosTable = true;
+    this.cd.detectChanges();
   }
 }

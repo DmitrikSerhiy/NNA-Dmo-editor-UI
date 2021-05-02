@@ -14,6 +14,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_RIPPLE_GLOBAL_OPTIONS } from '@angular/material';
 
 
 const routes: Routes = [
@@ -42,7 +43,9 @@ const routes: Routes = [
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
     AuthGuardForChild, AuthGuard, AuthService, UserManager, ToastrService, Toastr],
+
   bootstrap: [AppComponent],
 })
 export class AppModule { }

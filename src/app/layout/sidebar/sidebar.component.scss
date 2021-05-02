@@ -2,8 +2,9 @@
 @import "src/styles/fonts-mixins.scss";
 
 .sidebar {
-    @include primary-font-for-sidebar();
+    @include font-primary-info();
     position: fixed;
+    line-height: 1.5rem;
     z-index: 100;
     left: 235px;
     width: 235px;
@@ -40,6 +41,7 @@
 
 
         img {
+            user-select: none;
             margin: 0.7rem 0;
             height: 1.7rem;
             transition: margin-left .4s;
@@ -76,6 +78,7 @@
             background-color: rgba($primary-color, 0.01);
             border: 0;
             border-radius: 0;
+            user-select: none;
 
             text-decoration: none;
             .fa {
@@ -212,6 +215,7 @@
     display: flex;
     justify-content: center;
     padding: 0;
+    user-select: none;
 
     &:hover {
         width: 235px !important;
@@ -264,6 +268,7 @@
 
 .toggle-button {
     bottom: 0;
+    user-select: none;
     i {
         align-self: center;
     }

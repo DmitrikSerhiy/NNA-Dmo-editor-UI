@@ -17,17 +17,16 @@
     }
 
     .search-container {
-      flex: 0 1 220px;
+      flex: 0 1 240px;
       display: flex;
       margin-left: auto;
+      align-self: flex-end;
       i {
         position: absolute;
-        margin-top: 0.6rem;
-        margin-left: 1rem;
       }
 
       .search-input {
-        padding-left: 2.5rem;
+        padding-left: 2rem;
         &:focus {
           background-color: unset;
         }

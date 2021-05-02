@@ -24,14 +24,7 @@
 html, body {
   height: 100%;
   margin: 0;
-
-  .secondary-font {
-    @include secondary-font();
-  }
-
-  .primary-heading-font {
-    @include primary-heading-font();
-  }
+  font-size: 16px;
 }
 
 .info-message {
@@ -40,7 +33,7 @@ html, body {
   align-content: center;
   justify-content: center;
 
-  @include primary-font-for-info-message();
+  @include font-primary-info();
 }
 
 .spinner-container {
@@ -62,6 +55,10 @@ html, body {
   background-color: $primary-color;
 }
 
+.mat-checkbox .mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-ripple .mat-ripple-element {
+  background-color: transparent !important;
+}
+
 .mat-dialog-container {
   border-radius: 0 !important;
   border-style: solid !important;
@@ -74,12 +71,12 @@ html, body {
 .base-modal {
   .base-modal-header p {
     margin: 0;
-    @include primary-heading-font();
+    @include font-primary-heading();
   }
 
   .base-modal-body p {
     margin: 0;
-    @include secondary-font();
+    @include font-secondary-info();
   }
 
   .base-modal-header, .base-modal-body {
@@ -95,4 +92,9 @@ html, body {
     }
   }
 }
+
+.mat-drawer-container .mat-drawer  {
+  width: 235px;
+}
+
 

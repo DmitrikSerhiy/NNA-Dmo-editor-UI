@@ -3,7 +3,7 @@ export enum RightMenues {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
-    test = 'test'
+    // test = 'test'
 }
 
 export enum SidebarTabs {
@@ -11,7 +11,7 @@ export enum SidebarTabs {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
-    test = 'test'
+    // test = 'test'
 }
 
 export class DmoCollectionShortDto {

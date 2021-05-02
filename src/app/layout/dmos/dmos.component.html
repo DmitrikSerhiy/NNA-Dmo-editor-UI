@@ -7,13 +7,11 @@
     </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class="dmos-table-details">
         <div *ngIf="selectedDmo" class="dmo-info">
-            <div>
+            <!-- <div>
                 number of acts, bits, episodes etc.
-            </div>
-            <button class="nna-button nna-button-primary" (click)="redirectToDmo()"><i class="fa fa-sitemap"
-                    aria-hidden="true"></i> &#160; Open editor</button>
-            <button class="nna-button nna-button-secondary" (click)="onDmoRemove()"><i class="fa fa-trash"
-                    aria-hidden="true"></i> &#160; Remove DMO </button>
+            </div> -->
+            <button class="nna-button nna-button-primary" (click)="redirectToDmo()">Open editor</button>
+            <button class="nna-button nna-button-secondary" (click)="onDmoRemove()">Remove DMO </button>
         </div>
 
         <div class="search-container">
@@ -69,6 +67,6 @@
             </tr>
         </table>
 
-        <mat-paginator #dmosPaginator [length]="dmosCount" [pageSize]="15" showFirstLastButtons></mat-paginator>
+        <mat-paginator [hidden]="dmosCount < 11" #dmosPaginator [length]="dmosCount" [pageSize]="10"></mat-paginator>
     </div>
 </div>

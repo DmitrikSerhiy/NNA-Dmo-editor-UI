@@ -46,12 +46,12 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  sendTestEvent() {
-    if (this.isAuthorized) {
-      this.currestSidebarService.setMenu(SidebarTabs.test);
-      this.toggleRightMenu$.emit(RightMenues.test);
-    }
-  }
+  // sendTestEvent() {
+  //   if (this.isAuthorized) {
+  //     this.currestSidebarService.setMenu(SidebarTabs.test);
+  //     this.toggleRightMenu$.emit(RightMenues.test);
+  //   }
+  // }
 
   sendDmosEvent() {
     if (this.isAuthorized) {

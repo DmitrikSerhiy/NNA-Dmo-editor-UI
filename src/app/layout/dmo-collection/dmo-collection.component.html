@@ -3,30 +3,20 @@
         <div class="table-details">
             <div class="collection-name-container">
                 <div class="collection-name-header">
-                    <h4 *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}}
-                    </h4>
+                    <p class="collection-header" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary'
                         (click)='showEditCollectionNameForm()'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" [hidden]="showEditForm" class="nna-button nna-button-primary" 
-                        (click)="onAddDmo()">
-                        <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
                     </button>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button'
                         (click)='onRemoveCollection()'>
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
-                    <button type="button" [hidden]="showEditForm || showSearchContainer" class='nna-icon-button nna-button-primary'
-                        (click)="toggleSearchContainer($event)">
-                        <i class="fa fa-search" aria-hidden="true"></i>
+
+                    <button type="button" [hidden]="showEditForm" class="nna-button nna-button-primary" 
+                        (click)="onAddDmo()">
+                        <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
                     </button>
-                    <div [hidden]="showEditForm || !showSearchContainer" class="search-container">
-                        <i class="fa fa-search text-muted"></i>
-                        <input type="text" class="form-control nna-input search-input" (focus)="resetSelected()"
-                            placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off" 
-                            (mouseout)="toggleSearchContainer($event)">
-                    </div>
                 </div>
                 <form [hidden]="!showEditForm" [formGroup]="editCollectionNameForm" (ngSubmit)="onEditCollectionName()"
                     autocomplete="off">
@@ -60,12 +50,17 @@
             </div>
 
             <div [hidden]="showEditForm" class="dmo-details-container" [ngClass]="{'show-flex': selectedDmoInCollection}">
-                <button class="nna-button nna-button-primary" (click)="redirectToDmo()"><i class="fa fa-sitemap"
-                        aria-hidden="true"></i> &#160; Open editor</button>
-                <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"><i class="fa fa-trash"
-                        aria-hidden="true"></i> &#160; Remove from collection </button>
-                <div> number of acts, bits, episodes etc. </div>
+                <button class="nna-button nna-button-primary" (click)="redirectToDmo()"> Open editor</button>
+                <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"> Remove from collection </button>
+                <!-- <div> number of acts, bits, episodes etc. </div> -->
             </div>
+
+            <div class="search-container">
+                <i class="fa fa-search text-muted"></i>
+                <input type="text" class="form-control nna-input search-input" (focus)="resetSelected()"
+                    placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off">
+            </div>
+
         </div>
 
         <table mat-table class="nna-table" [dataSource]="collectionTable" #collectionSort="matSort" matSort>
@@ -112,7 +107,7 @@
             </tr>
         </table>
 
-        <mat-paginator #collectionPaginator [length]="collectionLength" [pageSize]="15" showFirstLastButtons></mat-paginator>
+        <mat-paginator [hidden]="collectionLength < 11" #collectionPaginator [length]="collectionLength" [pageSize]="10"></mat-paginator>
     </div>
 
     <div class="info-message" [hidden]="collectionLength != 0">

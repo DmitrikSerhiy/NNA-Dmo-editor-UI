@@ -18,7 +18,7 @@
         outline: none;
         padding: 0;
         margin: 0;
-        // padding: 6px 0;
+        height: 1.2rem;
         width: 100%;
         max-width: 100%;
         vertical-align: bottom;
@@ -36,7 +36,7 @@
         transition: background-position 1ms 150ms !important;
         animation-name: inputOut;
 
-        @include secondary-font-for-input();
+        @include font-secondary-info();
 
         &:focus {
             background-position: bottom 0px left 0px;
@@ -54,16 +54,15 @@
 
 .nna-input {
     padding: 0;
-    font-size: 1rem;
 }
 
 .nna-input-group {
     position: relative;
     padding: 15px 0 0;
-    margin-top: 10px;
     width: 100%;
 
     textarea {
+        height: unset !important;
         margin-top: 14px !important;
     }
 
@@ -75,32 +74,32 @@
         }
       
         &:placeholder-shown ~ .nna-input-label {
-          @include primary-font-for-input-active-label();
-          cursor: text;
-          top: 30px;
+            @include font-primary-info();
+            cursor: text;
+            top: 10px;
         }
     }
       
     .nna-input-label {
         position: absolute;
-        top: 0;
+        top: -5px;
         display: block;
         transition: 0.2s;
-        @include primary-font-for-input-label();
+        @include font-primary-info();
+        font-size: .7rem !important;
         color: gray;
+        user-select: none; 
     }
       
     .nna-input:focus {
-        ~ .nna-input-label {
+        ~ .nna-input-label {  
             position: absolute;
-            top: 0;
+            top: -5px;
             display: block;
             transition: 0.2s;
-            @include primary-font-for-input-label();
+            font-size: .7rem; //focus not empty
             color: black;
-            // background: linear-gradient(45deg,#F7C23B 0px, #F7C23B 40%,#F0CEC4 40%,#9B00D1 100%);
-            // background-clip: text;
-            // -webkit-text-fill-color: transparent;
+            user-select: none;
         }
     }
 }

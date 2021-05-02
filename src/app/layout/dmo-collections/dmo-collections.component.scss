@@ -28,7 +28,7 @@
       align-items: center;
       height: 40px;
       @include collection-item();
-      @include primary-action-font();
+      @include font-primary-info();
       justify-content: flex-start;
       display: flex;
 
@@ -99,7 +99,7 @@
       padding: 0.75rem 1.25rem;
       width: 100%;
       display: flex;
-      @include secondary-font();
+      @include font-secondary-info();
 
       .dmo-count {
         margin-left: auto;
