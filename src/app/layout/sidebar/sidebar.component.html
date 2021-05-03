@@ -1,7 +1,7 @@
 <nav class="sidebar" [ngClass]="{collapsed : !sidebarState}" [ngClass]="{'with-collapse-button' : isAuthorized}">
     <div [ngSwitch]="sidebarState" class="logo-container">
-        <img src="/assets/logo-en.svg" alt="logo" class="logo mini" *ngSwitchCase="false">
-        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo extend" *ngSwitchCase="true">
+        <img src="/assets/logo-en.svg" alt="logo" class="logo-mini" *ngSwitchCase="false">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo-extend" *ngSwitchCase="true">
     </div>
 
     <div class="list-group">

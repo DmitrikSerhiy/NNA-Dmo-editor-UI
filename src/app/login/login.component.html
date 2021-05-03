@@ -1,7 +1,10 @@
 <div class="login-page" [@routerTransition]>
-    <div class="row justify-content-md-center">
+    <div class="login-form">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo">
+        <p class="header">Log in</p>
+    </div>
+    <!-- <div class="row justify-content-md-center">
         <div class="col-md-4">
-            <!-- <img src="assets/images/logo.png" width="150px" class="user-avatar" /> -->
             <h1>Authentication</h1>
             <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                 <div class="form-content">
@@ -44,5 +47,5 @@
                 <button type="submit" [disabled]="!loginForm.valid" class="btn rounded-btn">Log in</button>
             </form>
         </div>
-    </div>
+    </div> -->
 </div>
