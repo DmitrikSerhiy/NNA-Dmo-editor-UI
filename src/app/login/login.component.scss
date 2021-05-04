@@ -27,6 +27,10 @@
         .header {
             @include font-primary-heading();
         }
+
+        input[autocomplete='off']:read-only {
+            background-color: transparent!important;
+        }
     }
 
 
