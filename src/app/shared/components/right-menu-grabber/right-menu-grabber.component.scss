@@ -10,6 +10,7 @@
     transition: right 0.4s;
     border-right: 0;
     @include font-primary-info();
+    padding: 0 !important;
     
     &:hover {
         cursor: pointer;

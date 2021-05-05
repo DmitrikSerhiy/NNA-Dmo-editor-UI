@@ -2,37 +2,44 @@
     <div class="login-form-container">
         <img src="/assets/logo-en-extend.svg" alt="logo" class="logo">
         <p class="header">Log in</p>
-        
-        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form"> <!-- autocomplete="off"> -->
             <div class="auth-slider-container">
-
                 <div class="auth-sliders">
 
                     <div id="email-input" class="nna-input-group auth-input">
-                        <input type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email*" />
-                        <label for="email" class="nna-input-label">Email*</label>
+                        <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
+                            (keyup)="specialTrigger($event, true)" />  <!-- autocomplete="off" /> -->
+                        <label for="email" class="nna-input-label"> 
+                            <span *ngIf="!emailInvalid">Email</span> 
+                            <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!emailInvalid" class="validation-icon material-icons" title="{{emailValidationToShow}}"> warning_amber</span>
                     </div>
 
                     <div id="password-input" class="nna-input-group auth-input">
-                        <input  type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password*" />
-                        <label for="password" class="nna-input-label">Password*</label>
+                        <input #passwordInput type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password" 
+                            (keyup)="specialTrigger($event, false)"/> <!-- autocomplete="off" /> -->
+                        <label for="password" class="nna-input-label">
+                            <span *ngIf="!passwordInvalid">Password</span> 
+                            <span class="validation-container" *ngIf="passwordInvalid">{{passValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!passwordInvalid" class="validation-icon material-icons" title="{{passValidationToShow}}"> warning_amber</span>
                     </div>
-                    
 
                 </div>
 
                 <div class="register-link">
-                    <span>no account?</span> 
+                    <span>Have no account yet?</span> 
                     <a class="nna-link" [routerLink]="['/signup']">Register</a>
                 </div> 
 
                 <div class="auth-buttons">
-                    <a class="nna-icon-button" href="login#email-input" [hidden]="firstStep" (click)="toFirstStep()"> < </a>
-                    <a class="nna-button-primary" href="login#password-input" [hidden]="!firstStep"  (click)="toSecondStep()">next</a>
-                    <button type="submit" [disabled]="!loginForm.valid" [hidden]="firstStep" class="nna-button-primary">Log in</button>
+                    <button type="button" class="nna-icon-button"    [hidden]="firstStep" (click)="toFirstStep()"> < </button>
+                    <button type="button" class="nna-button-primary" [hidden]="!firstStep"  (click)="toSecondStep()">next</button>
+                    <button type="submit" class="nna-button-primary" [hidden]="firstStep" >Log in</button>
                 </div>
             </div>
-            
+            <!-- [disabled]="!loginForm.valid"  -->
         </form>
 
 

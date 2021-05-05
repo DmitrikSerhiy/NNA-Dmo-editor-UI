@@ -12,13 +12,21 @@ import { CustomErrorHandler } from './custom-error-handler';
 
 @Injectable()
 export class AuthService {
-    serverUrl = environment.server_user + 'account/';
+    serverUrl = environment.server_user + 'account';
     constructor(private http: HttpClient, 
         private errorHandler: CustomErrorHandler) { }
 
+    checkUserEmail(email: string): Observable<boolean> {
+        return this.http
+            .post(this.serverUrl, { 'email': email } )
+            .pipe(
+                map((response: boolean) => response),
+                catchError(this.errorHandler.handle));
+    }
+
     authorize(email: string, password: string): Observable<UserDetails> {
         return this.http
-            .post(this.serverUrl + 'token', { 'email': email, 'password': password } )
+            .post(this.serverUrl + '/token', { 'email': email, 'password': password } )
             .pipe(
                 map((response: UserDetails) => response),
                 catchError(this.errorHandler.handle));
@@ -26,7 +34,7 @@ export class AuthService {
 
     register(userName: string, email: string, password: string): Observable<UserDetails> {
         return this.http
-            .post(this.serverUrl + 'register', {'userName': userName, 'email': email, 'password': password})
+            .post(this.serverUrl + '/register', {'userName': userName, 'email': email, 'password': password})
             .pipe(
                 map((response: UserDetails) => response),
                 catchError(this.errorHandler.handle));

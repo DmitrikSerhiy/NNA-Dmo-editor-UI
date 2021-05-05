@@ -4,7 +4,8 @@
 .nna-link {
     text-transform: lowercase;
     text-decoration: none !important;
-    background: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%);
+    background: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 20%, $secondary-color 100%);
+    font-weight: 600;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
