@@ -1,0 +1,10 @@
+@import "src/styles/colors.scss";
+
+
+.nna-link {
+    text-transform: lowercase;
+    text-decoration: none !important;
+    background: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

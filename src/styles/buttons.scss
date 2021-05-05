@@ -12,6 +12,8 @@
     min-height: 1.3rem;
     height: 1.3rem;
     text-transform: lowercase;
+    padding: .5rem .75rem;
+    white-space: nowrap;
 
     border-radius: unset;
     border-style: solid;
@@ -53,6 +55,7 @@
         font-size: .7rem;
         min-width: 1.3rem;
         width: 1.3rem;
+        padding: 0;
         justify-content: center;
         
         i, span {
@@ -60,6 +63,4 @@
             margin: auto;
             display: flex;
         }
-    // line-height: 1em;
-    // min-width: 1.875rem;
 }

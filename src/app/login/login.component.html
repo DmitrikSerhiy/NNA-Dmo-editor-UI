@@ -1,20 +1,38 @@
 <div class="login-page" [@routerTransition]>
-    <div class="login-form">
+    <div class="login-form-container">
         <img src="/assets/logo-en-extend.svg" alt="logo" class="logo">
         <p class="header">Log in</p>
         
-        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <div class="nna-input-group">
-                <input type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email*" />
-                <label for="email" class="nna-input-label">Email*</label>
+        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <div class="auth-slider-container">
+
+                <div class="auth-sliders">
+
+                    <div id="email-input" class="nna-input-group auth-input">
+                        <input type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email*" />
+                        <label for="email" class="nna-input-label">Email*</label>
+                    </div>
+
+                    <div id="password-input" class="nna-input-group auth-input">
+                        <input  type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password*" />
+                        <label for="password" class="nna-input-label">Password*</label>
+                    </div>
+                    
+
+                </div>
+
+                <div class="register-link">
+                    <span>no account?</span> 
+                    <a class="nna-link" [routerLink]="['/signup']">Register</a>
+                </div> 
+
+                <div class="auth-buttons">
+                    <a class="nna-icon-button" href="login#email-input" [hidden]="firstStep" (click)="toFirstStep()"> < </a>
+                    <a class="nna-button-primary" href="login#password-input" [hidden]="!firstStep"  (click)="toSecondStep()">next</a>
+                    <button type="submit" [disabled]="!loginForm.valid" [hidden]="firstStep" class="nna-button-primary">Log in</button>
+                </div>
             </div>
-
-            <!-- <div class="nna-input-group">
-                <input  type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password*" />
-                <label for="password" class="nna-input-label">Password*</label>
-            </div> -->
-
-            <button type="submit" [disabled]="!loginForm.valid" class="nna-button-primary">Log in</button>
+            
         </form>
 
 

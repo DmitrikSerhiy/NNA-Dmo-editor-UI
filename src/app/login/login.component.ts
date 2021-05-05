@@ -18,19 +18,31 @@ export class LoginComponent implements OnInit {
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
 
+  firstStep: boolean
+
   constructor(
     public router: Router,
     private authService: AuthService,
     private userManager: UserManager,
     private toast: Toastr) {
+      
   }
 
 
   ngOnInit() {
+    this.firstStep = true;
     this.loginForm = new FormGroup({
       'email': new FormControl('', [Validators.required, Validators.email]),
       'password': new FormControl('', [Validators.required, Validators.minLength(8)])
     });
+  }
+
+  toFirstStep(): void {
+    this.firstStep = true;
+  }
+
+  toSecondStep(): void {
+    this.firstStep = false;
   }
 
   onSubmit() {
