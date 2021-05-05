@@ -1,7 +1,66 @@
-<div class="login-page" [@routerTransition]>
+<div class="register-page">
+    <div class="register-form-container">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo">
+        <p class="header">Create account</p>
+        <form role="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form" autocomplete="off">
+            <div class="auth-slider-container">
+                <div class="auth-sliders">
+
+                    <div id="email-input" class="nna-input-group auth-input">
+                        <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
+                            (keyup)="specialTrigger($event, 1)" autocomplete="off" />
+                        <label for="email" class="nna-input-label"> 
+                            <span *ngIf="!emailInvalid">Email</span> 
+                            <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!emailInvalid" class="validation-icon material-icons" title="{{emailValidationToShow}}"> warning_amber</span>
+                    </div>
+
+                    <div id="name-input" class="nna-input-group auth-input">
+                        <input #nameInpup type="text" name="name" id="name" formControlName="name" class="form-control nna-input" placeholder="Name"
+                            (keyup)="specialTrigger($event, 2)" autocomplete="off" />
+                        <label for="name" class="nna-input-label"> 
+                            <span *ngIf="!nameInvalid">Name</span> 
+                            <span class="validation-container" *ngIf="nameInvalid">{{nameValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!nameInvalid" class="validation-icon material-icons" title="{{nameValidationToShow}}"> warning_amber</span>
+                    </div>
+
+                    <div id="password-input" class="nna-input-group auth-input">
+                        <input #passwordInput type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password" 
+                            (keyup)="specialTrigger($event, 2)" autocomplete="new-password"/>
+                        <label for="password" class="nna-input-label">
+                            <span *ngIf="!passwordInvalid">Password</span> 
+                            <span class="validation-container" *ngIf="passwordInvalid">{{passValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!passwordInvalid" class="validation-icon material-icons" title="{{passValidationToShow}}"> warning_amber</span>
+                    </div>
+
+                </div>
+
+                <div class="login-link">
+                    <span>Already have an account?</span> 
+                    <a class="nna-link" [routerLink]="['/login']">Login</a>
+                </div> 
+
+                <div class="auth-buttons">
+                    <button type="button" class="nna-icon-button"    [hidden]="firstStep || !secondStep" (click)="toFirstStep()"> < </button>
+                    <button type="button" class="nna-button-primary" [hidden]="!firstStep || secondStep " (click)="toSecondStep()">next</button>
+                    <button type="button" class="nna-icon-button"    [hidden]="!thirdStep" (click)="toSecondStep(true)"> < </button>
+                    <button type="button" class="nna-button-primary" [hidden]="!secondStep || thirdStep"(click)="toThirdStep()">next</button>
+                    <button type="submit" class="nna-button-primary" [hidden]="!thirdStep" (click)="onSubmit()">Create account</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+
+<!-- <div class="login-page" [@routerTransition]>
     <div class="row justify-content-md-center">
         <div class="col-md-4">
-            <!-- <img class="user-avatar" src="assets/images/logo.png" width="150px" /> -->
             <h1>Registration</h1>
             <form role="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()"> 
                 <div class="form-content">
@@ -56,4 +115,4 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->

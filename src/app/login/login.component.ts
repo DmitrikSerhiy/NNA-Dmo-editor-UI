@@ -22,8 +22,10 @@ export class LoginComponent implements OnInit {
   @ViewChild('passwordInput', { static: true }) passwordInput: ElementRef;
   
   firstStep: boolean
+  
   emailInvalid: boolean;
   passwordInvalid: boolean;
+
   private notExistingEmailValidation: string;
   private invalidEmailValidation: string;
   private emtpyEmailValidation: string;

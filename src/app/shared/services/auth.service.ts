@@ -18,7 +18,15 @@ export class AuthService {
 
     checkUserEmail(email: string): Observable<boolean> {
         return this.http
-            .post(this.serverUrl, { 'email': email } )
+            .post(this.serverUrl + '/email', { 'email': email } )
+            .pipe(
+                map((response: boolean) => response),
+                catchError(this.errorHandler.handle));
+    }
+
+    checkName(name: string): Observable<boolean> {
+        return this.http
+            .post(this.serverUrl + '/name', { 'name': name } )
             .pipe(
                 map((response: boolean) => response),
                 catchError(this.errorHandler.handle));
