@@ -8,7 +8,7 @@
 
                     <div id="email-input" class="nna-input-group auth-input">
                         <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
-                            (keyup)="specialTrigger($event, true)" />  <!-- autocomplete="off" /> -->
+                            (keyup)="specialTrigger($event, true)" (keydown)="checkKey($event)" />  <!-- autocomplete="off" /> -->
                         <label for="email" class="nna-input-label"> 
                             <span *ngIf="!emailInvalid">Email</span> 
                             <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>
@@ -18,7 +18,7 @@
 
                     <div id="password-input" class="nna-input-group auth-input">
                         <input #passwordInput type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password" 
-                            (keyup)="specialTrigger($event, false)"/> <!-- autocomplete="off" /> -->
+                            (keyup)="specialTrigger($event, false)" (keydown)="checkKey($event)" />  <!-- autocomplete="off" /> -->
                         <label for="password" class="nna-input-label">
                             <span *ngIf="!passwordInvalid">Password</span> 
                             <span class="validation-container" *ngIf="passwordInvalid">{{passValidationToShow}}</span>

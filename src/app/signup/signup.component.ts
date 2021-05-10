@@ -75,13 +75,23 @@ export class SignupComponent implements OnInit {
     this.emailInput.nativeElement.focus();
   }
 
-  specialTrigger($event, secondStep: number) {
+  checkKey($event) {
+    let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 13 || key == 9) {
+      $event.preventDefault();
+    }
+  }
+
+  specialTrigger($event, step: number) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13 || key == 9) { // enter or tab
-      if (secondStep == 1) {
-        // this.toSecondStep();
-      } else if (secondStep == 2) {
-        // this.onSubmit();
+      $event.preventDefault();
+      if (step == 1) {
+        this.toSecondStep();
+      } else if (step == 2) {
+        this.toThirdStep()
+      } else if (step == 3) {
+        this.onSubmit();
       }
     }
   }
@@ -116,7 +126,8 @@ export class SignupComponent implements OnInit {
         this.emailValidationToShow = this.emtpyEmailValidation;
         this.emailInput.nativeElement.focus();
       }
-    } else {
+      return;
+    }
 
     this.authService.checkUserEmail(this.registerForm.get('email').value)
       .subscribe(async (response) => {
@@ -140,8 +151,6 @@ export class SignupComponent implements OnInit {
           this.nameInput.nativeElement.focus();
         }
       });
-
-    }
   }
 
   toThirdStep(): void {
@@ -152,31 +161,29 @@ export class SignupComponent implements OnInit {
         this.nameValidationToShow = this.emtpyNameValidation;
         this.nameInput.nativeElement.focus();
       }
-    } else {
-
-      this.authService.checkName(this.registerForm.get('name').value)
-      .subscribe(async (response) => {
-        if (response == true) {
-          this.nameInvalid = true;
-          this.nameValidationToShow = this.takenNameValidaiton;
-          this.nameInput.nativeElement.focus();
-        } else {
-          if (this.nameInvalid == true) {
-            this.nameInvalid = false;
-            await this.sleep(200);
-          }
-
-          location.href = "signup#password-input";
-          this.firstStep = false;
-          this.secondStep = false;
-          this.thirdStep = true;
-          this.emailInvalid = false;
-          await this.sleep(600);
-          this.passwordInput.nativeElement.focus();
-        }
-      });
-
+      return;
     }
+    this.authService.checkName(this.registerForm.get('name').value)
+    .subscribe(async (response) => {
+      if (response == true) {
+        this.nameInvalid = true;
+        this.nameValidationToShow = this.takenNameValidaiton;
+        this.nameInput.nativeElement.focus();
+      } else {
+        if (this.nameInvalid == true) {
+          this.nameInvalid = false;
+          await this.sleep(200);
+        }
+
+        location.href = "signup#password-input";
+        this.firstStep = false;
+        this.secondStep = false;
+        this.thirdStep = true;
+        this.emailInvalid = false;
+        await this.sleep(600);
+        this.passwordInput.nativeElement.focus();
+      }
+    });
   }
 
   onSubmit() {
@@ -190,28 +197,23 @@ export class SignupComponent implements OnInit {
         this.passValidationToShow = this.invalidPasswordValidation;
         this.passwordInput.nativeElement.focus();
       };
-    } else {
-
-      if (this.registerForm.valid) {
-        this.authService.register(
-          this.registerForm.get('name').value,
-          this.registerForm.get('email').value,
-          this.registerForm.get('password').value)
-          .subscribe((response) => {
-            this.emailInvalid = false;
-            this.passwordInvalid = false;
-            this.nameInvalid = false;
-            this.userManager.register(response.accessToken, response.email, response.userName);
-          },
-          (error) => {
-            this.toast.info(error);
-          });
-      }
-
+      return;
+    } 
+    if (this.registerForm.valid) {
+      this.authService.register(
+        this.registerForm.get('name').value,
+        this.registerForm.get('email').value,
+        this.registerForm.get('password').value)
+        .subscribe((response) => {
+          this.emailInvalid = false;
+          this.passwordInvalid = false;
+          this.nameInvalid = false;
+          this.userManager.register(response.accessToken, response.email, response.userName);
+        },
+        (error) => {
+          this.toast.info(error);
+        });
     }
-
-
-
   }
 
   

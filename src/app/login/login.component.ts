@@ -63,9 +63,17 @@ export class LoginComponent implements OnInit {
   }
 
 
+  checkKey($event) {
+    let key = $event.which || $event.keyCode || $event.charCode;
+    if (key == 13 || key == 9) {
+      $event.preventDefault();
+    }
+  }
+
   specialTrigger($event, secondStep: boolean) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13 || key == 9) { // enter or tab
+      $event.preventDefault();
       if (secondStep == true) {
         this.toSecondStep();
       } else if (secondStep == false) {
@@ -75,7 +83,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  async toFirstStep(): Promise<void> {
+  toFirstStep(): void {
     location.href="login#email-input";
     this.firstStep = true;
     this.emailInput.nativeElement.focus();
@@ -92,8 +100,9 @@ export class LoginComponent implements OnInit {
         this.emailValidationToShow = this.emtpyEmailValidation;
         this.emailInput.nativeElement.focus();
       }
-    } else {
-
+      return;
+    } 
+    
     this.authService.checkUserEmail(this.loginForm.get('email').value)
       .subscribe(async (response) => {
         if (response == false) {
@@ -113,8 +122,6 @@ export class LoginComponent implements OnInit {
           this.passwordInput.nativeElement.focus();
         }
       });
-
-    }
   }
 
   onSubmit() {
@@ -128,27 +135,27 @@ export class LoginComponent implements OnInit {
         this.passValidationToShow = this.invalidPasswordValidation;
         this.passwordInput.nativeElement.focus();
       };
+      return;
+    } 
 
-    } else {
-      if (this.loginForm.valid) {
-        this.authService.authorize(this.loginForm.get('email').value, this.loginForm.get('password').value)
-          .subscribe((response) => {
-            if (response.errorMessage != null) {
-              if (response.errorMessage == '403') {
-                this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
-                this.passwordInvalid = true;
-                this.passwordInput.nativeElement.focus();
-              }
+    if (this.loginForm.valid) {
+      this.authService.authorize(this.loginForm.get('email').value, this.loginForm.get('password').value)
+        .subscribe((response) => {
+          if (response.errorMessage != null) {
+            if (response.errorMessage == '403') {
+              this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
+              this.passwordInvalid = true;
+              this.passwordInput.nativeElement.focus();
             }
-            else {
-              this.passwordInvalid = false;
-              this.userManager.login(response.accessToken, response.email, response.userName);
-            }
-          },
-          (error) => {
-            this.toast.error(error);
-          });
-      }
+          }
+          else {
+            this.passwordInvalid = false;
+            this.userManager.login(response.accessToken, response.email, response.userName);
+          }
+        },
+        (error) => {
+          this.toast.error(error);
+        });
     }
   }
 

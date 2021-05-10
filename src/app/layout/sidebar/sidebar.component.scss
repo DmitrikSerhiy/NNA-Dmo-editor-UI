@@ -48,21 +48,6 @@
             margin-left: 1rem;
         }
 
-        @keyframes logo-initial {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes logo-mini-shift {
-            from { margin-left: 1rem; }
-            to { margin-left: 0; }
-        }
-
-        @keyframes logo-extend-shift {
-            from { margin-left: 0; }
-            to { margin-left: 1rem; }
-        }
-
         .logo-mini {
             animation:  logo-mini-shift  .4s forwards;
         }
@@ -102,7 +87,7 @@
         }
         @for $i from 1 through 5 {
             a:nth-child(#{$i}) {
-                top: $i * 48px
+                top: $i * 43px
             }
           }
         a.router-link-active {
@@ -110,7 +95,7 @@
             cursor: pointer;
         }
         .side-item-collapse {
-            width: 60px;
+            width: 50px;
             &:hover { 
                 span {
                     display: inline !important;
@@ -155,7 +140,7 @@
             .panel-body {
                 .list-group-item {
                     border-radius: 0;
-                    background-color: rgba($primary-color, 0.6);;
+                    background-color: rgba($primary-color, 0.6);
                     border: 0 solid transparent;
                 }
                 .list-group-item:hover {
@@ -204,14 +189,14 @@
 
 .top-auth-buttons {
     bottom: unset;
-    top: 95px;
+    top: 82px;
     padding: 0;
     margin: auto;
 }
 
 
 .auth-blocks {
-    bottom: 47px;
+    bottom: 45px;
     display: flex;
     justify-content: center;
     padding: 0;
@@ -227,7 +212,7 @@
 
     .auth-block {
         display: flex;
-        height: 47px;
+        height: 45px;
         flex: 1 1 50%;
         
         .nav-link {
@@ -245,11 +230,6 @@
         display: flex;
         justify-content: left !important;
 
-        background: $sidebar-border;
-        background-repeat: no-repeat;
-        background-size: 100% 1px;
-        background-position: bottom;
-
         &:hover {
             width: 235px !important;
             display: flex !important;
@@ -260,7 +240,7 @@
     }
 
     .collapsed {
-        width: 60px;
+        width: 50px;
         display: flex;
         justify-content: left !important;
     }
@@ -273,20 +253,29 @@
         align-self: center;
     }
 
+    background: $sidebar-border;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    background-position: top;
+
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -ms-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-
-    &:hover {
-        background: rgba($primary-color, 0.6);
-    }
 }
 
 .collapsed {
-    width: 60px;
+    width: 50px;
     justify-content: center;
+    background-color: transparent;
+    border-right: 1px solid rgba($primary-color, 0.6);
+
+    .logo-container  {
+        background: transparent;
+    }
+    background: transparent;
+
     span {
         display: none;
 
@@ -294,4 +283,22 @@
             outline: none;
         }
     }
+
+    
+    @keyframes logo-initial {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes logo-mini-shift {
+        from { margin-left: 1rem; }
+        to { margin-left: 0; }
+    }
+
+    @keyframes logo-extend-shift {
+        from { margin-left: 0; }
+        to { margin-left: 1rem; }
+    }
 }
+
+

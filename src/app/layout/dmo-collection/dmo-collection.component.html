@@ -5,14 +5,14 @@
                 <div class="collection-name-header">
                     <p class="collection-header" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary' (click)='showEditCollectionNameForm()'>
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                     </button>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button' (click)='onRemoveCollection()'>
-                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </button>
 
                     <button type="button" [hidden]="showEditForm" class="nna-button nna-button-primary" (click)="onAddDmo()">
-                        <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
+                        add DMO 
                     </button>
                 </div>
                 <form [hidden]="!showEditForm" [formGroup]="editCollectionNameForm" (ngSubmit)="onEditCollectionName()" autocomplete="off">
@@ -26,7 +26,7 @@
                             <i class="fa fa-check" aria-hidden="true"></i>
                         </button>
                         <button type="button" class='nna-icon-button' (click)="hideEditCollectionNameForm()">
-                            <i class="fa fa-times" aria-hidden="true"></i>
+                            <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
                         </button>
                     </div>
                     <div class="validation-wrapper">
@@ -46,7 +46,7 @@
 
             <div [hidden]="showEditForm" class="dmo-details-container" [ngClass]="{'show-flex': selectedDmoInCollection}">
                 <button class="nna-button nna-button-primary" (click)="redirectToDmo()"> Open editor</button>
-                <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"> Remove from collection </button>
+                <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"> Remove dmo </button>
                 <!-- <div> number of acts, bits, episodes etc. </div> -->
             </div>
 
