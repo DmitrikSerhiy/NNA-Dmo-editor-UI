@@ -83,7 +83,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     if (!this.selectedDmoInCollection) {
       return;
     }
-    this.router.navigateByUrl('/editor?dmoId=' + this.selectedDmoInCollection.id);
+    this.router.navigateByUrl('/app/editor?dmoId=' + this.selectedDmoInCollection.id);
   }
 
   removeFromCollection() {
@@ -193,7 +193,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
         const deleteAndRedirect$ = this.dmoCollectionService.deleteCollection(this.currentDmoCollection.id);
 
         deleteAndRedirect$.subscribe({
-          next: () => { this.redirectToDashboard(); },
+          next: () => { this.redirectAfterRemove(); },
           error: (err) => { this.toastr.error(err); },
         });
       }
@@ -233,10 +233,10 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     this.showSearchContainer = !this.showSearchContainer;
   }
 
-  private redirectToDashboard() {
-    this.currentSidebarService.setMenu(SidebarTabs.dashboard);
+  private redirectAfterRemove() {
+    this.currentSidebarService.setMenu(null);
     this.collectionManager.setCollectionId('');
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/app');
   }
 
   private loadDmos() {

@@ -1,6 +1,6 @@
 <div class="login-page">
     <div class="login-form-container">
-        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo" (click)='redirectToHome()'>
         <p class="header">Login</p>
         <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form"> <!-- autocomplete="off"> -->
             <div class="auth-slider-container">

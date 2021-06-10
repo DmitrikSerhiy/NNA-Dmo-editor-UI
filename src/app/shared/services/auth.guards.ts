@@ -24,12 +24,12 @@ export class AuthGuard implements CanActivate {
 
     constructor(
         private userManager: UserManager,
-        private toastr: Toastr) { }
+        private toastr: Toastr,
+        private router: Router) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
         if (!this.userManager.isAuthorized()) {
-            this.toastr.info('You have to log in.');
-            console.log(state);
+            this.router.navigate(['/access-denied']);
             return false;
         }
         return true;

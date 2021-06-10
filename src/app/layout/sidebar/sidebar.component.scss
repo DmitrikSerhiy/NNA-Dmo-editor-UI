@@ -48,6 +48,10 @@
             margin-left: 1rem;
         }
 
+        .logo:hover {
+            cursor: pointer;
+        }
+
         .logo-mini {
             animation:  logo-mini-shift  .4s forwards;
         }
@@ -189,7 +193,7 @@
 
 .top-auth-buttons {
     bottom: unset;
-    top: 82px;
+    top: 44px;
     padding: 0;
     margin: auto;
 }
@@ -219,6 +223,7 @@
             align-self: center;
             color: black;
             padding: .75rem 1.15rem;
+            text-decoration: none;
         }
         &:hover {
             background: $primary-color;

@@ -63,6 +63,10 @@ export class LoginComponent implements OnInit {
   }
 
 
+  redirectToHome() {
+    this.router.navigate(['/']);
+  }
+  
   checkKey($event) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13 || key == 9) {

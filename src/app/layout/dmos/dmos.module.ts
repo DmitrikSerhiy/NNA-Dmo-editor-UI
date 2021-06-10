@@ -1,7 +1,6 @@
 import { RemoveDmoPopupComponent } from './../../shared/components/remove-dmo-popup/remove-dmo-popup.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModule } from './../../shared/shared.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DmosComponent } from './dmos.component';
@@ -20,7 +19,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatDialogModule,
     SharedModule,
-    MatProgressSpinnerModule,
     MatPaginatorModule,
     MatSortModule,
     MatTableModule

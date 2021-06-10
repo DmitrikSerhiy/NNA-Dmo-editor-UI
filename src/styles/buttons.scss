@@ -9,8 +9,8 @@
     align-items: center;
     text-decoration: none;
     background-color: transparent;
-    min-height: 1.3rem;
-    height: 1.3rem;
+    min-height: 1.75rem;
+    height: 1.75rem;
     text-transform: lowercase;
     padding: .5rem .75rem;
     white-space: nowrap;
@@ -53,8 +53,8 @@
 .nna-icon-button {
     @include nna-button();
         font-size: .7rem;
-        min-width: 1.3rem;
-        width: 1.3rem;
+        min-width: 1.75rem;
+        width: 1.75rem;
         padding: 0;
         justify-content: center;
         
@@ -63,4 +63,8 @@
             margin: auto;
             display: flex;
         }
+}
+
+.first-nna-button {
+    margin-left: 0px !important;
 }

@@ -42,7 +42,7 @@ html, body {
 .info-message {
   width: 100%;
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
 
   @include font-primary-info();
@@ -82,7 +82,6 @@ html, body {
   box-shadow: none !important;
 }
 
-
 .base-modal {
   .base-modal-header p {
     margin: 0;
@@ -108,8 +107,13 @@ html, body {
   }
 }
 
-.mat-drawer-container .mat-drawer  {
-  width: 235px;
+.mat-drawer-container {
+  background-color: white;
+  
+  .mat-drawer  {
+    width: 235px;
+  }
 }
+
 
 

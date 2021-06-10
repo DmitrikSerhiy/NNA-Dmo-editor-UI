@@ -1,5 +1,5 @@
 export enum RightMenues {
-    dashboard = 'dashboard',
+    none = 'none',
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
@@ -7,7 +7,7 @@ export enum RightMenues {
 }
 
 export enum SidebarTabs {
-    dashboard = 'dashboard',
+    none = 'none',
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',

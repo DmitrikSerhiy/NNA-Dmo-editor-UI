@@ -75,6 +75,10 @@ export class SignupComponent implements OnInit {
     this.emailInput.nativeElement.focus();
   }
 
+  redirectToHome() {
+    this.router.navigate(['/']);
+  }
+  
   checkKey($event) {
     let key = $event.which || $event.keyCode || $event.charCode;
     if (key == 13 || key == 9) {

@@ -24,7 +24,7 @@ export class UserManager {
         localStorage.setItem('user access token', accessToken);
         localStorage.setItem('user email', email);
         localStorage.setItem('user name', userName);
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/app');
     }
 
     logout() {
@@ -32,13 +32,10 @@ export class UserManager {
         localStorage.removeItem('user access token');
         localStorage.removeItem('user email');
         localStorage.removeItem('user name');
-        if (this.router.url === '/dashboard') {
+        this.router.navigate(['/']).then(_ => {
             location.reload();
-        } else {
-            this.router.navigateByUrl('/').then(_ => {
-                location.reload();
-            });
-        }
+        });
+        
     }
 
     register(accessToken, email, userName) {
@@ -46,6 +43,6 @@ export class UserManager {
         localStorage.setItem('user access token', accessToken);
         localStorage.setItem('user email', email);
         localStorage.setItem('user name', userName);
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/app');
     }
 }

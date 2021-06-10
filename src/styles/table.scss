@@ -1,6 +1,7 @@
 
 .nna-table {
     width: 100%;
+    background: #fafafa;
   
     .mat-header-row {
         @include font-primary-info();
@@ -51,8 +52,8 @@
 
   .mat-paginator .mat-paginator-outer-container .mat-paginator-container .mat-paginator-range-actions button {
     @include nna-button();
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 1.75rem;
+    height: 1.75rem;
     display: flex;
     justify-content: center;
 

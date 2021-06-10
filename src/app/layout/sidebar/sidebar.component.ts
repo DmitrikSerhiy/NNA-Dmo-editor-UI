@@ -4,6 +4,7 @@ import { RightMenues } from '../models';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +19,8 @@ export class SidebarComponent implements OnInit {
   constructor(
     public userManager: UserManager,
     private currestSidebarService: CurrentSidebarService,
-    private sidebarManagerService: SidebarManagerService) { 
+    private sidebarManagerService: SidebarManagerService,
+    private router: Router) { 
       this.toggleRightMenu$ = new EventEmitter<RightMenues>();
     }
 
@@ -53,17 +55,14 @@ export class SidebarComponent implements OnInit {
   //   }
   // }
 
+  redirectToHome() {
+    this.router.navigate(['/']);
+  }
+
   sendDmosEvent() {
     if (this.isAuthorized) {
       this.currestSidebarService.setMenu(SidebarTabs.dmos);
       this.toggleRightMenu$.emit(RightMenues.dmos);
-    }
-  }
-
-  sendDashboardEvent() {
-    if (this.isAuthorized) {
-      this.currestSidebarService.setMenu(SidebarTabs.dashboard);
-      this.toggleRightMenu$.emit(RightMenues.dashboard);
     }
   }
 

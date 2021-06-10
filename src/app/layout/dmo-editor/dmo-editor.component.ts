@@ -179,6 +179,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   }
 
   async closeEditor() {
+    if (!this.sidebarManagerService.IsOpen) {
+      this.sidebarManagerService.toggleSidebar();
+    }
     await this.closeEditorAndClearData();
     this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
   }

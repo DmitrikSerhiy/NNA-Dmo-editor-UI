@@ -1,22 +1,17 @@
 <nav class="sidebar" [ngClass]="{collapsed : !sidebarState}" [ngClass]="{'with-collapse-button' : isAuthorized}">
     <div [ngSwitch]="sidebarState" class="logo-container">
-        <img src="/assets/logo-en.svg" alt="logo" class="logo-mini" *ngSwitchCase="false">
-        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo-extend" *ngSwitchCase="true">
+        <img src="/assets/logo-en.svg" alt="logo" class="logo logo-mini" *ngSwitchCase="false" (click)='redirectToHome()'>
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo logo-extend" *ngSwitchCase="true" (click)='redirectToHome()'>
     </div>
 
     <div class="list-group">
         <!-- Id should be the same as LeftMenuTab -->
-        <a id="dashboard-tab" [routerLink]="['/dashboard']" [routerLinkActive]="['router-link-active']" (click)="sendDashboardEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}" >
-            <i class="fa fa-home" aria-hidden="true"></i>&nbsp;
-            <span>{{ 'Dashboard' }}</span>
-        </a>
-
-        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/app/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Create DMO' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmos-tab" [routerLink]="['/dmos']" [routerLinkActive]="['router-link-active']" (click)="sendDmosEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized" id="dmos-tab" [routerLink]="['/app/dmos']" [routerLinkActive]="['router-link-active']" (click)="sendDmosEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp;
             <span>{{ 'DMOs' }}</span>
         </a>
@@ -43,13 +38,13 @@
 
         <div class="auth-block" *ngIf='!isAuthorized' >
             <a [routerLink]="['/login']" class="nav-link">
-                <i class="fa fa-sign-in" ></i> {{ 'Log In' }}
+                {{ 'Log In' }}
             </a>
         </div>
 
         <div class="auth-block" *ngIf='!isAuthorized' >              
             <a [routerLink]="['/signup']" class="nav-link">
-                <i class="fa fa-user-plus" ></i> {{ 'Register' }}
+                {{ 'Register' }}
             </a>
         </div>
     </div>

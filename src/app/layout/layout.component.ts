@@ -83,9 +83,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         } else if ($event === RightMenues.dmos) {
             this.rightMenuGrabberService.hideGrabber();
             this.collectionService.setCollectionId('');
-        } else if ($event === RightMenues.dashboard) {
-            this.rightMenuGrabberService.hideGrabber();
-            this.collectionService.setCollectionId('');
         }
         //  else if ($event === RightMenues.test) {
         //     this.currentMenuName = RightMenues.test;

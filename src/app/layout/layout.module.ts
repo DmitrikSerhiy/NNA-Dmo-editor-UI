@@ -2,7 +2,6 @@ import { RightMenuGrabberComponent } from './../shared/components/right-menu-gra
 import { SharedModule } from './../shared/shared.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RemoveCollectionPopupComponent } from './../shared/components/remove-collection-popup/remove-collection-popup.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthGuard } from '../shared/services/auth.guards';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -21,13 +20,10 @@ const routes: Routes = [{
     path: '',
     component: LayoutComponent,
     children: [
-        { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
+
         { path: 'dmos', loadChildren: () => import('./dmos/dmos.module').then(m => m.DmosModule), canActivate: [AuthGuard] },
-        { path: 'editor', loadChildren: () =>
-            import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
-        { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module')
-            .then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
-        { path: '', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
+        { path: 'editor', loadChildren: () =>import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
+        { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module').then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
     ]}
 ];
 
@@ -39,7 +35,6 @@ const routes: Routes = [{
         NgbDropdownModule,
         ReactiveFormsModule,
         MatSidenavModule,
-        MatProgressSpinnerModule,
         MatDialogModule,
         SharedModule
     ],

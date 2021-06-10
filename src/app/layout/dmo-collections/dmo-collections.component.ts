@@ -106,7 +106,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
   openCollection(id: string) {
     this.closeRightMenu.emit();
-    this.router.navigateByUrl(`/dmoCollection?collectionId=${id}`);
+    this.router.navigateByUrl(`/app/dmoCollection?collectionId=${id}`);
   }
 
   onAddCollection() {
@@ -157,7 +157,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
               finalize(() => {
                 this.hideLoader();
                 this.toggleAddCollectionForm(true);
-                this.redirectToDashboard(this.selectedDmoCollectionName.id);
+                this.handleSelfRemove(this.selectedDmoCollectionName.id);
               }),
               catchError(innerError => { this.resetAddCollectionForm(); return throwError(innerError); }),
               concatMap(() => getAll$.pipe(
@@ -210,12 +210,12 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
         () => this.hideLoader());
   }
 
-  private redirectToDashboard(collectionIdToBeDeleted: string) {
+  private handleSelfRemove(collectionIdToBeDeleted: string) {
     if (!this.oppenedCollectionId || this.oppenedCollectionId !== collectionIdToBeDeleted) {
       return;
     }
     this.collectionManager.setCollectionId('');
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/app');
   }
 
   private resetAddCollectionForm() {

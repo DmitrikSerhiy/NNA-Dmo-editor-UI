@@ -52,7 +52,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   redirectToDmo() {
-    this.router.navigateByUrl('/editor?dmoId=' + this.selectedDmo.id);
+    this.router.navigateByUrl('/app/editor?dmoId=' + this.selectedDmo.id);
   }
 
   onDmoRemove() {
