@@ -1,1 +1,31 @@
-<p>home works!</p>
+<div class="home-container">
+
+    <div class="home-plot-points">
+
+        <div class="home-plot-point first-plot-point">
+            <div class="home-header"> DMO Editor </div>
+            <div class="home-subheader"> 
+                <span class="brand-color">D</span>
+                ecomposed 
+                <span class="brand-color">&nbsp;M</span>
+                ovie 
+                <span class="brand-color">&nbsp;O</span>
+                bjects   
+            </div>
+
+            <div class="home-auth-block">
+                <button *ngIf="!isAuthorized" type="button" class="nna-button-primary first-nna-button" (click)="toRegistration()"> Register </button>
+                <button *ngIf="!isAuthorized" type="button" class="nna-button-secondary nna-button-bright" (click)="toLogin()"> Login </button>
+                <button *ngIf="isAuthorized" type="button" class="nna-button-primary first-nna-button nna-button-width-unset" (click)="toLayout()"> Explore your DMOs </button>
+            </div>
+
+            <div class="home-info-block">
+                Learn how to understand 
+                <br />
+                storytelling as never before
+            </div>
+        </div>
+        <div class="home-line"></div>
+        <div class="home-plot-point"></div>
+    </div>
+</div>
