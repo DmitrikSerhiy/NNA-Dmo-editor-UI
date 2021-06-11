@@ -2,16 +2,17 @@
 @import "src/styles/colors.scss";
 @import "src/styles/buttons.scss";
 
-$initialShift: -26rem;
 $blackForHomePage:#212123;
-$whiteForHomePage: #fff;
+$whiteForHomePage: #E5E5E5;
+
+//E5E5E5
 
 .home-container {
     margin: auto;
-    width: 650px;
+    width: 100%;
+    background: $whiteForHomePage;
 
     .home-plot-points {
-        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -24,8 +25,6 @@ $whiteForHomePage: #fff;
             color: $whiteForHomePage;
             background: $blackForHomePage;
             border-radius: 50%;
-            position: relative;
-            top: $initialShift;
 
             .home-header {
                 @include font-primary-heading();
@@ -35,6 +34,10 @@ $whiteForHomePage: #fff;
                 justify-content: center;
             }
 
+            .dark-header {
+                color: $blackForHomePage;
+            }
+
             
             .home-info-block {
                 @include font-secondary-info();
@@ -42,6 +45,7 @@ $whiteForHomePage: #fff;
                 .brand-color {
                     color: $primary-color;
                 }
+
             }
 
             .bright-info-block {
@@ -60,13 +64,29 @@ $whiteForHomePage: #fff;
         }
 
         .first-plot-point {
+            height: 325px;
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+            border-bottom-left-radius: 10000rem;
+            border-bottom-right-radius: 10000rem;
+
+            .home-info-block {
+                display: flex;
+                justify-content: center;
+                padding-top: 3rem;
+                margin-left: 17rem;
+                margin-right: auto;
+            }
+        }
+
+        .first-plot-point, .last-plot-point  {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
 
             .home-header {
-                padding-top: 28rem;
+                padding-top: 3rem;
                 margin-left: 16.8rem;
                 margin-right: auto;
             }
@@ -94,14 +114,6 @@ $whiteForHomePage: #fff;
                     width: 6rem;
                     height: 2.4rem;
                 }
-            }
-
-            .home-info-block {
-                display: flex;
-                justify-content: center;
-                padding-top: 3rem;
-                margin-left: 17rem;
-                margin-right: auto;
             }
         }
 
@@ -228,48 +240,50 @@ $whiteForHomePage: #fff;
             }
         }
 
-        .home-plot-frame-info {
-            width: 110%;
-            margin: auto;
+        .home-plot-frame-container {
+            width: 100%;
             background: $primary-color;
-            color: $blackForHomePage;
-            position: relative;
-            top: -26rem;
 
-            display: flex;
-            justify-content: space-around;
+            .home-plot-frame-info {
+                width: calc(650px + calc(650px * 0.1));
+                margin: auto;
 
-            .home-frame-block-info {
+                color: $blackForHomePage;
                 display: flex;
-                flex-direction: column;
-                min-width: 160px;
+                justify-content: space-around;
 
-                .home-frame-block-info-header {
-                    margin: 1rem;
-                    align-self: center;
-                    @include font-primary-heading();
-                }
+                .home-frame-block-info {
+                    display: flex;
+                    flex-direction: column;
+                    min-width: 160px;
 
-                .home-frame-block-info-content {
-                    ul, ol {
-                        @include font-secondary-info();
-                        padding-left: 2rem;
-                        margin-top: 0;
-                        li {
-                            padding-top: 0.5rem;
-                            ul, ol {
-                                list-style-type: initial;
-                                padding-left: 1rem;
-                            }
+                    .home-frame-block-info-header {
+                        margin: 1rem;
+                        align-self: center;
+                        @include font-primary-heading();
+                    }
 
-                            .answer {
-                                display: flex;
-                                list-style-type:none;
-                                padding-left: 0 !important;
+                    .home-frame-block-info-content {
+                        ul, ol {
+                            @include font-secondary-info();
+                            padding-left: 2rem;
+                            margin-top: 0;
+                            li {
+                                padding-top: 0.5rem;
+                                ul, ol {
+                                    list-style-type: initial;
+                                    padding-left: 1rem;
+                                }
 
-                                &::before {
-                                    padding-top: 0.5rem;
-                                    content: "\2014\00A0";
+                                .answer {
+                                    display: flex;
+                                    list-style-type:none;
+                                    padding-left: 0 !important;
+
+                                    &::before {
+                                        padding-top: 0.5rem;
+                                        content: "\2014\00A0";
+                                    }
                                 }
                             }
                         }
@@ -278,9 +292,38 @@ $whiteForHomePage: #fff;
             }
         }
 
+        .last-plot-point {
+            height: 325px;
+            border-top-left-radius: 10000rem;
+            border-top-right-radius: 10000rem;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+
+            .home-footer {
+                display: flex;
+                justify-content: center;
+                align-items: flex-end;
+                width: 100%;
+                @include font-secondary-info();
+                position: relative;
+                top: 8rem;
+                margin-bottom: .5rem;
+
+                .links {
+                    margin-right: 2rem;
+                    a {
+                        color: $whiteForHomePage;
+                        text-decoration: none;
+                    }
+                }
+
+                .copyright {
+                    margin-left: 2rem;
+                }
+            }
+        }
+
         .home-line {
-            position: relative;
-            top: $initialShift;
             margin: auto;
             width: 2px;
             height: 200px;
