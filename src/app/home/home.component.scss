@@ -2,22 +2,26 @@
 @import "src/styles/colors.scss";
 @import "src/styles/buttons.scss";
 
+$initialShift: -26rem;
+$blackForHomePage:#212123;
+$whiteForHomePage: #fff;
+
 .home-container {
     margin: auto;
     width: 650px;
 
-
     .home-plot-points {
+
+        position: relative;
 
         .home-plot-point {
             width: 650px;
             height: 650px;
-            color: white;
-            background: #212123;
+            color: $whiteForHomePage;
+            background: $blackForHomePage;
             border-radius: 50%;
-        }
-
-        .first-plot-point {
+            position: relative;
+            top: $initialShift;
 
             .home-header {
                 @include font-primary-heading();
@@ -25,14 +29,10 @@
                 font-size: 2.375rem !important;
                 display: flex;
                 justify-content: center;
-                padding-top: 6rem;
             }
 
-            .home-subheader {
-                display: flex;
-                justify-content: center;
-                padding-top: 0.5rem;
-                margin-left: -0.7rem;
+            
+            .home-info-block {
                 @include font-secondary-info();
 
                 .brand-color {
@@ -40,17 +40,54 @@
                 }
             }
 
+            .bright-info-block {
+                @include font-secondary-info();
+                color: $blackForHomePage;
+
+                .brand-color {
+                    color: $primary-color;
+                }
+            }
+        }
+
+        .bright-plot-point {
+            background: transparent !important;
+            border: solid 2px $blackForHomePage;
+        }
+
+        .first-plot-point {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+
+            .home-header {
+                padding-top: 28rem;
+                margin-left: 16.8rem;
+                margin-right: auto;
+            }
+
+            .home-subheader {
+                display: flex;
+                justify-content: center;
+                padding-top: 0.5rem !important;
+                margin-left: 17rem;
+                margin-right: auto;
+            }
+
             .home-auth-block {
                 display: flex;
                 justify-content: center;
-                padding-top: 12rem;
+                margin-left: auto;
+                margin-right: auto;
+                padding-top: 3rem;
 
                 button {
                     display: flex;
                     justify-content: center;
                     margin-left: .5rem;
                     text-transform: capitalize !important;
-                    width: 8rem;
+                    width: 6rem;
                     height: 2.4rem;
                 }
             }
@@ -58,17 +95,142 @@
             .home-info-block {
                 display: flex;
                 justify-content: center;
-                padding-top: 12rem;
-                margin-left: -0.7rem;
-                @include font-secondary-info();
+                padding-top: 3rem;
+                margin-left: 17rem;
+                margin-right: auto;
+            }
+        }
+
+        .second-plot-point {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+
+            .home-header {
+                margin: auto;
+            }
+
+            .first-info-block {
+                width: 17rem;
+                margin-top: 11rem;
+                margin-left: 6rem;
+            }
+
+            .second-info-block {
+                margin-top: 11rem;
+                width: 17rem;
+                margin-left: 3rem;
+            }
+
+            .third-info-block {
+                width: 14rem;
+                margin-left: 1rem;
+                margin-top: 5rem;
+            }
+
+            .fourth-info-block {
+                width: 14rem;
+                margin-left: 1rem;
+                margin-top: 5rem;
+            }
+
+            .fifth-info-block {
+                margin-top: 6rem;
+                margin-left: 6rem;
+                width: 37rem;
+            }
+        }
+
+        .third-plot-point {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+
+            .home-header {
+                margin: auto;
+            }
+
+            .first-info-block {
+                margin-top: 14rem;
+                margin-left: 6rem;
+            }
+
+            .second-info-block {
+                margin-top: 10rem;
+                margin-left: 6rem;
+            }
+
+            .third-info-block {
+                margin-left: 4rem;
+                margin-top: 17rem;
+            }
+
+            .fourth-info-block {
+                margin-left: 4rem;
+                margin-top: 5rem;
+                margin-right: 8rem;
+            }
+
+            .fifth-info-block {
+                margin-top: 9rem;
+                margin-left: 5rem;
+                width: 11rem;
+            }
+
+            .sixth-info-block {
+                margin-top: 6rem;
+                margin-left: 21rem;
+            }
+        }
+
+        .fourth-plot-point {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+
+            .home-header {
+                margin: auto;
+                margin-top: 6rem;
+            }
+
+            .first-info-block {
+                width: 37rem;
+                margin-top: 11rem;
+                margin-left: 6rem;
+                margin-bottom: 3rem;
+            }
+
+            .second-info-block {
+                margin-top: 5rem;
+                width: 15rem;
+                margin-left: 1rem;
+            }
+
+            .third-info-block {
+                width: 14rem;
+                margin-top: 5rem;
+                margin-left: 1rem;
+            }
+
+            .fourth-info-block {
+                width: 16rem;
+                margin-left: 6rem;
+                margin-top: 5rem;
+            }
+
+            .fifth-info-block {
+                margin-top: 5rem;
+                margin-left: 4rem;
             }
         }
 
         .home-line {
+            position: relative;
+            top: $initialShift;
             margin: auto;
             width: 2px;
             height: 200px;
-            background: #212123;
+            background: $blackForHomePage;
         }
     }
 }
