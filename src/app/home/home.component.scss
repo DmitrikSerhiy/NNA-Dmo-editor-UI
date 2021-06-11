@@ -11,8 +11,12 @@ $whiteForHomePage: #fff;
     width: 650px;
 
     .home-plot-points {
-
         position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        align-content: center;
+        flex-wrap: wrap;
 
         .home-plot-point {
             width: 650px;
@@ -201,14 +205,14 @@ $whiteForHomePage: #fff;
             }
 
             .second-info-block {
-                margin-top: 5rem;
+                margin-top: 4rem;
                 width: 15rem;
                 margin-left: 1rem;
             }
 
             .third-info-block {
                 width: 14rem;
-                margin-top: 5rem;
+                margin-top: 4rem;
                 margin-left: 1rem;
             }
 
@@ -221,6 +225,56 @@ $whiteForHomePage: #fff;
             .fifth-info-block {
                 margin-top: 5rem;
                 margin-left: 4rem;
+            }
+        }
+
+        .home-plot-frame-info {
+            width: 110%;
+            margin: auto;
+            background: $primary-color;
+            color: $blackForHomePage;
+            position: relative;
+            top: -26rem;
+
+            display: flex;
+            justify-content: space-around;
+
+            .home-frame-block-info {
+                display: flex;
+                flex-direction: column;
+                min-width: 160px;
+
+                .home-frame-block-info-header {
+                    margin: 1rem;
+                    align-self: center;
+                    @include font-primary-heading();
+                }
+
+                .home-frame-block-info-content {
+                    ul, ol {
+                        @include font-secondary-info();
+                        padding-left: 2rem;
+                        margin-top: 0;
+                        li {
+                            padding-top: 0.5rem;
+                            ul, ol {
+                                list-style-type: initial;
+                                padding-left: 1rem;
+                            }
+
+                            .answer {
+                                display: flex;
+                                list-style-type:none;
+                                padding-left: 0 !important;
+
+                                &::before {
+                                    padding-top: 0.5rem;
+                                    content: "\2014\00A0";
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
