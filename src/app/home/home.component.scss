@@ -46,6 +46,12 @@ $whiteForHomePage: #E5E5E5;
                     color: $primary-color;
                 }
 
+                .icon-shift {
+                    position: relative;
+                    top: 1px;
+                    left: 2px;
+                }
+
             }
 
             .bright-info-block {
@@ -54,6 +60,12 @@ $whiteForHomePage: #E5E5E5;
 
                 .brand-color {
                     color: $primary-color;
+                }
+
+                .icon-shift {
+                    position: relative;
+                    top: 1px;
+                    left: 2px;
                 }
             }
         }
@@ -177,12 +189,12 @@ $whiteForHomePage: #E5E5E5;
             }
 
             .third-info-block {
-                margin-left: 4rem;
+                margin-left: 2rem;
                 margin-top: 17rem;
             }
 
             .fourth-info-block {
-                margin-left: 4rem;
+                margin-left: 2rem;
                 margin-top: 5rem;
                 margin-right: 8rem;
             }
@@ -269,6 +281,11 @@ $whiteForHomePage: #E5E5E5;
                             padding-left: 2rem;
                             margin-top: 0;
                             li {
+                                .icon-shift {
+                                    position: relative;
+                                    top: 1px;
+                                    left: 2px;
+                                }
                                 padding-top: 0.5rem;
                                 ul, ol {
                                     list-style-type: initial;
