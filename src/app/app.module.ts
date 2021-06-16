@@ -29,22 +29,22 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    AppComponent
+	AppComponent
   ],
   imports: [
-    RouterModule.forRoot(routes),
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    BrowserAnimationsModule,
-    ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgbDropdownModule,
+	RouterModule.forRoot(routes),
+	BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+	BrowserAnimationsModule,
+	ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
+	HttpClientModule,
+	FormsModule,
+	ReactiveFormsModule,
+	NgbDropdownModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
-    AuthGuardForChild, AuthGuard, AuthService, UserManager, ToastrService, Toastr],
+	{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+	{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
+	AuthGuardForChild, AuthGuard, AuthService, UserManager, ToastrService, Toastr],
 
   bootstrap: [AppComponent],
 })

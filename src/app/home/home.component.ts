@@ -4,33 +4,33 @@ import { UserManager } from '../shared/services/user-manager';
 
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+	selector: 'app-home',
+	templateUrl: './home.component.html',
+	styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
 
-  isAuthorized: boolean;
+	isAuthorized: boolean;
 
-  constructor(
-    private router: Router, 
-    private userManager: UserManager) { }
+	constructor(
+		private router: Router, 
+		private userManager: UserManager) { }
 
-  ngOnInit() {
-    this.isAuthorized = this.userManager.isAuthorized();
-  }
+	ngOnInit() {
+		this.isAuthorized = this.userManager.isAuthorized();
+	}
 
-  toRegistration() {
-    this.router.navigate(["/signup"]);
-  }
+	toRegistration() {
+		this.router.navigate(["/signup"]);
+	}
 
-  toLogin() {
-    this.router.navigate(["/login"]);
-  }
+	toLogin() {
+		this.router.navigate(["/login"]);
+	}
 
-  toLayout() {
-    this.router.navigate(["/app"]);
-  }
+	toLayout() {
+		this.router.navigate(["/app"]);
+	}
 
 
 }
