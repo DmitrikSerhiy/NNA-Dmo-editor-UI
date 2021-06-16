@@ -3,14 +3,12 @@ import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { routerTransition } from '../router.animations';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  animations: [routerTransition()]
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
 

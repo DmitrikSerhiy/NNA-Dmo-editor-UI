@@ -19,19 +19,19 @@ export class TestRightMenuComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit() {
-    this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
-      //do some shit on close menu
-    });
-    this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
-      //do some shit on open menu
-    })
+	this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
+	  //do some shit on close menu
+	});
+	this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
+	  //do some shit on open menu
+	})
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-    this.rightMenuOpnSubscription.unsubscribe();
-    this.rightMenuClsSubscription.unsubscribe();
+	this.unsubscribe$.next();
+	this.unsubscribe$.complete();
+	this.rightMenuOpnSubscription.unsubscribe();
+	this.rightMenuClsSubscription.unsubscribe();
   }
 
 }
