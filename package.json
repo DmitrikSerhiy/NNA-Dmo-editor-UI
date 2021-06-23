@@ -25,7 +25,7 @@
     "@angular/platform-server": "10.2.5",
     "@angular/router": "10.2.5",
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@microsoft/signalr": "^3.1.16",
+    "@microsoft/signalr": "^5.0.7",
     "@ng-bootstrap/ng-bootstrap": "^6.2.0",
     "aspnet-prerendering": "^3.0.1",
     "core-js": "^2.6.12",
