@@ -16,8 +16,16 @@ export class CollectionsManagerService {
     this.currentCollectionObserver = this.currentCollectionIdSource.asObservable();
    }
 
-  setCollectionId(collectionId: string) {
+  setCollectionId(collectionId: string, initial: boolean = false) {
     this.currentCollectionId = collectionId;
+    if (collectionId == '') {
+      return;
+    } 
+
+    if (initial) {
+      return;
+    }
+
     this.currentCollectionIdSource.next(collectionId);
   }
 

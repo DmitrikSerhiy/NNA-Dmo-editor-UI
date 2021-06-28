@@ -10,7 +10,7 @@ import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson } from './models/dmo-dtos';
 
@@ -49,6 +49,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
    // ------ [end] not state
 
   private unsubscribe$: Subject<void> = new Subject();
+  private initialLoadSub: Subscription;
 
   constructor(
     private editorHub: EditorHub,
@@ -104,6 +105,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
   async ngOnDestroy() {
+    this.initialLoadSub.unsubscribe();
     await this.closeEditorAndClearData();
   }
 
@@ -274,7 +276,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
     let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
       .pipe(takeUntil(this.unsubscribe$));
       
-    $initialLoad.subscribe({
+    this.initialLoadSub = $initialLoad.subscribe({
       next: (result: any) => { 
         this.initialDmoDto = new NnaDmoDto();
         this.initialDmoDto.beats = [];

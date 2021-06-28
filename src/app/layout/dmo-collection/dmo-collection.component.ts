@@ -6,9 +6,9 @@ import { CollectionsManagerService } from './../../shared/services/collections-m
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from './../../shared/services/toastr.service';
 import { DmoCollectionDto, DmoCollectionShortDto, AddDmosToCollectionDto,
-   DmosIdDto, ShortDmoCollectionDto, SidebarTabs, ShortDmoDto } from './../models';
-import { Component, OnInit, ViewChild, OnDestroy, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+   DmosIdDto, ShortDmoCollectionDto, ShortDmoDto } from './../models';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -16,7 +16,6 @@ import { concatMap, map, takeUntil, finalize } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { DmoCollectionsService } from 'src/app/shared/services/dmo-collections.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RightMenuGrabberService } from 'src/app/shared/services/right-menu-grabber.service';
 
 @Component({
   selector: 'app-dmo-collection',
@@ -33,7 +32,13 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   collectionTableColumn: string[];
   collectionLength = 0;
   selectedDmoInCollection: ShortDmoDto;
-  dmoSubscription: Subscription;
+  private collectionSubsctiption: Subscription;
+  private removeFromCollectionSub: Subscription;
+  private updateDmosSub: Subscription;
+  private addToCollectionSub: Subscription;
+  private deleteCollectionSub: Subscription;
+  private loadDmosSub: Subscription;
+
   @ViewChild('collectionPaginator', { static: true }) collectionPaginator: MatPaginator;
   @ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
   @ViewChild('removeFullCollectionModal', { static: true }) removeCollectionModal: NgbActiveModal;
@@ -50,6 +55,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
     public matModule: MatDialog,
     private toastr: Toastr,
     private router: Router,
+    private route: ActivatedRoute,
     private collectionManager: CollectionsManagerService,
     private currentSidebarService: CurrentSidebarService) { }
 
@@ -58,13 +64,39 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
     });
 
-    this.dmoSubscription = this.loadDmos();
+    let collectionId = this.collectionManager.getCurrentCollectionId();
+    if (!collectionId) {
+      collectionId = this.route.snapshot.queryParamMap.get("collectionId");
+      this.collectionManager.setCollectionId(collectionId, true);
+    }
+    if (!collectionId) {
+      this.router.navigate(['/app']);
+    }
+
+    this.collectionSubsctiption = this.collectionManager.currentCollectionObserver.subscribe({next: (_) => this.loadDmos(this.collectionManager.getCurrentCollectionId()) } );
   }
 
   ngOnDestroy(): void {
+    this.collectionSubsctiption.unsubscribe();
+    if (this.removeFromCollectionSub) {
+      this.removeFromCollectionSub.unsubscribe();
+    }
+    if (this.updateDmosSub) {
+      this.updateDmosSub.unsubscribe();
+    }
+    if (this.addToCollectionSub) {
+      this.addToCollectionSub.unsubscribe();
+    }
+    if (this.deleteCollectionSub) {
+      this.deleteCollectionSub.unsubscribe();
+    }
+    if(this.loadDmosSub) {
+      this.loadDmosSub.unsubscribe();
+    }
+
+    this.collectionManager.setCollectionId('');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    this.dmoSubscription.unsubscribe();
   }
 
   onRowSelect(row: ShortDmoDto) {
@@ -96,9 +128,9 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
     const removeAndReload$ = removeFromCollection$.pipe(
       takeUntil(this.unsubscribe$),
-      map(() => this.loadDmos()));
+      map(() => this.loadDmos(this.currentDmoCollection.id)));
 
-    removeAndReload$.subscribe({
+    this.removeFromCollectionSub = removeAndReload$.subscribe({
       error: (err) => { this.toastr.error(err); }
     });
   }
@@ -121,13 +153,12 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
           finalize(() => this.hideEditCollectionNameForm()),
           concatMap(() => getCollectionName$.pipe(
             takeUntil(this.unsubscribe$),
-            finalize(() => this.collectionManager.setCollectionId(collectionId)),
             map((response: DmoCollectionShortDto) => {
               this.currentDmoCollection.collectionName = response.collectionName;
             }))
           ));
 
-      updateAndGet$.subscribe({
+      this.updateDmosSub = updateAndGet$.subscribe({
         error: (err) => { this.toastr.error(err); },
       });
     }
@@ -157,26 +188,26 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       minWidth: '430px'
     });
 
-    dialogRef.afterClosed()
-      .subscribe({
-        next: (selectDmos: ShortDmoDto[]) => {
-          this.showPopupOverview = false;
-          if (!selectDmos) {
-            return;
-          }
-
-          const dto = new AddDmosToCollectionDto();
-          dto.collectionId = collectionId;
-          dto.dmos = selectDmos.map(d => new DmosIdDto(d.id));
-
-          const addToCollection$ = this.dmoCollectionService.addDmosToCollection(dto);
-          addToCollection$.pipe(takeUntil(this.unsubscribe$));
-          addToCollection$.subscribe({
-            next: () => { this.loadDmos(); },
-            error: (err) => { this.toastr.error(err); }
-          });
+    dialogRef.afterClosed().subscribe({
+      next: (selectDmos: ShortDmoDto[]) => {
+        this.showPopupOverview = false;
+        if (!selectDmos) {
+          return;
         }
-      });
+
+        const dto = new AddDmosToCollectionDto();
+        dto.collectionId = collectionId;
+        dto.dmos = selectDmos.map(d => new DmosIdDto(d.id));
+
+        const addToCollection$ = this.dmoCollectionService.addDmosToCollection(dto);
+        addToCollection$.pipe(takeUntil(this.unsubscribe$));
+
+        this.addToCollectionSub = addToCollection$.subscribe({
+          next: () => this.loadDmos(this.currentDmoCollection.id),
+          error: (err) => { this.toastr.error(err); }
+        });
+      }
+    });
   }
 
   onRemoveCollection() {
@@ -184,15 +215,14 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       data: this.currentDmoCollection.collectionName
     });
 
-    delteCollectionModal.afterClosed()
-    .subscribe({
+    delteCollectionModal.afterClosed().subscribe({
       next: (shouldDelete: boolean) => {
         if (!shouldDelete) {
           return;
         }
         const deleteAndRedirect$ = this.dmoCollectionService.deleteCollection(this.currentDmoCollection.id);
 
-        deleteAndRedirect$.subscribe({
+        this.deleteCollectionSub = deleteAndRedirect$.subscribe({
           next: () => { this.redirectAfterRemove(); },
           error: (err) => { this.toastr.error(err); },
         });
@@ -235,19 +265,17 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   private redirectAfterRemove() {
     this.currentSidebarService.setMenu(null);
-    this.collectionManager.setCollectionId('');
     this.router.navigateByUrl('/app');
   }
 
-  private loadDmos() {
+  private loadDmos(collectionId: string) {
     this.resetCollectionTable();
-    const collectionId = this.collectionManager.getCurrentCollectionId();
-    return this.dmoCollectionService.getWithDmos(collectionId)
+    this.loadDmosSub = this.dmoCollectionService.getWithDmos(collectionId)
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
         next: (response: DmoCollectionDto) => {
           this.currentDmoCollection = response;
           this.initializeCollectionTable(this.currentDmoCollection.dmos);
-          this.collectionManager.setCollectionId(collectionId); // this will trigger collections reload
         },
         error: (err) => { this.toastr.error(err); }
       });

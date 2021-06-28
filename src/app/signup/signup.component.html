@@ -48,7 +48,7 @@
                     <button type="button" class="nna-button-primary" [hidden]="!firstStep || secondStep " (click)="toSecondStep()">next</button>
                     <button type="button" class="nna-icon-button"    [hidden]="!thirdStep" (click)="toSecondStep(true)"> < </button>
                     <button type="button" class="nna-button-primary" [hidden]="!secondStep || thirdStep"(click)="toThirdStep()">next</button>
-                    <button type="submit" class="nna-button-primary" [hidden]="!thirdStep" (click)="onSubmit()">Create account</button>
+                    <button type="submit" class="nna-button-primary" [hidden]="!thirdStep">Create account</button>
                 </div>
             </div>
         </form>

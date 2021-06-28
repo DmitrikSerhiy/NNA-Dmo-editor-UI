@@ -11,7 +11,7 @@ import { throwError, Observable, Subject, Subscription } from 'rxjs';
 
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter, OnDestroy, ElementRef } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -32,9 +32,13 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   oppenedCollectionId: string;
   private unsubscribe$: Subject<void> = new Subject();
   get collectionName() { return this.addCollectionForm.get('collectionName'); }
-  loadCollectionsSubsciption: Subscription;
-  rightMenuOpnSubscription: Subscription;
-  rightMenuClsSubscription: Subscription;
+  private loadCollectionsSubsciption: Subscription;
+  private rightMenuOpnSubscription: Subscription;
+  private rightMenuClsSubscription: Subscription;
+  private collectionSubsctiption: Subscription;
+  private addToCollectionSubsctiption: Subscription;
+  private deleteCollectionSubsctiption: Subscription;
+
   @Input() rightMenuIsClosing$: Observable<void>;
   @Input() rightMenuIsOpening$: EventEmitter<void>;
   @Output() closeRightMenu = new EventEmitter<void>();
@@ -65,8 +69,8 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
     });
 
-    this.collectionManager.currentCollectionObserver
-      .subscribe(col => { this.oppenedCollectionId = col; });
+    this.collectionSubsctiption = this.collectionManager.currentCollectionObserver
+      .subscribe(_ => { this.oppenedCollectionId = this.collectionManager.getCurrentCollectionId(); });
 
     this.loadCollectionsSubsciption = this.loadCollections();
   }
@@ -77,6 +81,13 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     this.loadCollectionsSubsciption.unsubscribe();
     this.rightMenuOpnSubscription.unsubscribe();
     this.rightMenuClsSubscription.unsubscribe();
+    this.collectionSubsctiption.unsubscribe();
+    if (this.addToCollectionSubsctiption) {
+      this.addToCollectionSubsctiption.unsubscribe();
+    }
+    if (this.deleteCollectionSubsctiption) {
+      this.deleteCollectionSubsctiption.unsubscribe();
+    }
   }
 
   sortCollections() {
@@ -107,6 +118,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   openCollection(id: string) {
     this.closeRightMenu.emit();
     this.router.navigateByUrl(`/app/dmoCollection?collectionId=${id}`);
+    this.collectionManager.setCollectionId(id);
   }
 
   onAddCollection() {
@@ -128,7 +140,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
               this.dmoLists = response;
               this.resetCollectionsSort(); }))));
 
-      addAndRefresh$.subscribe({
+      this.addToCollectionSubsctiption = addAndRefresh$.subscribe({
         error: (err) => { this.toastr.error(err); },
       });
     }
@@ -140,8 +152,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
       data: dmoList.collectionName
     });
 
-    delteCollectionModal.afterClosed()
-      .subscribe({
+    delteCollectionModal.afterClosed().subscribe({
         next: (shouldDelete: boolean) => {
           if (!shouldDelete) {
             return;
@@ -166,7 +177,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
                   this.dmoLists = response;
                   this.resetCollectionsSort(); }))));
 
-          deleteAndRefresh$.subscribe({
+          this.deleteCollectionSubsctiption = deleteAndRefresh$.subscribe({
             error: (err) => { console.log(`from obs ${err}`); this.toastr.error(err); },
           });
         }
@@ -214,7 +225,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
     if (!this.oppenedCollectionId || this.oppenedCollectionId !== collectionIdToBeDeleted) {
       return;
     }
-    this.collectionManager.setCollectionId('');
     this.router.navigateByUrl('/app');
   }
 

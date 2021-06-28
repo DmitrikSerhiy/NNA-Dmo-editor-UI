@@ -16,23 +16,23 @@ export class AuthService {
     constructor(private http: HttpClient, 
         private errorHandler: CustomErrorHandler) { }
 
-    checkUserEmail(email: string): Observable<boolean> {
+    checkUserEmail(email: string): Promise<boolean> {
         return this.http
             .post(this.serverUrl + '/email', { 'email': email } )
             .pipe(
                 map((response: boolean) => response),
-                catchError(this.errorHandler.handle));
+                catchError(this.errorHandler.handle)).toPromise();
     }
 
-    checkName(name: string): Observable<boolean> {
+    checkName(name: string): Promise<boolean> {
         return this.http
             .post(this.serverUrl + '/name', { 'name': name } )
             .pipe(
                 map((response: boolean) => response),
-                catchError(this.errorHandler.handle));
+                catchError(this.errorHandler.handle)).toPromise();;
     }
 
-    authorize(email: string, password: string): Observable<UserDetails> {
+    authenticate(email: string, password: string): Observable<UserDetails> {
         return this.http
             .post(this.serverUrl + '/token', { 'email': email, 'password': password } )
             .pipe(
@@ -40,11 +40,11 @@ export class AuthService {
                 catchError(this.errorHandler.handle));
     }
 
-    register(userName: string, email: string, password: string): Observable<UserDetails> {
+    register(userName: string, email: string, password: string): Promise<UserDetails> {
         return this.http
             .post(this.serverUrl + '/register', {'userName': userName, 'email': email, 'password': password})
             .pipe(
                 map((response: UserDetails) => response),
-                catchError(this.errorHandler.handle));
+                catchError(this.errorHandler.handle)).toPromise();
     }
 }

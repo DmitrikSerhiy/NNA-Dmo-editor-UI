@@ -72,12 +72,12 @@ export class LoginComponent implements OnInit {
 	}
   }
 
-  specialTrigger($event, secondStep: boolean) {
+  async specialTrigger($event, secondStep: boolean) {
 	let key = $event.which || $event.keyCode || $event.charCode;
 	if (key == 13 || key == 9) { // enter or tab
 	  $event.preventDefault();
 	  if (secondStep == true) {
-		this.toSecondStep();
+		await this.toSecondStep();
 	  } else if (secondStep == false) {
 		this.onSubmit();
 	  }
@@ -85,46 +85,44 @@ export class LoginComponent implements OnInit {
   }
 
 
-  toFirstStep(): void {
-	location.href="login#email-input";
-	this.firstStep = true;
-	this.emailInput.nativeElement.focus();
-  }
+	toFirstStep(): void {
+		location.href="login#email-input";
+		this.firstStep = true;
+		this.emailInput.nativeElement.focus();
+	}
 
-  toSecondStep(): void {
-	let errors = this.loginForm.get('email').errors;
-	if (errors != null) {
-	  this.emailInvalid = true;
-	  if (errors['email']) {
-		this.emailValidationToShow = this.invalidEmailValidation;
-		this.emailInput.nativeElement.focus();
-	  } else if (errors['required']) {
-		this.emailValidationToShow = this.emtpyEmailValidation;
-		this.emailInput.nativeElement.focus();
-	  }
-	  return;
-	} 
-	
-	this.authService.checkUserEmail(this.loginForm.get('email').value)
-	  .subscribe(async (response) => {
+  	async toSecondStep() {
+		let errors = this.loginForm.get('email').errors;
+		if (errors != null) {
+			this.emailInvalid = true;
+			if (errors['email']) {
+				this.emailValidationToShow = this.invalidEmailValidation;
+				this.emailInput.nativeElement.focus();
+			} else if (errors['required']) {
+				this.emailValidationToShow = this.emtpyEmailValidation;
+				this.emailInput.nativeElement.focus();
+			}
+			return;
+		} 
+		
+		let response = await this.authService.checkUserEmail(this.loginForm.get('email').value)
 		if (response == false) {
-		  this.emailInvalid = true;
-		  this.emailValidationToShow = this.notExistingEmailValidation;
-		  this.emailInput.nativeElement.focus();
+			this.emailInvalid = true;
+			this.emailValidationToShow = this.notExistingEmailValidation;
+			this.emailInput.nativeElement.focus();
 		} else {
-		  if (this.emailInvalid == true) {
-			this.emailInvalid = false;
-			await this.sleep(200);
-		  }
+			if (this.emailInvalid == true) {
+				this.emailInvalid = false;
+				await this.sleep(200);
+			}
 
-		  location.href = "login#password-input";
-		  this.firstStep = false;
-		  this.emailInvalid = false;
-		  await this.sleep(600);
-		  this.passwordInput.nativeElement.focus();
+			location.href = "login#password-input";
+			this.firstStep = false;
+			this.emailInvalid = false;
+			await this.sleep(600);
+			this.passwordInput.nativeElement.focus();
 		}
-	  });
-  }
+    }
 
   onSubmit() {
 	let errors = this.loginForm.get('password').errors;
@@ -141,7 +139,7 @@ export class LoginComponent implements OnInit {
 	} 
 
 	if (this.loginForm.valid) {
-	  this.authService.authorize(this.loginForm.get('email').value, this.loginForm.get('password').value)
+	  this.authService.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
 		.subscribe((response) => {
 		  if (response.errorMessage != null) {
 			if (response.errorMessage == '403') {

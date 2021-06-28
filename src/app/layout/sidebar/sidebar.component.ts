@@ -62,14 +62,12 @@ export class SidebarComponent implements OnInit {
   sendDmosEvent() {
     if (this.isAuthorized) {
       this.currestSidebarService.setMenu(SidebarTabs.dmos);
-      this.toggleRightMenu$.emit(RightMenues.dmos);
     }
   }
 
   sendDmoEvent() {
     if (this.isAuthorized) {
       this.currestSidebarService.setMenu(SidebarTabs.dmo);
-      this.toggleRightMenu$.emit(RightMenues.dmo);
     }
   }
 }

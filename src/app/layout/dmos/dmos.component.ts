@@ -60,22 +60,21 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
       data: this.selectedDmo.name
     });
 
-    delteDMOModal.afterClosed()
-      .subscribe({
-        next: (shouldDelete: boolean) => {
-          if (!shouldDelete) {
-            return;
-          }
-          const deleteDMO$ = this.dmosService.deleteDmo(this.selectedDmo.id);
-
-          const deleteAndReload$ = deleteDMO$.pipe(
-            catchError((err) => throwError(err) ),
-            takeUntil(this.unsubscribe$),
-            concatMap(() => this.loadDmos()));
-
-          this.handleDMOSubscription(deleteAndReload$);
+    delteDMOModal.afterClosed().subscribe({
+      next: (shouldDelete: boolean) => {
+        if (!shouldDelete) {
+          return;
         }
-      });
+        const deleteDMO$ = this.dmosService.deleteDmo(this.selectedDmo.id);
+
+        const deleteAndReload$ = deleteDMO$.pipe(
+          catchError((err) => throwError(err) ),
+          takeUntil(this.unsubscribe$),
+          concatMap(() => this.loadDmos()));
+
+        this.handleDMOSubscription(deleteAndReload$);
+      }
+    });
   }
 
   resetSelected() {
