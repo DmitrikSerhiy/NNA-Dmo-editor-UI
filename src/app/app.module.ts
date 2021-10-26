@@ -33,7 +33,7 @@ const routes: Routes = [
 	AppComponent
   ],
   imports: [
-	RouterModule.forRoot(routes),
+	RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
 	BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
 	BrowserAnimationsModule,
 	ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
