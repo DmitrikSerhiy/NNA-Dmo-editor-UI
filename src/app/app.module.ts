@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -41,6 +41,7 @@ const routes: Routes = [
 	FormsModule,
 	ReactiveFormsModule,
 	NgbDropdownModule,
+ NgbModule,
   ],
   providers: [
 	{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
