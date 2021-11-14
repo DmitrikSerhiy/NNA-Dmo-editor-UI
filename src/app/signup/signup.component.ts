@@ -36,6 +36,7 @@ export class SignupComponent implements OnInit {
   private takenNameValidaiton: string;
   private emtpyPasswordValidation: string;
   private invalidPasswordValidation: string;
+  private failureMessage: string;
 
   emailValidationToShow: string;
   nameValidationToShow: string;
@@ -52,7 +53,8 @@ export class SignupComponent implements OnInit {
 	  this.emtpyNameValidation = "Name is missing";
 	  this.takenNameValidaiton = "Name is already taken";
 	  this.emtpyPasswordValidation = "Password is missing";
-	  this.invalidPasswordValidation = "Password must be at least 8 characters long";
+	  this.invalidPasswordValidation = "Password must be at least 10 characters long";
+	  this.failureMessage = 'Failed to create user';
 	}
 
   ngOnInit() {
@@ -67,7 +69,7 @@ export class SignupComponent implements OnInit {
 	this.registerForm = new FormGroup({
 	  'name' : new FormControl('', [Validators.required]),
 	  'email': new FormControl('', [Validators.required, Validators.email]),
-	  'password': new FormControl('', [Validators.required, Validators.minLength(8)])
+	  'password': new FormControl('', [Validators.required, Validators.minLength(10)])
 	});
 
 	this.emailInput.nativeElement.focus();
@@ -199,19 +201,26 @@ export class SignupComponent implements OnInit {
 	  return;
 	} 
 	if (this.registerForm.valid) {
-	  	this.authService.register(
-		this.registerForm.get('name').value,
-		this.registerForm.get('email').value,
-		this.registerForm.get('password').value)
-		.then(response => {
-		  	this.emailInvalid = false;
-		  	this.passwordInvalid = false;
-		  	this.nameInvalid = false;
-		  	this.userManager.register(response.accessToken, response.email, response.userName);
-		})
-		.catch(error => {
-		  	this.toast.info(error);
-		});
+	  	this.authService.register(this.registerForm.get('name').value, this.registerForm.get('email').value, this.registerForm.get('password').value)
+			.subscribe((response) => {
+				if (response.errorMessage != null) {
+					if (response.errorMessage == '422') {
+					  this.passValidationToShow = this.failureMessage;
+					  this.passwordInvalid = true;
+					  this.passwordInput.nativeElement.focus();
+					}
+				  }
+				  else {
+					this.emailInvalid = false;
+					this.passwordInvalid = false;
+					this.nameInvalid = false;
+					this.userManager.register(response.accessToken, response.email, response.userName);
+				  }
+			},
+			(error) => {
+				this.toast.error(error);
+			}
+		);
 	}
   }
 

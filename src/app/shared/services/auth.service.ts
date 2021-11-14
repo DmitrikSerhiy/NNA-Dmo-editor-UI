@@ -40,11 +40,11 @@ export class AuthService {
                 catchError(this.errorHandler.handle));
     }
 
-    register(userName: string, email: string, password: string): Promise<UserDetails> {
+    register(userName: string, email: string, password: string): Observable<UserDetails> {
         return this.http
             .post(this.serverUrl + '/register', {'userName': userName, 'email': email, 'password': password})
             .pipe(
                 map((response: UserDetails) => response),
-                catchError(this.errorHandler.handle)).toPromise();
+                catchError(this.errorHandler.handle));
     }
 }

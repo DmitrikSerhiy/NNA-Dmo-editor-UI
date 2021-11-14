@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
 	  this.invalidEmailValidation = "Email is invalid";
 	  this.emtpyEmailValidation = "Email is missing";
 	  this.emtpyPasswordValidation = "Password is missing";
-	  this.invalidPasswordValidation = "Password must be at least 8 characters long";
+	  this.invalidPasswordValidation = "Password must be at least 10 characters long";
 	  this.failedToAuthDueToWrongPassValidation = "Password is not correct";
   }
 
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
 
 	this.loginForm = new FormGroup({
 	  'email': new FormControl('', [Validators.required, Validators.email]),
-	  'password': new FormControl('', [Validators.required, Validators.minLength(8)])
+	  'password': new FormControl('', [Validators.required, Validators.minLength(10)])
 	});
 
 	this.emailInput.nativeElement.focus();
@@ -142,7 +142,7 @@ export class LoginComponent implements OnInit {
 	  this.authService.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
 		.subscribe((response) => {
 		  if (response.errorMessage != null) {
-			if (response.errorMessage == '403') {
+			if (response.errorMessage == '422') {
 			  this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
 			  this.passwordInvalid = true;
 			  this.passwordInput.nativeElement.focus();
