@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/48e1aaf5-b411-406c-bccd-4017e940e350/resourceGroups/nna-dev/providers/Microsoft.Web/sites/nna-dev-ui",
+    "appService.deploySubpath": "dist"
+}
