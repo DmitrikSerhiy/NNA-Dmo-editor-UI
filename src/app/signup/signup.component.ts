@@ -214,7 +214,8 @@ export class SignupComponent implements OnInit {
 					this.emailInvalid = false;
 					this.passwordInvalid = false;
 					this.nameInvalid = false;
-					this.userManager.register(response.accessToken, response.email, response.userName);
+					this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
+					this.router.navigateByUrl('/app');
 				  }
 			},
 			(error) => {

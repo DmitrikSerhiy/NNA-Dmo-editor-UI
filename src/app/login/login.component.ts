@@ -150,7 +150,8 @@ export class LoginComponent implements OnInit {
 		  }
 		  else {
 			this.passwordInvalid = false;
-			this.userManager.login(response.accessToken, response.email, response.userName);
+			this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
+			this.router.navigateByUrl('/app');
 		  }
 		},
 		(error) => {

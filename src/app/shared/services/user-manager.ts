@@ -1,48 +1,51 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Injectable()
 export class UserManager {
 
-    constructor(
-        private router: Router) { }
-
-    isAuthorized() {
+    constructor() { }
+        
+    isAuthorized(): boolean {
         return localStorage.getItem('user access token') !== null;
     }
 
-    getCurrentUser() {
+    getCurrentUser(): string {
         return localStorage.getItem('user name');
     }
 
-    getJWT() {
+    getCurrentUserEmail(): string {
+        return localStorage.getItem('user email');
+    }
+
+
+    getAccessToken(): string {
         return localStorage.getItem('user access token');
     }
 
-    login(accessToken, email, userName) {
-        console.log('Successful authentication');
-        localStorage.setItem('user access token', accessToken);
-        localStorage.setItem('user email', email);
-        localStorage.setItem('user name', userName);
-        this.router.navigateByUrl('/app');
+    getRefreshToken(): string {
+        return localStorage.getItem('user refresh token');
     }
 
-    logout() {
-        console.log('Logout');
+    saveUserData(accessToken, email, userName, refreshToken): void {
+        this.setLocalStorage(accessToken, email, userName, refreshToken);
+    }
+
+    updateTokens(accessToken: string, refreshToken: string): void {
+        localStorage.setItem('user access token', accessToken);
+        localStorage.setItem('user refresh token', refreshToken);    
+    }
+
+    clearUserData(): void {
         localStorage.removeItem('user access token');
         localStorage.removeItem('user email');
         localStorage.removeItem('user name');
-        this.router.navigate(['/']).then(_ => {
-            location.reload();
-        });
-        
+        localStorage.removeItem('user refresh token');        
     }
 
-    register(accessToken, email, userName) {
-        console.log('Successful registration');
+    private setLocalStorage(accessToken: string, email: string, userName: string, refreshToken: string): void {
         localStorage.setItem('user access token', accessToken);
         localStorage.setItem('user email', email);
         localStorage.setItem('user name', userName);
-        this.router.navigateByUrl('/app');
+        localStorage.setItem('user refresh token', refreshToken);
     }
 }

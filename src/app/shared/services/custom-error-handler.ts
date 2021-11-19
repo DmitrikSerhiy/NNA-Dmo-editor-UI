@@ -1,31 +1,92 @@
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, throwError } from "rxjs";
-import { UserDetails } from "../models/serverResponse";
+import { Router } from "@angular/router";
+
+import { Observable, throwError, from } from "rxjs";
+import { catchError, concatMap } from "rxjs/operators";
+import { environment } from "src/environments/environment";
+import { TokenDetails, UserDetails } from "../models/serverResponse";
+import { UserManager } from "./user-manager";
 
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class CustomErrorHandler {
-      
-    constructor() {}
+  providedIn: 'root'
+})
+export class CustomErrorHandler {
+  private serverUrl: string = environment.server_user + 'account';
 
-    handle(err: HttpErrorResponse) {
-    const error = err.error;
-      if (error && error.fromExceptionFilter) {
-        return throwError({header: `${error.title} ${error.code}`, message: error.message});
+  constructor(
+    private httpClient: HttpClient,
+    private userManager: UserManager,
+    private router: Router) {}
+
+  public handle<T>(response: any, originalObs?: Observable<T>) {
+    const error = response.error;
+
+    if (error && error.fromExceptionFilter) {
+      return throwError({header: `${error.title} ${error.code}`, message: error.message});
+    }
+    
+    else if (response.status == 422) {
+      return new Observable<any>(sub => {
+        let failedResult = new UserDetails();
+        failedResult.errorMessage = '422';
+        sub.next(failedResult);
+        sub.complete();
+      });
+    }
+
+    else if (response.status == 401) {
+      if (response.headers.get('RedirectToLogin')) {
+        return this.clearLocalStorageAndRedirectToLogin();
       }
 
-      if (err.status == 422) {
+      if (response.headers.get('ExpiredToken')) {
+        console.log('request refresh');
+
+        return this.requestRefreshTokens()
+          .pipe(
+            concatMap( (response) => {
+              if (response == null) {
+                return this.clearLocalStorageAndRedirectToLogin(); 
+              }
+              this.userManager.updateTokens(response.accessToken, response.refreshToken);
+              return originalObs;
+            }
+          )
+        )
+      } 
+    }
+
+    return throwError({header: 'Unverified error', message: 'Administrator has been notified.'});
+  }
+
+
+
+
+  private clearLocalStorageAndRedirectToLogin(): Observable<any> {
+    this.userManager.clearUserData();
+    return from(this.router.navigate(['/login']))
+  }
+  
+  private requestRefreshTokens(): Observable<TokenDetails> {
+    return this.httpClient
+      .post<TokenDetails>(this.serverUrl + '/refresh', {accessToken: this.userManager.getAccessToken(), refreshToken: this.userManager.getRefreshToken()} )
+      .pipe(
+        catchError(response => {    
+          if (response.headers.get('RedirectToLogin')) {
+            // refresh endpoint throws an error because of invalid tokens
+            return new Observable<any>(sub => {
+              sub.next(null);
+              sub.complete();
+            });
+          }
+        
+        console.error('Refresh endpoint throws undifined error');
         return new Observable<any>(sub => {
-          let failedResult = new UserDetails();
-          failedResult.errorMessage = '422';
-          sub.next(failedResult);
+          sub.next(null);
           sub.complete();
         });
-      }
-
-      return throwError({header: 'Unverified error', message: 'Administrator has been notified.'});
-    }
-  } 
+      })) 
+  }
+} 

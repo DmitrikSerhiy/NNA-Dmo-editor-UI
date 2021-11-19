@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RightMenuGrabberComponent } from './components/right-menu-grabber/right-menu-grabber.component';
 import { RemoveDmoPopupComponent } from './components/remove-dmo-popup/remove-dmo-popup.component';
 import { NnaSpinnerComponent } from './components/nna-spinner/nna-spinner.component';
+import { CustomErrorHandler } from './services/custom-error-handler';
 
 @NgModule({
   declarations: [RemoveCollectionPopupComponent, RightMenuGrabberComponent, RemoveDmoPopupComponent, NnaSpinnerComponent],
@@ -12,6 +13,7 @@ import { NnaSpinnerComponent } from './components/nna-spinner/nna-spinner.compon
     CommonModule,
     MatDialogModule
   ],
-  exports: [RemoveCollectionPopupComponent, RightMenuGrabberComponent, NnaSpinnerComponent]
+  exports: [RemoveCollectionPopupComponent, RightMenuGrabberComponent, NnaSpinnerComponent],
+  providers: [CustomErrorHandler]
 })
 export class SharedModule { }

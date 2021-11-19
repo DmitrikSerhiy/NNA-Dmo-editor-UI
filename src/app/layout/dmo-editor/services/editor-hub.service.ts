@@ -25,8 +25,8 @@ export class EditorHub {
     constructor(
         private userManager: UserManager, 
         private http: HttpClient,
-        private errorHandler: CustomErrorHandler) { 
-        this.hubConnection = null;
+        private errorHandler: CustomErrorHandler ) { 
+            this.hubConnection = null;
     }
 
     async startConnection() {
@@ -50,7 +50,7 @@ export class EditorHub {
     private createConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(environment.server_user + 'editor', {
-            accessTokenFactory: () => this.userManager.getJWT(), // todo: request refresh token if expired
+            accessTokenFactory: () => this.userManager.getAccessToken(), // todo: request refresh token if expired
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
@@ -133,14 +133,12 @@ export class EditorHub {
 
 
     // ----- editor http methods --------
+
     initialBeatsLoad(dmoId: string): Observable<string> {
         return this.http
-            .get(this.serverUrl + 'beats/initial/' + dmoId)
-            .pipe(
-                map((response: string) => response),
-                catchError(this.errorHandler.handle));
+            .get<string>(this.serverUrl + 'beats/initial/' + dmoId)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<string>(response, obs)));
     }
-
 
     // ----- editor http methods --------
 }

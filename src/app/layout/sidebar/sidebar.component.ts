@@ -5,6 +5,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { Toastr } from 'src/app/shared/services/toastr.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,9 +20,11 @@ export class SidebarComponent implements OnInit {
 
   constructor(
     public userManager: UserManager,
+    private authService: AuthService,
     private currestSidebarService: CurrentSidebarService,
     private sidebarManagerService: SidebarManagerService,
-    private router: Router) { 
+    private router: Router,
+    private toastr: Toastr) { 
       this.toggleRightMenu$ = new EventEmitter<RightMenues>();
     }
 
@@ -31,8 +35,31 @@ export class SidebarComponent implements OnInit {
     this.sidebarState = this.sidebarManagerService.IsOpen;
   }
 
+  // testAuth() {
+	//   this.authService.test().subscribe((response => {
+	// 	  console.log('Success!!!');
+	// 	  console.log(response);
+	//   } ),
+	//   (error: any) => {
+	// 	console.log('error!!!');
+	// 	  console.log(error)
+	//   });
+  // }
+
+
   onLoggedout() {
-    this.userManager.logout();
+    this.authService.logout(this.userManager.getCurrentUserEmail())
+      .subscribe(_ => {
+        this.userManager.clearUserData();
+        this.router.navigate(['/'])
+        
+        // .then(_ => {
+        //   location.reload();
+        // });
+      }, 
+      (error) => {
+        this.toastr.error(error)
+      });
   }
 
   toggleSidebar() {

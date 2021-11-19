@@ -19,7 +19,5 @@ export class NavMenuComponent implements OnInit {
     this.isAuthorized = this.userManager.isAuthorized();
   }
 
-  onLoggedout() {
-    this.userManager.logout();
-  }
+  onLoggedout() {}
 }

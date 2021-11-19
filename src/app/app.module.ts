@@ -17,7 +17,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_RIPPLE_GLOBAL_OPTIONS } from '@angular/material/core';
 import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 
-
 const routes: Routes = [
   { path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
   { path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule) },

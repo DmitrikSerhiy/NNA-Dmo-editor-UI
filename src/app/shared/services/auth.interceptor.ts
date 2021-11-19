@@ -13,7 +13,7 @@ export class AuthInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler): Observable<HttpEvent<any>> {
 
-        const jwt = this.userManager.getJWT();
+        const jwt = this.userManager.getAccessToken();
 
         if (jwt) {
             const cloned = req.clone({
