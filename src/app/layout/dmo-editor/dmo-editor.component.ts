@@ -105,7 +105,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 
   async ngOnDestroy() {
-    this.initialLoadSub.unsubscribe();
+    this.initialLoadSub?.unsubscribe();
     await this.closeEditorAndClearData();
   }
 

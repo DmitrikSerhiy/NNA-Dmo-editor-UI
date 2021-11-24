@@ -73,7 +73,10 @@ export class EditorHub {
         });
         this.hubConnection.onclose((error) => {
             if (error != null) {
-                console.error(error);
+                console.log(error.name);
+                console.log(error.message);
+
+                console.log(error.stack);
             }
             // todo: show red reconnected status;
         });
