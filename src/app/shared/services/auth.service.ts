@@ -48,7 +48,13 @@ export class AuthService {
         return this.http
             .delete<any>(this.serverUrl + '/logout', {body: {email: email} } )
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
-        }
+    }
+
+    verify(): Observable<any> {
+        return this.http
+        .get<any>(this.serverUrl + '/verify')
+        .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }  
 
     test(): Observable<any> {
         return this.http

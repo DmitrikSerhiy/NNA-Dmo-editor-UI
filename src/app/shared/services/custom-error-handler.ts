@@ -50,6 +50,7 @@ export class CustomErrorHandler {
               if (response == null) {
                 return this.clearLocalStorageAndRedirectToLogin(); 
               }
+              console.log('UPDATE TOKENS in local storage');
               this.userManager.updateTokens(response.accessToken, response.refreshToken);
               return originalObs;
             }
