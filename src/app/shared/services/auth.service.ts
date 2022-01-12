@@ -8,6 +8,7 @@ import { UserDetails } from '../models/serverResponse';
 
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
+import { AuthGoogleDto } from '../models/authDto';
 
 @Injectable()
 export class AuthService {
@@ -52,9 +53,16 @@ export class AuthService {
 
     verify(): Observable<any> {
         return this.http
-        .get<any>(this.serverUrl + '/verify')
-        .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+            .get<any>(this.serverUrl + '/verify')
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }  
+
+    googleAuth(authGoogleDto: AuthGoogleDto): Promise<UserDetails> {
+        return this.http
+            .post<UserDetails>(this.serverUrl + '/google', {'email': authGoogleDto.email, 'name': authGoogleDto.name, 'googleToken': authGoogleDto.googleToken })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<UserDetails>(response, obs)))
+            .toPromise();
+    }
 
     test(): Observable<any> {
         return this.http

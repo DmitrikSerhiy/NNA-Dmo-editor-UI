@@ -4,85 +4,107 @@ import { AuthService } from './../shared/services/auth.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
+import { ToastrErrorMessage } from '../shared/models/serverResponse';
+import { AuthGoogleDto } from '../shared/models/authDto';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+	selector: 'app-login',
+	templateUrl: './login.component.html',
+	styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
-  get email() { return this.loginForm.get('email'); }
-  get password() { return this.loginForm.get('password'); }
+	loginForm: FormGroup;
+	get email() { return this.loginForm.get('email'); }
+	get password() { return this.loginForm.get('password'); }
 
-  @ViewChild('emailInpup', { static: true }) emailInput: ElementRef;
-  @ViewChild('passwordInput', { static: true }) passwordInput: ElementRef;
-  
-  firstStep: boolean
-  
-  emailInvalid: boolean;
-  passwordInvalid: boolean;
+	@ViewChild('emailInpup', { static: true }) emailInput: ElementRef;
+	@ViewChild('passwordInput', { static: true }) passwordInput: ElementRef;
+	
+	firstStep: boolean
+	
+	emailInvalid: boolean;
+	passwordInvalid: boolean;
 
-  private notExistingEmailValidation: string;
-  private invalidEmailValidation: string;
-  private emtpyEmailValidation: string;
-  private emtpyPasswordValidation: string;
-  private invalidPasswordValidation: string;
-  private failedToAuthDueToWrongPassValidation: string;
+	private notExistingEmailValidation: string;
+	private invalidEmailValidation: string;
+	private emtpyEmailValidation: string;
+	private emtpyPasswordValidation: string;
+	private invalidPasswordValidation: string;
+	private failedToAuthDueToWrongPassValidation: string;
 
-  emailValidationToShow: string;
-  passValidationToShow: string;
+	emailValidationToShow: string;
+	passValidationToShow: string;
 
-  constructor(
-	public router: Router,
-	private authService: AuthService,
-	private userManager: UserManager,
-	private toast: Toastr) {
-	  this.notExistingEmailValidation = "Email is not found";
-	  this.invalidEmailValidation = "Email is invalid";
-	  this.emtpyEmailValidation = "Email is missing";
-	  this.emtpyPasswordValidation = "Password is missing";
-	  this.invalidPasswordValidation = "Password must be at least 10 characters long";
-	  this.failedToAuthDueToWrongPassValidation = "Password is not correct";
-  }
-
-  ngOnInit() {
-	this.firstStep = true;
-	this.emailInvalid = false;
-	this.passwordInvalid = false;
-
-	this.loginForm = new FormGroup({
-	  'email': new FormControl('', [Validators.required, Validators.email]),
-	  'password': new FormControl('', [Validators.required, Validators.minLength(10)])
-	});
-
-	this.emailInput.nativeElement.focus();
-  }
-
-
-  redirectToHome() {
-	this.router.navigate(['/']);
-  }
-  
-  checkKey($event) {
-	let key = $event.which || $event.keyCode || $event.charCode;
-	if (key == 13 || key == 9) {
-	  $event.preventDefault();
+	constructor(
+		public router: Router,
+		private authService: AuthService,
+		private userManager: UserManager,
+		private toast: Toastr,
+		private sosialAuthService: SocialAuthService) {
+			this.notExistingEmailValidation = "Email is not found";
+			this.invalidEmailValidation = "Email is invalid";
+			this.emtpyEmailValidation = "Email is missing";
+			this.emtpyPasswordValidation = "Password is missing";
+			this.invalidPasswordValidation = "Password must be at least 10 characters long";
+			this.failedToAuthDueToWrongPassValidation = "Password is not correct";
 	}
-  }
 
-  async specialTrigger($event, secondStep: boolean) {
-	let key = $event.which || $event.keyCode || $event.charCode;
-	if (key == 13 || key == 9) { // enter or tab
-	  $event.preventDefault();
-	  if (secondStep == true) {
-		await this.toSecondStep();
-	  } else if (secondStep == false) {
-		this.onSubmit();
-	  }
+  	ngOnInit() {
+		this.firstStep = true;
+		this.emailInvalid = false;
+		this.passwordInvalid = false;
+
+		this.loginForm = new FormGroup({
+			'email': new FormControl('', [Validators.required, Validators.email]),
+			'password': new FormControl('', [Validators.required, Validators.minLength(10)])
+		});
+
+		this.emailInput.nativeElement.focus();
+  	}
+
+ 	async onGoogleAuth() {
+		 // todo: add nna loader
+		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
+	  	if (!authResult) {
+			this.toast.error(new ToastrErrorMessage("Google Service refused to authenticate your account", "Authentication failed"));
+			return;
+	  	}
+
+		let authGoogleDto: AuthGoogleDto = {
+			name: authResult.name,
+			email: authResult.email, 
+			googleToken: authResult.idToken
+		};
+		let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
+		
+		this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
+		this.router.navigateByUrl('/app');
+ 	}
+
+	redirectToHome() {
+		this.router.navigate(['/']);
 	}
-  }
+  
+	checkKey($event) {
+		let key = $event.which || $event.keyCode || $event.charCode;
+		if (key == 13 || key == 9) {
+			$event.preventDefault();
+		}
+	}
+
+	async specialTrigger($event, secondStep: boolean) {
+		let key = $event.which || $event.keyCode || $event.charCode;
+		if (key == 13 || key == 9) { // enter or tab
+			$event.preventDefault();
+			if (secondStep == true) {
+				await this.toSecondStep();
+			} else if (secondStep == false) {
+				this.onSubmit();
+			}
+		}
+	}
 
 
 	toFirstStep(): void {
@@ -124,43 +146,43 @@ export class LoginComponent implements OnInit {
 		}
     }
 
-  onSubmit() {
-	let errors = this.loginForm.get('password').errors;
-	if (errors != null) {
-	  this.passwordInvalid = true;
-	  if (errors['required']) {
-		this.passValidationToShow = this.emtpyPasswordValidation;
-		this.passwordInput.nativeElement.focus();
-	  } else if (errors['minlength']) {
-		this.passValidationToShow = this.invalidPasswordValidation;
-		this.passwordInput.nativeElement.focus();
-	  };
-	  return;
-	} 
+  	onSubmit() {
+		let errors = this.loginForm.get('password').errors;
+		if (errors != null) {
+			this.passwordInvalid = true;
+		if (errors['required']) {
+			this.passValidationToShow = this.emtpyPasswordValidation;
+			this.passwordInput.nativeElement.focus();
+		} else if (errors['minlength']) {
+			this.passValidationToShow = this.invalidPasswordValidation;
+			this.passwordInput.nativeElement.focus();
+		};
+		return;
+		} 
 
-	if (this.loginForm.valid) {
-	  this.authService.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
-		.subscribe((response) => {
-		  if (response.errorMessage != null) {
-			if (response.errorMessage == '422') {
-			  this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
-			  this.passwordInvalid = true;
-			  this.passwordInput.nativeElement.focus();
-			}
-		  }
-		  else {
-			this.passwordInvalid = false;
-			this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
-			this.router.navigateByUrl('/app');
-		  }
-		},
-		(error) => {
-		  this.toast.error(error);
-		});
+		if (this.loginForm.valid) {
+			this.authService.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
+				.subscribe((response) => {
+				if (response.errorMessage != null) {
+					if (response.errorMessage == '422') {
+						this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
+						this.passwordInvalid = true;
+						this.passwordInput.nativeElement.focus();
+					}
+				}
+				else {
+					this.passwordInvalid = false;
+					this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
+					this.router.navigateByUrl('/app');
+				}
+			},
+			(error) => {
+				this.toast.error(error);
+			});
+		}
 	}
-  }
 
-  private sleep(ms: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, ms));
-  }
+	private sleep(ms: number): Promise<void> {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
 }

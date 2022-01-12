@@ -17,6 +17,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_RIPPLE_GLOBAL_OPTIONS } from '@angular/material/core';
 import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 
+import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
+import { GoogleLoginProvider } from 'angularx-social-login';
+
+
 const routes: Routes = [
   { path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
   { path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule) },
@@ -40,14 +44,30 @@ const routes: Routes = [
 	FormsModule,
 	ReactiveFormsModule,
 	NgbDropdownModule,
- NgbModule,
+  NgbModule,
+  SocialLoginModule
   ],
   providers: [
 	{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
 	{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
   UserManager, ToastrService, Toastr,
-	AuthGuardForChild, AuthGuard, AuthService ],
-
+	AuthGuardForChild, AuthGuard, AuthService,
+  {
+    provide: 'SocialAuthServiceConfig',
+    useValue: {
+      autoLogin: false,
+      providers: [
+        {
+          id: GoogleLoginProvider.PROVIDER_ID,
+          provider: new GoogleLoginProvider(
+            '778642260315-r01qeplmh6bo0169uv587o07stv06nab.apps.googleusercontent.com',
+            {scope: 'profile email' }
+          )
+        }
+      ]
+    } as SocialAuthServiceConfig,
+  }
+],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
