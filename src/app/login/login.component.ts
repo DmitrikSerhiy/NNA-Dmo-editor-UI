@@ -64,8 +64,9 @@ export class LoginComponent implements OnInit {
 		this.emailInput.nativeElement.focus();
   	}
 
- 	async onGoogleAuth() {
-		 // todo: add nna loader
+ 	async onGoogleAuth($event: any) {
+		$event.preventDefault();
+		// todo: add nna loader
 		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
 	  	if (!authResult) {
 			this.toast.error(new ToastrErrorMessage("Google Service refused to authenticate your account", "Authentication failed"));
