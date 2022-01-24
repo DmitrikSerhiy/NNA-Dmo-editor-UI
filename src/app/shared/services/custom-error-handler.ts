@@ -6,6 +6,7 @@ import { Observable, throwError, from } from "rxjs";
 import { catchError, concatMap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { TokenDetails, UserDetails } from "../models/serverResponse";
+import { Toastr } from "./toastr.service";
 import { UserManager } from "./user-manager";
 
 
@@ -18,10 +19,12 @@ export class CustomErrorHandler {
   constructor(
     private httpClient: HttpClient,
     private userManager: UserManager,
-    private router: Router) {}
+    private router: Router,
+    private toastr: Toastr) {}
 
   public handle<T>(response: any, originalObs?: Observable<T>) {
     const error = response.error;
+    console.log(error);
 
     if (error && error.fromExceptionFilter) {
       return throwError({header: `${error.title} ${error.code}`, message: error.message});
@@ -57,6 +60,10 @@ export class CustomErrorHandler {
           )
         )
       } 
+    } 
+    
+    else if (response.status == 400) {
+      this.toastr.error({'header': 'Bad request', 'message': 'Administrator has been notified.'})
     }
 
     return throwError({header: 'Unverified error', message: 'Administrator has been notified.'});

@@ -26,6 +26,13 @@ export class AuthService {
             .toPromise();
     }
 
+    checkSsoAndPassword(email: string): Promise<string> {
+        return this.http
+            .post<string>(this.serverUrl + '/authprovider', { 'email': email } )
+            .pipe(catchError((response, obs) => this.errorHandler.handle<string>(response, obs)))
+            .toPromise();
+    }
+
     checkName(name: string): Promise<boolean> {
         return this.http
             .post<boolean>(this.serverUrl + '/name', { 'name': name } )

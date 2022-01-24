@@ -33,9 +33,15 @@ export class LoginComponent implements OnInit {
 	private emtpyPasswordValidation: string;
 	private invalidPasswordValidation: string;
 	private failedToAuthDueToWrongPassValidation: string;
-
+	private ssoEmailValidationHeaderToShow: string
+	private ssoEmailValidationToShow: string;
+	
+	additionalValidationForSsoEmail: string;
+	linkToSetPasswordTitle: string;
+	linkToSetPasswordPreTitle: string;
 	emailValidationToShow: string;
 	passValidationToShow: string;
+
 
 	constructor(
 		public router: Router,
@@ -44,12 +50,16 @@ export class LoginComponent implements OnInit {
 		private toast: Toastr,
 		private sosialAuthService: SocialAuthService) {
 			this.notExistingEmailValidation = "Email is not found";
+			this.ssoEmailValidationHeaderToShow = "Password is not set for this email";
 			this.invalidEmailValidation = "Email is invalid";
 			this.emtpyEmailValidation = "Email is missing";
 			this.emtpyPasswordValidation = "Password is missing";
 			this.invalidPasswordValidation = "Password must be at least 10 characters long";
 			this.failedToAuthDueToWrongPassValidation = "Password is not correct";
-	}
+			this.ssoEmailValidationToShow = "Use your social account to login."
+			this.linkToSetPasswordPreTitle = "Or "
+			this.linkToSetPasswordTitle = "set password manually"
+		}
 
   	ngOnInit() {
 		this.firstStep = true;
@@ -66,7 +76,6 @@ export class LoginComponent implements OnInit {
 
  	async onGoogleAuth($event: any) {
 		$event.preventDefault();
-		// todo: add nna loader
 		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
 	  	if (!authResult) {
 			this.toast.error(new ToastrErrorMessage("Google Service refused to authenticate your account", "Authentication failed"));
@@ -128,20 +137,31 @@ export class LoginComponent implements OnInit {
 			return;
 		} 
 		
-		let response = await this.authService.checkUserEmail(this.loginForm.get('email').value)
+		let response = await this.authService.checkUserEmail(this.loginForm.get('email').value);
 		if (response == false) {
 			this.emailInvalid = true;
+			this.additionalValidationForSsoEmail = '';
 			this.emailValidationToShow = this.notExistingEmailValidation;
 			this.emailInput.nativeElement.focus();
 		} else {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
-				await this.sleep(200);
 			}
-
+			let ssoResponse = await this.authService.checkSsoAndPassword(this.loginForm.get('email').value);
+			if (ssoResponse) {
+				this.emailInvalid = true;
+				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;
+				this.additionalValidationForSsoEmail = this.ssoEmailValidationToShow.replace("social", ssoResponse.charAt(0).toUpperCase() + ssoResponse.substring(1, ssoResponse.length));
+				this.emailInput.nativeElement.focus();
+				return;
+			} 
+			
+			this.additionalValidationForSsoEmail = '';
+			this.emailValidationToShow = '';
+			this.emailInvalid = false;
+			await this.sleep(200);
 			location.href = "login#password-input";
 			this.firstStep = false;
-			this.emailInvalid = false;
 			await this.sleep(600);
 			this.passwordInput.nativeElement.focus();
 		}
@@ -158,11 +178,12 @@ export class LoginComponent implements OnInit {
 			this.passValidationToShow = this.invalidPasswordValidation;
 			this.passwordInput.nativeElement.focus();
 		};
-		return;
+			return;
 		} 
 
 		if (this.loginForm.valid) {
-			this.authService.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
+			this.authService
+				.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
 				.subscribe((response) => {
 				if (response.errorMessage != null) {
 					if (response.errorMessage == '422') {
@@ -170,8 +191,7 @@ export class LoginComponent implements OnInit {
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
 					}
-				}
-				else {
+				} else {
 					this.passwordInvalid = false;
 					this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 					this.router.navigateByUrl('/app');
