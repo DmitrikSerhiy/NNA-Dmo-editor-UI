@@ -1,0 +1,26 @@
+
+@import "src/styles/fonts-mixins.scss";
+
+.sso-container {
+    display: flex;
+    width: 350px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+    padding: 20px;
+    margin-top: 20px;
+    align-items: center;
+    align-content: center;
+
+    .sso-description-container {
+        width: 6.5rem;
+        margin: auto 0;
+
+        .sso-description {
+            @include font-primary-info();
+        }
+    }
+
+    .sso-button {
+        cursor: pointer;
+    }
+}

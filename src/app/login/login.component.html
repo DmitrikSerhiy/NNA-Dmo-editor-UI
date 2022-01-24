@@ -39,10 +39,6 @@
                     <a class="nna-link" [routerLink]="['/#']"> {{linkToSetPasswordTitle}}</a>
                 </div> 
 
-                <div>
-                    <button (click)="onGoogleAuth($event)">Google</button>
-                </div>
-
                 <div class="auth-buttons">
                     <button type="button" class="nna-icon-button"    [hidden]="firstStep" (click)="toFirstStep()"> < </button>
                     <button type="button" class="nna-button-primary" [hidden]="!firstStep"  (click)="toSecondStep()">next</button>
@@ -52,4 +48,7 @@
         </form>
 
     </div>
+
+    <app-sso-container [isRegister]="false"></app-sso-container>
+    
 </div>

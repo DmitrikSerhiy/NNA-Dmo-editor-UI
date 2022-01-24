@@ -1,22 +1,20 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SignupComponent } from './signup.component';
-
-const routes: Routes = [
-  {
-	  path: '', component: SignupComponent
-  }
-];
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [SignupComponent],
-  imports: [
-	CommonModule,
-	FormsModule,
-	ReactiveFormsModule,
-	RouterModule.forChild(routes)
-  ]
+    declarations: [SignupComponent],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        RouterModule.forChild([{
+            path: '', component: SignupComponent
+        }])
+    ]
 })
 export class SignupModule { }

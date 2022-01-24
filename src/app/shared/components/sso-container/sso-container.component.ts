@@ -1,0 +1,57 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
+import { AuthGoogleDto } from '../../models/authDto';
+import { ToastrErrorMessage } from '../../models/serverResponse';
+import { AuthService } from '../../services/auth.service';
+import { Toastr } from '../../services/toastr.service';
+import { UserManager } from '../../services/user-manager';
+
+@Component({
+	selector: 'app-sso-container',
+	templateUrl: './sso-container.component.html',
+	styleUrls: ['./sso-container.component.scss']
+})
+export class SsoContainerComponent implements OnInit {
+
+	isButtonClicked = false;
+	@Input() isRegister: boolean;
+	isTextForSignUp: boolean;
+
+  	constructor(
+		private sosialAuthService: SocialAuthService,
+		public router: Router,
+		private authService: AuthService,
+		private toast: Toastr,
+		private userManager: UserManager) { }
+
+  	ngOnInit(): void {
+		this.isTextForSignUp = this.isRegister;
+	}
+
+  	async onGoogleAuth($event: any) {
+		this.isButtonClicked = !this.isButtonClicked;
+		$event.preventDefault();
+		try {
+		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
+		} catch {
+			this.isButtonClicked = !this.isButtonClicked;
+			return;
+		}
+	  	if (!authResult) {
+			this.toast.error(new ToastrErrorMessage("Google refused to authenticate your account", "Authentication failed"));
+			return;
+	  	}
+
+		let authGoogleDto: AuthGoogleDto = {
+			name: authResult.name,
+			email: authResult.email, 
+			googleToken: authResult.idToken
+		};
+		let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
+		
+		this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
+		this.isButtonClicked = !this.isButtonClicked;
+		this.router.navigateByUrl('/app');
+ 	}
+}

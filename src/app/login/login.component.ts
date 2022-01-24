@@ -47,8 +47,7 @@ export class LoginComponent implements OnInit {
 		public router: Router,
 		private authService: AuthService,
 		private userManager: UserManager,
-		private toast: Toastr,
-		private sosialAuthService: SocialAuthService) {
+		private toast: Toastr) {
 			this.notExistingEmailValidation = "Email is not found";
 			this.ssoEmailValidationHeaderToShow = "Password is not set for this email";
 			this.invalidEmailValidation = "Email is invalid";
@@ -73,25 +72,6 @@ export class LoginComponent implements OnInit {
 
 		this.emailInput.nativeElement.focus();
   	}
-
- 	async onGoogleAuth($event: any) {
-		$event.preventDefault();
-		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
-	  	if (!authResult) {
-			this.toast.error(new ToastrErrorMessage("Google Service refused to authenticate your account", "Authentication failed"));
-			return;
-	  	}
-
-		let authGoogleDto: AuthGoogleDto = {
-			name: authResult.name,
-			email: authResult.email, 
-			googleToken: authResult.idToken
-		};
-		let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
-		
-		this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
-		this.router.navigateByUrl('/app');
- 	}
 
 	redirectToHome() {
 		this.router.navigate(['/']);
