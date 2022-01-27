@@ -14,9 +14,9 @@ import { UserManager } from '../../services/user-manager';
 })
 export class SsoContainerComponent implements OnInit {
 
-	isButtonClicked = false;
 	@Input() isRegister: boolean;
 	isTextForSignUp: boolean;
+	isSsoButtonClicked = false;
 
   	constructor(
 		private sosialAuthService: SocialAuthService,
@@ -30,16 +30,22 @@ export class SsoContainerComponent implements OnInit {
 	}
 
   	async onGoogleAuth($event: any) {
-		this.isButtonClicked = !this.isButtonClicked;
 		$event.preventDefault();
+
+		if (this.isSsoButtonClicked == true) {
+			return;
+		}
+		this.isSsoButtonClicked = true;
+
 		try {
-		var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
+			var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
 		} catch {
-			this.isButtonClicked = !this.isButtonClicked;
+			this.isSsoButtonClicked = false;
 			return;
 		}
 	  	if (!authResult) {
 			this.toast.error(new ToastrErrorMessage("Google refused to authenticate your account", "Authentication failed"));
+			this.isSsoButtonClicked = false;
 			return;
 	  	}
 
@@ -51,7 +57,7 @@ export class SsoContainerComponent implements OnInit {
 		let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
 		
 		this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
-		this.isButtonClicked = !this.isButtonClicked;
+		this.isSsoButtonClicked = false;
 		this.router.navigateByUrl('/app');
  	}
 }

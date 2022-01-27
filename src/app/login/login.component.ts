@@ -1,19 +1,17 @@
 import { Toastr } from './../shared/services/toastr.service';
 import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
-import { ToastrErrorMessage } from '../shared/models/serverResponse';
-import { AuthGoogleDto } from '../shared/models/authDto';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-login',
 	templateUrl: './login.component.html',
 	styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
 	loginForm: FormGroup;
 	get email() { return this.loginForm.get('email'); }
@@ -26,7 +24,8 @@ export class LoginComponent implements OnInit {
 	
 	emailInvalid: boolean;
 	passwordInvalid: boolean;
-
+	
+	private loginSubscription: Subscription;
 	private notExistingEmailValidation: string;
 	private invalidEmailValidation: string;
 	private emtpyEmailValidation: string;
@@ -48,17 +47,18 @@ export class LoginComponent implements OnInit {
 		private authService: AuthService,
 		private userManager: UserManager,
 		private toast: Toastr) {
-			this.notExistingEmailValidation = "Email is not found";
-			this.ssoEmailValidationHeaderToShow = "Password is not set for this email";
-			this.invalidEmailValidation = "Email is invalid";
-			this.emtpyEmailValidation = "Email is missing";
-			this.emtpyPasswordValidation = "Password is missing";
-			this.invalidPasswordValidation = "Password must be at least 10 characters long";
-			this.failedToAuthDueToWrongPassValidation = "Password is not correct";
-			this.ssoEmailValidationToShow = "Use your social account to login."
-			this.linkToSetPasswordPreTitle = "Or "
-			this.linkToSetPasswordTitle = "set password manually"
-		}
+
+		this.notExistingEmailValidation = "Email is not found";
+		this.ssoEmailValidationHeaderToShow = "Password is not set for this email";
+		this.invalidEmailValidation = "Email is invalid";
+		this.emtpyEmailValidation = "Email is missing";
+		this.emtpyPasswordValidation = "Password is missing";
+		this.invalidPasswordValidation = "Password must be at least 10 characters long";
+		this.failedToAuthDueToWrongPassValidation = "Password is not correct";
+		this.ssoEmailValidationToShow = "Use your social account to login."
+		this.linkToSetPasswordPreTitle = "Or "
+		this.linkToSetPasswordTitle = "set password manually"
+	}
 
   	ngOnInit() {
 		this.firstStep = true;
@@ -162,7 +162,7 @@ export class LoginComponent implements OnInit {
 		} 
 
 		if (this.loginForm.valid) {
-			this.authService
+			this.loginSubscription = this.authService
 				.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
 				.subscribe((response) => {
 				if (response.errorMessage != null) {
@@ -180,6 +180,12 @@ export class LoginComponent implements OnInit {
 			(error) => {
 				this.toast.error(error);
 			});
+		}
+	}
+
+	ngOnDestroy(): void {
+		if (this.loginSubscription) {
+			this.loginSubscription.unsubscribe();
 		}
 	}
 
