@@ -43,7 +43,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 	linkToSetPasswordPostTitle: string;
 	emailValidationToShow: string;
 	passValidationToShow: string;
-
+	showPasswordTitle: string
+	hidePasswordTitle: string;
+	passwordHidden: boolean = true;
 
 	constructor(
 		public router: Router,
@@ -64,6 +66,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 		this.linkToSetPasswordTitle = "set password";
 		this.linkToSetPasswordPostTitle = "manually";
 		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
+		this.showPasswordTitle = "Show password";
+		this.hidePasswordTitle = "Hide password";
 	}
 
 
@@ -80,6 +84,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 		this.emailInput.nativeElement.focus();
 
   	}
+
+	togglePassword(toggler: boolean) {
+		this.passwordHidden = toggler;
+
+		this.passwordHidden 
+			? this.passwordInput.nativeElement.setAttribute('type', 'password')
+			: this.passwordInput.nativeElement.setAttribute('type', 'text');
+
+		this.passwordInput.nativeElement.focus();
+	}
 
 	redirectToHome() {
 		this.router.navigate(['/']);

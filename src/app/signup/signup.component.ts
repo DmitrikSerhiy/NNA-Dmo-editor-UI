@@ -41,7 +41,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 	private failureMessage: string;
 	private nonEnglishCurrentLanguage: string;
 
-
+	passwordHidden: boolean = true;
 	emailValidationToShow: string;
 	nameValidationToShow: string;
 	passValidationToShow: string;
@@ -82,6 +82,16 @@ export class SignupComponent implements OnInit, OnDestroy {
 
 		this.emailInput.nativeElement.focus();
   	}
+
+	togglePassword(toggler: boolean) {
+		this.passwordHidden = toggler;
+
+		this.passwordHidden 
+			? this.passwordInput.nativeElement.setAttribute('type', 'password')
+			: this.passwordInput.nativeElement.setAttribute('type', 'text');
+
+		this.passwordInput.nativeElement.focus();
+	}
 
 	redirectToHome() {
 		this.router.navigate(['/']);

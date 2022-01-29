@@ -90,6 +90,18 @@
                                 cursor: pointer;
                             }
                         }
+
+                        .pass-icon {
+                            color: gray;
+                            margin-left: .4rem;
+                            &:hover {
+                                cursor: pointer;
+                            }
+                        }
+
+                        .pass-validation-icon {
+                            right: 2.1rem !important;
+                        }
                     }
 
                     .nna-input-label {

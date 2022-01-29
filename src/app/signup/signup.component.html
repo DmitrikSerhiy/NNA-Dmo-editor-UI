@@ -33,7 +33,9 @@
                             <span *ngIf="!passwordInvalid">Password</span> 
                             <span class="validation-container" *ngIf="passwordInvalid">{{passValidationToShow}}</span>
                         </label>
-                        <span [hidden]="!passwordInvalid" class="validation-icon material-icons" title="{{passValidationToShow}}"> warning_amber</span>
+                        <span [hidden]="!passwordInvalid" class="validation-icon material-icons pass-validation-icon" title="{{passValidationToShow}}"> warning_amber</span>
+                        <span *ngIf="passwordHidden" class="pass-icon material-icons" title="{{showPasswordTitle}}" (click)="togglePassword(false)"> visibility</span>
+                        <span *ngIf="!passwordHidden" class="pass-icon material-icons" title="{{hidePasswordTitle}}" (click)="togglePassword(true)"> visibility_off</span>
                     </div>
 
                 </div>
