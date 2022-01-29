@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from '../shared/services/toastr.service';
 import { Subscription } from 'rxjs';
+import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-signup',
@@ -38,6 +39,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 	private emtpyPasswordValidation: string;
 	private invalidPasswordValidation: string;
 	private failureMessage: string;
+	private nonEnglishCurrentLanguage: string;
+
 
 	emailValidationToShow: string;
 	nameValidationToShow: string;
@@ -49,7 +52,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 		public router: Router,
 		private authService: AuthService,
 		private userManager: UserManager,
-		private toast: Toastr) { 
+		private toast: Toastr,
+		private nnaHelpersService: NnaHelpersService) { 
 		this.invalidEmailValidation = "Email is invalid";
 		this.emtpyEmailValidation = "Email is missing";
 		this.takenEmailValidaiton = "Email is already taken";
@@ -58,6 +62,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must be at least 10 characters long";
 		this.failureMessage = 'Failed to create user';
+		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
 	}
 
   	ngOnInit() {
@@ -101,6 +106,16 @@ export class SignupComponent implements OnInit, OnDestroy {
 				this.onSubmit();
 			}
 		}
+
+		if (step == 3) {
+			if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
+				this.passValidationToShow = this.nonEnglishCurrentLanguage;
+				this.passwordInvalid = true;
+				this.passwordInput.nativeElement.focus();
+			} else {
+				this.passwordInvalid = false;
+			}
+		}
 	}
 
 	async toFirstStep(): Promise<void> {
@@ -118,12 +133,12 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.thirdStep = false;
 			this.secondStep = true;
 			this.emailInvalid = false;
-			await this.sleep(600);
+			await this.nnaHelpersService.sleep(600);
 			this.nameInput.nativeElement.focus();
 			return;
 		}
 
-		let errors = this.registerForm.get('email').errors;
+		let errors = this.email.errors;
 		if (errors != null) {
 			this.emailInvalid = true;
 			if (errors['email']) {
@@ -136,7 +151,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkUserEmail(this.registerForm.get('email').value);
+		let response = await this.authService.checkUserEmail(this.email.value);
 	  	if (response == true) {
 			this.emailInvalid = true;
 			this.emailValidationToShow = this.takenEmailValidaiton;
@@ -145,7 +160,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
 				this.thirdStep = false;
-				await this.sleep(200);
+				await this.nnaHelpersService.sleep(200);
 			}
 
 			location.href = "signup#name-input";
@@ -153,13 +168,13 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.thirdStep = false;
 			this.secondStep = true;
 			this.emailInvalid = false;
-			await this.sleep(600);
+			await this.nnaHelpersService.sleep(600);
 			this.nameInput.nativeElement.focus();
 	  	}
   	}
 
 	async toThirdStep(): Promise<void> {
-		let errors = this.registerForm.get('name').errors;
+		let errors = this.name.errors;
 		if (errors != null) {
 			this.nameInvalid = true;
 		if (errors['required']) {
@@ -169,7 +184,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkName(this.registerForm.get('name').value)
+		let response = await this.authService.checkName(this.name.value)
 		if (response == true) {
 			this.nameInvalid = true;
 			this.nameValidationToShow = this.takenNameValidaiton;
@@ -177,7 +192,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		} else {
 			if (this.nameInvalid == true) {
 				this.nameInvalid = false;
-				await this.sleep(200);
+				await this.nnaHelpersService.sleep(200);
 			}
 
 			location.href = "signup#password-input";
@@ -185,13 +200,13 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.secondStep = false;
 			this.thirdStep = true;
 			this.emailInvalid = false;
-			await this.sleep(600);
+			await this.nnaHelpersService.sleep(600);
 			this.passwordInput.nativeElement.focus();
 		}
   	}
 
   	onSubmit() {
-		let errors = this.registerForm.get('password').errors;
+		let errors = this.password.errors;
 		if (errors != null) {
 			this.passwordInvalid = true;
 			if (errors['required']) {
@@ -205,7 +220,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		} 
 		if (this.registerForm.valid) {
 			this.registerSubscriptions = this.authService
-				.register(this.registerForm.get('name').value, this.registerForm.get('email').value, this.registerForm.get('password').value)
+				.register(this.name.value, this.email.value, this.password.value)
 				.subscribe((response) => {
 					if (response.errorMessage != null) {
 						if (response.errorMessage == '422') {
@@ -232,9 +247,5 @@ export class SignupComponent implements OnInit, OnDestroy {
 		if (this.registerSubscriptions) {
 			this.registerSubscriptions.unsubscribe();
 		}
-	}
-
-	private sleep(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 }

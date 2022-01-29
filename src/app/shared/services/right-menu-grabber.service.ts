@@ -1,36 +1,33 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { NnaHelpersService } from './nna-helpers.service';
 
 @Injectable({
-  providedIn: 'root'
+  	providedIn: 'root'
 })
 export class RightMenuGrabberService {
 
-  private shouldShowGrabber = false;
-  private shouldShowGrabberSource = new BehaviorSubject(false);
-  shouldShowGrabber$ = this.shouldShowGrabberSource.asObservable();
+	private shouldShowGrabber = false;
+	private shouldShowGrabberSource = new BehaviorSubject(false);
+	shouldShowGrabber$ = this.shouldShowGrabberSource.asObservable();
 
-  showGrabber() {
-    this.shouldShowGrabber = true;
-    this.shouldShowGrabberSource.next(true);
-  }
+  	constructor(private nnaHelpersService: NnaHelpersService) { }
 
-  hideGrabber() {
-    this.shouldShowGrabber = false;
-    this.shouldShowGrabberSource.next(false);
-  }
+	showGrabber() {
+		this.shouldShowGrabber = true;
+		this.shouldShowGrabberSource.next(true);
+	}
 
-  async isGrabberShouldBeShown(delay: boolean = true) {
-    if (delay) {
-      await this.sleep(1000);
-    }
+	hideGrabber() {
+		this.shouldShowGrabber = false;
+		this.shouldShowGrabberSource.next(false);
+	}
 
-    return this.shouldShowGrabber;
-  }
+	async isGrabberShouldBeShown(delay: boolean = true) {
+		if (delay) {
+			await this.nnaHelpersService.sleep(1000);
+		}
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  constructor() { }
+		return this.shouldShowGrabber;
+	}
 }

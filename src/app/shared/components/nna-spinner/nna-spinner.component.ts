@@ -1,28 +1,25 @@
 import { Component, OnInit } from '@angular/core';
+import { NnaHelpersService } from '../../services/nna-helpers.service';
 
 @Component({
-  selector: 'app-nna-spinner',
-  templateUrl: './nna-spinner.component.html',
-  styleUrls: ['./nna-spinner.component.scss']
+	selector: 'app-nna-spinner',
+	templateUrl: './nna-spinner.component.html',
+	styleUrls: ['./nna-spinner.component.scss']
 })
 export class NnaSpinnerComponent implements OnInit {
-  visible: boolean = true;
-  isInitial: boolean = true;
-  constructor() { }
+	visible: boolean = true;
+	isInitial: boolean = true;
 
-  async ngOnInit() {
-    do {
-      await this.sleep(800);
-      this.toggle();
-    } while(true)
-  }
+ 	constructor(private nnaHelpersService: NnaHelpersService) { }
 
-  private toggle(): void {
-    this.visible = !this.visible;
-  }
+	async ngOnInit() {
+		do {
+			await this.nnaHelpersService.sleep(800);
+			this.toggle();
+		} while(true)
+	}
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
+	private toggle(): void {
+		this.visible = !this.visible;
+	}
 }

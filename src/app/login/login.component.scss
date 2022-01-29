@@ -117,12 +117,12 @@
                     margin-top: 1rem;
                     @include font-secondary-info();
 
-
                     :first-child {
                         flex-basis: 100%;
                     }
-                    :nth-child(2) {
-                        margin-right: 4px;
+
+                    .nna-link {
+                        margin: 0 4px;
                     }
                 }
 

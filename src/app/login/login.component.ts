@@ -1,10 +1,11 @@
 import { Toastr } from './../shared/services/toastr.service';
 import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-login',
@@ -34,10 +35,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 	private failedToAuthDueToWrongPassValidation: string;
 	private ssoEmailValidationHeaderToShow: string
 	private ssoEmailValidationToShow: string;
+	private nonEnglishCurrentLanguage: string;
 	
 	additionalValidationForSsoEmail: string;
 	linkToSetPasswordTitle: string;
 	linkToSetPasswordPreTitle: string;
+	linkToSetPasswordPostTitle: string;
 	emailValidationToShow: string;
 	passValidationToShow: string;
 
@@ -46,19 +49,23 @@ export class LoginComponent implements OnInit, OnDestroy {
 		public router: Router,
 		private authService: AuthService,
 		private userManager: UserManager,
-		private toast: Toastr) {
+		private toast: Toastr,
+		private nnaHelpersService: NnaHelpersService) {
 
 		this.notExistingEmailValidation = "Email is not found";
 		this.ssoEmailValidationHeaderToShow = "Password is not set for this email";
 		this.invalidEmailValidation = "Email is invalid";
 		this.emtpyEmailValidation = "Email is missing";
 		this.emtpyPasswordValidation = "Password is missing";
-		this.invalidPasswordValidation = "Password must be at least 10 characters long";
+		this.invalidPasswordValidation = "Password must contain at least 10 symbols";
 		this.failedToAuthDueToWrongPassValidation = "Password is not correct";
-		this.ssoEmailValidationToShow = "Use your social account to login."
-		this.linkToSetPasswordPreTitle = "Or "
-		this.linkToSetPasswordTitle = "set password manually"
+		this.ssoEmailValidationToShow = "Use your social account to login"
+		this.linkToSetPasswordPreTitle = "Or ";
+		this.linkToSetPasswordTitle = "set password";
+		this.linkToSetPasswordPostTitle = "manually";
+		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
 	}
+
 
   	ngOnInit() {
 		this.firstStep = true;
@@ -71,6 +78,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 		});
 
 		this.emailInput.nativeElement.focus();
+
   	}
 
 	redirectToHome() {
@@ -86,12 +94,23 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 	async specialTrigger($event, secondStep: boolean) {
 		let key = $event.which || $event.keyCode || $event.charCode;
+
 		if (key == 13 || key == 9) { // enter or tab
 			$event.preventDefault();
 			if (secondStep == true) {
 				await this.toSecondStep();
 			} else if (secondStep == false) {
 				this.onSubmit();
+			}
+		}
+
+		if (secondStep == false) {
+			if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
+				this.passValidationToShow = this.nonEnglishCurrentLanguage;
+				this.passwordInvalid = true;
+				this.passwordInput.nativeElement.focus();
+			} else {
+				this.passwordInvalid = false;
 			}
 		}
 	}
@@ -104,7 +123,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	}
 
   	async toSecondStep() {
-		let errors = this.loginForm.get('email').errors;
+		let errors = this.email.errors;
 		if (errors != null) {
 			this.emailInvalid = true;
 			if (errors['email']) {
@@ -117,7 +136,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			return;
 		} 
 		
-		let response = await this.authService.checkUserEmail(this.loginForm.get('email').value);
+		let response = await this.authService.checkUserEmail(this.email.value);
 		if (response == false) {
 			this.emailInvalid = true;
 			this.additionalValidationForSsoEmail = '';
@@ -127,7 +146,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
 			}
-			let ssoResponse = await this.authService.checkSsoAndPassword(this.loginForm.get('email').value);
+			let ssoResponse = await this.authService.checkSsoAndPassword(this.email.value);
 			if (ssoResponse) {
 				this.emailInvalid = true;
 				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;
@@ -139,16 +158,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 			this.additionalValidationForSsoEmail = '';
 			this.emailValidationToShow = '';
 			this.emailInvalid = false;
-			await this.sleep(200);
+			await this.nnaHelpersService.sleep(200);
 			location.href = "login#password-input";
 			this.firstStep = false;
-			await this.sleep(600);
+			await this.nnaHelpersService.sleep(600);
 			this.passwordInput.nativeElement.focus();
 		}
     }
 
   	onSubmit() {
-		let errors = this.loginForm.get('password').errors;
+		let errors = this.password.errors;
 		if (errors != null) {
 			this.passwordInvalid = true;
 		if (errors['required']) {
@@ -163,7 +182,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 		if (this.loginForm.valid) {
 			this.loginSubscription = this.authService
-				.authenticate(this.loginForm.get('email').value, this.loginForm.get('password').value)
+				.authenticate(this.email.value, this.password.value)
 				.subscribe((response) => {
 				if (response.errorMessage != null) {
 					if (response.errorMessage == '422') {
@@ -187,9 +206,5 @@ export class LoginComponent implements OnInit, OnDestroy {
 		if (this.loginSubscription) {
 			this.loginSubscription.unsubscribe();
 		}
-	}
-
-	private sleep(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 }
