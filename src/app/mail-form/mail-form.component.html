@@ -1,0 +1,32 @@
+<div class="mail-page">
+    <div class="mail-form-container" *ngIf="reason && validReason">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo" (click)='redirectToHome()'>
+        <p class="header" [ngSwitch]="reason">
+            <span *ngSwitchCase="'new'">Set new password</span>
+            <span *ngSwitchCase="'reset'">Reset password</span>
+        </p>
+        <form role="form" [formGroup]="mailForm" (ngSubmit)="onSubmit()" class="mail-form"> <!-- autocomplete="off"> -->
+            <div class="auth-slider-container">
+                <div class="auth-sliders">
+
+                    <div id="email-input" class="nna-input-group auth-input">
+                        <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
+                            (keyup)="specialTrigger($event)" (keydown)="checkKey($event)" />  <!-- autocomplete="off" /> -->
+                        <label for="email" class="nna-input-label"> 
+                            <span *ngIf="!emailInvalid">Email</span> 
+                            <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>
+                        </label>
+                        <span [hidden]="!emailInvalid" class="validation-icon material-icons" title="{{emailValidationToShow}}"> warning_amber</span>
+                    </div>
+
+                </div>
+ 
+                <div class="auth-buttons">
+                    <button type="button" class="nna-icon-button" (click)="navigateBack()"> < </button>
+                    <button type="submit" class="nna-button-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -1,7 +1,7 @@
 import { Toastr } from './../shared/services/toastr.service';
 import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';

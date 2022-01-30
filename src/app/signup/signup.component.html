@@ -40,9 +40,13 @@
 
                 </div>
 
-                <div class="login-link">
+                <div class="link-container">
                     <span>Already have an account?</span> 
                     <a class="nna-link" [routerLink]="['/login']">Login</a>
+                </div> 
+
+                <div class="link-container">
+                    <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
                 </div> 
 
                 <div class="auth-buttons">

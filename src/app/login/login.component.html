@@ -30,15 +30,19 @@
 
                 </div>
 
-                <div class="register-link">
+                <div class="link-container">
                     <span>Have no account yet?</span> 
                     <a class="nna-link" [routerLink]="['/signup']">Register</a>
+                </div> 
+
+                <div class="link-container" *ngIf='!additionalValidationForSsoEmail'>
+                    <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
                 </div> 
                 
                 <div class="sso-additional-validation-container" *ngIf='additionalValidationForSsoEmail' >
                     <span class="validation-container">{{additionalValidationForSsoEmail}}</span> 
                     <span class="validation-container">{{linkToSetPasswordPreTitle}}</span>
-                    <a class="nna-link" [routerLink]="['/#']"> {{linkToSetPasswordTitle}}</a> 
+                    <a class="nna-link"[routerLink]="['/email']" [queryParams]="{reason: 'new'}"> {{linkToSetPasswordTitle}}</a> 
                     <span class="validation-container">{{linkToSetPasswordPostTitle}}</span>
                     
                 </div> 
