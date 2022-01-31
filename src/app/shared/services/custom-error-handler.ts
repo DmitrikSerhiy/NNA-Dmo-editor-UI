@@ -66,6 +66,10 @@ export class CustomErrorHandler {
       this.toastr.error({'header': 'Bad request', 'message': 'Administrator has been notified.'})
     }
 
+    else if (response.status == 404) {
+      return throwError({header: 'Entity is not Found', status: 404 } );
+    }
+
     return throwError({header: 'Unverified error', message: 'Administrator has been notified.'});
   }
 

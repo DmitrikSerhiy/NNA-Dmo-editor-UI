@@ -1,3 +1,7 @@
+<div *ngIf="isProcessing" >
+    <app-nna-spinner></app-nna-spinner>
+</div>
+
 <div class="mail-page">
     <div class="mail-form-container" *ngIf="reason && validReason">
         <img src="/assets/logo-en-extend.svg" alt="logo" class="logo" (click)='redirectToHome()'>
@@ -5,7 +9,7 @@
             <span *ngSwitchCase="'new'">Set new password</span>
             <span *ngSwitchCase="'reset'">Reset password</span>
         </p>
-        <form role="form" [formGroup]="mailForm" (ngSubmit)="onSubmit()" class="mail-form"> <!-- autocomplete="off"> -->
+        <form *ngIf="!isSent && isNotSent && !sentCompleted" role="form" [formGroup]="mailForm" (ngSubmit)="onSubmit()" class="mail-form"> <!-- autocomplete="off"> -->
             <div class="auth-slider-container">
                 <div class="auth-sliders">
 
@@ -23,10 +27,21 @@
  
                 <div class="auth-buttons">
                     <button type="button" class="nna-icon-button" (click)="navigateBack()"> < </button>
-                    <button type="submit" class="nna-button-primary">Submit</button>
+                    <button [disabled]="isProcessing" type="submit" class="nna-button-primary">Submit</button>
                 </div>
             </div>
         </form>
+
+        <div class="message-container" *ngIf="isSent && sentCompleted">
+            <p>We've sent you an email. Check out your email box and follow further instructions.</p>
+            <button type="button" class="nna-button-primary" (click)="redirectToHome()">Home</button>
+        </div>
+
+        <div class="message-container" *ngIf="isNotSent && sentCompleted">
+            <p>We failed to send email to <strong>{{email.value}}</strong></p>
+            <p *ngIf="userNotFound">User with such email is not found</p>
+            <button type="button" class="nna-button-primary" (click)="resetForm()">Try again</button>
+        </div>
     </div>
 </div>
 

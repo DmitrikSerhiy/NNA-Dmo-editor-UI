@@ -38,6 +38,7 @@
         .mail-form {
             height: 100%;
             position: relative;
+
             .auth-slider-container {
                 height: 100%;
 
@@ -113,6 +114,17 @@
                 .nna-link {
                     @include font-secondary-info();
                 }
+            }
+        }
+
+        .message-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+
+            button {
+                margin-left: auto;
+                margin-top: auto;
             }
         }
     }

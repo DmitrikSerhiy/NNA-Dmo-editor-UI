@@ -25,3 +25,8 @@ export class ToastrErrorMessage {
     }
 }
 
+export enum SendMailReason {
+    setPassword,
+    resetPassword
+} 
+

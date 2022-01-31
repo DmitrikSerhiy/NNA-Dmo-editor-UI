@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { UserDetails } from '../models/serverResponse';
+import { SendMailReason, UserDetails } from '../models/serverResponse';
 
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
@@ -70,6 +70,12 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<UserDetails>(response, obs)))
             .toPromise();
     }
+
+    sendMail(target: string, reason: SendMailReason): Observable<any> {
+        return this.http
+            .post<any>(this.serverUrl + '/mail', {'email': target, 'reason': reason as number })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }      
 
     test(): Observable<any> {
         return this.http
