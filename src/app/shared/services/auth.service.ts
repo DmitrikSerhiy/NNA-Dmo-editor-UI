@@ -58,9 +58,9 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 
-    verify(): Observable<any> {
+    ping(): Observable<any> {
         return this.http
-            .get<any>(this.serverUrl + '/verify')
+            .get<any>(this.serverUrl + '/ping')
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }  
 
@@ -75,7 +75,19 @@ export class AuthService {
         return this.http
             .post<any>(this.serverUrl + '/mail', {'email': target, 'reason': reason as number })
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
-    }      
+    }    
+    
+    validateMailAndToken(email: string, token: string, reason: SendMailReason): Observable<boolean> {
+        return this.http
+            .post<boolean>(this.serverUrl + '/validate/tokenFromMail', { 'email': email, 'token': token, 'reason': reason as number })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<boolean>(response, obs)) );
+    }
+
+	setOrResetPassword(email: string, token: string, reason: SendMailReason, password: string): Observable<any> {
+        return this.http
+            .put<any>(this.serverUrl + '/password', { 'email': email, 'token': token, 'reason': reason as number, 'newPassword': password})
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }
 
     test(): Observable<any> {
         return this.http

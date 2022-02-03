@@ -22,53 +22,52 @@ import { GoogleLoginProvider } from 'angularx-social-login';
 
 
 const routes: Routes = [
-  { path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
-  { path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule) },
-  { path: 'signup', loadChildren: () => import('./signup/signup.module').then(m => m.SignupModule) },
-  { path: 'email', loadChildren: () =>  import('./mail-form/mail-form.module').then(m => m.MailFormModule) },
-  { path: 'access-denied', loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
-  { path: 'not-found', loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundModule) },
-  { path: '', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
-  { path: '**', redirectTo: 'not-found' }
+	{ path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
+	{ path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule) },
+	{ path: 'signup', loadChildren: () => import('./signup/signup.module').then(m => m.SignupModule) },
+	{ path: 'email', loadChildren: () =>  import('./mail-form/mail-form.module').then(m => m.MailFormModule) }, 
+	{ path: 'password', loadChildren: () =>  import('./password/password.module').then(m => m.PasswordModule)},
+	{ path: 'access-denied', loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
+	{ path: 'not-found', loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundModule) },
+	{ path: '', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
+	{ path: '**', redirectTo: 'not-found' }
 ];
 
 @NgModule({
-  declarations: [
-	AppComponent
-  ],
-  imports: [
-	RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
-	BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-	BrowserAnimationsModule,
-	ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
-	HttpClientModule,
-	FormsModule,
-	ReactiveFormsModule,
-	NgbDropdownModule,
-  NgbModule,
-  SocialLoginModule
-  ],
-  providers: [
-	{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-	{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
-  UserManager, ToastrService, Toastr,
-	AuthGuardForChild, AuthGuard, AuthService,
-  {
-    provide: 'SocialAuthServiceConfig',
-    useValue: {
-      autoLogin: false,
-      providers: [
-        {
-          id: GoogleLoginProvider.PROVIDER_ID,
-          provider: new GoogleLoginProvider(
-            '778642260315-r01qeplmh6bo0169uv587o07stv06nab.apps.googleusercontent.com',
-            {scope: 'profile email' }
-          )
-        }
-      ]
-    } as SocialAuthServiceConfig,
-  }
-],
-  bootstrap: [AppComponent],
+	declarations: [
+		AppComponent
+	],
+	imports: [
+		RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
+		BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+		BrowserAnimationsModule,
+		ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
+		HttpClientModule,
+		FormsModule,
+		ReactiveFormsModule,
+		NgbDropdownModule,
+		NgbModule,
+		SocialLoginModule
+	],
+	providers: [
+		{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+		{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
+		UserManager, ToastrService, Toastr,
+		AuthGuardForChild, AuthGuard, AuthService,
+		{	
+			provide: 'SocialAuthServiceConfig',
+			useValue: {
+				autoLogin: false,
+				providers: [{
+					id: GoogleLoginProvider.PROVIDER_ID,
+					provider: new GoogleLoginProvider(
+						'778642260315-r01qeplmh6bo0169uv587o07stv06nab.apps.googleusercontent.com', // todo: is it safe?
+						{scope: 'profile email' }
+					)
+				}]
+			} as SocialAuthServiceConfig,
+		}
+	],
+  	bootstrap: [AppComponent],
 })
 export class AppModule { }

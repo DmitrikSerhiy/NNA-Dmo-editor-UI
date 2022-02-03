@@ -75,9 +75,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.nameInvalid = false;
 
 		this.registerForm = new FormGroup({
-		'name' : new FormControl('', [Validators.required]),
-		'email': new FormControl('', [Validators.required, Validators.email]),
-		'password': new FormControl('', [Validators.required, Validators.minLength(10)])
+			'name' : new FormControl('', [Validators.required]),
+			'email': new FormControl('', [Validators.required, Validators.email]),
+			'password': new FormControl('', [Validators.required, Validators.minLength(10)])
 		});
 
 		this.emailInput.nativeElement.focus();
@@ -110,10 +110,13 @@ export class SignupComponent implements OnInit, OnDestroy {
 			$event.preventDefault();
 			if (step == 1) {
 				this.toSecondStep();
+				return;
 			} else if (step == 2) {
 				await this.toThirdStep()
+				return;
 			} else if (step == 3) {
 				this.onSubmit();
+				return;
 			}
 		}
 
@@ -216,6 +219,15 @@ export class SignupComponent implements OnInit, OnDestroy {
   	}
 
   	onSubmit() {
+		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+			this.passwordInvalid = true;
+			this.passwordInput.nativeElement.focus();
+			return;
+		} else {
+			this.passwordInvalid = false;
+		}
+
 		let errors = this.password.errors;
 		if (errors != null) {
 			this.passwordInvalid = true;

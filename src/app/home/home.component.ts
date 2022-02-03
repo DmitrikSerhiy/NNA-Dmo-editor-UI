@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 	toLayout() {
 		this.verifySubscription = this.authService
-			.verify()
+			.ping()
 			.subscribe({
 				next: () =>  this.router.navigate(["/app"]),
 				error: (_) => { 

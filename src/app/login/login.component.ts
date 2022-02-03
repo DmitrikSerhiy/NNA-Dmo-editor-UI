@@ -113,8 +113,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 			$event.preventDefault();
 			if (secondStep == true) {
 				await this.toSecondStep();
+				return;
 			} else if (secondStep == false) {
 				this.onSubmit();
+				return;
 			}
 		}
 
@@ -181,6 +183,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
   	onSubmit() {
+		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+			this.passwordInvalid = true;
+			this.passwordInput.nativeElement.focus();
+			return;
+		} else {
+			this.passwordInvalid = false;
+		}
+
 		let errors = this.password.errors;
 		if (errors != null) {
 			this.passwordInvalid = true;

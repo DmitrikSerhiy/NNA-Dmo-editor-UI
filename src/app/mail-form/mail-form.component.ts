@@ -32,9 +32,6 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 	isSent: boolean = false;
 	isNotSent: boolean = true;
 	sentCompleted: boolean = false;
-	userNotFound: boolean = false;
-
-
 
   	constructor(
 		  	private router: Router,
@@ -67,7 +64,7 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
 	navigateBack() {
-		history.back()
+		this.router.navigate(['/login']);
 	}
 
 	redirectToHome() {
@@ -112,20 +109,24 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
 			this.mailSubscription = sendMail$.subscribe(
 				() => {
-					this.isProcessing = false;
 					this.isSent = true;
 					this.isNotSent = false;
-					this.sentCompleted = true;
-
-				},  (error) => {
 					this.isProcessing = false;
-					this.isNotSent = true;
-					this.isSent = false;
 					this.sentCompleted = true;
-
+				}, (error) => {
 					if (error.status && error.status == 404) {
-						this.userNotFound = true;
+						this.emailValidationToShow = this.notExistingEmailValidation;
+						this.emailInvalid = true;
+						this.isSent = false;
+						this.isNotSent = true;
+						this.sentCompleted = false;
+					} else {
+						this.isNotSent = true;
+						this.isSent = false;
+						this.sentCompleted = true;
 					}
+					this.isProcessing = false;
+					
 				});
 		}
 	}
@@ -139,8 +140,8 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.isSent = false;
 		this.isNotSent = true;
 		this.sentCompleted = false;
-		this.userNotFound = false;
-		this.email.setValue('');
+		this.mailForm.reset();
+		this.emailInvalid = false;
 		await this.nnaHelpersService.sleep(200);
 		this.emailInpup.nativeElement.focus();
 	}

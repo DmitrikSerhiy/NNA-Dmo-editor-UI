@@ -40,7 +40,7 @@ export class EditorHub {
             }
 
             try {
-                await this.authService.verify().toPromise();
+                await this.authService.ping().toPromise();
             } catch (error) {
                 this.router.navigate(["/login"]); 
                 this.userManager.clearUserData();

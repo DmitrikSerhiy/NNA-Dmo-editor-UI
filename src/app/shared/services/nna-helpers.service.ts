@@ -9,14 +9,14 @@ export class NnaHelpersService {
 
 
 	containsNonEnglishSymbols(value: string): boolean {
+		if (!value) {
+			return false;
+		}
+
 		const regex = /\d|\w|[\.\$@\*\\\/\+\-\^\!\(\)\[\]\~\%\&\=\?\>\<\{\}\"\'\,\:\;\_]/g;
 		let contains = false;
 
-		if (!value) {
-			return true;
-		}
-
-		[...value].forEach(passSymbol => {
+		[...value].filter(char => char != '#').forEach(passSymbol => {
 			if (passSymbol.match(regex) === null) {
 				contains = true;
 				return;
