@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	private failedToAuthDueToWrongPassValidation: string;
 	private ssoEmailValidationHeaderToShow: string
 	private ssoEmailValidationToShow: string;
-	private nonEnglishCurrentLanguage: string;
+	private nonAllowedSymbols: string;
 	
 	additionalValidationForSsoEmail: string;
 	linkToSetPasswordTitle: string;
@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 		this.linkToSetPasswordPreTitle = "Or ";
 		this.linkToSetPasswordTitle = "set password";
 		this.linkToSetPasswordPostTitle = "manually";
-		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
+		this.nonAllowedSymbols = "Non-allowed symbols detected";
 		this.showPasswordTitle = "Show password";
 		this.hidePasswordTitle = "Hide password";
 	}
@@ -121,8 +121,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 		}
 
 		if (secondStep == false) {
-			if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-				this.passValidationToShow = this.nonEnglishCurrentLanguage;
+			if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+				this.passValidationToShow = this.nonAllowedSymbols;
 				this.passwordInvalid = true;
 				this.passwordInput.nativeElement.focus();
 			} else {
@@ -183,8 +183,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
   	onSubmit() {
-		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+		if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonAllowedSymbols;
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 			return;

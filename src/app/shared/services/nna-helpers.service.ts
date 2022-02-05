@@ -8,15 +8,14 @@ export class NnaHelpersService {
   	constructor() { }
 
 
-	containsNonEnglishSymbols(value: string): boolean {
+	containsNonAllowedSymbols(value: string): boolean {
 		if (!value) {
 			return false;
 		}
 
-		const regex = /\d|\w|[\.\$@\*\\\/\+\-\^\!\(\)\[\]\~\%\&\=\?\>\<\{\}\"\'\,\:\;\_]/g;
+		const regex = /\d|\w|[\.\$@\*\\\/\+\-\^\!\(\)\[\]\~\%\&\=\?\>\<\{\}\"\'\,\:\;\#\_]/g;
 		let contains = false;
-
-		[...value].filter(char => char != '#').forEach(passSymbol => {
+		[...value].forEach(passSymbol => {
 			if (passSymbol.match(regex) === null) {
 				contains = true;
 				return;

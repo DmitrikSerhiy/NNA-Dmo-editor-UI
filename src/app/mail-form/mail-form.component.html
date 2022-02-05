@@ -9,13 +9,13 @@
             <span *ngSwitchCase="'new'">Set new password</span>
             <span *ngSwitchCase="'reset'">Reset password</span>
         </p>
-        <form *ngIf="!isSent && isNotSent && !sentCompleted" role="form" [formGroup]="mailForm" (ngSubmit)="onSubmit()" class="mail-form">
+        <form *ngIf="!isSent && isNotSent && !sentCompleted" role="form" [formGroup]="mailForm" (ngSubmit)="onSubmit()" class="mail-form" autocomplete="on">
             <div class="auth-slider-container">
                 <div class="auth-sliders">
 
                     <div id="email-input" class="nna-input-group auth-input">
                         <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
-                            (keyup)="specialTrigger($event)" (keydown)="checkKey($event)" />
+                            (keyup)="specialTrigger($event)" (keydown)="checkKey($event)" autocomplete="email"/>
                         <label for="email" class="nna-input-label"> 
                             <span *ngIf="!emailInvalid">Email</span> 
                             <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>

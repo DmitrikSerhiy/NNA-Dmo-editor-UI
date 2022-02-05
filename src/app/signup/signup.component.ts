@@ -1,6 +1,6 @@
 import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from '../shared/services/toastr.service';
@@ -12,12 +12,12 @@ import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 	templateUrl: './signup.component.html',
 	styleUrls: ['./signup.component.scss']
 })
-export class SignupComponent implements OnInit, OnDestroy {
+export class SignupComponent implements OnInit, OnChanges, OnDestroy {
 
 	registerForm: FormGroup;
-	get name() { return this.registerForm.get('name'); }
-	get email() { return this.registerForm.get('email'); }
-	get password() { return this.registerForm.get('password'); }
+	get name() { return this.registerForm.get('new-name'); }
+	get email() { return this.registerForm.get('new-email'); }
+	get password() { return this.registerForm.get('new-password'); }
 
 	@ViewChild('emailInpup', { static: true }) emailInput: ElementRef;
 	@ViewChild('passwordInput', { static: true }) passwordInput: ElementRef;
@@ -39,7 +39,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 	private emtpyPasswordValidation: string;
 	private invalidPasswordValidation: string;
 	private failureMessage: string;
-	private nonEnglishCurrentLanguage: string;
+	private nonAllowedSymbols: string;
 
 	passwordHidden: boolean = true;
 	emailValidationToShow: string;
@@ -62,7 +62,12 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must be at least 10 characters long";
 		this.failureMessage = 'Failed to create user';
-		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
+		this.nonAllowedSymbols = "Non-allowed symbols detected";
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		console.log(this.email.value);
+
 	}
 
   	ngOnInit() {
@@ -75,12 +80,14 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.nameInvalid = false;
 
 		this.registerForm = new FormGroup({
-			'name' : new FormControl('', [Validators.required]),
-			'email': new FormControl('', [Validators.required, Validators.email]),
-			'password': new FormControl('', [Validators.required, Validators.minLength(10)])
+			'new-name' : new FormControl('', [Validators.required]),
+			'new-email': new FormControl('', [Validators.required, Validators.email]),
+			'new-password': new FormControl('', [Validators.required, Validators.minLength(10)])
 		});
 
 		this.emailInput.nativeElement.focus();
+
+
   	}
 
 	togglePassword(toggler: boolean) {
@@ -121,8 +128,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 		}
 
 		if (step == 3) {
-			if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-				this.passValidationToShow = this.nonEnglishCurrentLanguage;
+			if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+				this.passValidationToShow = this.nonAllowedSymbols;
 				this.passwordInvalid = true;
 				this.passwordInput.nativeElement.focus();
 			} else {
@@ -219,8 +226,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   	}
 
   	onSubmit() {
-		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+		if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonAllowedSymbols;
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 			return;

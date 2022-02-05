@@ -2,13 +2,13 @@
     <div class="login-form-container">
         <img src="/assets/logo-en-extend.svg" alt="logo" class="logo" (click)='redirectToHome()'>
         <p class="header">Login</p>
-        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form"> <!-- autocomplete="off"> -->
+        <form role="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
             <div class="auth-slider-container">
                 <div class="auth-sliders">
 
                     <div id="email-input" class="nna-input-group auth-input">
                         <input #emailInpup type="text" name="email" id="email" formControlName="email" class="form-control nna-input" placeholder="Email"
-                            (keyup)="specialTrigger($event, true)" (keydown)="checkKey($event)" />  <!-- autocomplete="off" /> -->
+                            (keyup)="specialTrigger($event, true)" (keydown)="checkKey($event)" autocomplete="email" />
                         <label for="email" class="nna-input-label"> 
                             <span *ngIf="!emailInvalid">Email</span> 
                             <span class="validation-container" *ngIf="emailInvalid">{{emailValidationToShow}}</span>
@@ -18,7 +18,7 @@
 
                     <div id="password-input" class="nna-input-group auth-input">
                         <input #passwordInput type="password" name="password" id="password" formControlName="password" class="form-control nna-input" placeholder="Password" 
-                            (keyup)="specialTrigger($event, false)" (keydown)="checkKey($event)" />  <!-- autocomplete="off" /> -->
+                            (keyup)="specialTrigger($event, false)" (keydown)="checkKey($event)" autocomplete="current-password" />
                         <label for="password" class="nna-input-label">
                             <span *ngIf="!passwordInvalid">Password</span> 
                             <span class="validation-container" *ngIf="passwordInvalid">{{passValidationToShow}}</span>
@@ -30,14 +30,15 @@
 
                 </div>
 
-                <div class="link-container">
+                <div class="link-container" *ngIf='!additionalValidationForSsoEmail'>
+                    <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
+                </div> 
+                
+                <div *ngIf="firstStep" class="link-container">
                     <span>Have no account yet?</span> 
                     <a class="nna-link" [routerLink]="['/signup']">Register</a>
                 </div> 
 
-                <div class="link-container" *ngIf='!additionalValidationForSsoEmail'>
-                    <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
-                </div> 
                 
                 <div class="sso-additional-validation-container" *ngIf='additionalValidationForSsoEmail' >
                     <span class="validation-container">{{additionalValidationForSsoEmail}}</span> 

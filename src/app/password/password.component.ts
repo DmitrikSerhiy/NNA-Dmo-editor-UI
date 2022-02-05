@@ -17,7 +17,10 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	passwordForm: FormGroup;
 	get password() { return this.passwordForm.get('password'); }
+	get hiddenEmail() { return this.passwordForm.get('email'); }
   	@ViewChild('passwordInput', { static: false }) passwordInput: ElementRef;
+	@ViewChild('emailInpup', { static: false }) emailInpup: ElementRef;
+
 
 	passwordInvalid: boolean;
 	passValidationToShow: string;
@@ -25,7 +28,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 	hidePasswordTitle: string;
 	passwordHidden: boolean = true;
 
-	private nonEnglishCurrentLanguage: string;
+	private nonAllowedSymbols: string;
 	private invalidPasswordValidation: string;
 	private emtpyPasswordValidation: string;
 	private failedToAuthDueToWrongPassValidation: string;
@@ -53,7 +56,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 		
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must contain at least 10 symbols";
-		this.nonEnglishCurrentLanguage = "Non-English symbols are not allowed";
+		this.nonAllowedSymbols = "Non-allowed symbols detected";
 		this.failedToAuthDueToWrongPassValidation = "Password is not correct";
 		this.showPasswordTitle = "Show password";
 		this.hidePasswordTitle = "Hide password";
@@ -76,7 +79,8 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.token = this.route.snapshot.queryParamMap.get("token");
 
 		this.passwordForm = new FormGroup({
-        	'password': new FormControl('', [Validators.required, Validators.minLength(10)])
+        	'password': new FormControl('', [Validators.required, Validators.minLength(10)]),
+			'email': new FormControl('', [Validators.required, Validators.email])
 		});
 		this.isProcessing = true;
 
@@ -95,6 +99,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 					this.passwordInvalid = true;
 				} else {
 					this.passwordInvalid = false;
+					this.hiddenEmail.setValue(this.email);
 				}
 				this.isProcessing = false;
 			}, () => { 
@@ -147,8 +152,8 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			return;
 		}
 
-		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+		if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonAllowedSymbols;
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 		} else {
@@ -157,8 +162,8 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	onSubmit() {
-		if (this.nnaHelpersService.containsNonEnglishSymbols(this.password.value)) {
-			this.passValidationToShow = this.nonEnglishCurrentLanguage;
+		if (this.nnaHelpersService.containsNonAllowedSymbols(this.password.value)) {
+			this.passValidationToShow = this.nonAllowedSymbols;
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 			return;
