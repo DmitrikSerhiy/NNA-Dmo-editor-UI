@@ -33,7 +33,8 @@
         </form>
 
         <div class="message-container" *ngIf="isSent && sentCompleted">
-            <p>We've sent you an email. Check out your email box and follow further instructions.</p>
+            <p>We've sent you an email. Please go to <strong>{{email.value}}</strong> and follow further instructions.</p>
+            <p>It could take a few minutes to appear, and be sure to check any spam and promotional folders</p>
             <button type="button" class="nna-button-primary" (click)="redirectToHome()">Home</button>
         </div>
 
