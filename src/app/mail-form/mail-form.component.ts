@@ -22,7 +22,6 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
 	private emtpyEmailValidation: string;
-	private notExistingEmailValidation: string;
 	private invalidEmailValidation: string;
 	isProcessing: boolean = false;
 
@@ -40,7 +39,6 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 			private nnaHelpersService: NnaHelpersService) {
 		this.invalidEmailValidation = "Email is invalid";
 		this.emtpyEmailValidation = "Email is missing";
-		this.notExistingEmailValidation = "Email is not found";
 	}
 
 	ngAfterViewInit(): void {
@@ -108,34 +106,22 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 				: this.authService.sendMail(this.email.value, SendMailReason.resetPassword);
 
 			this.mailSubscription = sendMail$.subscribe(
-				() => {
-					this.isSent = true;
-					this.isNotSent = false;
-					this.isProcessing = false;
-					this.sentCompleted = true;
-				}, (error) => {
-					if (error.status && error.status == 404) {
-						this.emailValidationToShow = this.notExistingEmailValidation;
-						this.emailInvalid = true;
-						this.isSent = false;
-						this.isNotSent = true;
-						this.sentCompleted = false;
+				(isSuccess: boolean) => {
+					if (isSuccess) {
+						this.isSent = true;
+						this.isNotSent = false;
 					} else {
 						this.isNotSent = true;
 						this.isSent = false;
-						this.sentCompleted = true;
 					}
+					this.sentCompleted = true;
 					this.isProcessing = false;
-					
 				});
 		}
 	}
 
 	async resetForm() {
-		if (this.mailSubscription) {
-			this.mailSubscription.unsubscribe();
-		}
-
+		this.mailSubscription?.unsubscribe();
 		this.isProcessing = false;
 		this.isSent = false;
 		this.isNotSent = true;
@@ -147,9 +133,7 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	ngOnDestroy(): void {
-		if (this.mailSubscription) {
-			this.mailSubscription.unsubscribe();
-		}
+		this.mailSubscription?.unsubscribe();
 	}
 
 }

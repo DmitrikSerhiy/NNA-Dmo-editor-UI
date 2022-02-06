@@ -42,7 +42,6 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 	private passwordSubscription: Subscription;
 	private validateMailAndTokenSubscription: Subscription;
 	private loginSubscription: Subscription;
-	private invalidToken: string; 
 	private failedToValidate: string;
 	allowToSetOrResetPassword: boolean = false;
 
@@ -60,8 +59,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.failedToAuthDueToWrongPassValidation = "Password is not correct";
 		this.showPasswordTitle = "Show password";
 		this.hidePasswordTitle = "Hide password";
-		this.invalidToken = "Token invalid. Try again."
-		this.failedToValidate = "Failed to validate token. Try again";
+		this.failedToValidate = "Failed to validate token";
    	}
 
 	ngAfterViewInit(): void {
@@ -90,23 +88,14 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 
 				if (!this.allowToSetOrResetPassword) {
 					this.password.disable();
+					this.passwordInvalid = true;
+					this.passValidationToShow = this.failedToValidate;
 				} else {
 					this.password.enable();
-				}
-				
-				if (!result.valid) {
-					this.passValidationToShow = this.invalidToken;
-					this.passwordInvalid = true;
-				} else {
 					this.passwordInvalid = false;
 					this.hiddenEmail.setValue(this.email);
 				}
-				this.isProcessing = false;
-			}, () => { 
-				this.passValidationToShow = this.failedToValidate;
-				this.passwordInvalid = true;
-				this.allowToSetOrResetPassword = false;
-				this.password.disable();
+				
 				this.isProcessing = false;
 			});
 	}
@@ -188,16 +177,8 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.isProcessing = true;
 			this.passwordSubscription = this.authService
 				.setOrResetPassword(this.email, this.token, this.reason, this.password.value)
-				.subscribe((response) => {
-					if (response?.errorMessage != null) {
-						if (response.errorMessage == '422') {
-							this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
-							this.passwordInvalid = true;
-							this.isProcessing = false;
-							this.passwordInput.nativeElement.focus();
-						}
-					} else {
-						console.log('hello');
+				.subscribe(
+					() => {
 						this.passwordInvalid = false;
 						this.loginSubscription = this.authService
 							.authenticate(this.email, this.password.value)
@@ -206,27 +187,19 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 								this.isProcessing = false;
 								this.router.navigateByUrl('/app');
 							});
+					},
+					() => {
+						this.passwordInput.nativeElement.focus();
+						this.isProcessing = false;
 					}
-				},
-				(error) => {
-					this.isProcessing = false;
-					this.toast.error(error);
-				});
+				);
 		}
 	}
 
 
 	ngOnDestroy(): void {
-		if (this.passwordSubscription) {
-			this.passwordSubscription.unsubscribe();
-		}
-
-		if (this.validateMailAndTokenSubscription) {
-			this.validateMailAndTokenSubscription.unsubscribe();
-		}
-
-		if (this.loginSubscription) {
-			this.loginSubscription.unsubscribe();
-		}
+		this.passwordSubscription?.unsubscribe();
+		this.validateMailAndTokenSubscription?.unsubscribe();
+		this.loginSubscription?.unsubscribe();
 	}
 }

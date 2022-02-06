@@ -78,16 +78,12 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    this.loadCollectionsSubsciption.unsubscribe();
-    this.rightMenuOpnSubscription.unsubscribe();
-    this.rightMenuClsSubscription.unsubscribe();
-    this.collectionSubsctiption.unsubscribe();
-    if (this.addToCollectionSubsctiption) {
-      this.addToCollectionSubsctiption.unsubscribe();
-    }
-    if (this.deleteCollectionSubsctiption) {
-      this.deleteCollectionSubsctiption.unsubscribe();
-    }
+    this.loadCollectionsSubsciption?.unsubscribe();
+    this.rightMenuOpnSubscription?.unsubscribe();
+    this.rightMenuClsSubscription?.unsubscribe();
+    this.collectionSubsctiption?.unsubscribe();
+    this.addToCollectionSubsctiption?.unsubscribe();
+    this.deleteCollectionSubsctiption?.unsubscribe();
   }
 
   sortCollections() {
@@ -140,9 +136,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
               this.dmoLists = response;
               this.resetCollectionsSort(); }))));
 
-      this.addToCollectionSubsctiption = addAndRefresh$.subscribe({
-        error: (err) => { this.toastr.error(err); },
-      });
+      this.addToCollectionSubsctiption = addAndRefresh$.subscribe();
     }
   }
 
@@ -177,9 +171,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
                   this.dmoLists = response;
                   this.resetCollectionsSort(); }))));
 
-          this.deleteCollectionSubsctiption = deleteAndRefresh$.subscribe({
-            error: (err) => { console.log(`from obs ${err}`); this.toastr.error(err); },
-          });
+          this.deleteCollectionSubsctiption = deleteAndRefresh$.subscribe();
         }
       });
   }
@@ -216,9 +208,8 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
         (response: DmoCollectionShortDto[]) => {
           this.dmoLists = response;
           this.resetCollectionsSort(); 
-        },
-        (error) => this.toastr.error(error),
-        () => this.hideLoader());
+          this.hideLoader();
+        });
   }
 
   private handleSelfRemove(collectionIdToBeDeleted: string) {

@@ -25,6 +25,23 @@ export class ToastrErrorMessage {
     }
 }
 
+export class ValidationResultField {
+    field: string;
+    errors: string[];
+}
+
+export class ValidationResult {
+    title: string;
+    fields: ValidationResultField[]
+}
+
+export class ValidationResultHandled {
+    constructor() {
+        this.isHandled = true;
+    }
+    isHandled: boolean;
+}
+
 export enum SendMailReason {
     setPassword,
     resetPassword

@@ -48,7 +48,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    this.dmoSubscription.unsubscribe();
+    this.dmoSubscription?.unsubscribe();
   }
 
   redirectToDmo() {
@@ -104,9 +104,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isDmosLoadings = false;
           this.allDmos = result;
           this.initializeDmosTable(this.allDmos);
-        },
-          error: (err) => { this.toastr.error(err); }
-        });
+        }});
   }
 
   private loadDmos() {

@@ -12,7 +12,7 @@ import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 	templateUrl: './signup.component.html',
 	styleUrls: ['./signup.component.scss']
 })
-export class SignupComponent implements OnInit, OnChanges, OnDestroy {
+export class SignupComponent implements OnInit, OnDestroy {
 
 	registerForm: FormGroup;
 	get name() { return this.registerForm.get('new-name'); }
@@ -65,11 +65,6 @@ export class SignupComponent implements OnInit, OnChanges, OnDestroy {
 		this.nonAllowedSymbols = "Non-allowed symbols detected";
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		console.log(this.email.value);
-
-	}
-
   	ngOnInit() {
 		this.firstStep = true;
 		this.secondStep = false;
@@ -86,8 +81,6 @@ export class SignupComponent implements OnInit, OnChanges, OnDestroy {
 		});
 
 		this.emailInput.nativeElement.focus();
-
-
   	}
 
 	togglePassword(toggler: boolean) {
@@ -250,31 +243,24 @@ export class SignupComponent implements OnInit, OnChanges, OnDestroy {
 		if (this.registerForm.valid) {
 			this.registerSubscriptions = this.authService
 				.register(this.name.value, this.email.value, this.password.value)
-				.subscribe((response) => {
-					if (response.errorMessage != null) {
-						if (response.errorMessage == '422') {
-							this.passValidationToShow = this.failureMessage;
-							this.passwordInvalid = true;
-							this.passwordInput.nativeElement.focus();
-						}
-					} else {
+				.subscribe(
+					(response) => {
 						this.emailInvalid = false;
 						this.passwordInvalid = false;
 						this.nameInvalid = false;
 						this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 						this.router.navigateByUrl('/app');
+					}, 
+					(errorMessage) => {
+						this.passValidationToShow = errorMessage;
+						this.passwordInvalid = true;
+						this.passwordInput.nativeElement.focus();
 					}
-				},
-				(error) => {
-					this.toast.error(error);
-				}
-			);
+				);
 		}
  	}
 
 	ngOnDestroy(): void {
-		if (this.registerSubscriptions) {
-			this.registerSubscriptions.unsubscribe();
-		}
+		this.registerSubscriptions?.unsubscribe();
 	}
 }

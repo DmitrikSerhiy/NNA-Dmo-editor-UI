@@ -77,23 +77,13 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.collectionSubsctiption.unsubscribe();
-    if (this.removeFromCollectionSub) {
-      this.removeFromCollectionSub.unsubscribe();
-    }
-    if (this.updateDmosSub) {
-      this.updateDmosSub.unsubscribe();
-    }
-    if (this.addToCollectionSub) {
-      this.addToCollectionSub.unsubscribe();
-    }
-    if (this.deleteCollectionSub) {
-      this.deleteCollectionSub.unsubscribe();
-    }
-    if(this.loadDmosSub) {
-      this.loadDmosSub.unsubscribe();
-    }
-
+    this.collectionSubsctiption?.unsubscribe();
+    this.removeFromCollectionSub?.unsubscribe();
+    this.updateDmosSub?.unsubscribe();
+    this.addToCollectionSub?.unsubscribe();
+    this.deleteCollectionSub?.unsubscribe();
+    this.loadDmosSub?.unsubscribe();
+    
     this.collectionManager.setCollectionId('');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
@@ -130,9 +120,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe$),
       map(() => this.loadDmos(this.currentDmoCollection.id)));
 
-    this.removeFromCollectionSub = removeAndReload$.subscribe({
-      error: (err) => { this.toastr.error(err); }
-    });
+    this.removeFromCollectionSub = removeAndReload$.subscribe();
   }
 
   onEditCollectionName() {
@@ -158,9 +146,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
             }))
           ));
 
-      this.updateDmosSub = updateAndGet$.subscribe({
-        error: (err) => { this.toastr.error(err); },
-      });
+      this.updateDmosSub = updateAndGet$.subscribe();
     }
   }
 
@@ -179,8 +165,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
           dmo.shortComment = d.shortComment;
           return dmo;
         })
-      )
-      .catch((err) => this.toastr.error(err));
+      );
 
     this.awaitingForDmos = false;
     const dialogRef = this.matModule.open(AddDmosPopupComponent, {
@@ -203,8 +188,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
         addToCollection$.pipe(takeUntil(this.unsubscribe$));
 
         this.addToCollectionSub = addToCollection$.subscribe({
-          next: () => this.loadDmos(this.currentDmoCollection.id),
-          error: (err) => { this.toastr.error(err); }
+          next: () => this.loadDmos(this.currentDmoCollection.id)
         });
       }
     });
@@ -223,8 +207,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
         const deleteAndRedirect$ = this.dmoCollectionService.deleteCollection(this.currentDmoCollection.id);
 
         this.deleteCollectionSub = deleteAndRedirect$.subscribe({
-          next: () => { this.redirectAfterRemove(); },
-          error: (err) => { this.toastr.error(err); },
+          next: () => { this.redirectAfterRemove(); }
         });
       }
     });
@@ -276,8 +259,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
         next: (response: DmoCollectionDto) => {
           this.currentDmoCollection = response;
           this.initializeCollectionTable(this.currentDmoCollection.dmos);
-        },
-        error: (err) => { this.toastr.error(err); }
+        }
       });
   }
 

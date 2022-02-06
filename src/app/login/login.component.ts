@@ -162,6 +162,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
 			}
+			// user has no password but has auth provider been saved
 			let ssoResponse = await this.authService.checkSsoAndPassword(this.email.value);
 			if (ssoResponse) {
 				this.emailInvalid = true;
@@ -208,28 +209,22 @@ export class LoginComponent implements OnInit, OnDestroy {
 		if (this.loginForm.valid) {
 			this.loginSubscription = this.authService
 				.authenticate(this.email.value, this.password.value)
-				.subscribe((response) => {
-				if (response.errorMessage != null) {
-					if (response.errorMessage == '422') {
-						this.passValidationToShow = this.failedToAuthDueToWrongPassValidation;
+				.subscribe(
+					(response) => {
+						this.passwordInvalid = false;
+						this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
+						this.router.navigateByUrl('/app');
+					},
+					(errorMessage) => {
+						this.passValidationToShow = errorMessage;
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
 					}
-				} else {
-					this.passwordInvalid = false;
-					this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
-					this.router.navigateByUrl('/app');
-				}
-			},
-			(error) => {
-				this.toast.error(error);
-			});
+				);
 		}
 	}
 
 	ngOnDestroy(): void {
-		if (this.loginSubscription) {
-			this.loginSubscription.unsubscribe();
-		}
+		this.loginSubscription?.unsubscribe();
 	}
 }

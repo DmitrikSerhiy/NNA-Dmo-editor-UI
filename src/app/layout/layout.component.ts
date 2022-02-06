@@ -60,9 +60,9 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.grabberSubscription.unsubscribe();
-        this.urlSubsription.unsubscribe();
-        this.styleUrlSubscription.unsubscribe();
+        this.grabberSubscription?.unsubscribe();
+        this.urlSubsription?.unsubscribe();
+        this.styleUrlSubscription?.unsubscribe();
     }
 
     closeByBackdrop() {

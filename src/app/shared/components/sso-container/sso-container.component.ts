@@ -54,10 +54,15 @@ export class SsoContainerComponent implements OnInit {
 			email: authResult.email, 
 			googleToken: authResult.idToken
 		};
-		let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
-		
-		this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
-		this.isSsoButtonClicked = false;
-		this.router.navigateByUrl('/app');
+
+		try {
+			let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
+			this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
+			this.isSsoButtonClicked = false;
+			this.router.navigateByUrl('/app');
+		} catch(error) {
+			this.isSsoButtonClicked = false;
+		}
+
  	}
 }

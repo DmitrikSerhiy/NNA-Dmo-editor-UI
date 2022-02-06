@@ -45,9 +45,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 			.subscribe(_ => {
 					this.userManager.clearUserData();
 					this.router.navigate(['/'])
-				}, 
-				(error) => {
-					this.toastr.error(error)
 				}
 			);
   	}
@@ -89,8 +86,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.currMenuSubscription.unsubscribe();
-		this.sidebarSubscription.unsubscribe();
-		this.currentUserEmailSubscription.unsubscribe();
+		this.currMenuSubscription?.unsubscribe();
+		this.sidebarSubscription?.unsubscribe();
+		this.currentUserEmailSubscription?.unsubscribe();
 	}
 }

@@ -290,8 +290,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
         this.beatsLoading = false;
         this.sidebarManagerService.collapseSidebar();
-      },
-      error: (err) => { this.toastr.error(err); }
+      }
     });
   }
 
