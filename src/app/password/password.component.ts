@@ -33,9 +33,9 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 	private emtpyPasswordValidation: string;
 	private failedToAuthDueToWrongPassValidation: string;
 
-	private email: string;
-	private reason: SendMailReason;
-	private token: string;
+	email: string;
+	reason: SendMailReason;
+	token: string;
 
 	isProcessing: boolean = false;
 
