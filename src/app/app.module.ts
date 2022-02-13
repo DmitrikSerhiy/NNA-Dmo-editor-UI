@@ -19,6 +19,7 @@ import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
+import { environment } from 'src/environments/environment';
 
 
 const routes: Routes = [
@@ -60,10 +61,7 @@ const routes: Routes = [
 				autoLogin: false,
 				providers: [{
 					id: GoogleLoginProvider.PROVIDER_ID,
-					provider: new GoogleLoginProvider(
-						'778642260315-r01qeplmh6bo0169uv587o07stv06nab.apps.googleusercontent.com', // todo: is it safe?
-						{scope: 'profile email' }
-					)
+					provider: new GoogleLoginProvider(environment.google_client_id, { scope: 'profile email' })
 				}]
 			} as SocialAuthServiceConfig,
 		}
