@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { AuthGoogleDto } from '../../models/authDto';
@@ -15,6 +15,7 @@ import { UserManager } from '../../services/user-manager';
 export class SsoContainerComponent implements OnInit {
 
 	@Input() isRegister: boolean;
+	@Output() ssoButtonClicked = new EventEmitter<string>();
 	isTextForSignUp: boolean;
 	isSsoButtonClicked = false;
 
@@ -36,6 +37,7 @@ export class SsoContainerComponent implements OnInit {
 			return;
 		}
 		this.isSsoButtonClicked = true;
+		this.ssoButtonClicked.emit("google");
 
 		try {
 			var authResult = await this.sosialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);

@@ -224,6 +224,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	ssoButtonClicked(authProviderName: string) {
+		location.href="login#email-input";
+		this.firstStep = true;
+		this.loginForm.reset();
+		this.emailInvalid = false;
+		this.passwordInvalid = false;
+	}
+	
 	ngOnDestroy(): void {
 		this.loginSubscription?.unsubscribe();
 	}

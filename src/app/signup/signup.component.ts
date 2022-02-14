@@ -131,7 +131,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	async toFirstStep(): Promise<void> {
+	toFirstStep(): void {
 		location.href="signup#email-input";
 		this.firstStep = true;
 		this.secondStep = false;
@@ -259,6 +259,17 @@ export class SignupComponent implements OnInit, OnDestroy {
 				);
 		}
  	}
+
+	ssoButtonClicked(authProviderName: string) {
+		location.href="signup#email-input";
+		this.firstStep = true;
+		this.secondStep = false;
+		this.thirdStep = false;
+		this.registerForm.reset();
+		this.emailInvalid = false;
+		this.passwordInvalid = false;
+		this.nameInvalid = false;
+	}
 
 	ngOnDestroy(): void {
 		this.registerSubscriptions?.unsubscribe();
