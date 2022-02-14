@@ -36,10 +36,12 @@ export class ValidationResult {
 }
 
 export class ValidationResultHandled {
-    constructor() {
+    constructor(title: string) {
         this.isHandled = true;
+        this.title = title;
     }
     isHandled: boolean;
+    title: string;
 }
 
 export enum SendMailReason {

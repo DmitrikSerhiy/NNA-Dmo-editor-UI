@@ -32,9 +32,8 @@ export class CustomErrorHandler {
 
 		else if (response.status == 422) {
 			return new Observable<any>(sub => {
-				console.log(response);
 				this.toastr.validationMessage(error)
-				sub.error(new ValidationResultHandled());
+				sub.error(new ValidationResultHandled(response.error.title));
 				sub.complete();
 			});
 		}

@@ -216,7 +216,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 						this.router.navigateByUrl('/app');
 					},
 					(errorMessage) => {
-						this.passValidationToShow = errorMessage;
+						this.passValidationToShow = errorMessage.title;
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
 					}
