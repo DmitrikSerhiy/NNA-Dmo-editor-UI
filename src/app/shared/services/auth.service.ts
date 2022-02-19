@@ -59,9 +59,7 @@ export class AuthService {
     }
 
     ping(): Observable<any> {
-        return this.http
-            .get<any>(this.serverUrl + '/ping')
-            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+        return this.http.get<any>(this.serverUrl + '/ping');
     }  
 
     googleAuth(authGoogleDto: AuthGoogleDto): Promise<UserDetails> {
