@@ -1,0 +1,11 @@
+<div class="card card-default mb-3 user-cabinet">
+    <div class="card-header user-cabinet-header"> Personal info </div>
+    <div *ngIf="isFormProcessing" class="personal-info-spinner">
+        <app-nna-spinner></app-nna-spinner>
+    </div>
+
+    <div>
+        <button (click)="onLoggedout()">Logout</button>
+    </div>
+
+</div>

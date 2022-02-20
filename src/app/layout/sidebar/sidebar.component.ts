@@ -5,7 +5,6 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/cor
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,7 +22,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   	constructor(
 		public userManager: UserManager,
-		private authService: AuthService,
 		private currestSidebarService: CurrentSidebarService,
 		private sidebarManagerService: SidebarManagerService,
 		private router: Router) { 
@@ -37,16 +35,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.sidebarState = this.sidebarManagerService.IsOpen;
   	}
 
-  	onLoggedout() {
-    	this.currentUserEmailSubscription = this.authService
-			.logout(this.userManager.getCurrentUserEmail())
-			.subscribe(_ => {
-					this.userManager.clearUserData();
-					this.router.navigate(['/'])
-				}
-			);
-  	}
-
 	toggleSidebar() {
 		if (this.isAuthorized) {
 			this.sidebarManagerService.toggleSidebar();
@@ -57,6 +45,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		if (this.isAuthorized) {
 			this.currestSidebarService.setMenu(SidebarTabs.dmoCollections);
 			this.toggleRightMenu$.emit(RightMenues.dmoCollections);
+		}
+	}
+
+	sendUserCabinetEvent() {
+		if (this.isAuthorized) {
+			this.currestSidebarService.setMenu(SidebarTabs.userCabinet);
+			this.toggleRightMenu$.emit(RightMenues.userCabinet);
 		}
 	}
 

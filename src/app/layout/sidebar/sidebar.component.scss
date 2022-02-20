@@ -39,7 +39,6 @@
         background-size: 100% 1px;
         background-position: bottom;
 
-
         img {
             user-select: none;
             margin: 0.7rem 0;
@@ -108,6 +107,11 @@
                 background-color: $primary-color !important;
             }
         }
+    }
+
+    .bottom-group-item {
+        top: unset !important;
+        bottom: 45px;
     }
 
     .sidebar-dropdown {

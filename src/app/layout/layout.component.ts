@@ -97,6 +97,10 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
             this.rightMenuGrabberService.hideGrabber();
         } else if ($event === RightMenues.dmo) {
             this.rightMenuGrabberService.hideGrabber();
+        } else if ($event === RightMenues.userCabinet) {
+            this.currentMenuName = RightMenues.userCabinet;
+            this.rightMenuGrabberService.hideGrabber();
+            this.toggleRightMenu = $event;
         }
         //  else if ($event === RightMenues.test) {
         //     this.currentMenuName = RightMenues.test;
@@ -113,6 +117,7 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     private getCurrentUserFriendlyRightMenu(menu: RightMenues) {
         switch (menu) {
             case RightMenues.dmoCollections: return 'DMO collections';
+            case RightMenues.userCabinet: return 'Personal info';
             // case RightMenues.test: return 'Test'
             default: return '';
         }

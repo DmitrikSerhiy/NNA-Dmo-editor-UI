@@ -17,8 +17,13 @@
         </a>
 
         <a *ngIf="isAuthorized" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
-            <i class="fa fa-layer-group"></i> &nbsp;
+            <i class="fa fa-layer-group" aria-hidden="true"></i> &nbsp;
             <span>{{ 'Collections' }}</span>
+        </a>
+
+        <a *ngIf="isAuthorized" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+            <i class="fa fa-user" aria-hidden="true"></i> &nbsp;
+            <span>{{ userManager.getCurrentUser() }}</span>
         </a>
 
         <!-- <a *ngIf="isAuthorized" id="test-tab" (click)="sendTestEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
@@ -29,13 +34,6 @@
     </div>
 
     <div class="bottom-blocks auth-blocks" [ngClass]="{'top-auth-buttons' : !isAuthorized}">
-        <div class="auth-block main" *ngIf='isAuthorized' >
-            <a class="nav-link" (click)="onLoggedout()">
-                <i class="fa fa-fw fa-power-off"></i> 
-                <span> {{ userManager.getCurrentUser() }} </span>
-            </a>
-        </div>
-
         <div class="auth-block" *ngIf='!isAuthorized' >
             <a [routerLink]="['/login']" class="nav-link">
                 {{ 'Log In' }}

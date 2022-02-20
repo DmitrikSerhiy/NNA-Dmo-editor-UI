@@ -15,6 +15,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { DmoCollectionsComponent } from './dmo-collections/dmo-collections.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestRightMenuComponent } from './test-right-menu/test-right-menu.component';
+import { UserCabinetComponent } from './user-cabinet/user-cabinet.component';
 
 const routes: Routes = [{
     path: '',
@@ -28,7 +29,7 @@ const routes: Routes = [{
 ];
 
 @NgModule({
-    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent],
+    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent, UserCabinetComponent],
     imports: [
         CommonModule,
         RouterModule.forChild(routes),

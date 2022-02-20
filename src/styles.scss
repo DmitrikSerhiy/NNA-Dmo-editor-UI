@@ -57,7 +57,7 @@ html, body {
   z-index: 1000;
 }
 
-.dmo-collections-spinner .spinner-container {
+.dmo-collections-spinner .spinner-container, .personal-info-spinner .spinner-container {
   width: 235px !important;
   left: unset !important;
 }

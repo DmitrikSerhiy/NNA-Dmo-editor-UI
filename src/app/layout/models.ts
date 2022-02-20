@@ -3,6 +3,7 @@ export enum RightMenues {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
+    userCabinet = 'userCabinet'
     // test = 'test'
 }
 
@@ -11,6 +12,7 @@ export enum SidebarTabs {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
+    userCabinet = 'userCabinet'
     // test = 'test'
 }
 

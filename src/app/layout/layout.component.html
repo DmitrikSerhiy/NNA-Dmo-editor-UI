@@ -1,12 +1,12 @@
 <body>
 	<mat-sidenav-container role="main" style="height: 100%" (backdropClick)="closeByBackdrop()" >
-	<mat-sidenav #rightMenu position="end" [(opened)]="toggleRightMenu" role="directory"
-	  [fixedInViewport]="true" [fixedTopGap]="0" [fixedBottomGap]="0"> 
+	<mat-sidenav #rightMenu position="end" [(opened)]="toggleRightMenu" role="directory" [fixedInViewport]="true" [fixedTopGap]="0" [fixedBottomGap]="0"> 
 
 	<div [ngSwitch]="currentMenuName">
 		<!-- Values took from rigth-menus.ts -->
-		<app-dmo-collections *ngSwitchCase="'dmoCollections'" [rightMenuIsClosing$]='rightMenuIsClosing$' [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)" ></app-dmo-collections>  
-		<app-test-right-menu *ngSwitchCase="'test'" [rightMenuIsClosing$]='rightMenuIsClosing$'  [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)"></app-test-right-menu>
+		<app-dmo-collections *ngSwitchCase="'dmoCollections'" [rightMenuIsClosing$]='rightMenuIsClosing$' [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)" ></app-dmo-collections>
+		<app-user-cabinet *ngSwitchCase="'userCabinet'" [rightMenuIsClosing$]='rightMenuIsClosing$' [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)" ></app-user-cabinet>    
+		<!-- <app-test-right-menu *ngSwitchCase="'test'" [rightMenuIsClosing$]='rightMenuIsClosing$'  [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)"></app-test-right-menu> -->
 		<!-- ' -->
 		<div *ngSwitchDefault>No selected menu</div>
 	</div>
