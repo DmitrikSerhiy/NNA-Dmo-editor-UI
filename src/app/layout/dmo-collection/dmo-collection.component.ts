@@ -4,7 +4,6 @@ import { AddDmosPopupComponent } from '../../shared/components/add-dmos-popup/ad
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CollectionsManagerService } from './../../shared/services/collections-manager.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Toastr } from './../../shared/services/toastr.service';
 import { DmoCollectionDto, DmoCollectionShortDto, AddDmosToCollectionDto,
    DmosIdDto, ShortDmoCollectionDto, ShortDmoDto } from './../models';
 import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
@@ -53,7 +52,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
   constructor(
     private dmoCollectionService: DmoCollectionsService,
     public matModule: MatDialog,
-    private toastr: Toastr,
     private router: Router,
     private route: ActivatedRoute,
     private collectionManager: CollectionsManagerService,
@@ -220,9 +218,10 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
   showEditCollectionNameForm() {
     this.editCollectionNameForm.get('collectionName').setValue(this.currentDmoCollection.collectionName);
+    
     this.showEditForm = true;
     this.selectedDmoInCollection = null;
-
+    
     setTimeout(() => {
       this.collectionNameField.nativeElement.focus();
     }, 100);

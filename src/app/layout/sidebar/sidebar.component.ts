@@ -6,7 +6,6 @@ import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { Toastr } from 'src/app/shared/services/toastr.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,8 +26,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		private authService: AuthService,
 		private currestSidebarService: CurrentSidebarService,
 		private sidebarManagerService: SidebarManagerService,
-		private router: Router,
-    	private toastr: Toastr) { 
+		private router: Router) { 
       	this.toggleRightMenu$ = new EventEmitter<RightMenues>();
     }
 
@@ -76,12 +74,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	sendDmosEvent() {
 		if (this.isAuthorized) {
 			this.currestSidebarService.setMenu(SidebarTabs.dmos);
+			this.toggleRightMenu$.emit(RightMenues.dmos);
 		}
 	}
 
 	sendDmoEvent() {
 		if (this.isAuthorized) {
 			this.currestSidebarService.setMenu(SidebarTabs.dmo);
+			this.toggleRightMenu$.emit(RightMenues.dmo);
 		}
 	}
 

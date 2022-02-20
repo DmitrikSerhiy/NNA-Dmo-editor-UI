@@ -7,6 +7,7 @@ import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } 
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
 import { ActivatedRoute } from '@angular/router';
+import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 
 @Component({
     selector: 'app-layout',
@@ -33,12 +34,20 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         private currentSidebarService: CurrentSidebarService,
         private rightMenuGrabberService: RightMenuGrabberService,
         public sidebarManagerService: SidebarManagerService,
-        private route: ActivatedRoute) { }
+        private route: ActivatedRoute,
+        private nnaHelpersService: NnaHelpersService) { }
 
     ngOnInit() { 
         this.grabberSubscription = this.rightMenuGrabberService.shouldShowGrabber$.subscribe({
-            next: async () => this.isGrabberShouldBeShown = await this.rightMenuGrabberService.isGrabberShouldBeShown()
-          });
+            next: async (shoudBeShown: boolean) => {
+                if (shoudBeShown === false) {
+                    this.isGrabberShouldBeShown = shoudBeShown;
+                } else {
+                    await this.nnaHelpersService.sleep(1000);
+                    this.isGrabberShouldBeShown = shoudBeShown;
+                }
+            }  
+        });
 
         this.urlSubsription = this.route.queryParams.subscribe(param => {
             if (param.collectionId) {
@@ -85,6 +94,8 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
             this.rightMenuGrabberService.showGrabber();
             this.toggleRightMenu = $event;
         } else if ($event === RightMenues.dmos) {
+            this.rightMenuGrabberService.hideGrabber();
+        } else if ($event === RightMenues.dmo) {
             this.rightMenuGrabberService.hideGrabber();
         }
         //  else if ($event === RightMenues.test) {

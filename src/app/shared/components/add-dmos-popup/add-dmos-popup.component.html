@@ -6,10 +6,10 @@
         <div [hidden]="!dmos" class="base-modal-body dmos-table-container">
             <div class="search-container">
                 <i class="fa fa-search text-muted"></i>
-                <input type="text" class="form-control nna-input search-input"
+                <input type="text" class="nna-input search-input"
                     placeholder="dmo name or movie title" (keyup)="applyDmosFilter($event)" autocomplete="off">
             </div>
-            <table mat-table class="nna-table" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
+            <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
                 <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef class="column-header">
                         <mat-checkbox  (change)="$event ? dmosTableToggle() : null"

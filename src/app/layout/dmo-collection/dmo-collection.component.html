@@ -4,6 +4,9 @@
             <div class="collection-name-container">
                 <div class="collection-name-header">
                     <p class="collection-header" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
+                    <!-- <button type="button" class='nna-icon-button nna-button-primary'>
+                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                    </button> -->
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary' (click)='showEditCollectionNameForm()'>
                         <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                     </button>
@@ -18,7 +21,7 @@
                 <form [hidden]="!showEditForm" [formGroup]="editCollectionNameForm" (ngSubmit)="onEditCollectionName()" autocomplete="off">
                     <div class="edit-collection-name">
                         <input #editCollectionNameField type="text" name="collectionName" formControlName="collectionName"
-                            class="form-control nna-input search-input" placeholder="collection name"
+                            class="nna-input search-input" placeholder="collection name" 
                             autocomplete="off">
 
                         <button type="submit" [disabled]="!editCollectionNameForm.valid" class='nna-icon-button nna-button-primary'
@@ -30,7 +33,7 @@
                         </button>
                     </div>
                     <div class="validation-wrapper">
-                        <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
+                        <div *ngIf="collectionName.invalid && (collectionName.dirty)"
                             class="validation-container">
                             <div *ngIf="collectionName.errors.required">
                                 <p class="validation-text">name is missing </p>
@@ -52,7 +55,7 @@
 
             <div class="search-container">
                 <i class="fa fa-search text-muted"></i>
-                <input type="text" class="form-control nna-input search-input" (focus)="resetSelected()"
+                <input type="text" class="nna-input search-input" (focus)="resetSelected()"
                     placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off">
             </div>
 

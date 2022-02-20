@@ -8,6 +8,7 @@
 
       .collection-name-container {
         display: flex;
+        align-items: center;
         height: 38px;
 
         .collection-name-header {
@@ -21,16 +22,6 @@
           button {
             display: flex;
             margin-left: .5rem;
-            opacity: 0;
-          }
-        }
-
-        &:hover {
-          cursor: pointer;
-          .collection-name-header {
-            button {
-              opacity: 1;
-            }
           }
         }
 

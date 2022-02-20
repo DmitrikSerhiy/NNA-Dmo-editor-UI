@@ -62,7 +62,7 @@ export class CustomErrorHandler {
 		} 
 		
 		else {
-			this.toastr.error(new ToastrErrorMessage(error.message, error.title));
+			this.toastr.error(new ToastrErrorMessage('Administrator has been notified', 'Unverified error'));
 			return throwError({message: 'Unverified error', serverResponse: response});
 		}
 	}

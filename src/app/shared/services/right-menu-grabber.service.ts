@@ -1,6 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { NnaHelpersService } from './nna-helpers.service';
 
 @Injectable({
   	providedIn: 'root'
@@ -11,7 +10,7 @@ export class RightMenuGrabberService {
 	private shouldShowGrabberSource = new BehaviorSubject(false);
 	shouldShowGrabber$ = this.shouldShowGrabberSource.asObservable();
 
-  	constructor(private nnaHelpersService: NnaHelpersService) { }
+  	constructor() { }
 
 	showGrabber() {
 		this.shouldShowGrabber = true;
@@ -23,11 +22,7 @@ export class RightMenuGrabberService {
 		this.shouldShowGrabberSource.next(false);
 	}
 
-	async isGrabberShouldBeShown(delay: boolean = true) {
-		if (delay) {
-			await this.nnaHelpersService.sleep(1000);
-		}
-
+	isGrabberShouldBeShown() {
 		return this.shouldShowGrabber;
 	}
 }

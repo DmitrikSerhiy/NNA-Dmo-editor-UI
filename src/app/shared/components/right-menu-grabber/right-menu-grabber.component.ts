@@ -1,4 +1,3 @@
-import { RightMenuGrabberService } from './../../services/right-menu-grabber.service';
 import { RightMenues } from './../../../layout/models';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
@@ -9,17 +8,16 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class RightMenuGrabberComponent implements OnInit {
 
-  @Input() menuName: RightMenues;
-  @Input() userFriendlyMenuName: string;
-  @Output() toggleMenu = new EventEmitter<string>();
-  @Input() shouldbeShown: boolean;
+	@Input() menuName: RightMenues;
+	@Input() userFriendlyMenuName: string;
+	@Output() toggleMenu = new EventEmitter<string>();
+	@Input() shouldbeShown: boolean;
 
-  constructor() { }
+  	constructor() { }
 
-  ngOnInit() {
-  }
+	ngOnInit() {}
 
-  toggleRightMenu() {
-    this.toggleMenu.emit(this.menuName);
-  }
+	toggleRightMenu() {
+		this.toggleMenu.emit(this.menuName);
+	}
 }

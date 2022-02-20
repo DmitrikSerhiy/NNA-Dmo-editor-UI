@@ -1,7 +1,8 @@
+@import "src/styles/colors.scss";
 
 .nna-table {
     width: 100%;
-    background: #fafafa;
+    background: $background-color;
   
     .mat-header-row {
         @include font-primary-info();
@@ -43,6 +44,14 @@
       td {
         border: none;
       }
+    }
+  }
+
+  .nna-table-for-popoup {
+    background: none !important;
+
+    tr {
+      cursor: default !important;
     }
   }
   

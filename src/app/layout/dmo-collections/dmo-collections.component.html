@@ -13,7 +13,7 @@
             <form [formGroup]="addCollectionForm" (ngSubmit)="onAddCollection()" [hidden]="showAddButton" autocomplete="off">
                 <div class="add-collection-form">
                     <input id="collectionNameField" #collectionNameField type="text" name="collectionName" formControlName="collectionName"
-                        class="form-control nna-input" placeholder="collection name">
+                        class="nna-input" placeholder="collection name">
                     <button type="submit" [disabled]="!addCollectionForm.valid" class='nna-icon-button nna-button-primary'
                         [ngClass]="{'nna-diabled-button': !addCollectionForm.valid}">
                         <i class="fa fa-check"aria-hidden="true"></i>
@@ -22,8 +22,8 @@
                         <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
                     </button>
                 </div>
-                <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)" class="validation-wrapper">
-                    <div *ngIf="collectionName.invalid && (collectionName.dirty || collectionName.touched)"
+                <div *ngIf="collectionName.invalid && (collectionName.dirty)" class="validation-wrapper">
+                    <div *ngIf="collectionName.invalid && (collectionName.dirty)"
                         class="validation-container">
                         <div *ngIf="collectionName.errors.required">
                             <p class="validation-text">name is missing </p>
@@ -38,7 +38,7 @@
             <div class="filter-collection-button" *ngIf='showSortButton' [hidden]="!showAddButton" (click)="sortCollections()" title="{{sortingTittle}}">                
                 <i [hidden]="collectionsByAcs || collectionsByDefault" class="fa fa-sort-numeric-up" aria-hidden="true" title="{{sortingTittle}}"></i>
                 <i [hidden]="collectionsByDesc || collectionsByDefault" class="fa fa-sort-numeric-down" aria-hidden="true" title="{{sortingTittle}}"></i>
-                <i [hidden]="collectionsByDesc || collectionsByAcs" class="fa fa-list" aria-hidden="true" title="{{sortingTittle}}"></i>
+                <i [hidden]="collectionsByDesc || collectionsByAcs" class="fa fa-times" aria-hidden="true" title="{{sortingTittle}}"></i>
             </div>
         </div>
 

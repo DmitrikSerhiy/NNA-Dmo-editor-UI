@@ -4,8 +4,6 @@ import { CollectionsManagerService } from './../../shared/services/collections-m
 import { DmoCollectionShortDto } from './../models';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { Toastr } from './../../shared/services/toastr.service';
-
 import { concatMap, map, catchError, finalize, takeUntil } from 'rxjs/operators';
 import { throwError, Observable, Subject, Subscription } from 'rxjs';
 
@@ -15,220 +13,224 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-dmo-collections',
-  templateUrl: './dmo-collections.component.html',
-  styleUrls: ['./dmo-collections.component.scss']
+	selector: 'app-dmo-collections',
+	templateUrl: './dmo-collections.component.html',
+	styleUrls: ['./dmo-collections.component.scss']
 })
 export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
-  addCollectionForm: FormGroup;
-  dmoLists: DmoCollectionShortDto[];
-  sortedDmoLists: DmoCollectionShortDto[];
-  showAddButton = true;
-  isFormProcessing = false;
-  showSortButton = false;
-  sortingTittle: string;
-  selectedDmoCollectionName: DmoCollectionShortDto;
-  oppenedCollectionId: string;
-  private unsubscribe$: Subject<void> = new Subject();
-  get collectionName() { return this.addCollectionForm.get('collectionName'); }
-  private loadCollectionsSubsciption: Subscription;
-  private rightMenuOpnSubscription: Subscription;
-  private rightMenuClsSubscription: Subscription;
-  private collectionSubsctiption: Subscription;
-  private addToCollectionSubsctiption: Subscription;
-  private deleteCollectionSubsctiption: Subscription;
+	addCollectionForm: FormGroup;
+	dmoLists: DmoCollectionShortDto[];
+	sortedDmoLists: DmoCollectionShortDto[];
+	showAddButton = true;
+	isFormProcessing = false;
+	showSortButton = false;
+	sortingTittle: string;
+	selectedDmoCollectionName: DmoCollectionShortDto;
+	oppenedCollectionId: string;
+	private unsubscribe$: Subject<void> = new Subject();
+	get collectionName() { return this.addCollectionForm.get('collectionName'); }
+	private loadCollectionsSubsciption: Subscription;
+	private rightMenuOpnSubscription: Subscription;
+	private rightMenuClsSubscription: Subscription;
+	private collectionSubsctiption: Subscription;
+	private addToCollectionSubsctiption: Subscription;
+	private deleteCollectionSubsctiption: Subscription;
 
-  @Input() rightMenuIsClosing$: Observable<void>;
-  @Input() rightMenuIsOpening$: EventEmitter<void>;
-  @Output() closeRightMenu = new EventEmitter<void>();
-  @ViewChild('removeCollectionModal', { static: true }) removeModal: NgbActiveModal;
-  @ViewChild('collectionNameField', { static: true }) collectionNameField: ElementRef;
+	@Input() rightMenuIsClosing$: Observable<void>;
+	@Input() rightMenuIsOpening$: EventEmitter<void>;
+	@Output() closeRightMenu = new EventEmitter<void>();
+	@ViewChild('removeCollectionModal', { static: true }) removeModal: NgbActiveModal;
+	@ViewChild('collectionNameField', { static: true }) collectionNameField: ElementRef;
 
-  collectionsByDesc = true;
-  collectionsByAcs = false;
-  collectionsByDefault = false;
+	collectionsByDesc = true;
+	collectionsByAcs = false;
+	collectionsByDefault = false;
 
-  constructor(
-    private dmoCollectionsService: DmoCollectionsService,
-    private toastr: Toastr,
-    private router: Router,
-    public matModule: MatDialog,
-    private collectionManager: CollectionsManagerService) { }
+	constructor(
+		private dmoCollectionsService: DmoCollectionsService,
+		private router: Router,
+		public matModule: MatDialog,
+		private collectionManager: CollectionsManagerService) { }
 
 
-  ngOnInit() {
-    this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
-      this.toggleAddCollectionForm(true);
-    });
-    this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
-      this.loadCollectionsSubsciption = this.loadCollections();
-    })
+	ngOnInit() {
+			this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
+			this.toggleAddCollectionForm(true);
+		});
 
-    this.addCollectionForm = new FormGroup({
-      'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
-    });
+		this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
+			this.loadCollectionsSubsciption = this.loadCollections();
+		})
 
-    this.collectionSubsctiption = this.collectionManager.currentCollectionObserver
-      .subscribe(_ => { this.oppenedCollectionId = this.collectionManager.getCurrentCollectionId(); });
+		this.addCollectionForm = new FormGroup({
+			'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
+		});
 
-    this.loadCollectionsSubsciption = this.loadCollections();
-  }
+		this.collectionSubsctiption = this.collectionManager.currentCollectionObserver
+			.subscribe(_ => { this.oppenedCollectionId = this.collectionManager.getCurrentCollectionId(); });
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-    this.loadCollectionsSubsciption?.unsubscribe();
-    this.rightMenuOpnSubscription?.unsubscribe();
-    this.rightMenuClsSubscription?.unsubscribe();
-    this.collectionSubsctiption?.unsubscribe();
-    this.addToCollectionSubsctiption?.unsubscribe();
-    this.deleteCollectionSubsctiption?.unsubscribe();
-  }
+		this.loadCollectionsSubsciption = this.loadCollections();
+	}
 
-  sortCollections() {
-    if (this.collectionsByDesc) {
-      this.collectionsByDefault = false;
-      this.collectionsByAcs = true;
-      this.collectionsByDesc = false;
-      this.sortedDmoLists = this.sortedDmoLists.sort(comparer).reverse();
-      this.sortingTittle = 'reverce sorting'
-    } else if (this.collectionsByAcs) {
-      this.collectionsByDefault = true;
-      this.collectionsByAcs = false;
-      this.collectionsByDesc = false;
-      this.sortedDmoLists = this.sortedDmoLists.sort(comparer);
-      this.sortingTittle = 'reset sorting'
-    } else {
-      this.resetCollectionsSort();
-    }
+	ngOnDestroy(): void {
+		this.unsubscribe$.next();
+		this.unsubscribe$.complete();
+		this.loadCollectionsSubsciption?.unsubscribe();
+		this.rightMenuOpnSubscription?.unsubscribe();
+		this.rightMenuClsSubscription?.unsubscribe();
+		this.collectionSubsctiption?.unsubscribe();
+		this.addToCollectionSubsctiption?.unsubscribe();
+		this.deleteCollectionSubsctiption?.unsubscribe();
+	}
 
-    function comparer(a, b) {
-      if (a.dmoCount > b.dmoCount) { return 1; }
-      if (a.dmoCount < b.dmoCount) { return -1; }
+	sortCollections() {
+		if (this.collectionsByDesc) {
+			this.collectionsByDefault = false;
+			this.collectionsByAcs = true;
+			this.collectionsByDesc = false;
+			this.sortedDmoLists = this.sortedDmoLists.sort(comparer).reverse();
+			this.sortingTittle = 'reverce sorting'
+		} else if (this.collectionsByAcs) {
+			this.collectionsByDefault = true;
+			this.collectionsByAcs = false;
+			this.collectionsByDesc = false;
+			this.sortedDmoLists = this.sortedDmoLists.sort(comparer);
+			this.sortingTittle = 'reset sorting'
+		} else {
+			this.resetCollectionsSort();
+		}
 
-      return 0;
-    }
-  }
+		function comparer(a, b) {
+			if (a.dmoCount > b.dmoCount) { return 1; }
+			if (a.dmoCount < b.dmoCount) { return -1; }
 
-  openCollection(id: string) {
-    this.closeRightMenu.emit();
-    this.router.navigateByUrl(`/app/dmoCollection?collectionId=${id}`);
-    this.collectionManager.setCollectionId(id);
-  }
+			return 0;
+		}
+	}
 
-  onAddCollection() {
-    if (this.addCollectionForm.valid) {
-      const collectionName = this.addCollectionForm.get('collectionName').value;
-      this.showLoader();
+	openCollection(id: string) {
+		this.closeRightMenu.emit();
+		this.router.navigateByUrl(`/app/dmoCollection?collectionId=${id}`);
+		this.collectionManager.setCollectionId(id);
+	}
 
-      const add$ = this.dmoCollectionsService.addCollection(collectionName);
-      const getAll$ = this.dmoCollectionsService.getCollections();
+	onAddCollection() {
+		if (this.addCollectionForm.valid) {
+			const collectionName = this.addCollectionForm.get('collectionName').value;
+			this.showLoader();
 
-      const addAndRefresh$ =
-        add$.pipe(
-          takeUntil(this.unsubscribe$),
-          finalize(() => { this.hideLoader(); this.toggleAddCollectionForm(true); }),
-          catchError(innerError => { this.hideLoader(); this.resetAddCollectionForm(); return throwError(innerError); }),
-          concatMap(() => getAll$.pipe(
-            takeUntil(this.unsubscribe$),
-            map((response: DmoCollectionShortDto[]) => {
-              this.dmoLists = response;
-              this.resetCollectionsSort(); }))));
+			const add$ = this.dmoCollectionsService.addCollection(collectionName);
+			const getAll$ = this.dmoCollectionsService.getCollections();
 
-      this.addToCollectionSubsctiption = addAndRefresh$.subscribe();
-    }
-  }
+			const addAndRefresh$ =
+				add$.pipe(
+				takeUntil(this.unsubscribe$),
+				finalize(() => { this.hideLoader(); this.toggleAddCollectionForm(true); }),
+				catchError(innerError => { this.hideLoader(); this.resetAddCollectionForm(); return throwError(innerError); }),
+				concatMap(() => getAll$.pipe(
+					takeUntil(this.unsubscribe$),
+					map((response: DmoCollectionShortDto[]) => {
+					this.dmoLists = response;
+					this.resetCollectionsSort(); }))));
 
-  onDeleteCollection(dmoList: DmoCollectionShortDto) {
-    this.selectedDmoCollectionName = dmoList;
-    const delteCollectionModal = this.matModule.open(RemoveCollectionPopupComponent, {
-      data: dmoList.collectionName
-    });
+			this.addToCollectionSubsctiption = addAndRefresh$.subscribe();
+		}
+	}
 
-    delteCollectionModal.afterClosed().subscribe({
-        next: (shouldDelete: boolean) => {
-          if (!shouldDelete) {
-            return;
-          }
+	onDeleteCollection(dmoList: DmoCollectionShortDto) {
+			this.selectedDmoCollectionName = dmoList;
+			const delteCollectionModal = this.matModule.open(RemoveCollectionPopupComponent, {
+			data: dmoList.collectionName
+		});
 
-          this.showLoader();
-          const delete$ = this.dmoCollectionsService.deleteCollection(this.selectedDmoCollectionName.id);
-          const getAll$ = this.dmoCollectionsService.getCollections();
+		delteCollectionModal.afterClosed().subscribe({
+			next: (shouldDelete: boolean) => {
+				if (!shouldDelete) {
+					return;
+				}
 
-          const deleteAndRefresh$ =
-            delete$.pipe(
-              takeUntil(this.unsubscribe$),
-              finalize(() => {
-                this.hideLoader();
-                this.toggleAddCollectionForm(true);
-                this.handleSelfRemove(this.selectedDmoCollectionName.id);
-              }),
-              catchError(innerError => { this.resetAddCollectionForm(); return throwError(innerError); }),
-              concatMap(() => getAll$.pipe(
-                takeUntil(this.unsubscribe$),
-                map((response: DmoCollectionShortDto[]) => {
-                  this.dmoLists = response;
-                  this.resetCollectionsSort(); }))));
+				this.showLoader();
+				const delete$ = this.dmoCollectionsService.deleteCollection(this.selectedDmoCollectionName.id);
+				const getAll$ = this.dmoCollectionsService.getCollections();
 
-          this.deleteCollectionSubsctiption = deleteAndRefresh$.subscribe();
-        }
-      });
-  }
+				const deleteAndRefresh$ =
+					delete$.pipe(
+						takeUntil(this.unsubscribe$),
+						finalize(() => {
+							this.hideLoader();
+							this.toggleAddCollectionForm(true);
+							this.handleSelfRemove(this.selectedDmoCollectionName.id);
+						}),
+						catchError(innerError => { 
+							this.resetAddCollectionForm(); 
+							return throwError(innerError);
+						}),
+						concatMap(() => getAll$.pipe(
+							takeUntil(this.unsubscribe$),
+							map((response: DmoCollectionShortDto[]) => {
+								this.dmoLists = response;
+								this.resetCollectionsSort(); 
+							})
+						)));
 
-  toggleAddCollectionForm(close = false) {
-    if (close) {
-      this.showAddButton = true;
-    } else {
-      this.showAddButton = !this.showAddButton;
-    }
-    this.resetAddCollectionForm();
+				this.deleteCollectionSubsctiption = deleteAndRefresh$.subscribe();
+			}
+		});
+	}
 
-    if (!this.showAddButton) {
-      setTimeout(() => {
-        this.collectionNameField.nativeElement.focus();
-      }, 100);
-    }
-  }
+	toggleAddCollectionForm(close = false) {
+		if (close) {
+			this.showAddButton = true;
+		} else {
+			this.showAddButton = !this.showAddButton;
+		}
+		this.resetAddCollectionForm();
 
-  private resetCollectionsSort() {
-    this.collectionsByDefault = false;
-    this.collectionsByAcs = false;
-    this.collectionsByDesc = true;
-    this.sortedDmoLists = [...this.dmoLists];
-    this.showSortButton = this.dmoLists.length > 1;
-    this.sortingTittle = 'sort by dmos'
-  }
+		if (!this.showAddButton) {
+			setTimeout(() => {
+				this.collectionNameField.nativeElement.focus();
+			}, 100);
+		}
+	}
 
-  private loadCollections() : Subscription{
-    this.showLoader();
-    return this.dmoCollectionsService.getCollections()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(
-        (response: DmoCollectionShortDto[]) => {
-          this.dmoLists = response;
-          this.resetCollectionsSort(); 
-          this.hideLoader();
-        });
-  }
+	private resetCollectionsSort() {
+		this.collectionsByDefault = false;
+		this.collectionsByAcs = false;
+		this.collectionsByDesc = true;
+		this.sortedDmoLists = [...this.dmoLists];
+		this.showSortButton = this.dmoLists.length > 1;
+		this.sortingTittle = 'sort by dmos'
+	}
 
-  private handleSelfRemove(collectionIdToBeDeleted: string) {
-    if (!this.oppenedCollectionId || this.oppenedCollectionId !== collectionIdToBeDeleted) {
-      return;
-    }
-    this.router.navigateByUrl('/app');
-  }
+	private loadCollections() : Subscription {
+		this.showLoader();
+		return this.dmoCollectionsService.getCollections()
+			.pipe(takeUntil(this.unsubscribe$))
+			.subscribe(
+				(response: DmoCollectionShortDto[]) => {
+					this.dmoLists = response;
+					this.resetCollectionsSort(); 
+					this.hideLoader();
+				});
+	}
 
-  private resetAddCollectionForm() {
-    this.addCollectionForm.reset();
-  }
+	private handleSelfRemove(collectionIdToBeDeleted: string) {
+		if (!this.oppenedCollectionId || this.oppenedCollectionId !== collectionIdToBeDeleted) {
+			return;
+		}
+		this.router.navigateByUrl('/app');
+	}
 
-  private showLoader() {
-    this.isFormProcessing = true;
-  }
+	private resetAddCollectionForm() {
+		this.addCollectionForm.reset();
+	}
 
-  private hideLoader() {
-    this.isFormProcessing = false;
-  }
+	private showLoader() {
+		this.isFormProcessing = true;
+	}
 
+	private hideLoader() {
+		this.isFormProcessing = false;
+	}
 }

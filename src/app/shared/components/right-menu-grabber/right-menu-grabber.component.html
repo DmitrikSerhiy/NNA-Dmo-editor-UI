@@ -1,4 +1,4 @@
-<div *ngIf="shouldbeShown" class="right-menu-grabber-container nna-button-secondary" (click)="toggleRightMenu()">
+<div *ngIf="shouldbeShown && userFriendlyMenuName" class="right-menu-grabber-container nna-button-secondary" (click)="toggleRightMenu()">
     <div [ngSwitch]="menuName" class="right-menu-grabber">
         
         <i class="fa fa-arrow-left" aria-hidden="true"></i> 
