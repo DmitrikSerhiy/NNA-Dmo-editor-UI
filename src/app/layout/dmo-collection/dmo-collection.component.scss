@@ -88,5 +88,29 @@
         }
       }
     }
+
+    .nna-table {
+      .table-cell {
+        .action-wrapper {
+          display: flex;
+          opacity: 0;
+
+          button {
+            margin-left: 0.5rem;
+          }
+        }
+        .action-wrapper-visibility {
+          opacity: 1;
+        }
+
+        .short-comment {
+          max-width: 200px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          margin: auto 0;
+        }
+      }
+    }
   }
 }
