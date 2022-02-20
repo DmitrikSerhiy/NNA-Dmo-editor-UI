@@ -5,7 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CollectionsManagerService } from './../../shared/services/collections-manager.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DmoCollectionDto, DmoCollectionShortDto, AddDmosToCollectionDto,
-   DmosIdDto, ShortDmoCollectionDto, ShortDmoDto } from './../models';
+   DmosIdDto, ShortDmoCollectionDto, ShortDmoDto, SidebarTabs } from './../models';
 import { Component, OnInit, ViewChild, OnDestroy, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,6 +15,7 @@ import { concatMap, map, takeUntil, finalize } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { DmoCollectionsService } from 'src/app/shared/services/dmo-collections.service';
 import { MatDialog } from '@angular/material/dialog';
+import { RightMenuGrabberService } from 'src/app/shared/services/right-menu-grabber.service';
 
 @Component({
 	selector: 'app-dmo-collection',
@@ -57,7 +58,8 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private collectionManager: CollectionsManagerService,
-		private currentSidebarService: CurrentSidebarService) { }
+		private currentSidebarService: CurrentSidebarService,
+		private rightMenuGrabberService: RightMenuGrabberService) { }
 
 	ngOnInit() {
 		this.editCollectionNameForm = new FormGroup({
@@ -113,6 +115,9 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		if (!this.selectedDmoInCollection) {
 			return;
 		}
+
+		this.rightMenuGrabberService.hideGrabber();
+		this.currentSidebarService.setMenu(SidebarTabs.none);
 		this.router.navigateByUrl('/app/editor?dmoId=' + this.selectedDmoInCollection.id);
 	}
 

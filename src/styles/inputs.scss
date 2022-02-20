@@ -73,8 +73,8 @@ select:-webkit-autofill:focus {
     width: 100%;
 
     textarea {
-        height: unset !important;
-        margin-top: 14px !important;
+        height: fit-content !important;
+        resize: none;
     }
 
     @include nna-input-base();

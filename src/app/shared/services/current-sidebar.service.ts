@@ -45,6 +45,7 @@ export class CurrentSidebarService {
 		if (!sideBarTab || sideBarTab == SidebarTabs.none) {
 			return;
 		}
+		
 		const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
 		this.renderer.addClass(selectedTab, 'router-link-active');
 	}
