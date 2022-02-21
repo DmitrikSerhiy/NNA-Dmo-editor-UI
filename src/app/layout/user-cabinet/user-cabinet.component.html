@@ -7,7 +7,7 @@
     <div [hidden]="isUserNotFound || isFormProcessing" class="personal-info-container">
 
         <div class="personal-info-block block-with-button-wrapper">
-            <div class="block-with-button" [ngSwitch]="personalInfo.isEmailVerified">
+            <div class="block-with-button" [ngSwitch]="personalInfo?.isEmailVerified">
                 <div class="nna-input-group">
                     <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
                     <label for="email" class="nna-input-label">Email</label>
@@ -57,6 +57,27 @@
                 </div>
             </div>
         </form>
+
+
+        <div [hidden]="showPasswordChangeForm" class="personal-info-block">
+            <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
+                Change password
+            </button>
+        </div>
+
+        <div [hidden]="!showPasswordChangeForm" [formGroup]="changePasswordForm" (ngSubmit)="onPasswordChange()" autocomplete="off" class="personal-info-block">
+                    <!-- todo: fix input focus bug (with flex) -->
+
+            <div class="nna-input-group">
+                <input #oldwPasswordInput type="password" class="nna-input" name="old-password" id="old-password" formControlName="old-password" placeholder="Old password" autocomplete="off"/>
+                <label for="old-password" class="nna-input-label">Old password</label>
+            </div>
+            <div class="nna-input-group">
+                <input #newPasswordInput type="password" class="nna-input" name="new-password" id="new-password" formControlName="new-password" placeholder="New password" autocomplete="new-password"/>
+                <label for="new-password" class="nna-input-label">New password</label>
+            </div>
+        </div>
+
 
 
 

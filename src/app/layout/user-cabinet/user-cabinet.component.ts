@@ -22,16 +22,19 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	rightMenuClsSubscription: Subscription;
 	isFormProcessing = false;
 	showUserNameChangeForm: boolean = false;
+	showPasswordChangeForm: boolean = false;
 	initialUserName: string;
 	isUserNotFound: boolean = false;
 
 	changeUserNameForm: FormGroup;
+	changePasswordForm: FormGroup;
 	get userName() { return this.changeUserNameForm.get('userName'); }
 	@ViewChild('email', { static: true }) email: ElementRef;
 	@ViewChild('demoName', { static: true }) demoName: ElementRef;
 	@ViewChild('userName', { static: true }) userNameElement: ElementRef;
 
 
+	// todo: userName must be trimmed and left with single space only
 	personalInfo: PersonalInfoDto;
 
  	private unsubscribe$: Subject<void> = new Subject();
@@ -52,6 +55,13 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.changeUserNameForm = new FormGroup({
 			'userName': new FormControl('', [Validators.required, Validators.maxLength(50)])
 		});
+
+		this.changePasswordForm = new FormGroup({
+			'old-password': new FormControl('', [Validators.required, Validators.minLength(10)]),
+			'new-password': new FormControl('', [Validators.required, Validators.minLength(10)])
+		});
+
+
 		
 		this.isFormProcessing = true;
 		this.authService
@@ -133,29 +143,52 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 				} );
 	}
 
-	toggleChangeUserNameForm(show: boolean) {
-		this.showUserNameChangeForm = !this.showUserNameChangeForm;
 
-		if (show === true) {
-			this.userName.setValue(this.initialUserName);
+	onPasswordChange() {
+
+	}
+
+	toggleChangeUserNameForm(show: boolean, hideOtherForms: boolean = true) {
+		this.showUserNameChangeForm = show;
+		this.userName.setValue(this.initialUserName);
+
+		if (show === true) {	
 			setTimeout(() => {
 				this.userNameElement.nativeElement.focus();
 			}, 100);
 		} else {
-			this.resetName();
+			this.resetNameForm();
+		}
+
+		if (hideOtherForms) {
+			this.toggleChangePasswordForm(false, false);
+		}
+
+	}
+
+	toggleChangePasswordForm(show: boolean, hideOtherForms: boolean = true) {
+		this.showPasswordChangeForm = show;
+
+		if (hideOtherForms) {
+			this.toggleChangeUserNameForm(false, false);
 		}
 	}
 
 	ngOnDestroy(): void {
-		this.resetName();
+		this.resetNameForm();
+		this.resetPasswordForm();
 		this.unsubscribe$.next();
 		this.unsubscribe$.complete();
 		this.rightMenuOpnSubscription?.unsubscribe();
 		this.rightMenuClsSubscription?.unsubscribe();
 	}
 
-	private resetName(): void {
+	private resetNameForm(): void {
 		this.changeUserNameForm.reset();
+	}
+
+	private resetPasswordForm(): void {
+		// this.changeUserNameForm.reset();
 	}
 
 }

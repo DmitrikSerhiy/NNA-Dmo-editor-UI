@@ -21,14 +21,15 @@
 		flex-direction: column;
 
 		.personal-info-block {
-			margin: 0.75rem 0.75rem;
+			margin: 1rem 0.75rem 0 0.75rem;
 			width: unset;
+			display: flex;
 		}
 
 		.block-with-button-wrapper {
 			display: flex;
     		align-items: flex-start;
-			min-height: 50px;
+			min-height: 60px;
 
 			.block-with-button {
 				display: flex;
@@ -48,7 +49,7 @@
 		}
 
 		form {
-			min-height: 50px;
+			min-height: 60px;
 			width: 100%;
 			padding: 0;
 			display: flex;
@@ -59,6 +60,7 @@
 				align-items: flex-start;
 	  
 				.nna-input-group {
+					display: flex;
 					input {
 						flex: 1 1 70%;
 					}
