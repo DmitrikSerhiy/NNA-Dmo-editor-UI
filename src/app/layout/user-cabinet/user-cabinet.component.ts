@@ -32,7 +32,6 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('userName', { static: true }) userNameElement: ElementRef;
 
 
-
 	personalInfo: PersonalInfoDto;
 
  	private unsubscribe$: Subject<void> = new Subject();
@@ -87,6 +86,10 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 		
 	}
 
+	sendVerifyEmail() {
+		console.log("not implemented");
+	}
+
 	onLoggedout() {
     	this.authService
 			.logout()
@@ -108,9 +111,6 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.toggleChangeUserNameForm(false);
 			return;
 		}
-
-		console.log(this.userName.value);
-		console.log(this.initialUserName);
 		
 		this.isFormProcessing = true;
 		this.authService.updateUserName(this.userName.value)

@@ -25,7 +25,6 @@
 			width: unset;
 		}
 
-		
 		.block-with-button-wrapper {
 			display: flex;
     		align-items: flex-start;
@@ -38,6 +37,12 @@
 				button {
 					margin-left: 0.4rem;
 					align-self: flex-end;
+				}
+
+				.single-icon {
+					align-self: flex-end;
+					margin-bottom: 0.3rem;
+					margin-right: 0.5rem;
 				}
 			}
 		}

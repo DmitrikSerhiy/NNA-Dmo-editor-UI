@@ -6,9 +6,17 @@
 
     <div [hidden]="isUserNotFound || isFormProcessing" class="personal-info-container">
 
-        <div class="personal-info-block nna-input-group">
-            <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
-            <label for="email" class="nna-input-label">Email</label>
+        <div class="personal-info-block block-with-button-wrapper">
+            <div class="block-with-button" [ngSwitch]="personalInfo.isEmailVerified">
+                <div class="nna-input-group">
+                    <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
+                    <label for="email" class="nna-input-label">Email</label>
+                </div>
+                <i *ngSwitchCase="true" class="fa fa-check single-icon" aria-hidden="true" title="Account is verified"></i>
+                <button *ngSwitchCase="false" type="button" class='nna-icon-button nna-button-primary' (click)='sendVerifyEmail()' title="Send email to verify account">
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
 
         <div [hidden]="showUserNameChangeForm" class="personal-info-block block-with-button-wrapper">
