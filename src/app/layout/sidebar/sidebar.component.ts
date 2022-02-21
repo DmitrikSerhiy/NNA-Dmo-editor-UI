@@ -1,7 +1,7 @@
 import { SidebarTabs } from './../models';
 import { CurrentSidebarService } from './../../shared/services/current-sidebar.service';
 import { RightMenues } from '../models';
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { Router } from '@angular/router';
@@ -15,13 +15,15 @@ import { Subscription } from 'rxjs';
 export class SidebarComponent implements OnInit, OnDestroy {
 	isAuthorized: boolean;
 	sidebarState: boolean;
+	@Input() updateUserNameDisplay: EventEmitter<void>;
 	@Output() toggleRightMenu$: EventEmitter<RightMenues>;
 	private currMenuSubscription: Subscription;
 	private sidebarSubscription: Subscription;
 	private currentUserEmailSubscription: Subscription;
+	userName: string;
 
   	constructor(
-		public userManager: UserManager,
+		private userManager: UserManager,
 		private currestSidebarService: CurrentSidebarService,
 		private sidebarManagerService: SidebarManagerService,
 		private router: Router) { 
@@ -33,6 +35,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.currMenuSubscription = this.currestSidebarService.currentMenuSource$.subscribe();
 		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; })
 		this.sidebarState = this.sidebarManagerService.IsOpen;
+		this.userName = this.userManager.getCurrentUser();
+		this.updateUserNameDisplay.subscribe(() => { this.userName = this.userManager.getCurrentUser(); } );
   	}
 
 	toggleSidebar() {

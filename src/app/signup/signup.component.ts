@@ -75,7 +75,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.nameInvalid = false;
 
 		this.registerForm = new FormGroup({
-			'new-name' : new FormControl('', [Validators.required]),
+			'new-name' : new FormControl('', [Validators.required, Validators.maxLength(50)]),
 			'new-email': new FormControl('', [Validators.required, Validators.email]),
 			'new-password': new FormControl('', [Validators.required, Validators.minLength(10)])
 		});

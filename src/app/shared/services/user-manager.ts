@@ -17,6 +17,10 @@ export class UserManager {
         return localStorage.getItem('user email');
     }
 
+    updateUserName(newUserName: string): void {
+        localStorage.removeItem('user name');
+        localStorage.setItem('user name', newUserName);
+    }
 
     getAccessToken(): string {
         return localStorage.getItem('user access token');

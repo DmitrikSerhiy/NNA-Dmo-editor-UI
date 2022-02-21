@@ -4,8 +4,64 @@
         <app-nna-spinner></app-nna-spinner>
     </div>
 
-    <div>
-        <button (click)="onLoggedout()">Logout</button>
+    <div [hidden]="isUserNotFound || isFormProcessing" class="personal-info-container">
+
+        <div class="personal-info-block nna-input-group">
+            <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
+            <label for="email" class="nna-input-label">Email</label>
+        </div>
+
+        <div [hidden]="showUserNameChangeForm" class="personal-info-block block-with-button-wrapper">
+            <div class="block-with-button">
+                <div class="nna-input-group">
+                    <input #demoName autocomplete="off" type="text" name="demoName" id="demoName" class="nna-input" disabled />
+                    <label for="demoName" class="nna-input-label">Name</label>
+                </div>
+                <button type="button" class='nna-icon-button nna-button-primary' (click)='toggleChangeUserNameForm(true)'>
+                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+
+        <form [hidden]="!showUserNameChangeForm" [formGroup]="changeUserNameForm" (ngSubmit)="onUserNameChange()" autocomplete="off" class="personal-info-block">
+            <div class="change-username-form">
+                <div class="nna-input-group">
+                    <input id="userName" #userName autocomplete="off" type="text" name="userName" formControlName="userName" class="nna-input" placeholder="Name">
+                    <label for="userName" class="nna-input-label">Name</label>
+                </div>
+                <button type="submit" [disabled]="!changeUserNameForm.valid" class='nna-icon-button nna-button-primary'
+                    [ngClass]="{'nna-diabled-button': !changeUserNameForm.valid}">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+                <button type="button" class='nna-icon-button' (click)="toggleChangeUserNameForm(false)">
+                    <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
+                </button>
+            </div>
+            <div *ngIf="changeUserNameForm.invalid && changeUserNameForm.dirty" class="validation-wrapper">
+                <div *ngIf="changeUserNameForm.controls.userName.errors" class="validation-container">
+                    <div *ngIf="changeUserNameForm.controls.userName.errors.required">
+                        <p class="validation-text">name is missing </p>
+                    </div>
+                    <div *ngIf="changeUserNameForm.controls.userName.errors.maxlength">
+                        <p class="validation-text">Maximum name length is 50</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+
+        <div class="personal-info-block">
+            <button class="nna-button nna-button-primary" (click)="onLoggedout()">Logout</button>
+        </div>
+
+    </div>
+
+    <div class="personal-info-container" [hidden]="!isUserNotFound || isFormProcessing">
+        <div class="personal-info-block nna-input-group">
+            User is not found
+        </div>
     </div>
 
 </div>

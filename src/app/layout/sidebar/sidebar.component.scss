@@ -112,6 +112,30 @@
     .bottom-group-item {
         top: unset !important;
         bottom: 45px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &.side-item-collapse {
+            overflow:unset;
+            span {
+                visibility: hidden;
+            }
+
+            &:hover {
+                overflow: hidden;
+                span {
+                    visibility: visible;
+                }
+            }
+        }
+        
+        &:focus {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .sidebar-dropdown {

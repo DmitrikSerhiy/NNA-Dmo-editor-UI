@@ -24,6 +24,8 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     rightMenuIsOpening$ = new EventEmitter<void>();
     isAuthorized: boolean = false;
     isGrabberShouldBeShown: boolean = false;
+    updateUserNameDisplay$: EventEmitter<void>;
+
     private grabberSubscription: Subscription;
     private urlSubsription: Subscription;
     private styleUrlSubscription: Subscription;
@@ -38,6 +40,7 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         private nnaHelpersService: NnaHelpersService) { }
 
     ngOnInit() { 
+        this.updateUserNameDisplay$ = new EventEmitter<void>(); 
         this.grabberSubscription = this.rightMenuGrabberService.shouldShowGrabber$.subscribe({
             next: async (shoudBeShown: boolean) => {
                 if (shoudBeShown === false) {
@@ -112,6 +115,10 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
     openRightMenuByGrabber($event) {
         this.openRightMenu($event);
+    }
+
+    updateUserName() {
+        this.updateUserNameDisplay$.emit()
     }
 
     private getCurrentUserFriendlyRightMenu(menu: RightMenues) {

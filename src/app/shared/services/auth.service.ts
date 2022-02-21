@@ -8,7 +8,7 @@ import { SendMailReason, UserDetails } from '../models/serverResponse';
 
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
-import { AuthGoogleDto } from '../models/authDto';
+import { AuthGoogleDto, PersonalInfoDto } from '../models/authDto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +18,18 @@ export class AuthService {
             private http: HttpClient, 
             private errorHandler: CustomErrorHandler) {
     }
+
+    getPersonalInfo(): Observable<PersonalInfoDto> {
+		return this.http
+            .get<PersonalInfoDto>(this.serverUrl + '/personalInfo')
+            .pipe(catchError((response, obs) => this.errorHandler.handle<PersonalInfoDto>(response, obs)));
+	}
+
+    updateUserName(newUserName: string): Observable<boolean> {
+		return this.http
+            .put<boolean>(this.serverUrl + '/name', {userName: newUserName})
+            .pipe(catchError((response, obs) => this.errorHandler.handle<boolean>(response, obs)));
+	}
 
     checkUserEmail(email: string): Promise<boolean> {
         return this.http
@@ -52,9 +64,9 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<UserDetails>(response, obs) ));
     }
 
-    logout(email: string): Observable<any> {
+    logout(): Observable<any> {
         return this.http
-            .delete<any>(this.serverUrl + '/logout', {body: {email: email} } )
+            .delete<any>(this.serverUrl + '/logout' )
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 

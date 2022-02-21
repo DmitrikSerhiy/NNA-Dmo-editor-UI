@@ -14,6 +14,7 @@ import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
+	// todo: redirect to app if user is authorized
 	loginForm: FormGroup;
 	get email() { return this.loginForm.get('email'); }
 	get password() { return this.loginForm.get('password'); }

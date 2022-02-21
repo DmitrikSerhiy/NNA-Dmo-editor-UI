@@ -15,4 +15,62 @@
 		align-items: center;
 		padding: 0 .75rem;
 	}
+
+	.personal-info-container {
+		display: flex;
+		flex-direction: column;
+
+		.personal-info-block {
+			margin: 0.75rem 0.75rem;
+			width: unset;
+		}
+
+		
+		.block-with-button-wrapper {
+			display: flex;
+    		align-items: flex-start;
+			min-height: 50px;
+
+			.block-with-button {
+				display: flex;
+				width: 100%;
+
+				button {
+					margin-left: 0.4rem;
+					align-self: flex-end;
+				}
+			}
+		}
+
+		form {
+			min-height: 50px;
+			width: 100%;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+	  
+			.change-username-form {
+				display: flex;
+				align-items: flex-start;
+	  
+				.nna-input-group {
+					input {
+						flex: 1 1 70%;
+					}
+				}
+
+				button {
+					margin-left: 0.4rem;
+					align-self: flex-end;
+				}
+			}
+
+			.validation-wrapper {
+				height: 1.75rem;
+				display: flex;
+				justify-content: center;
+				margin-top: .4rem;
+			}
+		}
+	}
 }

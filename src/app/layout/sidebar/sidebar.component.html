@@ -21,9 +21,9 @@
             <span>{{ 'Collections' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}" title="{{userName}}">
             <i class="fa fa-user" aria-hidden="true"></i> &nbsp;
-            <span>{{ userManager.getCurrentUser() }}</span>
+            <span>{{ userName }}</span>
         </a>
 
         <!-- <a *ngIf="isAuthorized" id="test-tab" (click)="sendTestEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
