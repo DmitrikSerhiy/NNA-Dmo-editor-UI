@@ -22,8 +22,32 @@
         <div [hidden]="showUserNameChangeForm" class="personal-info-block block-with-button-wrapper">
             <div class="block-with-button">
                 <div class="nna-input-group">
+                    <input #demoName1 autocomplete="off" type="text" name="demoName1" id="demoName1" class="nna-input" disabled />
+                    <label for="demoName" class="nna-input-label">Name1</label>
+                </div>
+                <button type="button" class='nna-icon-button nna-button-primary' (click)='toggleChangeUserNameForm(true)'>
+                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <div [hidden]="showUserNameChangeForm" class="personal-info-block block-with-button-wrapper">
+            <div class="block-with-button">
+                <div class="nna-input-group">
                     <input #demoName autocomplete="off" type="text" name="demoName" id="demoName" class="nna-input" disabled />
                     <label for="demoName" class="nna-input-label">Name</label>
+                </div>
+                <button type="button" class='nna-icon-button nna-button-primary' (click)='toggleChangeUserNameForm(true)'>
+                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <div [hidden]="showUserNameChangeForm" class="personal-info-block block-with-button-wrapper">
+            <div class="block-with-button">
+                <div class="nna-input-group">
+                    <input #demoName1 autocomplete="off" type="text" name="demoName1" id="demoName1" class="nna-input" disabled />
+                    <label for="demoName" class="nna-input-label">Name1</label>
                 </div>
                 <button type="button" class='nna-icon-button nna-button-primary' (click)='toggleChangeUserNameForm(true)'>
                     <i class="fa fa-pencil-alt" aria-hidden="true"></i>
@@ -59,24 +83,66 @@
         </form>
 
 
-        <div [hidden]="showPasswordChangeForm" class="personal-info-block">
+
+
+        <!-- <form  [formGroup]="changePasswordForm" (ngSubmit)="onPasswordChange()" autocomplete="off" class="personal-info-block">
+            <div class="change-username-form">
+                <div class="nna-input-group">
+                    <input id="oldPassword" #oldPasswordInput autocomplete="off" type="password" name="oldPassword" formControlName="oldPassword" class="nna-input" placeholder="Old password">
+                    <label for="oldPassword" class="nna-input-label">Current password</label>
+                </div>
+            </div>
+        </form> -->
+
+        
+
+
+
+
+        <!-- <div [hidden]="showPasswordChangeForm" class="personal-info-block">
             <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
                 Change password
             </button>
         </div>
 
-        <div [hidden]="!showPasswordChangeForm" [formGroup]="changePasswordForm" (ngSubmit)="onPasswordChange()" autocomplete="off" class="personal-info-block">
-                    <!-- todo: fix input focus bug (with flex) -->
+        <form [hidden]="!showPasswordChangeForm" [formGroup]="changePasswordForm" (ngSubmit)="onPasswordChange()"  class="personal-info-block">
+            <div class="change-password-form">
+                <div class="nna-input-group">
+                    <input #oldPasswordInput type="password" class="nna-input" name="oldPassword" id="oldPassword" formControlName="oldPassword" placeholder="Current password" />
+                    <label for="oldPassword" class="nna-input-label">Current password</label>
+                </div>
 
-            <div class="nna-input-group">
-                <input #oldwPasswordInput type="password" class="nna-input" name="old-password" id="old-password" formControlName="old-password" placeholder="Old password" autocomplete="off"/>
-                <label for="old-password" class="nna-input-label">Old password</label>
+                <div class="nna-input-group">
+                    <input #newPasswordInput type="password" class="nna-input" name="newPassword" id="newPassword" formControlName="newPassword" placeholder="New password" /> 
+                    <label for="newPassword" class="nna-input-label">New password</label>
+                </div>
+
+                <button type="submit" [disabled]="!changePasswordForm.valid" class='nna-icon-button nna-button-primary'
+                    [ngClass]="{'nna-diabled-button': !changePasswordForm.valid}">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+
             </div>
-            <div class="nna-input-group">
-                <input #newPasswordInput type="password" class="nna-input" name="new-password" id="new-password" formControlName="new-password" placeholder="New password" autocomplete="new-password"/>
-                <label for="new-password" class="nna-input-label">New password</label>
-            </div>
-        </div>
+
+            <div *ngIf="changePasswordForm.invalid && changePasswordForm.dirty" class="validation-wrapper">
+                <div *ngIf="changePasswordForm.controls.oldPassword.errors" class="validation-container">
+                    <div *ngIf="changePasswordForm.controls.oldPassword.errors.required && changePasswordForm.controls.oldPassword.dirty">
+                        <p class="validation-text">Enter your current password</p>
+                    </div>
+                    <div *ngIf="changePasswordForm.controls.oldPassword.errors.minLength">
+                        <p class="validation-text">Maximum password length is 10</p>
+                    </div>
+                </div>
+                <div *ngIf="changePasswordForm.controls.newPassword.errors" class="validation-container">
+                    <div *ngIf="changePasswordForm.controls.newPassword.errors.required ">
+                        <p class="validation-text">Enter new password</p>
+                    </div>
+                    <div *ngIf="changePasswordForm.controls.newPassword.errors.minLength">
+                        <p class="validation-text">Maximum new password length is 10</p>
+                    </div>
+                </div>
+            </div> 
+        </form> -->
 
 
 

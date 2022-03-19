@@ -29,11 +29,18 @@
 		.block-with-button-wrapper {
 			display: flex;
     		align-items: flex-start;
-			min-height: 60px;
+			min-height: 65px;
 
 			.block-with-button {
 				display: flex;
 				width: 100%;
+
+				.nna-input-group {
+					display: flex;
+					input {
+						margin-top: 5px;
+					}
+				}
 
 				button {
 					margin-left: 0.4rem;
@@ -49,7 +56,7 @@
 		}
 
 		form {
-			min-height: 60px;
+			min-height: 65px;
 			width: 100%;
 			padding: 0;
 			display: flex;
@@ -63,12 +70,24 @@
 					display: flex;
 					input {
 						flex: 1 1 70%;
+						margin-top: 5px;
 					}
 				}
 
 				button {
 					margin-left: 0.4rem;
 					align-self: flex-end;
+				}
+			}
+
+			.change-password-form {
+				display: flex;
+				align-items: flex-start;
+				flex-direction: column;
+
+				.nna-input-group {
+					display: flex;
+					margin-top: 5px;
 				}
 			}
 

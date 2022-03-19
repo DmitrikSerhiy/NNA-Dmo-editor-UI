@@ -29,10 +29,13 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	changeUserNameForm: FormGroup;
 	changePasswordForm: FormGroup;
 	get userName() { return this.changeUserNameForm.get('userName'); }
+
 	@ViewChild('email', { static: true }) email: ElementRef;
 	@ViewChild('demoName', { static: true }) demoName: ElementRef;
 	@ViewChild('userName', { static: true }) userNameElement: ElementRef;
 
+	@ViewChild('oldPasswordInput', { static: true }) oldPasswordElement: ElementRef;
+	@ViewChild('newPasswordInput', { static: true }) newPasswordElement: ElementRef;
 
 	// todo: userName must be trimmed and left with single space only
 	personalInfo: PersonalInfoDto;
@@ -56,9 +59,10 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 			'userName': new FormControl('', [Validators.required, Validators.maxLength(50)])
 		});
 
+
 		this.changePasswordForm = new FormGroup({
-			'old-password': new FormControl('', [Validators.required, Validators.minLength(10)]),
-			'new-password': new FormControl('', [Validators.required, Validators.minLength(10)])
+			'oldPassword': new FormControl('', [Validators.required, Validators.minLength(10)]),
+			'newPassword': new FormControl('', [Validators.required, Validators.minLength(10)])
 		});
 
 
@@ -93,7 +97,8 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	ngAfterViewInit(): void {
-		
+
+
 	}
 
 	sendVerifyEmail() {
@@ -123,7 +128,8 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		
 		this.isFormProcessing = true;
-		this.authService.updateUserName(this.userName.value)
+		this.authService
+			.updateUserName(this.userName.value)
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(
 				(changeNameResponse: boolean) => {
@@ -140,7 +146,8 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 				() => { 
 					this.toggleChangeUserNameForm(false);
 					this.isFormProcessing = false;
-				} );
+				} 
+			);
 	}
 
 
@@ -168,11 +175,24 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	toggleChangePasswordForm(show: boolean, hideOtherForms: boolean = true) {
 		this.showPasswordChangeForm = show;
+		console.log(this.changePasswordForm)
+
+
+		if (show === true) {	
+			setTimeout(() => {
+				this.oldPasswordElement.nativeElement.focus();
+			}, 100);
+		} else {
+			this.resetPasswordForm();
+		}
+
 
 		if (hideOtherForms) {
 			this.toggleChangeUserNameForm(false, false);
 		}
 	}
+
+
 
 	ngOnDestroy(): void {
 		this.resetNameForm();
@@ -188,7 +208,7 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	private resetPasswordForm(): void {
-		// this.changeUserNameForm.reset();
+		this.changePasswordForm.reset();
 	}
 
 }
