@@ -55,9 +55,8 @@
 			}
 		}
 
-		form {
+		.change-username-form-wrapper {
 			min-height: 65px;
-			width: 100%;
 			padding: 0;
 			display: flex;
 			flex-direction: column;
@@ -80,17 +79,6 @@
 				}
 			}
 
-			.change-password-form {
-				display: flex;
-				align-items: flex-start;
-				flex-direction: column;
-
-				.nna-input-group {
-					display: flex;
-					margin-top: 5px;
-				}
-			}
-
 			.validation-wrapper {
 				height: 1.75rem;
 				display: flex;
@@ -98,5 +86,22 @@
 				margin-top: .4rem;
 			}
 		}
+
+		.change-password-form-wrapper {
+			width: 100%;
+
+			.change-password-form {
+				.nna-input-group {
+					margin-top: 5px;
+				}
+			}
+		}
+
+		.change-password-button {
+			width: 100%;
+
+		}
+
+
 	}
 }
