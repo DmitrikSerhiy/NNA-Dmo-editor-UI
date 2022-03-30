@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { SendMailReason } from '../shared/models/serverResponse';
 import { AuthService } from '../shared/services/auth.service';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
+import { UserManager } from '../shared/services/user-manager';
 
 @Component({
   selector: 'app-mail-form',
@@ -36,7 +37,8 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 		  	private router: Router,
 			private route: ActivatedRoute,
 			private authService: AuthService,
-			private nnaHelpersService: NnaHelpersService) {
+			private nnaHelpersService: NnaHelpersService,
+			private userManager: UserManager) {
 		this.invalidEmailValidation = "Email is invalid";
 		this.emtpyEmailValidation = "Email is missing";
 	}
@@ -62,11 +64,15 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
 	navigateBack() {
-		this.router.navigate(['/login']);
+		if (this.userManager.isAuthorized) {
+			history.back();
+		} else {
+			this.router.navigate(['/login']);
+		}
 	}
 
 	redirectToHome() {
-		this.router.navigate(['/']);
+		this.router.navigate(['/app']);
 	}
 
 	checkKey($event) {

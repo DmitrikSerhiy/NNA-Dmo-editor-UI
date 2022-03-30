@@ -10,4 +10,5 @@ export interface PersonalInfoDto {
     userId: string;
     authProviders: string[];
     isEmailVerified: boolean;
+    hasPassword: boolean;
 }

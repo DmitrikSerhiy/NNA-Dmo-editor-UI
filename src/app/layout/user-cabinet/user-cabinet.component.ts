@@ -12,7 +12,7 @@ import { UserManager } from 'src/app/shared/services/user-manager';
 	templateUrl: './user-cabinet.component.html',
 	styleUrls: ['./user-cabinet.component.scss']
 })
-export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UserCabinetComponent implements OnInit, OnDestroy {
 
 	@Input() rightMenuIsClosing$: Observable<void>;
 	@Input() rightMenuIsOpening$: EventEmitter<void>;
@@ -25,6 +25,11 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	showPasswordChangeForm: boolean = false;
 	initialUserName: string;
 	isUserNotFound: boolean = false;
+	passwordHidden: boolean = true;
+
+	missingPasswordValidation: boolean = false;
+	missingNewPasswordValidation: boolean = false;
+	minLenghtPasswordValidation: boolean = false;
 
 	changeUserNameForm: FormGroup;
 	changePasswordForm: FormGroup;
@@ -37,6 +42,10 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('oldPasswordInput', { static: true }) oldPasswordElement: ElementRef;
 	@ViewChild('newPasswordInput', { static: true }) newPasswordElement: ElementRef;
 
+	showPasswordTitle: string;
+	hidePasswordTitle: string;
+	passwrodTogglerTitle: string;
+
 	// todo: userName must be trimmed and left with single space only
 	personalInfo: PersonalInfoDto;
 
@@ -45,7 +54,11 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	constructor(		
 		private userManager: UserManager,
 		private authService: AuthService,
-		private router: Router) { }
+		private router: Router) { 
+			this.showPasswordTitle = "Show password";
+			this.hidePasswordTitle = "Hide password";
+			this.passwrodTogglerTitle = this.showPasswordTitle;
+		}
 
 	ngOnInit(): void {
 		this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
@@ -59,13 +72,10 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 			'userName': new FormControl('', [Validators.required, Validators.maxLength(50)])
 		});
 
-
 		this.changePasswordForm = new FormGroup({
-			'oldPassword': new FormControl('', [Validators.required, Validators.minLength(10)]),
+			'oldPassword': new FormControl('', [Validators.required]),
 			'newPassword': new FormControl('', [Validators.required, Validators.minLength(10)])
 		});
-
-
 		
 		this.isFormProcessing = true;
 		this.authService
@@ -93,12 +103,28 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 					this.isFormProcessing = false;
 				}
 			);
+	}
+
+	togglePassword() {
+		this.passwordHidden = !this.passwordHidden;
+
+		this.passwrodTogglerTitle = this.passwordHidden 
+			? this.showPasswordTitle
+			: this.hidePasswordTitle;
+
+		this.passwordHidden 
+			? this.oldPasswordElement.nativeElement.setAttribute('type', 'password')
+			: this.oldPasswordElement.nativeElement.setAttribute('type', 'text');
+
+		this.passwordHidden 
+			? this.newPasswordElement.nativeElement.setAttribute('type', 'password')
+			: this.newPasswordElement.nativeElement.setAttribute('type', 'text');
 
 	}
 
-	ngAfterViewInit(): void {
 
-
+	redirectToSetPasswordPage() {
+		this.router.navigate(['/email'], { queryParams: { reason: 'new' } } );
 	}
 
 	sendVerifyEmail() {
@@ -152,6 +178,21 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 	onPasswordChange() {
+		if (!this.changePasswordForm.valid) {
+			this.missingPasswordValidation = this.changePasswordForm.controls["oldPassword"].errors?.required ? true : false;
+			this.missingNewPasswordValidation = this.changePasswordForm.controls["newPassword"].errors?.required ? true : false;
+			this.minLenghtPasswordValidation = this.changePasswordForm.controls["newPassword"].errors?.minlength ? true : false;
+		} else {
+			this.missingPasswordValidation = false;
+			this.missingNewPasswordValidation = false;
+			this.minLenghtPasswordValidation = false;
+		}
+
+		if (!this.changePasswordForm.valid) {
+			return;
+		}
+
+		// todo: send request
 
 	}
 
@@ -175,8 +216,6 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	toggleChangePasswordForm(show: boolean, hideOtherForms: boolean = true) {
 		this.showPasswordChangeForm = show;
-		console.log(this.changePasswordForm)
-
 
 		if (show === true) {	
 			setTimeout(() => {
@@ -208,6 +247,8 @@ export class UserCabinetComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	private resetPasswordForm(): void {
+		this.passwrodTogglerTitle = this.showPasswordTitle;
+		this.passwordHidden = true;
 		this.changePasswordForm.reset();
 	}
 

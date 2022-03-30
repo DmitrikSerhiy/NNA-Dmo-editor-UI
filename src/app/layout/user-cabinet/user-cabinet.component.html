@@ -58,7 +58,7 @@
         </form>
 
 
-        <div class="personal-info-block">
+        <div *ngIf="personalInfo.hasPassword" class="personal-info-block">
 
             <div [hidden]="showPasswordChangeForm" class="change-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
@@ -78,33 +78,45 @@
                         <label for="newPassword" class="nna-input-label">New password</label>
                     </div>
 
-                    <button type="submit" [disabled]="!changePasswordForm.valid" class='nna-icon-button nna-button-primary'
-                        [ngClass]="{'nna-diabled-button': !changePasswordForm.valid}">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                    </button>
+                    <div class="change-password-buttons-wrapper">
+                        <button type="button" class='nna-icon-button nna-button-primary' title="{{passwrodTogglerTitle}}" (click)="togglePassword()">
+                            <span *ngIf="passwordHidden" class="material-icons"> visibility</span>
+                            <span *ngIf="!passwordHidden" class="material-icons"> visibility_off</span>
+                        </button>
+
+                        <div class="main-buttons">
+                            <button type="submit" class='nna-icon-button nna-button-primary'>
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </button>
+
+                            <button type="button" class='nna-icon-button' (click)="toggleChangePasswordForm(false)">
+                                <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div *ngIf="changePasswordForm.invalid && changePasswordForm.dirty" class="validation-wrapper">
-                    <div *ngIf="changePasswordForm.controls.oldPassword.errors" class="validation-container">
-                        <div *ngIf="changePasswordForm.controls.oldPassword.errors.required && changePasswordForm.controls.oldPassword.dirty">
-                            <p class="validation-text">Enter your current password</p>
-                        </div>
-                        <div *ngIf="changePasswordForm.controls.oldPassword.errors.minLength">
-                            <p class="validation-text">Maximum password length is 10</p>
-                        </div>
-                    </div>
-                    <div *ngIf="changePasswordForm.controls.newPassword.errors" class="validation-container">
-                        <div *ngIf="changePasswordForm.controls.newPassword.errors.required ">
-                            <p class="validation-text">Enter new password</p>
-                        </div>
-                        <div *ngIf="changePasswordForm.controls.newPassword.errors.minLength">
-                            <p class="validation-text">Maximum new password length is 10</p>
-                        </div>
-                    </div>
+                <div class="change-password-validations">
+      
+                    <p *ngIf="missingPasswordValidation" class="validation-text">Current password is missing</p>
+
+                    <p *ngIf ="missingNewPasswordValidation" class="validation-text">New password is missing</p>
+
+                    <p *ngIf ="minLenghtPasswordValidation" class="validation-text">Password must be at least 10 characters long</p>
+        
                 </div> 
 
             </form>
 
+        </div>
+
+        <div *ngIf="!personalInfo.hasPassword" class="personal-info-block">
+
+            <div class="set-password-button">
+                <button type="button" class='nna-button nna-button-secondary' (click)="redirectToSetPasswordPage()">
+                    Set password for your account
+                </button>
+            </div>
         </div>
 
 

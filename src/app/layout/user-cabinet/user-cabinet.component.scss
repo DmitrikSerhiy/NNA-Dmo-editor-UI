@@ -92,14 +92,59 @@
 
 			.change-password-form {
 				.nna-input-group {
-					margin-top: 5px;
+					// .nna-input {
+					// 	width: 80%;
+					// }
+
+					// .pass-icon {
+					// 	position: absolute;
+					// 	right: 0;
+					// 	color: gray;
+					// 	margin-left: .4rem;
+					// 	&:hover {
+					// 		cursor: pointer;
+					// 	}
+					//}
+
+					&:nth-child(2) {
+						top: 7px;
+						margin-bottom: 7px;
+					}
+				}
+
+				.change-password-buttons-wrapper {
+					margin-top: 0.75rem;
+					display: flex;
+
+					.nna-icon-button {
+						.material-icons {
+							font-size: 14px;
+						}
+					}
+
+					.main-buttons {
+						display: flex;
+						margin-left: auto;
+						
+						.nna-icon-button {
+							margin-left: 0.4rem;
+						}
+					}
+
+				}
+			}
+
+			.change-password-validations {
+				margin-top: 0.75rem;
+
+				p {
+					margin-bottom: 0.75rem;
 				}
 			}
 		}
 
-		.change-password-button {
+		.change-password-button, .set-password-button {
 			width: 100%;
-
 		}
 
 
