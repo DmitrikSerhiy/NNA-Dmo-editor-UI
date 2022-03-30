@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { PersonalInfoDto } from 'src/app/shared/models/authDto';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { UserManager } from 'src/app/shared/services/user-manager';
@@ -99,7 +99,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 					this.isFormProcessing = false;
 				},
 				() => { 
-
 					this.isFormProcessing = false;
 				}
 			);
@@ -119,9 +118,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		this.passwordHidden 
 			? this.newPasswordElement.nativeElement.setAttribute('type', 'password')
 			: this.newPasswordElement.nativeElement.setAttribute('type', 'text');
-
 	}
-
 
 	redirectToSetPasswordPage() {
 		this.router.navigate(['/email'], { queryParams: { reason: 'new' } } );
@@ -211,7 +208,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		if (hideOtherForms) {
 			this.toggleChangePasswordForm(false, false);
 		}
-
 	}
 
 	toggleChangePasswordForm(show: boolean, hideOtherForms: boolean = true) {
@@ -224,7 +220,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		} else {
 			this.resetPasswordForm();
 		}
-
 
 		if (hideOtherForms) {
 			this.toggleChangeUserNameForm(false, false);

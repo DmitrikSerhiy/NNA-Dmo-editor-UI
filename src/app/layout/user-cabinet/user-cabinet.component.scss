@@ -3,6 +3,7 @@
 
 .user-cabinet {
 	border: none;
+	height: 100%;
 
 	.user-cabinet-header {
 		background: $input-underline-gradient;
@@ -19,11 +20,22 @@
 	.personal-info-container {
 		display: flex;
 		flex-direction: column;
+		height: 100%;
 
 		.personal-info-block {
 			margin: 1rem 0.75rem 0 0.75rem;
 			width: unset;
 			display: flex;
+		}
+
+		.block-with-toggler {
+			min-height: 65px;
+		}
+
+		.last-block {
+			margin-top: auto;
+			margin-bottom: 0.75rem;
+
 		}
 
 		.block-with-button-wrapper {
@@ -92,20 +104,6 @@
 
 			.change-password-form {
 				.nna-input-group {
-					// .nna-input {
-					// 	width: 80%;
-					// }
-
-					// .pass-icon {
-					// 	position: absolute;
-					// 	right: 0;
-					// 	color: gray;
-					// 	margin-left: .4rem;
-					// 	&:hover {
-					// 		cursor: pointer;
-					// 	}
-					//}
-
 					&:nth-child(2) {
 						top: 7px;
 						margin-bottom: 7px;
@@ -130,7 +128,6 @@
 							margin-left: 0.4rem;
 						}
 					}
-
 				}
 			}
 
@@ -146,7 +143,5 @@
 		.change-password-button, .set-password-button {
 			width: 100%;
 		}
-
-
 	}
 }

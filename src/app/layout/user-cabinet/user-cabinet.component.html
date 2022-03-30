@@ -58,7 +58,7 @@
         </form>
 
 
-        <div *ngIf="personalInfo.hasPassword" class="personal-info-block">
+        <div *ngIf="personalInfo?.hasPassword" class="personal-info-block block-with-toggler">
 
             <div [hidden]="showPasswordChangeForm" class="change-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
@@ -110,18 +110,23 @@
 
         </div>
 
-        <div *ngIf="!personalInfo.hasPassword" class="personal-info-block">
-
+        <div *ngIf="!personalInfo?.hasPassword" class="personal-info-block block-with-toggler">
             <div class="set-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="redirectToSetPasswordPage()">
                     Set password for your account
                 </button>
             </div>
         </div>
+        
+        <div *ngIf="personalInfo?.authProviders && personalInfo?.authProviders?.length > 0" class="personal-info-block">
+            auth providers
+        </div>
 
 
-        <div class="personal-info-block">
-            <button class="nna-button nna-button-primary" (click)="onLoggedout()">Logout</button>
+        <div class="personal-info-block last-block">
+            <button class="nna-button nna-button-primary" (click)="onLoggedout()">
+                 Logout
+            </button>
         </div>
 
     </div>
