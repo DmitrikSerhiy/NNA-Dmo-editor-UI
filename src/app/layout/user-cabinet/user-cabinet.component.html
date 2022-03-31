@@ -58,7 +58,7 @@
         </form>
 
 
-        <div [hidden]="!personalInfo?.hasPassword" class="personal-info-block">
+        <div [hidden]="!personalInfo?.hasPassword || passwordChanged" class="personal-info-block">
 
             <div [hidden]="showPasswordChangeForm" class="change-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
@@ -110,7 +110,13 @@
 
         </div>
 
-        <div [hidden]="personalInfo?.hasPassword" class="personal-info-block">
+        <div [hidden]="!passwordChanged" class="personal-info-block">
+            <div class="change-password-response-container">
+                <p>Password was successfully changed</p>
+            </div>
+        </div>
+
+        <div [hidden]="personalInfo?.hasPassword || passwordChanged" class="personal-info-block">
             <div class="set-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="redirectToSetPasswordPage()">
                     Set password for your account

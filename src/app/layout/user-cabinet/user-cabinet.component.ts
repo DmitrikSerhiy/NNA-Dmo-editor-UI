@@ -26,6 +26,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	initialUserName: string;
 	isUserNotFound: boolean = false;
 	passwordHidden: boolean = true;
+	passwordChanged: boolean = false;
 
 	missingPasswordValidation: boolean = false;
 	missingNewPasswordValidation: boolean = false;
@@ -36,6 +37,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	changeUserNameForm: FormGroup;
 	changePasswordForm: FormGroup;
 	get userName() { return this.changeUserNameForm.get('userName'); }
+	get oldPassword() { return this.changePasswordForm.get('oldPassword'); }
+	get newPassword() { return this.changePasswordForm.get('newPassword'); }
 
 	@ViewChild('email', { static: true }) email: ElementRef;
 	@ViewChild('demoName', { static: true }) demoName: ElementRef;
@@ -48,7 +51,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	hidePasswordTitle: string;
 	passwrodTogglerTitle: string;
 
-	// todo: userName must be trimmed and left with single space only
 	personalInfo: PersonalInfoDto;
 
  	private unsubscribe$: Subject<void> = new Subject();
@@ -107,10 +109,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			);
 	}
 
-	onGoogleButtonClicked() {
-		
-	}
-
 	togglePassword() {
 		this.passwordHidden = !this.passwordHidden;
 
@@ -147,7 +145,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
   	}
 
 	onUserNameChange() {
-		if (this.userName.value === this.initialUserName) {
+		const newName = this.userName.value.trim();
+		if (newName === this.initialUserName) {
 			this.toggleChangeUserNameForm(false);
 			return;
 		}
@@ -156,7 +155,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			this.toggleChangeUserNameForm(false);
 			return;
 		}
-		
+
 		this.isFormProcessing = true;
 		this.authService
 			.updateUserName(this.userName.value)
@@ -164,10 +163,10 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			.subscribe(
 				(changeNameResponse: boolean) => {
 					if (changeNameResponse) {
-						this.initialUserName = this.userName.value;
-						this.personalInfo.userName = this.userName.value;
-						this.demoName.nativeElement.value = this.userName.value;
-						this.userManager.updateUserName(this.userName.value);
+						this.initialUserName = newName;
+						this.personalInfo.userName = newName;
+						this.demoName.nativeElement.value = newName;
+						this.userManager.updateUserName(newName);
 						this.updateUserName.emit();
 						this.toggleChangeUserNameForm(false);
 					}
@@ -196,8 +195,13 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		// todo: send request
-
+		this.authService
+			.changePassword(this.personalInfo.userId, this.oldPassword.value, this.newPassword.value)
+			.pipe(takeUntil(this.unsubscribe$))
+			.subscribe(() => {
+				this.passwordChanged = true;
+				this.toggleChangePasswordForm(false, true);
+			});
 	}
 
 	toggleChangeUserNameForm(show: boolean, hideOtherForms: boolean = true) {
@@ -253,5 +257,4 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		this.passwordHidden = true;
 		this.changePasswordForm.reset();
 	}
-
 }

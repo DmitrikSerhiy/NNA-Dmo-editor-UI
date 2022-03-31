@@ -14,7 +14,6 @@ import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-	// todo: redirect to app if user is authorized
 	loginForm: FormGroup;
 	get email() { return this.loginForm.get('email'); }
 	get password() { return this.loginForm.get('password'); }
@@ -83,7 +82,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 		});
 
 		this.emailInput.nativeElement.focus();
-
   	}
 
 	togglePassword(toggler: boolean) {
@@ -163,7 +161,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
 			}
-			// user has no password but has auth provider been saved
+			// user has no password but has auth provider previously saved
 			let ssoResponse = await this.authService.checkSsoAndPassword(this.email.value);
 			if (ssoResponse) {
 				this.emailInvalid = true;

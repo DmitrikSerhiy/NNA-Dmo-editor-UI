@@ -95,7 +95,13 @@ export class AuthService {
 
 	setOrResetPassword(email: string, token: string, reason: SendMailReason, password: string): Observable<any> {
         return this.http
-            .put<any>(this.serverUrl + '/password', { 'email': email, 'token': token, 'reason': reason as number, 'newPassword': password})
+            .post<any>(this.serverUrl + '/password', { 'email': email, 'token': token, 'reason': reason as number, 'newPassword': password})
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }
+
+	changePassword(userId: string, currentPassword: string, newPassword: string): Observable<any> {
+        return this.http
+            .put<any>(this.serverUrl + '/password', { 'userId': userId, 'currentPassword': currentPassword, 'newPassword': newPassword })
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 

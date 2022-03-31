@@ -149,11 +149,16 @@
 			}
 		}
 
-		.change-password-button, .set-password-button {
+		.change-password-button, .set-password-button, .change-password-response-container {
 			width: 100%;
 			.nna-button {
 				width: 100%;
 				justify-content: center;
+			}
+
+			p {
+				width: 100%;
+				font-size: 0.7rem;
 			}
 		}
 	}
