@@ -58,7 +58,7 @@
         </form>
 
 
-        <div *ngIf="personalInfo?.hasPassword" class="personal-info-block block-with-toggler">
+        <div [hidden]="!personalInfo?.hasPassword" class="personal-info-block">
 
             <div [hidden]="showPasswordChangeForm" class="change-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
@@ -110,7 +110,7 @@
 
         </div>
 
-        <div *ngIf="!personalInfo?.hasPassword" class="personal-info-block block-with-toggler">
+        <div [hidden]="personalInfo?.hasPassword" class="personal-info-block">
             <div class="set-password-button">
                 <button type="button" class='nna-button nna-button-secondary' (click)="redirectToSetPasswordPage()">
                     Set password for your account
@@ -119,7 +119,10 @@
         </div>
         
         <div *ngIf="personalInfo?.authProviders && personalInfo?.authProviders?.length > 0" class="personal-info-block">
-            auth providers
+            <div class="linked-accounts-container">
+                <p>Linked accounts:</p>
+                <app-google-button *ngIf="googleIsLinked" [disabled]="true"></app-google-button>
+            </div>
         </div>
 
 

@@ -16,6 +16,7 @@ import { DmoCollectionsComponent } from './dmo-collections/dmo-collections.compo
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestRightMenuComponent } from './test-right-menu/test-right-menu.component';
 import { UserCabinetComponent } from './user-cabinet/user-cabinet.component';
+import { GoogleButtonComponent } from '../shared/components/google-button/google-button.component';
 
 const routes: Routes = [{
     path: '',

@@ -7,6 +7,7 @@ import { RemoveDmoPopupComponent } from './components/remove-dmo-popup/remove-dm
 import { NnaSpinnerComponent } from './components/nna-spinner/nna-spinner.component';
 import { CustomErrorHandler } from './services/custom-error-handler';
 import { SsoContainerComponent } from './components/sso-container/sso-container.component';
+import { GoogleButtonComponent } from './components/google-button/google-button.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { SsoContainerComponent } from './components/sso-container/sso-container.
     RightMenuGrabberComponent, 
     RemoveDmoPopupComponent, 
     NnaSpinnerComponent, 
-    SsoContainerComponent
+    SsoContainerComponent, 
+    GoogleButtonComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import { SsoContainerComponent } from './components/sso-container/sso-container.
     RemoveCollectionPopupComponent, 
     RightMenuGrabberComponent, 
     NnaSpinnerComponent, 
-    SsoContainerComponent
+    SsoContainerComponent,
+    GoogleButtonComponent
   ],
   providers: [CustomErrorHandler]
 })

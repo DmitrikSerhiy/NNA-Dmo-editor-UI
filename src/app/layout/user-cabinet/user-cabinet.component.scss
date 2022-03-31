@@ -26,6 +26,14 @@
 			margin: 1rem 0.75rem 0 0.75rem;
 			width: unset;
 			display: flex;
+
+			.linked-accounts-container {
+				flex-direction: column;
+				p {
+					font-size: 0.75rem;
+					margin-bottom: .4rem;
+				}
+			}
 		}
 
 		.block-with-toggler {
@@ -34,6 +42,7 @@
 
 		.last-block {
 			margin-top: auto;
+			margin-left: auto;
 			margin-bottom: 0.75rem;
 
 		}
@@ -142,6 +151,10 @@
 
 		.change-password-button, .set-password-button {
 			width: 100%;
+			.nna-button {
+				width: 100%;
+				justify-content: center;
+			}
 		}
 	}
 }

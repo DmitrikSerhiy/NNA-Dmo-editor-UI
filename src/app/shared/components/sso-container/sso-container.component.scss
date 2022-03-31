@@ -12,7 +12,6 @@
     align-content: center;
 
     .sso-description-container {
-        // width: 6.5rem;
         margin: auto 0;
         margin-right: 0.2rem;
 
@@ -20,9 +19,5 @@
             vertical-align: sub;
             @include font-primary-info();
         }
-    }
-
-    .sso-button {
-        cursor: pointer;
     }
 }

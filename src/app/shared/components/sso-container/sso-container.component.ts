@@ -30,9 +30,7 @@ export class SsoContainerComponent implements OnInit {
 		this.isTextForSignUp = this.isRegister;
 	}
 
-  	async onGoogleAuth($event: any) {
-		$event.preventDefault();
-
+  	async onGoogleButtonClicked() {
 		if (this.isSsoButtonClicked == true) {
 			return;
 		}

@@ -31,6 +31,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	missingNewPasswordValidation: boolean = false;
 	minLenghtPasswordValidation: boolean = false;
 
+	googleIsLinked: boolean;
+
 	changeUserNameForm: FormGroup;
 	changePasswordForm: FormGroup;
 	get userName() { return this.changeUserNameForm.get('userName'); }
@@ -89,6 +91,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 						return;
 					}
 					this.personalInfo = response;
+					this.googleIsLinked = this.personalInfo.authProviders.find(ap => ap == "google") !== undefined;
 
 					this.userName.setValue(this.personalInfo.userName);
 					this.email.nativeElement.value = this.personalInfo.userEmail;
@@ -102,6 +105,10 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 					this.isFormProcessing = false;
 				}
 			);
+	}
+
+	onGoogleButtonClicked() {
+		
 	}
 
 	togglePassword() {
