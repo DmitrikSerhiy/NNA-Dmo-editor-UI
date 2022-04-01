@@ -1,6 +1,6 @@
 <div class="card card-default mb-3 user-cabinet">
     <div class="card-header user-cabinet-header"> Personal info </div>
-    <div *ngIf="isFormProcessing" class="personal-info-spinner">
+    <div *ngIf="isFormProcessing || isFormProcessingAfterEdit" class="personal-info-spinner">
         <app-nna-spinner></app-nna-spinner>
     </div>
 
@@ -105,13 +105,9 @@
                 </div>
 
                 <div class="change-password-validations">
-      
                     <p *ngIf="missingPasswordValidation" class="validation-text">Current password is missing</p>
-
                     <p *ngIf ="missingNewPasswordValidation" class="validation-text">New password is missing</p>
-
                     <p *ngIf ="minLenghtPasswordValidation" class="validation-text">Password must be at least 10 characters long</p>
-        
                 </div> 
 
             </form>
@@ -148,7 +144,7 @@
 
     </div>
 
-    <div class="personal-info-container" [hidden]="!isUserNotFound || isFormProcessing">
+    <div class="personal-info-container" [hidden]="!isUserNotFound">
         <div class="personal-info-block nna-input-group">
             User is not found
         </div>

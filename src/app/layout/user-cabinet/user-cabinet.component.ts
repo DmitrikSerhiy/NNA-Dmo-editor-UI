@@ -23,6 +23,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	rightMenuOpnSubscription: Subscription;
 	rightMenuClsSubscription: Subscription;
 	isFormProcessing = false;
+	isFormProcessingAfterEdit = false;
 	showUserNameChangeForm: boolean = false;
 	showPasswordChangeForm: boolean = false;
 	initialUserName: string;
@@ -133,14 +134,14 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	}
 
 	sendVerifyEmail() {
-		this.isFormProcessing = true;
+		this.isFormProcessingAfterEdit = true;
 		this.authService
 			.sendConfirmEmail(this.personalInfo.userEmail)
 			.subscribe(() => {
 				this.emailForAccountConfirmationHasBeenSent = true;
-				this.isFormProcessing = false;
+				this.isFormProcessingAfterEdit = false;
 			}, () => {
-				this.isFormProcessing = false;
+				this.isFormProcessingAfterEdit = false;
 			});
 	}
 
@@ -167,7 +168,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		this.isFormProcessing = true;
+		this.isFormProcessingAfterEdit = true;
 		this.authService
 			.updateUserName(this.userManager.getCurrentUserEmail(), this.userName.value)
 			.pipe(takeUntil(this.unsubscribe$))
@@ -178,7 +179,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 				this.userManager.updateUserName(newName);
 				this.updateUserName.emit();
 				this.toggleChangeUserNameForm(false);
-				this.isFormProcessing = false;
+				this.isFormProcessingAfterEdit = false;
 			},
 			(error) => { 
 				if (error.message) {
@@ -187,7 +188,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 					this.hasServerValidationMessage = true;
 					this.serverValidationMessage = error;
 				}
-				this.isFormProcessing = false;
+				this.isFormProcessingAfterEdit = false;
 			});
 	}
 
