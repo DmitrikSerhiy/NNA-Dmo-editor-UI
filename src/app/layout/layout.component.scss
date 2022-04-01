@@ -12,17 +12,23 @@
     height: 100%;
 }
 
-.main-container {
-    margin-left: 235px;
-    padding: 15px;
-    -ms-overflow-x: hidden;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    position: relative;
+.nna-main-container-wrapper {
     overflow: hidden;
-    height: 100%;
-    background-color: $background-color;
-}
-.collapsed {
-    margin-left: 50px;
+
+    .main-container {
+        margin-left: 234px;
+        padding: 15px;
+        margin-right: -1px;
+        margin-top: -1px;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+        background-color: $background-color;
+    }
+    .collapsed {
+        margin-left: 49px;
+        margin-right: -1px;
+        margin-top: -1px;
+        margin-bottom: -1px;
+    }
 }

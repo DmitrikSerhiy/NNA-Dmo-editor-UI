@@ -10,7 +10,7 @@
 				<div *ngSwitchDefault>No selected menu</div>
 			</div>
 		</mat-sidenav>
-		<mat-sidenav-content>
+		<mat-sidenav-content class="nna-main-container-wrapper">
 			<app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" [shouldbeShown]="isGrabberShouldBeShown" (toggleMenu)="openRightMenuByGrabber($event)" ></app-right-menu-grabber>
 			<!-- <app-nav-menu></app-nav-menu> -->
 
