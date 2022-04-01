@@ -12,10 +12,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { concatMap, map, takeUntil, finalize } from 'rxjs/operators';
-import { Subject, Subscription } from 'rxjs';
 import { DmoCollectionsService } from 'src/app/shared/services/dmo-collections.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RightMenuGrabberService } from 'src/app/shared/services/right-menu-grabber.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { Subject } from 'rxjs/internal/Subject';
 
 @Component({
 	selector: 'app-dmo-collection',

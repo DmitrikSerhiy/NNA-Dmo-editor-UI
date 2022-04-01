@@ -1,13 +1,14 @@
 import { RightMenuGrabberService } from './../shared/services/right-menu-grabber.service';
 import { CurrentSidebarService } from './../shared/services/current-sidebar.service';
 import { CollectionsManagerService } from './../shared/services/collections-manager.service';
-import { Observable, Subscription } from 'rxjs';
 import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
 import { ActivatedRoute } from '@angular/router';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
+import { Observable } from 'rxjs/internal/Observable';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
     selector: 'app-layout',

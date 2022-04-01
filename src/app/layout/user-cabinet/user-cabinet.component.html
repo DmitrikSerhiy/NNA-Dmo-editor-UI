@@ -7,9 +7,9 @@
     <div [hidden]="isUserNotFound || isFormProcessing" class="personal-info-container">
 
         <div class="personal-info-block block-with-button-wrapper">
-            <div class="block-with-button" [ngSwitch]="personalInfo?.isEmailVerified">
+            <div class="block-with-button" *ngIf="personalInfo">
                 <div class="nna-input-group">
-                    <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
+                    <input autocomplete="off" type="text" name="email" id="email" value="{{personalInfo.userEmail}}" class="nna-input" disabled />
                     <label for="email" class="nna-input-label">Email</label>
                 </div>
                 <i *ngIf="personalInfo.isEmailVerified == true && emailForAccountConfirmationHasBeenSent == false" class="fa fa-check single-icon" aria-hidden="true" title="Account is verified"></i>

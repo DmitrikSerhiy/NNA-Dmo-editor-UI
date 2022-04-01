@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { TokenDetails } from '../shared/models/serverResponse';
 import { AuthService } from '../shared/services/auth.service';
 import { RefreshHelperService } from '../shared/services/refresh-helper.service';

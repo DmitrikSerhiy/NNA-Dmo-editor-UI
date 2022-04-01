@@ -1,7 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
+import { Subject } from 'rxjs/internal/Subject';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { takeUntil } from 'rxjs/operators';
 import { PersonalInfoDto } from 'src/app/shared/models/authDto';
 import { AuthService } from 'src/app/shared/services/auth.service';
@@ -44,7 +46,6 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	get oldPassword() { return this.changePasswordForm.get('oldPassword'); }
 	get newPassword() { return this.changePasswordForm.get('newPassword'); }
 
-	@ViewChild('email', { static: true }) email: ElementRef;
 	@ViewChild('demoName', { static: true }) demoName: ElementRef;
 	@ViewChild('userName', { static: true }) userNameElement: ElementRef;
 
@@ -100,10 +101,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 					this.googleIsLinked = this.personalInfo.authProviders.find(ap => ap == "google") !== undefined;
 
 					this.userName.setValue(this.personalInfo.userName);
-					this.email.nativeElement.value = this.personalInfo.userEmail;
 					this.demoName.nativeElement.value = this.personalInfo.userName;
 					this.initialUserName = this.personalInfo.userName;
-
 
 					this.isFormProcessing = false;
 				},
