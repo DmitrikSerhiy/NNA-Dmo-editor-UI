@@ -1,0 +1,40 @@
+<div *ngIf="isProcessing" >
+    <app-nna-spinner></app-nna-spinner>
+</div>
+
+<div class="confirm-account-page">
+    <div class="confirm-account-container">
+        <img src="/assets/logo-en-extend.svg" alt="logo" class="logo" (click)='redirectToHome()'>
+        <p class="header"> Account activation</p>
+
+        <div *ngIf="token && isConfirmed" class="main-block">
+            <h6>Email is verified. Your account is activated.</h6>
+        </div>
+
+        <div *ngIf="failedToConfirm && !emailIsSent" class="main-block">
+            <h6>{{errorMessage}}</h6>
+        </div>
+
+        <div *ngIf="!token && !userIsNotAuthorized" class="main-block">
+            <h6>Token is missing</h6>
+        </div>
+
+        <div *ngIf="emailIsSent" class="main-block">
+            <p>We've sent you an email. Please go to <strong>{{currentUserEmail}}</strong> and follow further instructions.</p>
+            <p>It could take a few minutes to appear, and be sure to check any spam and promotional folders</p>
+        </div>
+
+        <div *ngIf="userIsNotAuthorized" class="main-block">
+            <p>To verify your account you should login first.</p>
+            <p>And follow the link in your mail box again.</p>
+        </div>
+
+
+        <div class="buttons-block">
+            <button *ngIf="failedToConfirm && !userIsNotAuthorized && !emailIsSent" type="button" class="nna-button-secondary" (click)="sendConfirmEmail()">Try again</button>
+            <button *ngIf="!userIsNotAuthorized" type="button" class="nna-button-primary" (click)="redirectToHome()">Ok</button>
+            <button *ngIf="userIsNotAuthorized" type="button" class="nna-button-primary" (click)="toLogin()">Login</button>
+        </div>
+    </div>
+</div>
+

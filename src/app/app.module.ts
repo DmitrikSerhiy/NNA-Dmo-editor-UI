@@ -20,6 +20,7 @@ import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { environment } from 'src/environments/environment';
+import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
 
 
 const routes: Routes = [
@@ -28,6 +29,7 @@ const routes: Routes = [
 	{ path: 'signup', loadChildren: () => import('./signup/signup.module').then(m => m.SignupModule) },
 	{ path: 'email', loadChildren: () =>  import('./mail-form/mail-form.module').then(m => m.MailFormModule) }, 
 	{ path: 'password', loadChildren: () =>  import('./password/password.module').then(m => m.PasswordModule)},
+	{ path: 'account', loadChildren: () =>  import('./confirm-account/confirm-account.module').then(m => m.ConfirmAccountModule)},
 	{ path: 'access-denied', loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
 	{ path: 'not-found', loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundModule) },
 	{ path: '', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },

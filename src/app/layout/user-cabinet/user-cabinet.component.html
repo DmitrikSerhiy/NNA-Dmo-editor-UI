@@ -12,10 +12,11 @@
                     <input #email autocomplete="off" type="text" name="email" id="email" class="nna-input" disabled />
                     <label for="email" class="nna-input-label">Email</label>
                 </div>
-                <i *ngSwitchCase="true" class="fa fa-check single-icon" aria-hidden="true" title="Account is verified"></i>
-                <button *ngSwitchCase="false" type="button" class='nna-icon-button nna-button-primary' (click)='sendVerifyEmail()' title="Send email to verify account">
+                <i *ngIf="personalInfo.isEmailVerified == true && emailForAccountConfirmationHasBeenSent == false" class="fa fa-check single-icon" aria-hidden="true" title="Account is verified"></i>
+                <button *ngIf="personalInfo.isEmailVerified == false && emailForAccountConfirmationHasBeenSent == false" type="button" class='nna-icon-button nna-button-primary' (click)='sendVerifyEmail()' title="Send email to verify account">
                     <i class="fa fa-envelope" aria-hidden="true"></i>
                 </button>
+                <i *ngIf="emailForAccountConfirmationHasBeenSent == true" class="fa fa-paper-plane single-icon" aria-hidden="true" title="Email has been sent"></i>
             </div>
         </div>
 
@@ -45,13 +46,20 @@
                     <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
                 </button>
             </div>
-            <div *ngIf="changeUserNameForm.invalid && changeUserNameForm.dirty" class="validation-wrapper">
+            <div *ngIf="changeUserNameForm.invalid && changeUserNameForm.dirty && !hasServerValidationMessage" class="validation-wrapper">
                 <div *ngIf="changeUserNameForm.controls.userName.errors" class="validation-container">
                     <div *ngIf="changeUserNameForm.controls.userName.errors.required">
-                        <p class="validation-text">name is missing </p>
+                        <p class="validation-text">Name is missing</p>
                     </div>
                     <div *ngIf="changeUserNameForm.controls.userName.errors.maxlength">
                         <p class="validation-text">Maximum name length is 50</p>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="hasServerValidationMessage" class="validation-wrapper">
+                <div class="validation-container">
+                    <div>
+                        <p class="validation-text">{{serverValidationMessage}}</p>
                     </div>
                 </div>
             </div>

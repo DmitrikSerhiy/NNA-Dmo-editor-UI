@@ -167,6 +167,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 				this.emailInvalid = true;
 				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;
 				this.additionalValidationForSsoEmail = this.ssoEmailValidationToShow.replace("social", ssoResponse.charAt(0).toUpperCase() + ssoResponse.substring(1, ssoResponse.length));
+				// todo: change it to handle array
 				this.emailInput.nativeElement.focus();
 				return;
 			} 

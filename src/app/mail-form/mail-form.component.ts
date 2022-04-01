@@ -55,6 +55,10 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
         	'email': new FormControl('', [Validators.required, Validators.email])
 		});
 
+		if (this.userManager.isAuthorized()) {
+			this.email.setValue(this.userManager.getCurrentUserEmail());
+		}
+
 		this.reason = this.route.snapshot.queryParamMap.get("reason");
 		if (this.reason == 'new' || this.reason == 'reset') {
 			this.validReason = true;
@@ -134,6 +138,11 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.sentCompleted = false;
 		this.mailForm.reset();
 		this.emailInvalid = false;
+
+		if (this.userManager.isAuthorized()) {
+			this.email.setValue(this.userManager.getCurrentUserEmail());
+		}
+
 		await this.nnaHelpersService.sleep(200);
 		this.emailInpup.nativeElement.focus();
 	}

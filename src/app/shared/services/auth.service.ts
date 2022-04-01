@@ -25,10 +25,10 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<PersonalInfoDto>(response, obs)));
 	}
 
-    updateUserName(newUserName: string): Observable<boolean> {
+    updateUserName(email: string, newUserName: string): Observable<any> {
 		return this.http
-            .put<boolean>(this.serverUrl + '/name', {userName: newUserName})
-            .pipe(catchError((response, obs) => this.errorHandler.handle<boolean>(response, obs)));
+            .put<any>(this.serverUrl + '/name', { 'userName': newUserName, 'email': email })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)));
 	}
 
     checkUserEmail(email: string): Promise<boolean> {
@@ -64,9 +64,9 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<UserDetails>(response, obs) ));
     }
 
-    logout(): Observable<any> {
+    logout(email: string): Observable<any> {
         return this.http
-            .delete<any>(this.serverUrl + '/logout' )
+            .delete<any>(this.serverUrl + '/logout', {body: {'email': email} } )
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 
@@ -99,9 +99,21 @@ export class AuthService {
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 
-	changePassword(userId: string, currentPassword: string, newPassword: string): Observable<any> {
+	changePassword(email: string, currentPassword: string, newPassword: string): Observable<any> {
         return this.http
-            .put<any>(this.serverUrl + '/password', { 'userId': userId, 'currentPassword': currentPassword, 'newPassword': newPassword })
+            .put<any>(this.serverUrl + '/password', { 'email': email, 'currentPassword': currentPassword, 'newPassword': newPassword })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }
+
+    confirmAccount(email: string, token: string): Observable<any> {
+        return this.http
+            .post<any>(this.serverUrl, { 'token': token, 'email': email })
+            .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
+    }
+
+    sendConfirmEmail(email: string): Observable<any> {
+        return this.http
+            .post<any>(this.serverUrl + '/mail/confirmation', {'email': email})
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 

@@ -27,10 +27,14 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	isUserNotFound: boolean = false;
 	passwordHidden: boolean = true;
 	passwordChanged: boolean = false;
+	emailForAccountConfirmationHasBeenSent: boolean = false;
 
 	missingPasswordValidation: boolean = false;
 	missingNewPasswordValidation: boolean = false;
 	minLenghtPasswordValidation: boolean = false;
+
+	hasServerValidationMessage: boolean = false;
+	serverValidationMessage: string;
 
 	googleIsLinked: boolean;
 
@@ -130,12 +134,20 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	}
 
 	sendVerifyEmail() {
-		console.log("not implemented");
+		this.isFormProcessing = true;
+		this.authService
+			.sendConfirmEmail(this.personalInfo.userEmail)
+			.subscribe(() => {
+				this.emailForAccountConfirmationHasBeenSent = true;
+				this.isFormProcessing = false;
+			}, () => {
+				this.isFormProcessing = false;
+			});
 	}
 
 	onLoggedout() {
     	this.authService
-			.logout()
+			.logout(this.userManager.getCurrentUserEmail())
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(_ => {
 					this.userManager.clearUserData();
@@ -158,27 +170,27 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 		this.isFormProcessing = true;
 		this.authService
-			.updateUserName(this.userName.value)
+			.updateUserName(this.userManager.getCurrentUserEmail(), this.userName.value)
 			.pipe(takeUntil(this.unsubscribe$))
-			.subscribe(
-				(changeNameResponse: boolean) => {
-					if (changeNameResponse) {
-						this.initialUserName = newName;
-						this.personalInfo.userName = newName;
-						this.demoName.nativeElement.value = newName;
-						this.userManager.updateUserName(newName);
-						this.updateUserName.emit();
-						this.toggleChangeUserNameForm(false);
-					}
-					this.isFormProcessing = false;
-				},
-				() => { 
+			.subscribe(() => {
+				this.initialUserName = newName;
+				this.personalInfo.userName = newName;
+				this.demoName.nativeElement.value = newName;
+				this.userManager.updateUserName(newName);
+				this.updateUserName.emit();
+				this.toggleChangeUserNameForm(false);
+				this.isFormProcessing = false;
+			},
+			(error) => { 
+				if (error.message) {
 					this.toggleChangeUserNameForm(false);
-					this.isFormProcessing = false;
-				} 
-			);
+				} else {
+					this.hasServerValidationMessage = true;
+					this.serverValidationMessage = error;
+				}
+				this.isFormProcessing = false;
+			});
 	}
-
 
 	onPasswordChange() {
 		if (!this.changePasswordForm.valid) {
@@ -196,7 +208,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		}
 
 		this.authService
-			.changePassword(this.personalInfo.userId, this.oldPassword.value, this.newPassword.value)
+			.changePassword(this.personalInfo.userEmail, this.oldPassword.value, this.newPassword.value)
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(() => {
 				this.passwordChanged = true;
@@ -250,11 +262,15 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 	private resetNameForm(): void {
 		this.changeUserNameForm.reset();
+		this.hasServerValidationMessage = false;
+		this.serverValidationMessage = '';
 	}
 
 	private resetPasswordForm(): void {
 		this.passwrodTogglerTitle = this.showPasswordTitle;
 		this.passwordHidden = true;
 		this.changePasswordForm.reset();
+		this.hasServerValidationMessage = false;
+		this.serverValidationMessage = ''
 	}
 }
