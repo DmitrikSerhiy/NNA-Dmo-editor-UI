@@ -112,8 +112,8 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 		if (this.mailForm.valid) {
 			this.isProcessing = true;
 			const sendMail$ = this.reason == 'new' 
-				? this.authService.sendMail(this.email.value, SendMailReason.setPassword)
-				: this.authService.sendMail(this.email.value, SendMailReason.resetPassword);
+				? this.authService.sendMailForPasswordAction(this.email.value, SendMailReason.setPassword)
+				: this.authService.sendMailForPasswordAction(this.email.value, SendMailReason.resetPassword);
 
 			this.mailSubscription = sendMail$.subscribe(
 				(isSuccess: boolean) => {
@@ -125,6 +125,10 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 						this.isSent = false;
 					}
 					this.sentCompleted = true;
+					this.isProcessing = false;
+				}, () => {
+					this.isNotSent = true;
+					this.isSent = false;
 					this.isProcessing = false;
 				});
 		}

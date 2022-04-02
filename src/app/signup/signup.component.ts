@@ -42,6 +42,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 	private nonAllowedSymbols: string;
 
 	passwordHidden: boolean = true;
+	isProcessing: boolean = false;
 	emailValidationToShow: string;
 	nameValidationToShow: string;
 	passValidationToShow: string;
@@ -241,20 +242,28 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		} 
 		if (this.registerForm.valid) {
+			this.isProcessing = true;
 			this.registerSubscriptions = this.authService
 				.register(this.name.value, this.email.value, this.password.value)
 				.subscribe(
 					(response) => {
+						this.isProcessing = false;
 						this.emailInvalid = false;
 						this.passwordInvalid = false;
 						this.nameInvalid = false;
 						this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 						this.router.navigateByUrl('/app');
 					}, 
-					(errorMessage) => {
-						this.passValidationToShow = errorMessage.title;
+					(messageForUI) => {
+						if (messageForUI.unhandledError) {
+							this.isProcessing = false;
+							return;
+						}
+						this.isProcessing = false;
+						this.passValidationToShow = messageForUI;
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
+						
 					}
 				);
 		}

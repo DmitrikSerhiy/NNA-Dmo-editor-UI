@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, throwError } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
 import { concatMap } from "rxjs/operators";
 import { ToastrErrorMessage, ValidationResultHandled } from "../models/serverResponse";
 import { RefreshHelperService } from "./refresh-helper.service";
@@ -48,12 +48,12 @@ export class CustomErrorHandler {
 				});
 			}
 			this.toastr.error(new ToastrErrorMessage(error.errorMessage, 'Bad request'));
-			return throwError({header: 'Bad request', serverResponse: response } );
+			return throwError({message: 'Bad request', serverResponse: response } );
 		}
 
 		// else if (response.status == 404) {
 		// 	this.toastr.error(new ToastrErrorMessage(response.error, 'Entity is not Found: 404'));
-		// 	return throwError({header: 'Entity is not Found', status: 404 } );
+		// 	return throwError({message: 'Entity is not Found', status: 404 } );
 		// }
 
 		else if (error.fromExceptionFilter) {
@@ -63,7 +63,7 @@ export class CustomErrorHandler {
 		
 		else {
 			this.toastr.error(new ToastrErrorMessage('Administrator has been notified', 'Unverified error'));
-			return throwError({message: 'Unverified error', serverResponse: response});
+			return throwError({message: 'Unverified error', serverResponse: response, unhandledError: true});
 		}
 	}
 } 

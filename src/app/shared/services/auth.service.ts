@@ -38,10 +38,10 @@ export class AuthService {
             .toPromise();
     }
 
-    checkSsoAndPassword(email: string): Promise<string> {
+    checkSsoAndPassword(email: string): Promise<string[]> {
         return this.http
-            .post<string>(this.serverUrl + '/authprovider', { 'email': email } )
-            .pipe(catchError((response, obs) => this.errorHandler.handle<string>(response, obs)))
+            .get<string[]>(this.serverUrl + `/authproviders?email=${email}` )
+            .pipe(catchError((response, obs) => this.errorHandler.handle<string[]>(response, obs)))
             .toPromise();
     }
 
@@ -81,9 +81,9 @@ export class AuthService {
             .toPromise();
     }
 
-    sendMail(target: string, reason: SendMailReason): Observable<any> {
+    sendMailForPasswordAction(target: string, reason: SendMailReason): Observable<any> {
         return this.http
-            .post<any>(this.serverUrl + '/mail', {'email': target, 'reason': reason as number })
+            .post<any>(this.serverUrl + '/mail/password', {'email': target, 'reason': reason as number })
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }    
     
@@ -107,7 +107,7 @@ export class AuthService {
 
     confirmAccount(email: string, token: string): Observable<any> {
         return this.http
-            .post<any>(this.serverUrl, { 'token': token, 'email': email })
+            .post<any>(this.serverUrl + '/confirmation', { 'token': token, 'email': email })
             .pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)) );
     }
 

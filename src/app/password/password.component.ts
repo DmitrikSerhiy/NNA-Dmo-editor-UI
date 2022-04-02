@@ -16,11 +16,9 @@ import { UserManager } from '../shared/services/user-manager';
 export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	passwordForm: FormGroup;
-	get password() { return this.passwordForm.get('password'); }
+	get password() { return this.passwordForm.get('newPassword'); }
 	get hiddenEmail() { return this.passwordForm.get('email'); }
   	@ViewChild('passwordInput', { static: false }) passwordInput: ElementRef;
-	@ViewChild('emailInpup', { static: false }) emailInpup: ElementRef;
-
 
 	passwordInvalid: boolean;
 	passValidationToShow: string;
@@ -65,7 +63,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 	ngAfterViewInit(): void {
 		if (this.email && (this.reason == 0 || this.reason == 1) && this.token) {
 			if (this.isProcessing == false) {
-				this.passwordInput.nativeElement.focus();
+				setTimeout(() => { this.passwordInput.nativeElement.focus(); }, 300);
 			}
 		}
 	}
@@ -77,10 +75,11 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.token = this.route.snapshot.queryParamMap.get("token");
 
 		this.passwordForm = new FormGroup({
-        	'password': new FormControl('', [Validators.required, Validators.minLength(10)]),
+        	'newPassword': new FormControl('', [Validators.required, Validators.minLength(10)]),
 			'email': new FormControl('', [Validators.required, Validators.email])
 		});
 		this.isProcessing = true;
+		this.passwordForm.controls['email'].setValue(this.email);
 
 		this.validateMailAndTokenSubscription = this.authService.validateMailAndToken(this.email, this.token, this.reason)
 			.subscribe((result: any) => { 
@@ -93,10 +92,13 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 				} else {
 					this.password.enable();
 					this.passwordInvalid = false;
-					this.hiddenEmail.setValue(this.email);
 				}
 				
 				this.isProcessing = false;
+				setTimeout(() => { this.passwordInput.nativeElement.focus(); }, 300);
+			}, () => {
+				this.isProcessing = false;
+				this.passwordInvalid = false;
 			});
 	}
 
@@ -173,6 +175,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			return;
 		} 
 
+		console.log(this.passwordForm);
 		if (this.passwordForm.valid) {
 			this.isProcessing = true;
 			this.passwordSubscription = this.authService

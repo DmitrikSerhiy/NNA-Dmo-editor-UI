@@ -4,7 +4,7 @@
         <app-nna-spinner></app-nna-spinner>
     </div>
 
-    <div [hidden]="isUserNotFound || isFormProcessing" class="personal-info-container">
+    <div [hidden]="isUserNotFound || isFormProcessing || unhandledError" class="personal-info-container">
 
         <div class="personal-info-block block-with-button-wrapper">
             <div class="block-with-button" *ngIf="personalInfo">
@@ -96,7 +96,6 @@
                             <button type="submit" class='nna-icon-button nna-button-primary'>
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </button>
-
                             <button type="button" class='nna-icon-button' (click)="toggleChangePasswordForm(false)">
                                 <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem;"></i>
                             </button>

@@ -27,8 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	ngOnInit() {
 		this.authService
 			.ping()
-			.subscribe(
-				() =>  {
+			.subscribe(() =>  {
 					this.isAuthorized = true;
 				},
 				(response: any) => { 

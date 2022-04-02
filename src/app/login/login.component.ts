@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	showPasswordTitle: string
 	hidePasswordTitle: string;
 	passwordHidden: boolean = true;
+	isProcessing: boolean = false;
 
 	constructor(
 		public router: Router,
@@ -151,6 +152,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			return;
 		} 
 		
+		// todo: merge checkUserEmail and checkSsoAndPassword into one end-point
 		let response = await this.authService.checkUserEmail(this.email.value);
 		if (response == false) {
 			this.emailInvalid = true;
@@ -166,8 +168,22 @@ export class LoginComponent implements OnInit, OnDestroy {
 			if (ssoResponse) {
 				this.emailInvalid = true;
 				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;
-				this.additionalValidationForSsoEmail = this.ssoEmailValidationToShow.replace("social", ssoResponse.charAt(0).toUpperCase() + ssoResponse.substring(1, ssoResponse.length));
-				// todo: change it to handle array
+				let additionalValidationFOrSsoEmailTemp = "";
+				
+				ssoResponse.forEach(ssoProviderName => {
+					if (ssoResponse.length == 1) {
+						additionalValidationFOrSsoEmailTemp = ssoResponse[0].charAt(0).toUpperCase() + ssoResponse[0].slice(1);
+						return;
+					}
+					if (additionalValidationFOrSsoEmailTemp === "") {
+						additionalValidationFOrSsoEmailTemp += ssoProviderName.charAt(0).toUpperCase() + ssoProviderName.slice(1);
+						return;
+					} 
+					additionalValidationFOrSsoEmailTemp += ` or ${ssoProviderName.charAt(0).toUpperCase() + ssoProviderName.slice(1)}`;
+				});
+
+				this.additionalValidationForSsoEmail = this.ssoEmailValidationToShow.replace("social", additionalValidationFOrSsoEmailTemp);
+
 				this.emailInput.nativeElement.focus();
 				return;
 			} 
@@ -207,16 +223,22 @@ export class LoginComponent implements OnInit, OnDestroy {
 		} 
 
 		if (this.loginForm.valid) {
+			this.isProcessing = true;
 			this.loginSubscription = this.authService
 				.authenticate(this.email.value, this.password.value)
 				.subscribe(
 					(response) => {
+						this.isProcessing = false;
 						this.passwordInvalid = false;
 						this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 						this.router.navigateByUrl('/app');
 					},
-					(errorMessage) => {
-						this.passValidationToShow = errorMessage.title;
+					(messageForUI) => {
+						if (messageForUI.unhandledError) {
+							this.isProcessing = false;
+							return;
+						}
+						this.passValidationToShow = messageForUI;
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
 					}

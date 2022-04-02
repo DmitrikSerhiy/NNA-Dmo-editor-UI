@@ -31,6 +31,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	passwordHidden: boolean = true;
 	passwordChanged: boolean = false;
 	emailForAccountConfirmationHasBeenSent: boolean = false;
+	unhandledError: boolean = false;
 
 	missingPasswordValidation: boolean = false;
 	missingNewPasswordValidation: boolean = false;
@@ -107,8 +108,11 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 					this.isFormProcessing = false;
 				},
-				() => { 
+				(error) => { 
 					this.isFormProcessing = false;
+					if (error.unhandledError) {
+						this.unhandledError = true;
+					}
 				}
 			);
 	}
@@ -207,12 +211,19 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			return;
 		}
 
+		this.isFormProcessingAfterEdit = true;
 		this.authService
 			.changePassword(this.personalInfo.userEmail, this.oldPassword.value, this.newPassword.value)
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(() => {
 				this.passwordChanged = true;
+				this.isFormProcessingAfterEdit = false;
 				this.toggleChangePasswordForm(false, true);
+			}, (error) => {
+				this.isFormProcessingAfterEdit = false;
+				if (error.unhandledError) {
+					this.toggleChangePasswordForm(false, true);
+				}
 			});
 	}
 
@@ -269,6 +280,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	private resetPasswordForm(): void {
 		this.passwrodTogglerTitle = this.showPasswordTitle;
 		this.passwordHidden = true;
+		this.oldPassword.reset();
+		this.newPassword.reset();
 		this.changePasswordForm.reset();
 		this.hasServerValidationMessage = false;
 		this.serverValidationMessage = ''
