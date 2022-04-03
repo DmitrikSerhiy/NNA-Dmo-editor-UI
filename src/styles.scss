@@ -58,8 +58,17 @@ html, body {
 }
 
 .dmo-collections-spinner .spinner-container, .personal-info-spinner .spinner-container {
+  height: 100% !important;
   width: 235px !important;
   left: unset !important;
+
+  .spinner-wrapper {
+    height: 100% !important;
+
+    .spinner {
+      top: calc(50% - calc(110px / 2));
+    }
+  }
 }
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
