@@ -5,8 +5,6 @@
 $blackForHomePage:#212123;
 $whiteForHomePage: #E5E5E5;
 
-//E5E5E5
-
 .home-container {
     margin: auto;
     width: 100%;
@@ -37,7 +35,6 @@ $whiteForHomePage: #E5E5E5;
             .dark-header {
                 color: $blackForHomePage;
             }
-
             
             .home-info-block {
                 @include font-secondary-info();
@@ -51,7 +48,11 @@ $whiteForHomePage: #E5E5E5;
                     top: 1px;
                     left: 2px;
                 }
+            }
 
+            .block-splitter {
+                flex: 1 1 100%;
+                height: 0px;
             }
 
             .bright-info-block {
@@ -85,20 +86,20 @@ $whiteForHomePage: #E5E5E5;
             .home-info-block {
                 display: flex;
                 justify-content: center;
-                padding-top: 3rem;
+                padding-top: 1rem;
                 margin-left: 17rem;
                 margin-right: auto;
             }
         }
 
-        .first-plot-point, .last-plot-point  {
+        .first-plot-point {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
 
             .home-header {
-                padding-top: 3rem;
+                padding-top: 1rem;
                 margin-left: 16.8rem;
                 margin-right: auto;
             }
@@ -106,7 +107,7 @@ $whiteForHomePage: #E5E5E5;
             .home-subheader {
                 display: flex;
                 justify-content: center;
-                padding-top: 0.5rem !important;
+                padding-top: 0 !important;
                 margin-left: 17rem;
                 margin-right: auto;
             }
@@ -116,7 +117,7 @@ $whiteForHomePage: #E5E5E5;
                 justify-content: center;
                 margin-left: auto;
                 margin-right: auto;
-                padding-top: 3rem;
+                padding-top: 6rem;
 
                 button {
                     display: flex;
@@ -135,37 +136,32 @@ $whiteForHomePage: #E5E5E5;
             align-content: flex-start;
 
             .home-header {
-                margin: auto;
+                padding-top: 2rem;
+                flex: 0 0 100%;
             }
 
             .first-info-block {
-                width: 17rem;
-                margin-top: 11rem;
-                margin-left: 6rem;
+                flex: 0 0 50%;
+                margin: auto;
+                padding-top: 2rem;
             }
 
             .second-info-block {
-                margin-top: 11rem;
-                width: 17rem;
-                margin-left: 3rem;
+                flex: 0 0 35%;
+                margin: auto;
+                margin-top: 8rem;
             }
 
             .third-info-block {
-                width: 14rem;
-                margin-left: 1rem;
-                margin-top: 5rem;
+                flex: 0 0 35%;
+                margin: auto;
+                margin-top: 8rem;
             }
 
             .fourth-info-block {
-                width: 14rem;
-                margin-left: 1rem;
-                margin-top: 5rem;
-            }
-
-            .fifth-info-block {
-                margin-top: 6rem;
-                margin-left: 6rem;
-                width: 37rem;
+                flex: 0 0 50%;
+                margin: auto;
+                padding-top: 8rem;
             }
         }
 
@@ -178,36 +174,45 @@ $whiteForHomePage: #E5E5E5;
                 margin: auto;
             }
 
+            .second-header {
+                margin: auto;
+                padding-top: 3rem;
+            }
+
             .first-info-block {
-                margin-top: 14rem;
-                margin-left: 6rem;
+                margin: auto;
+                padding-top: 8rem;
             }
 
             .second-info-block {
-                margin-top: 10rem;
-                margin-left: 6rem;
+                flex: 0 0 200px;
+                margin: auto;
+                margin-top: 8rem;
             }
 
             .third-info-block {
-                margin-left: 2rem;
-                margin-top: 17rem;
+                flex: 0 0 200px;
+                margin: auto;
+                margin-top: 8rem;
+                padding-left: 3rem;
             }
 
             .fourth-info-block {
-                margin-left: 2rem;
-                margin-top: 5rem;
-                margin-right: 8rem;
+                flex: 0 0 200px;
+                margin: auto;
+                margin-top: 3rem;
             }
 
             .fifth-info-block {
-                margin-top: 9rem;
-                margin-left: 5rem;
-                width: 11rem;
+                flex: 0 0 200px;
+                margin: auto;
+                margin-top: 3rem;
+                padding-left: 3rem;
             }
 
             .sixth-info-block {
-                margin-top: 6rem;
-                margin-left: 21rem;
+                margin: auto;
+                padding-top: 8rem;
             }
         }
 
@@ -217,38 +222,38 @@ $whiteForHomePage: #E5E5E5;
             align-content: flex-start;
 
             .home-header {
-                margin: auto;
-                margin-top: 6rem;
+                padding-top: 2rem;
+                flex: 0 0 100%;
             }
 
             .first-info-block {
-                width: 37rem;
-                margin-top: 11rem;
-                margin-left: 6rem;
-                margin-bottom: 3rem;
+                flex: 0 0 55%;
+                margin: auto;
+                padding-top: 2rem;
             }
 
             .second-info-block {
-                margin-top: 4rem;
-                width: 15rem;
-                margin-left: 1rem;
+                flex: 0 0 35%;
+                margin: auto;
+                margin-top: 7rem;
             }
 
             .third-info-block {
-                width: 14rem;
-                margin-top: 4rem;
-                margin-left: 1rem;
+                flex: 0 0 35%;
+                margin: auto;
+                margin-top: 7rem;
             }
 
             .fourth-info-block {
-                width: 16rem;
-                margin-left: 6rem;
-                margin-top: 5rem;
+                flex: 0 0 55%;
+                margin: auto;
+                padding-top: 7rem;
             }
 
             .fifth-info-block {
-                margin-top: 5rem;
-                margin-left: 4rem;
+                flex: 0 0 55%;
+                margin: auto;
+                padding-top: 2rem;
             }
         }
 
@@ -316,18 +321,49 @@ $whiteForHomePage: #E5E5E5;
             border-bottom-left-radius: 0px;
             border-bottom-right-radius: 0px;
 
-            .home-footer {
+            .home-header {
+                margin-top: 2rem;
+            }
+
+            .home-subheader {
+                display: flex;
+                margin-left: 16.1rem;
+            }
+
+            .home-auth-block {
+                display: flex;
+                margin-left: 16.1rem;
+                padding-top: 8rem;
+
+                button {
+                    display: flex;
+                    justify-content: center;
+                    margin-left: .5rem;
+                    text-transform: capitalize !important;
+                    width: 6rem;
+                    height: 2.4rem;
+                }
+            }
+
+            .button-for-authorized-user{
                 display: flex;
                 justify-content: center;
-                align-items: flex-end;
-                width: 100%;
+                text-transform: capitalize !important;
+                width: 6rem;
+                height: 2.4rem;
+                margin: auto;
+                margin-top: 8rem;
+            }
+
+            .home-footer {
+                display: flex;
                 @include font-secondary-info();
-                position: relative;
-                top: 8rem;
                 margin-bottom: .5rem;
+                margin-left: 16.1rem;
 
                 .links {
                     margin-right: 2rem;
+                    padding-top: 3rem;
                     a {
                         color: $whiteForHomePage;
                         text-decoration: none;
@@ -335,7 +371,7 @@ $whiteForHomePage: #E5E5E5;
                 }
 
                 .copyright {
-                    margin-left: 2rem;
+                    padding-top: 3rem;
                 }
             }
         }
