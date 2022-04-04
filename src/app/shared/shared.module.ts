@@ -8,6 +8,7 @@ import { NnaSpinnerComponent } from './components/nna-spinner/nna-spinner.compon
 import { CustomErrorHandler } from './services/custom-error-handler';
 import { SsoContainerComponent } from './components/sso-container/sso-container.component';
 import { GoogleButtonComponent } from './components/google-button/google-button.component';
+import { ToastrWrapperComponent } from './components/toastr-wrapper/toastr-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { GoogleButtonComponent } from './components/google-button/google-button.
     RemoveDmoPopupComponent, 
     NnaSpinnerComponent, 
     SsoContainerComponent, 
-    GoogleButtonComponent
+    GoogleButtonComponent, 
+    ToastrWrapperComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { GoogleButtonComponent } from './components/google-button/google-button.
     RightMenuGrabberComponent, 
     NnaSpinnerComponent, 
     SsoContainerComponent,
-    GoogleButtonComponent
+    GoogleButtonComponent,
+    ToastrWrapperComponent
   ],
   providers: [CustomErrorHandler]
 })

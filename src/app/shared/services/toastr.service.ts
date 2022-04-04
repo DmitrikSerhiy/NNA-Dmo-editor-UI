@@ -5,60 +5,38 @@ import { ToastrErrorMessage, ValidationResult, ValidationResultField } from '../
 @Injectable()
 export class Toastr {
 
-    toastrDelay = 2000;
-    longtoastrDelay = 5000;
+    private toastrDelay = 1500;
+    private longtoastrDelay = 5000;
 
     constructor(private toastr: ToastrService) { }
 
     success(message: string) {
-        this.toastr.success(message, 'Success!', {
-            timeOut: this.toastrDelay,
-            positionClass: 'toast-bottom-right',
-            
-        });
-    }
-
-    info(message: string) {
-        this.toastr.info(message, 'Info', {
-            timeOut: this.toastrDelay,
-            positionClass: 'toast-bottom-right'
-        });
+        this.toastr.show(message, "Success!", { timeOut: this.toastrDelay });
     }
 
     warning(errorObject: ToastrErrorMessage) {
-        this.toastr.warning(errorObject.message, errorObject.header, {
-            timeOut: this.toastrDelay,
-            positionClass: 'toast-bottom-right',
-        });
+        this.toastr.show(`${errorObject.header} ${errorObject.message}`, "Warning", { timeOut: this.longtoastrDelay });
     }
 
     validationMessage(result: ValidationResult): void {
-        this.toastr.warning(this.formatValidationErrors(result.fields), result.title, {
-            positionClass: 'toast-bottom-right',
-            enableHtml: true,
-            closeButton: true,
-            tapToDismiss: true,
-            disableTimeOut: true,
-
-        });
+        this.toastr.show(this.formatValidationErrors(result.fields, result.title), "Warning", { enableHtml: true, disableTimeOut: true});
     }
 
     error(errorObject: ToastrErrorMessage) {
-        this.toastr.error(errorObject.message, errorObject.header, {
-            timeOut: this.toastrDelay,
-            positionClass: 'toast-bottom-right'
-        });
+        this.toastr.show(`${errorObject.header} ${errorObject.message}`, "Error!", { timeOut: this.longtoastrDelay });
     }
 
-    private formatValidationErrors(fields: ValidationResultField[]) {
-        let result: string = "<hr>";
+    private formatValidationErrors(fields: ValidationResultField[], title: string) {
+        let result: string = "<div class='validation-separator'></div>";
+        result += title;
         fields.forEach(element => {
             let fieldErrors: string = "Validations: ";
-            element.errors.forEach(fieldError => { fieldErrors += `<text"> ${fieldError} </text>`})
+            element.errors.forEach(fieldError => { fieldErrors += `<text> ${fieldError}. </text> <div class='validation-separator big-separator'></div>`})
+            result += "<div class='validation-separator huge-separator'></div>";
             result += `<text>Field: <strong>${element.field}</strong></text>`;
-            result += "<hr>";
+            result += "</text> <div class='validation-separator big-separator'></div>";
             result += fieldErrors;
-            result += "<hr>";
+            result += "<div class='validation-separator'></div>";
         });
 
         return result;

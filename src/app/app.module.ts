@@ -20,8 +20,7 @@ import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { environment } from 'src/environments/environment';
-import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
-
+import { ToastrWrapperComponent } from './shared/components/toastr-wrapper/toastr-wrapper.component';
 
 const routes: Routes = [
 	{ path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
@@ -44,7 +43,15 @@ const routes: Routes = [
 		RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
 		BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
 		BrowserAnimationsModule,
-		ToastrModule.forRoot({preventDuplicates: true, countDuplicates: true}),
+		ToastrModule.forRoot({ 
+			preventDuplicates: true, 
+			countDuplicates: true,
+			tapToDismiss: false,
+			positionClass: 'toast-bottom-right', 
+			toastClass: '', 
+			toastComponent: ToastrWrapperComponent,
+			maxOpened: 4
+		}),
 		HttpClientModule,
 		FormsModule,
 		ReactiveFormsModule,
