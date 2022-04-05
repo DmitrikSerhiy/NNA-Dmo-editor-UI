@@ -33,6 +33,10 @@
     &:focus {
         outline: none;
     }
+
+    &:disabled {
+        pointer-events: none;
+    }
 }
 
 .nna-button-primary {
