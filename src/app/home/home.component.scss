@@ -2,13 +2,10 @@
 @import "src/styles/colors.scss";
 @import "src/styles/buttons.scss";
 
-$blackForHomePage:#212123;
-$whiteForHomePage: #E5E5E5;
-
 .home-container {
     margin: auto;
     width: 100%;
-    background: $whiteForHomePage;
+    background: $background-color;
 
     .home-plot-points {
         display: flex;
@@ -20,8 +17,8 @@ $whiteForHomePage: #E5E5E5;
         .home-plot-point {
             width: 650px;
             height: 650px;
-            color: $whiteForHomePage;
-            background: $blackForHomePage;
+            color: $background-color;
+            background: $for-background-contrast-color;
             border-radius: 50%;
 
             .home-header {
@@ -33,7 +30,7 @@ $whiteForHomePage: #E5E5E5;
             }
 
             .dark-header {
-                color: $blackForHomePage;
+                color: $for-background-contrast-color;
             }
             
             .home-info-block {
@@ -57,7 +54,7 @@ $whiteForHomePage: #E5E5E5;
 
             .bright-info-block {
                 @include font-secondary-info();
-                color: $blackForHomePage;
+                color: $for-background-contrast-color;
 
                 .brand-color {
                     color: $primary-color;
@@ -73,7 +70,7 @@ $whiteForHomePage: #E5E5E5;
 
         .bright-plot-point {
             background: transparent !important;
-            border: solid 2px $blackForHomePage;
+            border: solid 2px $for-background-contrast-color;
         }
 
         .first-plot-point {
@@ -265,7 +262,7 @@ $whiteForHomePage: #E5E5E5;
                 width: calc(650px + calc(650px * 0.1));
                 margin: auto;
 
-                color: $blackForHomePage;
+                color: $for-background-contrast-color;
                 display: flex;
                 justify-content: space-around;
 
@@ -365,7 +362,7 @@ $whiteForHomePage: #E5E5E5;
                     margin-right: 2rem;
                     padding-top: 3rem;
                     a {
-                        color: $whiteForHomePage;
+                        color: $background-color;
                         text-decoration: none;
                     }
                 }
@@ -380,7 +377,7 @@ $whiteForHomePage: #E5E5E5;
             margin: auto;
             width: 2px;
             height: 200px;
-            background: $blackForHomePage;
+            background: $for-background-contrast-color;
         }
     }
 }

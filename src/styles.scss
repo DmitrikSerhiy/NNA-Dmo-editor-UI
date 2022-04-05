@@ -21,6 +21,19 @@ html, body {
   font-size: 16px;
 }
 
+::-webkit-scrollbar-track {
+  background-color:  $background-color;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: $background-color;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $for-background-contrast-color;
+}
+
 .validation-wrapper {
   margin-top: 0.2rem;
   height: 1.4rem !important;
@@ -118,13 +131,21 @@ html, body {
 
 .mat-drawer-container {
   background-color: white;
-  
+
   .mat-drawer  {
     width: 235px;
   }
 }
 
-
+.mat-drawer {
+  ::-webkit-scrollbar-track {
+    background-color: white !important;
+  }
+  
+  ::-webkit-scrollbar {
+    background-color: white !important;
+  }
+}
 
 
 /* Importing Bootstrap SCSS file. */

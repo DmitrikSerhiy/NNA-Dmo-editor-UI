@@ -125,7 +125,7 @@
             </tr>
         </table>
 
-        <mat-paginator [hidden]="collectionLength < 11" #collectionPaginator [length]="collectionLength" [pageSize]="10"></mat-paginator>
+        <mat-paginator [hidden]="collectionLength < 11" class="dmo-collection-table-paginator" #collectionPaginator [length]="collectionLength" [pageSize]="10"></mat-paginator>
     </div>
 
     <div class="info-message" [hidden]="collectionLength != 0">

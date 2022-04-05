@@ -8,19 +8,15 @@
     transition: margin-left 0.2s ease-in-out;
 }
 
-.right-menu-wrapper {
-    height: 100%;
-}
-
 .nna-main-container-wrapper {
-    overflow: hidden;
+    overflow-x: hidden;
 
     .main-container {
         margin-left: 234px;
         padding: 15px;
         margin-right: -1px;
         margin-top: -1px;
-        overflow: hidden;
+        overflow-x: hidden;
         position: relative;
         height: 100%;
         background-color: $background-color;

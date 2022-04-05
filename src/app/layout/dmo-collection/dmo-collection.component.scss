@@ -1,4 +1,5 @@
 @import 'src/styles/fonts-mixins.scss';
+@import "src/styles/colors.scss";
 
 .collection-page {
   .collection-table-wrapper {
@@ -112,5 +113,9 @@
         }
       }
     }
+  }
+
+  .dmo-collection-table-paginator {
+    background-color: $background-color;
   }
 }
