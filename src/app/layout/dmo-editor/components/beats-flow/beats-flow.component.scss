@@ -1,3 +1,5 @@
+@import "src/styles/colors.scss";
+
 $editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart for screenplay text
 .beats-container {
     min-height: 32px;
@@ -26,32 +28,31 @@ $editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart f
             display: flex;
             align-items: center;
             margin-left: 1rem;
-            // background-color: chocolate;
-            $active-color: #1a69a4;
+            $active-color: $secondary-color;
         
             @mixin setBorder($color) {
                 outline: none;
                 background: repeating-linear-gradient(
                     90deg,
-                    $color 0px, 
-                    $color 9.7px,
-                    transparent 9.7px,
-                    transparent 19.4px,
-                    $color 19.5px,
-                    $color 28.6px,
-                    transparent 28.6px,
-                    transparent 29.6px,
-                    $color 29.6px,
-                    $color 38.8px,
-                    transparent 38.8px,
-                    transparent 48.5px,
-                    $color 48.5px,
-                    $color 57.6px,
-                    transparent 57.6px,
-                    transparent 58.6px,
-                    $color 58.6px,
-                    $color 68px,
-                    transparent 68px,
+                    $color 1px, 
+                    $color 8px,
+                    transparent 8px,
+                    transparent 16px,
+                    $color 16px,
+                    $color 22px,
+                    transparent 22px,
+                    transparent 24px,
+                    $color 24px,
+                    $color 30px,
+                    transparent 30px,
+                    transparent 39px,
+                    $color 39px,
+                    $color 45px,
+                    transparent 45px,
+                    transparent 47px,
+                    $color 47px,
+                    $color 53px,
+                    transparent 53px,
                     transparent 70px
                 );
                 background-repeat: no-repeat;
