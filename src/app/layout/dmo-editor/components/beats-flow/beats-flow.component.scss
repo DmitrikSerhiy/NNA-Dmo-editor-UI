@@ -147,6 +147,7 @@ $editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart f
                 border-left-style: solid;
                 border-left-width: 1px;
                 border-left-color: transparent;
+                caret-color: $secondary-color;
 
                 &:hover {
                     cursor: text;
