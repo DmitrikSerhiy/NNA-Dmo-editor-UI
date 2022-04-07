@@ -61,6 +61,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
     this.setupSubscription();
   }
 
+  preventDrag(event: any) {
+    event.preventDefault();
+  }
+
   //#region general settings
 
   private setupSubscription() {

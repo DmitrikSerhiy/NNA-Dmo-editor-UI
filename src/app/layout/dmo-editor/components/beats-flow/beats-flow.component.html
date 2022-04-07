@@ -6,25 +6,27 @@
 
     <div class="beat-container" *ngFor="let beat of beats; let i = index">
         
-        <div class="time-picker-container">
+        <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
             <input #timePickers class="time-picker" 
                 [id]="'time_picker_' + beat.beatId"
-                maxlength='7' type="text" autocomplete="off" spellcheck = false    
+                maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
                 placeholder="h:mm:ss" 
                 (keydown)="setTimePickerKeyMetaData($event)"
                 (keyup)="setTimePickerValue($event, i)"
                 (focusout)="finalizeTimePicker($event)"
-                (focusin)="prepareTimePicker($event)"/>
+                (focusin)="prepareTimePicker($event)"
+                (dragover)="preventDrag($event)" />
         </div>
 
-        <div class="beat-data-holder-container" (click)="beatContainerClick($event)">
+        <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
             <div #beatDataHolders class="beat-data-holder"
                 [id]="'beat_' + beat.beatId"
-                type="text" contenteditable="true" placeholder="add some description"
+                type="text" contenteditable="true" draggable="false"  placeholder="add some description"
                 (keyup)="setBeatValue($event)"
                 (keydown)="setBeatKeyMetaData($event)"
                 (focusout)="finalizeBeat($event)"
-                (input)="beatChanged($event, i)">
+                (input)="beatChanged($event, i)"
+                (dragover)="preventDrag($event)">
             </div>
         </div>
 
