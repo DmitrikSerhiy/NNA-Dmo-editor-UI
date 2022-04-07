@@ -154,16 +154,16 @@ $editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart f
 
                 &:focus {
                     outline: none;
-                    border-left-color: $secondary-color;
-                
+                    &:not(:empty) {
+                        border-left-color: $secondary-color;
+                    }
                 }
 
-                [contenteditable][placeholder]:empty:before {
+                &:empty::before {
                     content: attr(placeholder);
+                    color: rgba(128, 128, 128, 0.7);
                     position: absolute;
-                    color: gray;
-                    background-color: transparent;
-                  }
+                }
             }
         }
 

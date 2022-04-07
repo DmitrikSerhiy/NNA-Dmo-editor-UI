@@ -20,7 +20,7 @@
         <div class="beat-data-holder-container" (click)="beatContainerClick($event)">
             <div #beatDataHolders class="beat-data-holder"
                 [id]="'beat_' + beat.beatId"
-                type="text" contenteditable="true" placeholder="beat details"
+                type="text" contenteditable="true" placeholder="add some description"
                 (keyup)="setBeatValue($event)"
                 (keydown)="setBeatKeyMetaData($event)"
                 (focusout)="finalizeBeat($event)"
