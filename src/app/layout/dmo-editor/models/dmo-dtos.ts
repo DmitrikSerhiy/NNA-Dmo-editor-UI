@@ -2,11 +2,8 @@ import { DmoList } from "../helpers/dmo-list";
 
 export class NnaDmoDto {
     dmoId: string;
-    isFinished: boolean;
-    statusString: string;
     beats: NnaBeatDto[];
-
-    
+   
     public getBeatsAsLinkedList() : DmoList<NnaBeatDto> {
         let list = new DmoList<NnaBeatDto>();
         if (!this.beats || this.beats.length == 0) {

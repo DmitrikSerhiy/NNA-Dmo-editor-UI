@@ -44,7 +44,7 @@ export class SsoContainerComponent implements OnInit {
 			return;
 		}
 	  	if (!authResult) {
-			this.toast.error(new ToastrErrorMessage("Google refused to authenticate your account", "Authentication failed"));
+			this.toast.showError(new ToastrErrorMessage("Google refused to authenticate your account", "Authentication failed"));
 			this.isSsoButtonClicked = false;
 			return;
 	  	}

@@ -3,11 +3,8 @@ import { InitialPopupComponent } from './components/initial-popup/initial-popup.
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
-import { Toastr } from '../../shared/services/toastr.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
-import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
-import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
@@ -55,7 +52,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		private editorHub: EditorHub,
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
-		private toastr: Toastr,
 		public matModule: MatDialog,
 		private sidebarManagerService: SidebarManagerService,
 		private cdRef: ChangeDetectorRef,
@@ -63,6 +59,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		// private editorChangeDetectorService: EditorChangeDetectorService,
 		this.beatsUpdating = false; 
 		this.beatWasSet = false;
+		this.isDmoInfoSet = false;
+		this.isInitialPopupOpen = false;
+		this.beatsLoading = false;
 		this.updateGraphEvent = new EventEmitter<any>();
 		this.updateBeatsEvent = new EventEmitter<any>();
 		this.beatsMetaData = [];
@@ -70,25 +69,23 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-		this.isDmoInfoSet = false;
-		this.isInitialPopupOpen = false;
-		this.beatsLoading = true;
-
-		//this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
+		// this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
 		// this.beatsUpdating = true;
 		// await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
 		// this.beatsUpdating = false;
 
-		//});
+		// });
 
 		this.activatedRoute.queryParams.subscribe(params => {
-		this.dmoId = params['dmoId'];
+			this.dmoId = params['dmoId'];
 		});
+
+		await this.editorHub.startConnection();
 
 		if (this.dmoId) {
 			await this.loadDmo();
 		} else {
-			await this.createAndInitDmo();
+			await this.createDmo();
 		}
 	}
 
@@ -102,7 +99,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		await this.editorHub.updateDmosJson(prepared);
 		this.beatsUpdating = false;
 		console.log('beats was synced')
-
 	}
 
 
@@ -115,68 +111,46 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
   	// #region general settings
 
-	async createAndInitDmo() {
+	async createDmo() {
 		const popupResult = await this.finalizePopup();
 			if (!popupResult) {
 			return;
 		}
-		await this.editorHub.startConnection();
-		
-		let response: EditorResponseDto;
-		try {
-			response = await this.editorHub.createDmo(popupResult);
-		} catch (err) {
-			this.showUnhandledException(err);
+
+		const createdDmo = await this.editorHub.createDmo(popupResult);
+		if (createdDmo == null) {
 			return;
 		}
 
-		if (this.handleResponse(response)) {
-			this.initDmo(response.data);
-			this.createInitialDmo();
-
-			this.beatsLoading = false;
-			this.sidebarManagerService.collapseSidebar();
-		}
+		this.initDmo(createdDmo);
+		this.createInitialDmo();
 	}
+	
 
 	async editCurrentDmo() {
 		const popupResult = await this.finalizePopup();
 		if (!popupResult) {
 			return;
 		}
-		let response: EditorResponseDto;
-		try {
-			response = await this.editorHub.updateShortDmo(popupResult);
-
-		if (this.handleResponse(response)) {
-			await this.loadDmo();
-		}
-
-		} catch (err) {
-			this.showUnhandledException(err);
+		const response = await this.editorHub.updateShortDmo(popupResult);
+		if (this.editorHub.isResponseFailed(response)) {
 			return;
 		}
+		this.initDmo(popupResult);
 	}
 
 	async loadDmo() {
-		await this.editorHub.startConnection();
-		let response: EditorResponseDto;
-		try {
-			response = await this.editorHub.loadShortDmo(this.dmoId);
-		} catch(err) {
-			this.showUnhandledException(err);
+		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
+		if (shortDmo == null) {
 			return;
 		}
 
-		if (this.handleResponse(response)) {
-			this.initDmo(response.data);
-
-			if (this.currentShortDmo.hasBeats) {
-				this.loadBeats();
-			} else {
-				this.createInitialDmo();
-				this.sidebarManagerService.collapseSidebar();
-			}
+		this.initDmo(shortDmo);
+		if (this.currentShortDmo.hasBeats) {
+			this.beatsLoading = true;
+			this.loadBeats();
+		} else {
+			this.createInitialDmo();
 		}
 	}
 
@@ -192,8 +166,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		this.initialDmoDto = new NnaDmoDto();
 		this.initialDmoDto.beats = [];
 		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
-		this.initialDmoDto.isFinished = false;
-		this.initialDmoDto.statusString = 'In progress';
+		this.sidebarManagerService.collapseSidebar();
 	}
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
@@ -221,51 +194,28 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		return response;
 	}
 
-	private handleResponse(entry: EditorResponseDto) : boolean {
-		if (!entry) {
-			return false;
-		}
 
-		if (entry.isSuccessful) {
-			return true;
-		}
-
-		if (entry.errors != null && entry.errors.length != 0) {
-			entry.errors.forEach(err => console.error(err.errorMessage));
-			this.toastr.error(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
-			return false;
-		}
-
-		if (entry.warnings != null && entry.warnings.length != 0) {
-			this.toastr.warning(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
-			console.error('Validation result is not implemented');
-			console.log('validation warnings');
-			entry.warnings.forEach(war => console.log(`field: ${war.fieldName} message: ${war.validationMessage}`));
-			return false;
-		}
-
-		this.showUnhandledException();
-		return false;
-	}
-
-	private showUnhandledException(err?: any) {
-		if (!err) {
-			this.toastr.error(new ToastrErrorMessage('Unhandled exception', 'Error'));
+	private initDmo(result: ShortDmoDto): void {
+		if (!this.currentShortDmo) {
+			this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
 		} else {
-			this.toastr.error(new ToastrErrorMessage(err, 'Error'));
-			console.error(err);
+			this.currentShortDmo.movieTitle = result.movieTitle;
+			this.currentShortDmo.name = result.name;
 		}
-	}
-
-	private initDmo(result: ShortDmoDto) {
-		this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
 
 		if (result.id) {
 			this.currentShortDmo.id = result.id;
 			this.dmoId = result.id;
 		}
 		this.currentShortDmo.shortComment = result.shortComment;
-		this.currentShortDmo.hasBeats = result.hasBeats;
+		if (result.hasBeats !== undefined && result.hasBeats !== null) {
+			this.currentShortDmo.hasBeats = result.hasBeats;
+		}
+
+		if (result.dmoStatus !== undefined && result.dmoStatus !== null) {
+			this.currentShortDmo.dmoStatus = result.dmoStatus;
+		}
+
 		this.isDmoInfoSet = true;
 	}
 
@@ -273,27 +223,26 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
 			.pipe(takeUntil(this.unsubscribe$));
 		
-		this.initialLoadSub = $initialLoad.subscribe({
-			next: (result: any) => { 
-				this.initialDmoDto = new NnaDmoDto();
-				this.initialDmoDto.beats = [];
+		this.initialLoadSub = $initialLoad.subscribe((result: any) => { 
+			this.initialDmoDto = new NnaDmoDto();
+			this.initialDmoDto.beats = [];
 
-				let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
+			let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
 
-				this.initialDmoDto.beats = beats;
-				this.initialDmoDto.isFinished = result.dmoStatusId == 1; //Completed
-				this.initialDmoDto.dmoId = result.dmoId;
-				this.initialDmoDto.statusString = result.dmoStatus;
+			this.initialDmoDto.beats = beats;
+			this.initialDmoDto.dmoId = result.dmoId;
 
-				this.beatsLoading = false;
-				this.sidebarManagerService.collapseSidebar();
-			}
+			this.beatsLoading = false;
+			this.sidebarManagerService.collapseSidebar();
 		});
 	}
 
   	// #endregion
 
 
+
+
+	  
     // #region initial load
 
 	async beatsSet(callbackResult: any): Promise<void> {

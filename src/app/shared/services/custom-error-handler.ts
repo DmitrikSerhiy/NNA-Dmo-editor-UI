@@ -21,7 +21,7 @@ export class CustomErrorHandler {
 
 		if (response.status == 422) {
 			return new Observable<any>(sub => {
-				this.toastr.validationMessage(error)
+				this.toastr.showValidationMessage(error)
 				sub.error(new ValidationResultHandled(error.title));
 				sub.complete();
 			});
@@ -47,7 +47,7 @@ export class CustomErrorHandler {
 					sub.complete();
 				});
 			}
-			this.toastr.error(new ToastrErrorMessage(error.errorMessage, 'Bad request'));
+			this.toastr.showError(new ToastrErrorMessage(error.errorMessage, 'Bad request'));
 			return throwError({message: 'Bad request', serverResponse: response } );
 		}
 
@@ -57,12 +57,12 @@ export class CustomErrorHandler {
 		// }
 
 		else if (error.fromExceptionFilter) {
-			this.toastr.error(new ToastrErrorMessage(error.message, `${error.title} ${error.code}`));
+			this.toastr.showError(new ToastrErrorMessage(error.message, `${error.title} ${error.code}`));
 			return throwError({message: error.title, serverResponse: response});
 		} 
 		
 		else {
-			this.toastr.error(new ToastrErrorMessage('Administrator has been notified', 'Unverified error'));
+			this.toastr.showError(new ToastrErrorMessage('Administrator has been notified', 'Unverified error'));
 			return throwError({message: 'Unverified error', serverResponse: response, unhandledError: true});
 		}
 	}

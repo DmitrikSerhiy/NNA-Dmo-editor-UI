@@ -25,6 +25,11 @@ export class ToastrErrorMessage {
     }
 }
 
+export class EditorValidationMessage {
+    fieldName: string;
+    validationMessage: string;
+}
+
 export class ValidationResultField {
     field: string;
     errors: string[];

@@ -13,12 +13,23 @@ import { Observable } from 'rxjs';
 import { NnaDmoWithBeatsAsJson } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
+import { Toastr } from 'src/app/shared/services/toastr.service';
+import { EditorValidationMessage, ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditorHub {
     serverUrl = environment.server_user
+
+    public get failedResponseObject(): any {
+        return { failed: true };
+    }
+    
+    public isResponseFailed(response: any): boolean {
+        return response?.failed;
+    }
+
     private hubConnection: signalR.HubConnection;
     public get isConnected() : boolean {
         return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected
@@ -29,7 +40,8 @@ export class EditorHub {
         private authService: AuthService,
         private router: Router, 
         private http: HttpClient,
-        private errorHandler: CustomErrorHandler ) { 
+        private errorHandler: CustomErrorHandler,
+        private toastr: Toastr) { 
             this.hubConnection = null;
     }
 
@@ -88,57 +100,25 @@ export class EditorHub {
         });
     
     }
-
-
+    
     // ----- editor websocket methods ------
 
-    async loadShortDmo(dmoId: string) : Promise<EditorResponseDto> {
-        if (!this.isConnected) {
-            return;
-        }
-        try {
-            var response = await this.hubConnection.invoke('LoadShortDmo', { id: dmoId } );
-            return Promise.resolve<EditorResponseDto>(response);
-        } catch (err) {
-            Promise.reject(err)
-        }
+    async loadShortDmo(dmoId: string) : Promise<ShortDmoDto> {
+        return await this.invokeSocketMethod<ShortDmoDto>('LoadShortDmo', { id: dmoId });
     }
 
-    async createDmo(dmo: ShortDmoDto) : Promise<EditorResponseDto> {
-        if (!this.isConnected) {
-            return;
-        }
-        try {
-            var response = await this.hubConnection.invoke('CreateDmo', dmo);
-            return Promise.resolve<EditorResponseDto>(response);
-        } catch (err) {
-            Promise.reject(err)
-        }
+    async createDmo(dmo: ShortDmoDto) : Promise<ShortDmoDto> {
+        return await this.invokeSocketMethod<ShortDmoDto>('CreateDmo', dmo);
     }
 
-    async updateShortDmo(dmo: ShortDmoDto): Promise<EditorResponseDto> {
-        if (!this.isConnected) {
-            return;
-        }
-        try {
-            var response = await this.hubConnection.invoke('UpdateShortDmo', dmo);
-            return Promise.resolve<EditorResponseDto>(response);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+    async updateShortDmo(dmo: ShortDmoDto): Promise<any> {
+        return await this.invokeSocketMethodWithoutResponseData('UpdateShortDmo', dmo);
     }
 
-    async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<EditorResponseDto> {
-        if (!this.isConnected) {
-            return;
-        }
-        try {
-            var response = await this.hubConnection.invoke('UpdateDmosJson', dmo);
-            return Promise.resolve<EditorResponseDto>(response);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+    async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<any> {
+        return await this.invokeSocketMethodWithoutResponseData('UpdateDmosJson', dmo);
     }
+
     // ----- editor websocket methods ------
 
 
@@ -151,4 +131,81 @@ export class EditorHub {
     }
 
     // ----- editor http methods --------
+
+
+    private async invokeSocketMethod<TResponse>(methodName: string, params: any): Promise<TResponse> {
+        if (!this.isConnected) {
+            return;
+        }
+        
+        try {
+            var response = await this.hubConnection.invoke(methodName, params );
+            if (this.isResponseSuccessful(response)) {
+                return Promise.resolve<TResponse>(response.data);
+            }
+
+            this.showErrorsOrValidations(response);
+            return Promise.resolve(null);  
+        } catch (failedResponse) {
+            await this.abortConnection();
+            this.showErrorsOrValidations(failedResponse);
+            return Promise.resolve(null);   
+        }
+    }
+
+    private async invokeSocketMethodWithoutResponseData(methodName: string, params: any): Promise<void> {
+        if (!this.isConnected) {
+            return;
+        }
+        
+        try {
+            var response = await this.hubConnection.invoke(methodName, params );
+            if (this.isResponseSuccessful(response)) {
+                return Promise.resolve()
+            }
+
+            this.showErrorsOrValidations(response);
+            return Promise.resolve(this.failedResponseObject);  
+        } catch (failedResponse) {
+            await this.abortConnection();
+            this.showErrorsOrValidations(failedResponse);
+            return Promise.resolve(this.failedResponseObject);   
+        }
+    }
+
+    private showErrorsOrValidations(entry: EditorResponseDto) {
+        let toastShowed: boolean = false;
+		if (entry.errors != null && entry.errors.length != 0) {
+			entry.errors.forEach(error => {
+                console.log(entry);
+                this.toastr.showError(new ToastrErrorMessage(error.errorMessage, `${entry.message} ${entry.httpCode}`));
+            });
+            toastShowed = true;
+		}
+
+		if (entry.warnings != null && entry.warnings.length != 0) {
+            let validations = [];
+            console.log(entry);
+            entry.warnings.forEach(warning => {validations.push({ fieldName: warning.fieldName, validationMessage: warning.validationMessage} ) });
+            this.toastr.showValidationMessageForEditor(validations, entry.message);
+            toastShowed = true;
+		}
+
+        if (toastShowed == false) {
+            this.showUnverifiedSoketError();
+        }
+	}
+
+    private isResponseSuccessful(entry: EditorResponseDto) : boolean {
+        if (!entry) {
+			return false;
+		}
+
+		return entry.isSuccessful 
+    }
+
+    private showUnverifiedSoketError() {
+        this.toastr.showError(new ToastrErrorMessage('Administrator has been notified', 'Unverified socket error'));
+    }
+
 }

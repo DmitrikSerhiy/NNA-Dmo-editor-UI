@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
-import { ToastrErrorMessage, ValidationResult, ValidationResultField } from '../models/serverResponse';
+import { EditorValidationMessage, ToastrErrorMessage, ValidationResult, ValidationResultField } from '../models/serverResponse';
 
 @Injectable()
 export class Toastr {
@@ -18,15 +18,27 @@ export class Toastr {
         this.toastr.show(`${errorObject.header} ${errorObject.message}`, "Warning", { timeOut: this.longtoastrDelay });
     }
 
-    validationMessage(result: ValidationResult): void {
-        this.toastr.show(this.formatValidationErrors(result.fields, result.title), "Warning", { enableHtml: true, disableTimeOut: true});
+    showValidationMessage(result: ValidationResult): void {
+        this.toastr.show(this.formatValidationMessages(result.fields, result.title), "Warning", { disableTimeOut: true});
     }
 
-    error(errorObject: ToastrErrorMessage) {
-        this.toastr.show(`${errorObject.header} ${errorObject.message}`, "Error!", { timeOut: this.longtoastrDelay });
+    showValidationMessageForEditor(validations: EditorValidationMessage[], subHeader: string): void {
+        this.toastr.show(this.formatValidationMessagesForEditor(validations, subHeader), "Warning", { enableHtml: true, timeOut: this.longtoastrDelay });
     }
 
-    private formatValidationErrors(fields: ValidationResultField[], title: string) {
+    showError(errorObject: ToastrErrorMessage) {
+        this.toastr.show(this.formatErrorMessages(errorObject), "Error!", { enableHtml: true, timeOut: this.longtoastrDelay });
+    }
+
+    private formatErrorMessages(errorMessage: ToastrErrorMessage) {
+        let result: string = "<div class='validation-separator'></div>";
+        result += errorMessage.header;
+        result += "<div class='validation-separator'></div>";
+        result += errorMessage.message;
+        return result;
+    }
+
+    private formatValidationMessages(fields: ValidationResultField[], title: string) {
         let result: string = "<div class='validation-separator'></div>";
         result += title;
         fields.forEach(element => {
@@ -37,6 +49,18 @@ export class Toastr {
             result += "</text> <div class='validation-separator big-separator'></div>";
             result += fieldErrors;
             result += "<div class='validation-separator'></div>";
+        });
+
+        return result;
+    }
+
+    private formatValidationMessagesForEditor(validations: EditorValidationMessage[], subHeader: string) {
+        let result: string = "<div class='validation-separator'></div>";
+        result += subHeader;
+        validations.forEach(validation => {
+            result += "</text> <div class='validation-separator big-separator'></div>";
+            result += `<text>Field: <strong>${validation.fieldName}</strong>. Validation: <strong>${validation.validationMessage}</strong></text>`;
+            result += "</text> <div class='validation-separator big-separator'></div>";
         });
 
         return result;

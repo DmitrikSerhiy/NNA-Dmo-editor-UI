@@ -37,7 +37,7 @@ export class RefreshHelperService {
 						return this.clearLocalStorageAndRedirectToLogin(withRedirect);
 					} 
 					
-					this.toastr.error(new ToastrErrorMessage('Unverified error', 'Failed to refresh tokens'));
+					this.toastr.showError(new ToastrErrorMessage('Unverified error', 'Failed to refresh tokens'));
 					return this.clearLocalStorageAndRedirectToLogin(withRedirect);
 				})
 			); 
