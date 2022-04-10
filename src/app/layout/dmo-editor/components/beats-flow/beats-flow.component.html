@@ -21,7 +21,7 @@
         <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
             <div #beatDataHolders class="beat-data-holder"
                 [id]="'beat_' + beat.beatId"
-                type="text" contenteditable="true" draggable="false"  placeholder="add some description"
+                type="text" contenteditable="true" draggable="false"  placeholder="add description"
                 (keyup)="setBeatValue($event)"
                 (keydown)="setBeatKeyMetaData($event)"
                 (focusout)="finalizeBeat($event)"

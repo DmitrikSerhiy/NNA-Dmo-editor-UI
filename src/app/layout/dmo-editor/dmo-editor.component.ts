@@ -15,518 +15,510 @@ import { BeatGeneratorService } from './helpers/beat-generator';
 import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson } from './models/dmo-dtos';
 
 @Component({
-  selector: 'app-dmo-editor',
-  templateUrl: './dmo-editor.component.html',
-  styleUrls: ['./dmo-editor.component.scss']
+	selector: 'app-dmo-editor',
+	templateUrl: './dmo-editor.component.html',
+	styleUrls: ['./dmo-editor.component.scss']
 })
 export class DmoEditorComponent implements OnInit, OnDestroy {
 
-  isInitialPopupOpen: boolean;
-  initialPopup: MatDialogRef<InitialPopupComponent>;
+	isInitialPopupOpen: boolean;
+	initialPopup: MatDialogRef<InitialPopupComponent>;
 
-  beatsUpdating: boolean;
-  
-  // initial fields
-  isDmoInfoSet: boolean;
-  beatsLoading: boolean;
-  dmoId: string;
-  currentShortDmo: ShortDmoDto;
-  initialDmoDto: NnaDmoDto;
-  beatWasSet: boolean;
+	beatsUpdating: boolean;
+	
+	// initial fields
+	isDmoInfoSet: boolean;
+	beatsLoading: boolean;
+	dmoId: string;
+	currentShortDmo: ShortDmoDto;
+	initialDmoDto: NnaDmoDto;
+	beatWasSet: boolean;
 
 
-  // events
-  updateGraphEvent: EventEmitter<any>;
-  updateBeatsEvent: EventEmitter<any>;
+	// events
+	updateGraphEvent: EventEmitter<any>;
+	updateBeatsEvent: EventEmitter<any>;
 
-  // ------ [start] not state
-  private isDmoFinised: boolean;
-  private beatsMetaData: any[];
-  private beatsIds: string[];
-  private plotPointElements: QueryList<ElementRef>;   //elements
-  private beatElements: QueryList<ElementRef>;        //elements
-  private timePickerElements: QueryList<ElementRef>;  //elements
+	// ------ [start] not state
+	private isDmoFinised: boolean;
+	private beatsMetaData: any[];
+	private beatsIds: string[];
+	private plotPointElements: QueryList<ElementRef>;   //elements
+	private beatElements: QueryList<ElementRef>;        //elements
+	private timePickerElements: QueryList<ElementRef>;  //elements
    // ------ [end] not state
 
-  private unsubscribe$: Subject<void> = new Subject();
-  private initialLoadSub: Subscription;
+	private unsubscribe$: Subject<void> = new Subject();
+	private initialLoadSub: Subscription;
 
-  constructor(
-    private editorHub: EditorHub,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private toastr: Toastr,
-    public matModule: MatDialog,
-    private sidebarManagerService: SidebarManagerService,
-    private cdRef: ChangeDetectorRef,
-    private dataGenerator: BeatGeneratorService
-    // private editorChangeDetectorService: EditorChangeDetectorService,
+	constructor(
+		private editorHub: EditorHub,
+		private activatedRoute: ActivatedRoute,
+		private router: Router,
+		private toastr: Toastr,
+		public matModule: MatDialog,
+		private sidebarManagerService: SidebarManagerService,
+		private cdRef: ChangeDetectorRef,
+		private dataGenerator: BeatGeneratorService		) {
+		// private editorChangeDetectorService: EditorChangeDetectorService,
+		this.beatsUpdating = false; 
+		this.beatWasSet = false;
+		this.updateGraphEvent = new EventEmitter<any>();
+		this.updateBeatsEvent = new EventEmitter<any>();
+		this.beatsMetaData = [];
+		this.beatsIds = [];
+	}
 
-    ) {
-      this.beatsUpdating = false; 
-      this.beatWasSet = false;
-      this.updateGraphEvent = new EventEmitter<any>();
-      this.updateBeatsEvent = new EventEmitter<any>();
-      this.beatsMetaData = [];
-      this.beatsIds = [];
-    }
+	async ngOnInit() {
+		this.isDmoInfoSet = false;
+		this.isInitialPopupOpen = false;
+		this.beatsLoading = true;
 
-  async ngOnInit() {
-    this.isDmoInfoSet = false;
-    this.isInitialPopupOpen = false;
-    this.beatsLoading = true;
+		//this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
+		// this.beatsUpdating = true;
+		// await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
+		// this.beatsUpdating = false;
 
-    //this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
-      // this.beatsUpdating = true;
-      // await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
-      // this.beatsUpdating = false;
+		//});
 
-    //});
+		this.activatedRoute.queryParams.subscribe(params => {
+		this.dmoId = params['dmoId'];
+		});
 
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.dmoId = params['dmoId'];
-    });
-
-    if (this.dmoId) {
-      await this.loadDmo();
-    } else {
-      await this.createAndInitDmo();
-    }
-  }
+		if (this.dmoId) {
+			await this.loadDmo();
+		} else {
+			await this.createAndInitDmo();
+		}
+	}
 
 
-  async syncBeats(source: string) {
-    console.log(`sync from ${source}`);
-    let prepared = this.buildDmoWithBeatsJson();
-    console.log('prepared for saving');
-    console.log(prepared);
-    await this.editorHub.updateDmosJson(prepared);
-  }
+	async syncBeats(source: string) {
+		// console.log(`sync from ${source}`);
+		let prepared = this.buildDmoWithBeatsJson();
+		// console.log('prepared for saving');
+		// console.log(prepared);
+		this.beatsUpdating = true;
+		await this.editorHub.updateDmosJson(prepared);
+		this.beatsUpdating = false;
+		console.log('beats was synced')
+
+	}
 
 
-  async ngOnDestroy() {
-    this.initialLoadSub?.unsubscribe();
-    await this.closeEditorAndClearData();
-  }
-
-
-
-  //#region general settings
-
-  async createAndInitDmo() {
-    const popupResult = await this.finalizePopup();
-    if (!popupResult) {
-      return;
-    }
-    await this.editorHub.startConnection();
-    
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.createDmo(popupResult);
-    } catch (err) {
-      this.showUnhandledException(err);
-      return;
-    }
-
-    if (this.handleResponse(response)) {
-      this.initDmo(response.data);
-      this.createInitialDmo();
-
-      this.beatsLoading = false;
-      this.sidebarManagerService.collapseSidebar();
-    }
-  }
-
-  async editCurrentDmo() {
-    const popupResult = await this.finalizePopup();
-    if (!popupResult) {
-      return;
-    }
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.updateShortDmo(popupResult);
-
-      if (this.handleResponse(response)) {
-        await this.loadDmo();
-      }
-
-    } catch (err) {
-      this.showUnhandledException(err);
-      return;
-    }
-  }
-
-  async loadDmo() {
-
-    await this.editorHub.startConnection();
-
-    let response: EditorResponseDto;
-    try {
-      response = await this.editorHub.loadShortDmo(this.dmoId);
-    } catch(err) {
-      this.showUnhandledException(err);
-      return;
-    }
-
-    if (this.handleResponse(response)) {
-      this.initDmo(response.data);
-
-      if (this.currentShortDmo.hasBeats) {
-        this.loadBeats();
-      } else {
-        this.createInitialDmo();
-        this.sidebarManagerService.collapseSidebar();
-      }
-    }
-  }
-
-  async closeEditor() {
-    if (!this.sidebarManagerService.IsOpen) {
-      this.sidebarManagerService.toggleSidebar();
-    }
-    await this.closeEditorAndClearData();
-    this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
-  }
-
-  private createInitialDmo() {
-    this.initialDmoDto = new NnaDmoDto();
-    this.initialDmoDto.beats = [];
-    this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
-    this.initialDmoDto.isFinished = false;
-    this.initialDmoDto.statusString = 'In progress';
-  }
-
-  private async finalizePopup(): Promise<ShortDmoDto> {
-    let popupData = null;
-    if(this.currentShortDmo) {
-      popupData = this.currentShortDmo;
-    }
-    this.initialPopup = this.matModule.open(InitialPopupComponent, {
-      data: popupData,
-      width: '400px' });
-
-    this.isInitialPopupOpen = true;
-
-    const popupResult = await this.initialPopup.afterClosed().toPromise();
-    this.isInitialPopupOpen = false;
-    if (!popupResult || popupResult.cancelled) {
-      return null;
-    } 
-
-    let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
-    response.shortComment = popupResult.shortComment;
-    if (this.currentShortDmo && this.currentShortDmo.id) {
-      response.id = this.currentShortDmo.id;
-    }
-
-    this.initialPopup = null;
-    this.matModule.ngOnDestroy();
-    return response;
-  }
-
-  private handleResponse(entry: EditorResponseDto) : boolean {
-    if (!entry) {
-      return false;
-    }
-
-    if (entry.isSuccessful) {
-      return true;
-    }
-
-    if (entry.errors != null && entry.errors.length != 0) {
-      entry.errors.forEach(err => console.error(err.errorMessage));
-      this.toastr.error(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
-      return false;
-    }
-
-    if (entry.warnings != null && entry.warnings.length != 0) {
-      this.toastr.warning(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
-      console.error('Validation result is not implemented');
-      console.log('validation warnings');
-      entry.warnings.forEach(war => console.log(`field: ${war.fieldName} message: ${war.validationMessage}`));
-      return false;
-    }
-
-    this.showUnhandledException();
-    return false;
-  }
-
-  private showUnhandledException(err?: any) {
-    if (!err) {
-      this.toastr.error(new ToastrErrorMessage('Unhandled exception', 'Error'));
-    } else {
-      this.toastr.error(new ToastrErrorMessage(err, 'Error'));
-      console.error(err);
-    }
-  }
-
-  private initDmo(result: ShortDmoDto) {
-    this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
-
-    if (result.id) {
-      this.currentShortDmo.id = result.id;
-      this.dmoId = result.id;
-    }
-    this.currentShortDmo.shortComment = result.shortComment;
-    this.currentShortDmo.hasBeats = result.hasBeats;
-    this.isDmoInfoSet = true;
-  }
-
-  private loadBeats() {
-    let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
-      .pipe(takeUntil(this.unsubscribe$));
-      
-    this.initialLoadSub = $initialLoad.subscribe({
-      next: (result: any) => { 
-        this.initialDmoDto = new NnaDmoDto();
-        this.initialDmoDto.beats = [];
-
-        let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
-
-        this.initialDmoDto.beats = beats;
-        this.initialDmoDto.isFinished = result.dmoStatusId == 1; //Completed
-        this.initialDmoDto.dmoId = result.dmoId;
-        this.initialDmoDto.statusString = result.dmoStatus;
-
-        this.beatsLoading = false;
-        this.sidebarManagerService.collapseSidebar();
-      }
-    });
-  }
-
-  //#endregion
-
-
-  //#region initial load
-
-  async beatsSet(callbackResult: any): Promise<void> {
-    this.beatElements = callbackResult.beats;
-    this.timePickerElements = callbackResult.timePickers;
-    this.beatsMetaData = callbackResult.beatMetadata
-    this.beatsIds = callbackResult.beatsIds;
-    this.beatWasSet = true;
-    this.cdRef.detectChanges();
+	async ngOnDestroy() {
+		this.initialLoadSub?.unsubscribe();
+		await this.closeEditorAndClearData();
+	}
 
 
 
-    if (callbackResult.lastAction != null) {
-      await this.syncBeats(callbackResult.lastAction);
-    }
-  }
+  	// #region general settings
 
-  plotPointsSet(callbackResult): void {
-    this.plotPointElements = callbackResult.elements;
-  }
+	async createAndInitDmo() {
+		const popupResult = await this.finalizePopup();
+			if (!popupResult) {
+			return;
+		}
+		await this.editorHub.startConnection();
+		
+		let response: EditorResponseDto;
+		try {
+			response = await this.editorHub.createDmo(popupResult);
+		} catch (err) {
+			this.showUnhandledException(err);
+			return;
+		}
 
-  buildBeatsData() {
-    let plotPointsData: NnaBeatDto[] = [];
+		if (this.handleResponse(response)) {
+			this.initDmo(response.data);
+			this.createInitialDmo();
 
-    this.initialDmoDto.beats.map(b => b).forEach((beatDto: NnaBeatDto, i) => {
-      plotPointsData.push(beatDto);
-    });
+			this.beatsLoading = false;
+			this.sidebarManagerService.collapseSidebar();
+		}
+	}
 
-    return plotPointsData;
-  }
+	async editCurrentDmo() {
+		const popupResult = await this.finalizePopup();
+		if (!popupResult) {
+			return;
+		}
+		let response: EditorResponseDto;
+		try {
+			response = await this.editorHub.updateShortDmo(popupResult);
 
-  buildPlotPointsData() {
-    let plotPointsData: any[] = [];
+		if (this.handleResponse(response)) {
+			await this.loadDmo();
+		}
 
-    this.beatElements.forEach((beatElement, i) => {
-      plotPointsData.push({beatId: this.beatsIds[i], plotPointMetaData: this.beatsMetaData[i], order: i});
-    });
+		} catch (err) {
+			this.showUnhandledException(err);
+			return;
+		}
+	}
 
-    return plotPointsData;
-  }
+	async loadDmo() {
+		await this.editorHub.startConnection();
+		let response: EditorResponseDto;
+		try {
+			response = await this.editorHub.loadShortDmo(this.dmoId);
+		} catch(err) {
+			this.showUnhandledException(err);
+			return;
+		}
 
-  private selectBeatDtos(): NnaBeatDto[] {
-    // console.log(this.beatsMetaData);
-    // let dtos = this.beatElements
-      // .filter((element, i) => {
-      //   if (this.beatsMetaData[i].isDirty == true) {
-      //     this.beatsMetaData[i].isDirty = undefined;
-      //     return true;
-      //   }
-      //   return false;
-      // })
-      return this.beatElements.map((beatElement, i) => {
-        let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
-        let beat: NnaBeatDto = {
-          beatId: beatId,
-          order: i,
-          text: beatElement.nativeElement.innerHTML,
-          time: this.buildTimeDtoFromBeat(beatId)
-        }
-        return beat;
-    });
-    // console.log(this.beatsMetaData);
-    // return dtos;
-  }
+		if (this.handleResponse(response)) {
+			this.initDmo(response.data);
 
-  //#endregion
+			if (this.currentShortDmo.hasBeats) {
+				this.loadBeats();
+			} else {
+				this.createInitialDmo();
+				this.sidebarManagerService.collapseSidebar();
+			}
+		}
+	}
+
+	async closeEditor() {
+		if (!this.sidebarManagerService.IsOpen) {
+			this.sidebarManagerService.toggleSidebar();
+		}
+		await this.closeEditorAndClearData();
+		this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
+	}
+
+	private createInitialDmo() {
+		this.initialDmoDto = new NnaDmoDto();
+		this.initialDmoDto.beats = [];
+		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+		this.initialDmoDto.isFinished = false;
+		this.initialDmoDto.statusString = 'In progress';
+	}
+
+	private async finalizePopup(): Promise<ShortDmoDto> {
+		let popupData = null;
+		if(this.currentShortDmo) {
+			popupData = this.currentShortDmo;
+		}
+		this.initialPopup = this.matModule.open(InitialPopupComponent, {data: popupData, width: '400px' });
+		this.isInitialPopupOpen = true;
+
+		const popupResult = await this.initialPopup.afterClosed().toPromise();
+		this.isInitialPopupOpen = false;
+		if (!popupResult || popupResult.cancelled) {
+			return null;
+		} 
+
+		let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
+		response.shortComment = popupResult.shortComment;
+		if (this.currentShortDmo && this.currentShortDmo.id) {
+			response.id = this.currentShortDmo.id;
+		}
+
+		this.initialPopup = null;
+		this.matModule.ngOnDestroy();
+		return response;
+	}
+
+	private handleResponse(entry: EditorResponseDto) : boolean {
+		if (!entry) {
+			return false;
+		}
+
+		if (entry.isSuccessful) {
+			return true;
+		}
+
+		if (entry.errors != null && entry.errors.length != 0) {
+			entry.errors.forEach(err => console.error(err.errorMessage));
+			this.toastr.error(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
+			return false;
+		}
+
+		if (entry.warnings != null && entry.warnings.length != 0) {
+			this.toastr.warning(new ToastrErrorMessage(entry.message, `${entry.httpCode} ${entry.header}`));
+			console.error('Validation result is not implemented');
+			console.log('validation warnings');
+			entry.warnings.forEach(war => console.log(`field: ${war.fieldName} message: ${war.validationMessage}`));
+			return false;
+		}
+
+		this.showUnhandledException();
+		return false;
+	}
+
+	private showUnhandledException(err?: any) {
+		if (!err) {
+			this.toastr.error(new ToastrErrorMessage('Unhandled exception', 'Error'));
+		} else {
+			this.toastr.error(new ToastrErrorMessage(err, 'Error'));
+			console.error(err);
+		}
+	}
+
+	private initDmo(result: ShortDmoDto) {
+		this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
+
+		if (result.id) {
+			this.currentShortDmo.id = result.id;
+			this.dmoId = result.id;
+		}
+		this.currentShortDmo.shortComment = result.shortComment;
+		this.currentShortDmo.hasBeats = result.hasBeats;
+		this.isDmoInfoSet = true;
+	}
+
+	private loadBeats() {
+		let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
+			.pipe(takeUntil(this.unsubscribe$));
+		
+		this.initialLoadSub = $initialLoad.subscribe({
+			next: (result: any) => { 
+				this.initialDmoDto = new NnaDmoDto();
+				this.initialDmoDto.beats = [];
+
+				let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
+
+				this.initialDmoDto.beats = beats;
+				this.initialDmoDto.isFinished = result.dmoStatusId == 1; //Completed
+				this.initialDmoDto.dmoId = result.dmoId;
+				this.initialDmoDto.statusString = result.dmoStatus;
+
+				this.beatsLoading = false;
+				this.sidebarManagerService.collapseSidebar();
+			}
+		});
+	}
+
+  	// #endregion
 
 
-  //#region CRUD
+    // #region initial load
+
+	async beatsSet(callbackResult: any): Promise<void> {
+		this.beatElements = callbackResult.beats;
+		this.timePickerElements = callbackResult.timePickers;
+		this.beatsMetaData = callbackResult.beatMetadata
+		this.beatsIds = callbackResult.beatsIds;
+		this.beatWasSet = true;
+		this.cdRef.detectChanges();
+
+		if (callbackResult.lastAction != null) {
+			await this.syncBeats(callbackResult.lastAction);
+		}
+	}
+
+	plotPointsSet(callbackResult): void {
+		this.plotPointElements = callbackResult.elements;
+	}
+
+	buildBeatsData() {
+		let plotPointsData: NnaBeatDto[] = [];
+
+		this.initialDmoDto.beats.map(b => b).forEach((beatDto: NnaBeatDto, i) => {
+			plotPointsData.push(beatDto);
+		});
+
+		return plotPointsData;
+	}
+
+	buildPlotPointsData() {
+		let plotPointsData: any[] = [];
+
+		this.beatElements.forEach((beatElement, i) => {
+			plotPointsData.push({beatId: this.beatsIds[i], plotPointMetaData: this.beatsMetaData[i], order: i});
+		});
+
+		return plotPointsData;
+	}
+
+	private selectBeatDtos(): NnaBeatDto[] {
+		// console.log(this.beatsMetaData);
+		// let dtos = this.beatElements
+		// .filter((element, i) => {
+		//   if (this.beatsMetaData[i].isDirty == true) {
+		//     this.beatsMetaData[i].isDirty = undefined;
+		//     return true;
+		//   }
+		//   return false;
+		// })
+		return this.beatElements.map((beatElement, i) => {
+				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
+				let beat: NnaBeatDto = {
+				beatId: beatId,
+				order: i,
+				text: beatElement.nativeElement.innerHTML,
+				time: this.buildTimeDtoFromBeat(beatId)
+			}
+			return beat;
+		});
+		// console.log(this.beatsMetaData);
+		// return dtos;
+	}
+
+   // #endregion
+
+
+  	// #region CRUD
   
-  finishDmo(): void {
-    this.isDmoFinised = !this.isDmoFinised;
-    this.updatePlotPoints();
-  }
+	finishDmo(): void {
+		this.isDmoFinised = !this.isDmoFinised;
+		this.updatePlotPoints();
+	}
 
-  lineCountChanged(change: any): void {
-    this.beatsIds.forEach((beatId, i) => {
-      if (beatId == change.beatId) {
-        this.beatsMetaData[i] = { lineCount: change.newLineCount.lineCount, lines: change.newLineCount.lines };
-        return;
-      }
-    });
+	lineCountChanged(change: any): void {
+		this.beatsIds.forEach((beatId, i) => {
+			if (beatId == change.beatId) {
+				this.beatsMetaData[i] = { lineCount: change.newLineCount.lineCount, lines: change.newLineCount.lines };
+				return;
+			}
+		});
 
-    this.updatePlotPoints();
-  }
+		this.updatePlotPoints();
+	}
 
-  addBeat(fromBeat: any): void {
-    let indexToInsert: number;
-    this.beatsIds.forEach((beatId, i) => {
-      if (beatId == fromBeat.beatIdFrom) {
-        indexToInsert = i;
-        return;
-      }
-    });
+  	addBeat(fromBeat: any): void {
+		let indexToInsert: number;
+		this.beatsIds.forEach((beatId, i) => {
+			if (beatId == fromBeat.beatIdFrom) {
+				indexToInsert = i;
+				return;
+			}
+		});
 
-    let beats = this.selectBeatDtos();
-    let newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
-    beats.splice(indexToInsert + 1, 0 , newBeat)
-    beats = this.orderBeats(beats);
+		let beats = this.selectBeatDtos();
+		let newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
+		beats.splice(indexToInsert + 1, 0 , newBeat)
+		beats = this.orderBeats(beats);
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add' });
-    this.updatePlotPoints();
-  }
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add' });
+		this.updatePlotPoints();
+  	}
 
-  removeBeat(fromBeat: any): void {
-    let indexToRemove: number;
-    this.beatsIds.forEach((beatId, i) => {
-      if (beatId == fromBeat.beatIdToRemove) {
-        indexToRemove = i;
-        return;
-      }
-    });
+	removeBeat(fromBeat: any): void {
+		let indexToRemove: number;
+		this.beatsIds.forEach((beatId, i) => {
+			if (beatId == fromBeat.beatIdToRemove) {
+				indexToRemove = i;
+				return;
+			}
+		});
 
-    let beats = this.selectBeatDtos();
-    beats.splice(indexToRemove, 1);
-    beats = this.orderBeats(beats);
+		let beats = this.selectBeatDtos();
+		beats.splice(indexToRemove, 1);
+		beats = this.orderBeats(beats);
 
-    let beatIdToFocus = indexToRemove == 0 
-      ? 0
-      : indexToRemove - 1;
+		let beatIdToFocus = indexToRemove == 0 ? 0 : indexToRemove - 1;
 
-      console.log(beatIdToFocus);
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove' });
+		this.updatePlotPoints();
+	}
 
-    this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove' });
-    this.updatePlotPoints();
-  }
+	private updatePlotPoints() {
+		let newPlotPoints = []
+		this.beatsIds.forEach((beatId, i) => {
+			newPlotPoints.push({beatId: beatId, plotPointMetaData: this.beatsMetaData[i], order: i});
+		});
 
-  private updatePlotPoints() {
-    let newPlotPoints = []
-    this.beatsIds.forEach((beatId, i) => {
-      newPlotPoints.push({beatId: beatId, plotPointMetaData: this.beatsMetaData[i], order: i});
-    });
+		this.updateGraphEvent.emit({newplotPoints: newPlotPoints, isFinished: this.isDmoFinised});
+	}
 
-    this.updateGraphEvent.emit({newplotPoints: newPlotPoints, isFinished: this.isDmoFinised});
-  }
-
-  //#endregion
+  	// #endregion
 
 
-  //#region helpers
+    // #region helpers
 
-  private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
-    let shouldIncrement: boolean = false;
-    beats.forEach((beat, i) => {
-      if (beat.order == -1) {
-        beat.order = i - 1;
-        shouldIncrement = true;
-      } else {
-        beat.order = i;
-      }
-      if (shouldIncrement) {
-        beat.order = beat.order + 1;
-      }
-    });
-    return beats;
-  } 
+	private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
+		let shouldIncrement: boolean = false;
+		beats.forEach((beat, i) => {
+			if (beat.order == -1) {
+				beat.order = i - 1;
+				shouldIncrement = true;
+			} else {
+				beat.order = i;
+			}
+			if (shouldIncrement) {
+				beat.order = beat.order + 1;
+			}
+		});
 
-  private buildTimeDtoFromBeat(beatId: string): NnaBeatTimeDto {
-    let selectedTimePickerElement: any;
-    this.timePickerElements.forEach(timePicker => {
-      if (this.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
-        selectedTimePickerElement = timePicker.nativeElement;
-        return;
-      }
-    })
-    
-    return this.convertTimeToDto(selectedTimePickerElement.value);
-  }
+		return beats;
+	} 
 
-  private selectBeatIdFromBeatDataHolder(nativeElement: any): string {
-    let beatSufix = 'beat_';
-    return nativeElement.getAttribute('id').substring(beatSufix.length);
-  }
+	private buildTimeDtoFromBeat(beatId: string): NnaBeatTimeDto {
+		let selectedTimePickerElement: any;
+		this.timePickerElements.forEach(timePicker => {
+			if (this.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
+				selectedTimePickerElement = timePicker.nativeElement;
+				return;
+			}
+		});
+		
+		return this.convertTimeToDto(selectedTimePickerElement.value);
+	}
 
-  private selectBeatIdFromTimePicker(nativeElement: any): string {
-    let beatSufix = 'time_picker_';
-    return nativeElement.getAttribute('id').substring(beatSufix.length);
-  }
+	private selectBeatIdFromBeatDataHolder(nativeElement: any): string {
+		let beatSufix = 'beat_';
+		return nativeElement.getAttribute('id').substring(beatSufix.length);
+	}
+
+	private selectBeatIdFromTimePicker(nativeElement: any): string {
+		let beatSufix = 'time_picker_';
+		return nativeElement.getAttribute('id').substring(beatSufix.length);
+	}
   
-  private convertTimeToDto(value: string): NnaBeatTimeDto {
-    let time = value.replace(/:+/g, '');
-    time = time.replace(/ +/g, '0');
-    
-    var timeDto = new NnaBeatTimeDto();
-    timeDto.hours = 0;
-    timeDto.minutes = 0;
-    timeDto.seconds = 0;
+	private convertTimeToDto(value: string): NnaBeatTimeDto {
+		let time = value.replace(/:+/g, '');
+		time = time.replace(/ +/g, '0');
+		
+		var timeDto = new NnaBeatTimeDto();
+		timeDto.hours = 0;
+		timeDto.minutes = 0;
+		timeDto.seconds = 0;
 
-    if (time.length == 1) {
-      timeDto.hours = +time[0];
-      return timeDto;
-    } else if (time.length > 1 && time.length <= 3) {
-      timeDto.hours = +time[0];
-      if (time.length == 2) {
-        timeDto.minutes = +time[1];
-      } else {
-        timeDto.minutes = +`${time[1]}${time[2]}`;
-      }
-      return timeDto;
-    }
+		if (time.length == 1) {
+			timeDto.hours = +time[0];
+			return timeDto;
+		} else if (time.length > 1 && time.length <= 3) {
+			timeDto.hours = +time[0];
+		if (time.length == 2) {
+			timeDto.minutes = +time[1];
+		} else {
+			timeDto.minutes = +`${time[1]}${time[2]}`;
+		}
+			return timeDto;
+		}
 
-    timeDto.hours = +time[0];
-    timeDto.minutes = +`${time[1]}${time[2]}`;
-    if (time.length == 4) {
-      timeDto.seconds = +time[3];
-    } else {
-      timeDto.seconds = +`${time[3]}${time[4]}`;
-    }
-    return timeDto;
-  }
+		timeDto.hours = +time[0];
+		timeDto.minutes = +`${time[1]}${time[2]}`;
+		if (time.length == 4) {
+			timeDto.seconds = +time[3];
+		} else {
+			timeDto.seconds = +`${time[3]}${time[4]}`;
+		}
+		return timeDto;
+	}
 
-  private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
-    let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
-    dmoWithJson.json = JSON.stringify(this.selectBeatDtos());
-    dmoWithJson.dmoId = this.dmoId;
-    return dmoWithJson;
-  }
+	private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
+		let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
+		dmoWithJson.json = JSON.stringify(this.selectBeatDtos());
+		dmoWithJson.dmoId = this.dmoId;
+		return dmoWithJson;
+	}
 
-  private async closeEditorAndClearData() {
-    await this.editorHub.abortConnection();
-    this.dmoId = '';
-    this.isDmoInfoSet = false;
-    this.isInitialPopupOpen = false;
-    this.matModule.closeAll();
-    this.initialPopup = null;
-    this.currentShortDmo = null;
+	private async closeEditorAndClearData() {
+		await this.editorHub.abortConnection();
+		this.dmoId = '';
+		this.isDmoInfoSet = false;
+		this.isInitialPopupOpen = false;
+		this.matModule.closeAll();
+		this.initialPopup = null;
+		this.currentShortDmo = null;
 
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
+		this.unsubscribe$.next();
+		this.unsubscribe$.complete();
+	}
 
-  //#endregion
+  	// #endregion
 }

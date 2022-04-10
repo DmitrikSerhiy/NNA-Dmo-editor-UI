@@ -6,7 +6,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DmoEditorComponent as DmoEditor } from './dmo-editor.component';
 import { InitialPopupComponent } from './components/initial-popup/initial-popup.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BeatsFlowComponent } from './components/beats-flow/beats-flow.component';
 import { PlotPointsFlowComponent } from './components/plot-points-flow/plot-points-flow.component';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -25,7 +24,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatDialogModule,
     MatTabsModule,
-    MatProgressSpinnerModule,
     SharedModule
   ]
 })

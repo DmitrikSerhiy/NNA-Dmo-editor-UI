@@ -1,3 +1,6 @@
+@import '../../../styles/fonts-mixins.scss';
+@import '../../../styles/colors.scss';
+
 .general-editor-wrapper {
     min-height: 100vh;
     margin: -1rem;
@@ -5,34 +8,37 @@
     background-image: url("/assets/editor_background.jpeg");
 
     .controls-panel {
-        height: 32px;
+        position: sticky;
+        top: -1rem;
+        left: 0;
+        right: 0;
+        z-index: 100;
         display: flex;
         justify-content: flex-start;
-        
-        button {
-            align-self: center;
+        background: white;
+        margin-left: -1rem;
+        margin-right: calc(-1rem - 1px);
+        margin-top: -1rem;
+        padding-right: calc(1rem + 1px);
+        padding-left: 1rem;
+        padding-top: 1rem;
+
+        .movie-title {
+            @include font-primary-heading();
+            margin-bottom: 1rem;
         }
-        button:not(:first-child) {
+
+        .nna-button, .nna-icon-button {
             margin-left: 0.5rem;
         }
 
         .editor-board-tools {
-            height: 32px;
             display: flex;
-            align-items: center;
+            margin-left: auto;
 
             .info-icons {
-                display: flex;
-                align-items: center;
-
-                .spinner-wrapper {
-                    position: relative;
-                    width: 0px;
-                    .cloud-spinner {
-                        position: absolute;
-                        left: 5px;
-                        top: -6px;
-                    }
+                svg {
+                    cursor: pointer;
                 }
             }
         }
@@ -42,8 +48,6 @@
         display: flex;
         flex-flow: row nowrap;
         min-height: 100vh;
-
-
         
         app-plot-points-flow {
             flex: 0 0 2rem;

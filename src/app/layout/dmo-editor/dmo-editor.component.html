@@ -1,22 +1,28 @@
 
 <div *ngIf='isDmoInfoSet' class="general-editor-wrapper">
     <div class="controls-panel">
-        <button class="nna-button nna-button-primary" (click)='editCurrentDmo()'>Edit DMO details</button>
-        <button class="nna-button nna-button-primary" (click)='closeEditor()'>Close editor</button>
-        <button class="nna-button nna-button-primary" (click)='finishDmo()'>Finish DMO</button>
+        <p class="movie-title">{{currentShortDmo.movieTitle}} </p>
+
+        <button type="button" class='nna-icon-button nna-button-primary' (click)='editCurrentDmo()'>
+            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+        </button>
+        <button type="button" class='nna-icon-button' (click)="closeEditor()">
+            <i class="fa fa-times" aria-hidden="true" style="font-size: 1rem; margin-top: 5px;"></i>
+        </button>
+
+        <!-- <button class="nna-button nna-button-secondary" (click)='closeEditor()'>Close editor</button>
+        <button class="nna-button nna-button-secondary" (click)='finishDmo()'>Finish DMO</button> -->
         <!-- <button class="nna-button nna-button-primary" (click)='save()'>Save</button> -->
             
-        <p *ngIf="!beatsLoading">dmo status:  {{this.initialDmoDto.statusString}}  </p>
+        <!-- <p *ngIf="!beatsLoading">dmo status:  {{this.initialDmoDto.statusString}}  </p> -->
 
         <div class="editor-board-tools"> 
-            <div class="info-icons">
-                <div class="spinner-wrapper" *ngIf="beatsUpdating">
-                    <mat-progress-spinner class="cloud-spinner" diameter="14" mode="indeterminate"></mat-progress-spinner>
-                </div>
-                <svg *ngIf="beatsUpdating"  xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>
-                <svg *ngIf="!beatsUpdating" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM10 17l-3.5-3.5 1.41-1.41L10 14.17 15.18 9l1.41 1.41L10 17z"/></svg>
+            <div class="info-icons" title="Your work is autosaved">
+                <svg *ngIf="!beatsUpdating" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3zm-9-3.82l-2.09-2.09L6.5 13.5 10 17l6.01-6.01-1.41-1.41z"/></svg>
+                <svg *ngIf="beatsUpdating" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M21.5,14.98c-0.02,0-0.03,0-0.05,0.01C21.2,13.3,19.76,12,18,12c-1.4,0-2.6,0.83-3.16,2.02C13.26,14.1,12,15.4,12,17 c0,1.66,1.34,3,3,3l6.5-0.02c1.38,0,2.5-1.12,2.5-2.5S22.88,14.98,21.5,14.98z M21.51,18L21.51,18L15,18c-0.55,0-1-0.45-1-1 s0.45-1,1-1h1.25v-0.25c0-0.97,0.78-1.75,1.75-1.75s1.75,0.78,1.75,1.75V17c0,0,1.75,0,1.76,0c0.28,0,0.5,0.22,0.5,0.5 C22,17.77,21.78,18,21.51,18z M10,4.26v2.09C7.67,7.18,6,9.39,6,12c0,1.77,0.78,3.34,2,4.44V14h2v6H4v-2h2.73 C5.06,16.54,4,14.4,4,12C4,8.27,6.55,5.15,10,4.26z M20,6h-2.73c1.43,1.26,2.41,3.01,2.66,5l-2.02,0 C17.68,9.64,16.98,8.45,16,7.56V10h-2V4h6V6z"/></g></g></svg>
             </div>
         </div>
+
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
        <app-plot-points-flow 
