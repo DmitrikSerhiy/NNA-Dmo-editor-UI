@@ -55,8 +55,12 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
   private setupSubscription(): void {
     this.updateGraph.subscribe(update => {
 
-      this.plotPoints = [ ...update.newplotPoints]
-      this.isDmoFinished = update.isFinished;
+      if (update.newplotPoints) {
+        this.plotPoints = [ ...update.newplotPoints]
+      }
+      if (update.isFinished) {
+        this.isDmoFinished = update.isFinished;
+      }
       this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
 
       this.renderGraph();

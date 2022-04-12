@@ -40,9 +40,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	private isDmoFinised: boolean;
 	private beatsMetaData: any[];
 	private beatsIds: string[];
-	private plotPointElements: QueryList<ElementRef>;   //elements
-	private beatElements: QueryList<ElementRef>;        //elements
-	private timePickerElements: QueryList<ElementRef>;  //elements
+	private plotPointElements: QueryList<ElementRef>;   // elements
+	private beatElements: QueryList<ElementRef>;        // elements
+	private timePickerElements: QueryList<ElementRef>;  // elements
    // ------ [end] not state
 
 	private unsubscribe$: Subject<void> = new Subject();
@@ -171,10 +171,10 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
 		let popupData = null;
-		if(this.currentShortDmo) {
+		if (this.currentShortDmo) {
 			popupData = this.currentShortDmo;
 		}
-		this.initialPopup = this.matModule.open(InitialPopupComponent, {data: popupData, width: '400px' });
+		this.initialPopup = this.matModule.open(InitialPopupComponent, { data: popupData, width: '400px' });
 		this.isInitialPopupOpen = true;
 
 		const popupResult = await this.initialPopup.afterClosed().toPromise();
@@ -183,15 +183,16 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 			return null;
 		} 
 
-		let response = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
-		response.shortComment = popupResult.shortComment;
+		let newDmoDetails = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
+		newDmoDetails.shortComment = popupResult.shortComment;
+		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
 		if (this.currentShortDmo && this.currentShortDmo.id) {
-			response.id = this.currentShortDmo.id;
+			newDmoDetails.id = this.currentShortDmo.id;
 		}
 
 		this.initialPopup = null;
 		this.matModule.ngOnDestroy();
-		return response;
+		return newDmoDetails;
 	}
 
 
@@ -213,6 +214,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		}
 
 		if (result.dmoStatus !== undefined && result.dmoStatus !== null) {
+			this.isDmoFinised = result.dmoStatus === 1;
+			if (this.currentShortDmo.dmoStatus != result.dmoStatus) {
+				this.updateGraphEvent.emit({isFinished: this.isDmoFinised});
+			}
+
 			this.currentShortDmo.dmoStatus = result.dmoStatus;
 		}
 

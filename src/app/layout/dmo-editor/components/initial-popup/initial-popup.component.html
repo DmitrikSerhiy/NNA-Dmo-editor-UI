@@ -36,8 +36,17 @@
 
                 </div>
             </div>
+            
+            <div [hidden]="!isEdit" class="nna-input-group">
+                <select name="pets" id="dmoStatus" name="dmoStatus" formControlName="dmoStatus" class="form-control nna-input" placeholder="DMO name*" >
+                    <option value="0">In progress</option>
+                    <option value="1">Completed</option>
+                    <option value="2">Not finished</option>
+                </select>
+                <label for="dmoStatus" class="nna-input-label">Status</label>
+            </div>
 
-            <div class="nna-input-group">
+            <div class="nna-input-group" [ngClass]="{'group-with-textarea': isEdit}">
                 <textarea autocomplete="off" name="shortComment" id="shortComment" formControlName="shortComment" 
                     class="form-control nna-input" rows="3" placeholder="Short comment"></textarea>
                 <label for="shortComment" class="nna-input-label">Short comment</label>
