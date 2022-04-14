@@ -77,6 +77,15 @@ select:-webkit-autofill:focus {
         resize: none;
     }
 
+    select {
+        -webkit-appearance: none;
+        appearance: none;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
     @include nna-input-base();
 
     .nna-input {
