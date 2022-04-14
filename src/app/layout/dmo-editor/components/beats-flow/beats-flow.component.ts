@@ -30,6 +30,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	private onUpLines: any;
 	private valueBeforeRemove: string;
 	private shiftIsPressed: boolean;
+	private controlIsPressed: boolean;
+
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
@@ -157,21 +159,29 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	setBeatKeyMetaData($event: any): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
-			if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
-			this.focusNextPreviousBeat(key, $event);
-			return;
+
+		if (key == 17) { // control
+			this.controlIsPressed = true;
 		}
-		
+
 		if (key == 16) { // shift
 			this.shiftIsPressed = true;
 		} 
 
+		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+			this.focusNextPreviousBeat(key, $event);
+			return;
+		}
+		
+
 		if (key == 13) { // enter
 			if (this.shiftIsPressed == false) {
-				$event.preventDefault();
 				this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
-				return;
+			} else {
+				this.insertNewLineIntoBeatHolder($event);
 			}
+			$event.preventDefault();
+			return;
 		}
 
 		if (key == 9) { // tab
@@ -189,12 +199,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	setBeatValue($event: any): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
-		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
-			return;
+
+		if (key == 17) { // control
+			this.controlIsPressed = false;
 		}
 
 		if (key == 16) { // shift
 			this.shiftIsPressed = false;
+		}
+
+		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
+			return;
 		}
 
 		if (key == 13) { // enter
@@ -242,8 +257,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	}
 
 	private focusNextPreviousBeat(key: number, $event: any): void {
-		if (key == 38) { // up 
-			if (document.getSelection().focusOffset == 0) {
+		if (key == 38) { // up
+			if (document.getSelection().focusOffset == 0 || this.controlIsPressed) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						if (i != 0) {
@@ -257,7 +272,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			}
 			return;
 		} else if (key == 40 || key == 39) { // down or right
-			if (document.getSelection().focusOffset == $event.target.innerHTML.length || document.getSelection().focusOffset == 1) { // weird bug with focusOffset == 1 after focus from lower beat
+			if ($event.target.firstChild == null || document.getSelection().focusOffset == $event.target.firstChild?.length - 1 || document.getSelection().focusOffset == $event.target.firstChild?.length || document.getSelection().focusOffset == 1 || this.controlIsPressed) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						if (i != this.beatsIds.length - 1) {
@@ -271,7 +286,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			}
 		return;
 		} else if (key == 37) { // left
-			if (document.getSelection().focusOffset == 0) {
+			if (document.getSelection().focusOffset == 0 || this.controlIsPressed) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						let timePickerElement = this.timePickersElements.toArray()[i].nativeElement;
@@ -368,6 +383,29 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		sel.addRange(range);
 	}
 
+	private insertNewLineIntoBeatHolder($event) {
+		let previousFocus = document.getSelection().focusOffset;
+		let orifinalText = $event.target.firstChild?.textContent ?? '';
+		if ($event.target.firstChild) {
+			$event.target.firstChild.textContent = orifinalText.slice(0, previousFocus) + '\n'+ orifinalText.slice(previousFocus);
+			// todo: bug here sometimes new line is not created (maybe google some examples)
+			// console.log(orifinalText);
+			// console.log($event.target.firstChild.textContent);
+
+		} else {
+			$event.target.textContent = orifinalText.slice(0, previousFocus) + '\n\n'+ orifinalText.slice(previousFocus);
+		}
+		var setpos = document.createRange();
+		var set = window.getSelection();
+		// todo: bug here when focus come from relative
+
+		setpos.setStart($event.target.firstChild, previousFocus+1);
+		setpos.collapse(true);
+		set.removeAllRanges();
+		set.addRange(setpos);
+		$event.target.focus();
+	}
+
   //#endregion
 
 
@@ -380,10 +418,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			key != 8 && key != 46 &&    // delete and backspace
 			key != 13 &&                // enter
 			key != 32 &&                // space
+			key != 17 &&				// control
 			key == 9 &&                 // tab
 			!(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
 			event.preventDefault();
 			return;
+		}
+
+		if (key == 17) {
+			this.controlIsPressed = true;
 		}
 
 		if (key == 13) { // enter
@@ -398,10 +441,18 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			return;
 		}
 
-		if (key == 39 && event.target.selectionStart == 7) { // left and right arrows 
-			this.focusSiblingBeat(event);
-			event.preventDefault();
-			return;
+		if (key == 39) { // right arrow
+			if (event.target.selectionStart == 7 || this.controlIsPressed == true) {
+				this.focusSiblingBeat(event);
+				event.preventDefault();
+				return;
+			}
+		}
+
+		if (key == 37) { // left arrow
+			if (event.target.selectionStart == 0 || this.controlIsPressed == true) {
+				this.focusPreviousTimePicker(event);
+			}
 		}
 
 		if (key == 40 || key == 38) { // up and down arrow
@@ -418,6 +469,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	setTimePickerValue(event: any, index: number): void {
 		let key = event.which || event.keyCode || event.charCode;
+
+		if (key == 17) {
+			this.controlIsPressed = false;
+		}
+		
 		if (key == 13) { // enter
 			event.preventDefault();
 			return;
@@ -669,7 +725,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	private focusPreviousNextTimePicker($event, key) {
 		if (key == 38) { // up
-			this.beatsIds.forEach((beatId, i) => {
+			this.focusPreviousTimePicker($event);
+		} else if (key == 40) { // down
+			this.focusNextTimePicker($event);
+		}
+	}
+
+	private focusPreviousTimePicker($event) {
+		this.beatsIds.forEach((beatId, i) => {
 			if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
 				if (i != 0) {
 					const timepickerElement = this.timePickersElements.toArray()[i - 1].nativeElement;
@@ -678,18 +741,21 @@ export class BeatsFlowComponent implements AfterViewInit  {
 				}
 			}
 		});
-		} else if (key == 40) { // down
-			this.beatsIds.forEach((beatId, i) => {
-				if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
-					if (i != this.beatsIds.length - 1) {
-						const timepickerElement = this.timePickersElements.toArray()[i + 1].nativeElement;
-						timepickerElement.focus(); 
+	}
 
-						return;
-					}
+	private focusNextTimePicker($event) {
+		this.beatsIds.forEach((beatId, i) => {
+			if (beatId == this.selectBeatIdFromTimePicker($event.target)) {
+				if (i != this.beatsIds.length - 1) {
+					const timepickerElement = this.timePickersElements.toArray()[i + 1].nativeElement;
+					timepickerElement.focus(); 
+						timepickerElement.focus(); 
+					timepickerElement.focus(); 
+
+					return;
 				}
-			});
-		}
+			}
+		});
 	}
 
 	private shiftCursorOnColon(nativeElement: any, key: number): void {
