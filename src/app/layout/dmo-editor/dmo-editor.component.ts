@@ -470,6 +470,9 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		this.matModule.closeAll();
 		this.initialPopup = null;
 		this.currentShortDmo = null;
+		if (this.sidebarManagerService.IsOpen == false) {
+			this.sidebarManagerService.toggleSidebar();
+		}
 
 		this.unsubscribe$.next();
 		this.unsubscribe$.complete();
