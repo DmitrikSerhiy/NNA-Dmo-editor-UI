@@ -3,24 +3,26 @@ import { ShortDmoDto } from '../../models';
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { catchError, share } from 'rxjs/operators';
 
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { NnaDmoWithBeatsAsJson } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
-import { EditorValidationMessage, ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
+import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditorHub {
     serverUrl = environment.server_user
+
+    private readonly connectionStateEmit$: Subject<void> = new Subject<void>();
 
     public get failedResponseObject(): any {
         return { failed: true };
@@ -31,8 +33,21 @@ export class EditorHub {
     }
 
     private hubConnection: signalR.HubConnection;
+
     public get isConnected() : boolean {
-        return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected
+        return this.hubConnection && this.hubConnection.state == signalR.HubConnectionState.Connected;
+    }
+
+    public get isReconnecting(): boolean {
+        return this.hubConnection && (this.hubConnection.state == signalR.HubConnectionState.Connecting || this.hubConnection.state == signalR.HubConnectionState.Reconnecting);
+    }
+
+    public get isDisconnected(): boolean {
+        return this.hubConnection && (this.hubConnection.state == signalR.HubConnectionState.Disconnected || this.hubConnection.state == signalR.HubConnectionState.Disconnecting);
+    }
+
+    get onConnectionChanged(): Observable<void>  {
+        return this.connectionStateEmit$.asObservable().pipe(share());
     }
 
     constructor(
@@ -45,9 +60,11 @@ export class EditorHub {
             this.hubConnection = null;
     }
 
+
+
     async startConnection() {
         if (this.userManager.isAuthorized) {
-            if(this.hubConnection != null && this.hubConnection.state != 'Disconnected') {
+            if (this.isConnected) {
                 return;
             }
 
@@ -55,6 +72,7 @@ export class EditorHub {
                 await this.authService.ping().toPromise();
             } catch (error) {
                 this.router.navigate(["/login"]); 
+                // todo: navigate to special error page
                 this.userManager.clearUserData();
             }                
 
@@ -86,14 +104,17 @@ export class EditorHub {
 
         this.hubConnection.onreconnecting((error) => {
             console.log('Reconnecting...');
+            this.connectionStateEmit$.next();
             if (error != null) {
                 console.log(error);
             }
         });
         this.hubConnection.onreconnected(() => {
+            this.connectionStateEmit$.next();
             console.log('Reconnected.');
         });
         this.hubConnection.onclose((error) => {
+            this.connectionStateEmit$.next();
             if (error != null) {
                 console.log('failed');
             }

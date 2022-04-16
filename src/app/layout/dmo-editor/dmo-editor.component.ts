@@ -21,7 +21,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	isInitialPopupOpen: boolean;
 	initialPopup: MatDialogRef<InitialPopupComponent>;
 
+	connectionState: string;
 	beatsUpdating: boolean;
+	autosaveTitle: string;
+	connectionStateTitle: string;
+	private savingIsDoneTitle: string = "Your work is autosaved";
+	private savingInProgressTitle: string = "Your work is saving";
+	editorIsConnected: boolean;
 	
 	// initial fields
 	isDmoInfoSet: boolean;
@@ -30,6 +36,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	currentShortDmo: ShortDmoDto;
 	initialDmoDto: NnaDmoDto;
 	beatWasSet: boolean;
+
 
 
 	// events
@@ -81,14 +88,39 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		});
 
 		await this.editorHub.startConnection();
+		this.setConnectionView();
+		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
 
 		if (this.dmoId) {
 			await this.loadDmo();
 		} else {
 			await this.createDmo();
 		}
+		this.autosaveTitle = this.savingIsDoneTitle;
 	}
 
+	setConnectionView(): void {
+		if (this.editorHub.isConnected) {
+			this.editorIsConnected = true;
+			this.connectionState = "online";
+			this.connectionStateTitle = "Connections is established";
+		} else if (this.editorHub.isReconnecting) {
+			this.editorIsConnected = true;
+			this.connectionState = "connecting";
+			this.connectionStateTitle = "Editor is connecting";
+		} else {
+			this.editorIsConnected = false;
+			this.connectionState = "offline";
+			this.connectionStateTitle = "Editor is disconnected";
+		}
+	}
+
+	async tryReconnect() {
+		await this.editorHub.startConnection();
+		this.setConnectionView();
+		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
+		await this.syncBeats("manually");
+	}
 
 	async syncBeats(source: string) {
 		// console.log(`sync from ${source}`);
@@ -96,8 +128,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		// console.log('prepared for saving');
 		// console.log(prepared);
 		this.beatsUpdating = true;
+		this.autosaveTitle = this.savingInProgressTitle;
 		await this.editorHub.updateDmosJson(prepared);
 		this.beatsUpdating = false;
+		this.autosaveTitle = this.savingIsDoneTitle;
+
 		console.log('beats was synced')
 	}
 

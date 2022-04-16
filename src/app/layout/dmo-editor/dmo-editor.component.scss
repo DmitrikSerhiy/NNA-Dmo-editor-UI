@@ -36,7 +36,27 @@
             display: flex;
             margin-left: auto;
 
-            .info-icons {
+            .socket-status-icon {
+                svg {
+                    cursor: pointer;
+
+                    defs {
+                        radialGradient {
+                            .connection-indicator-online-color {
+                                stop-color:#10f345
+                            }
+                            .connection-indicator-offline-color {
+                                stop-color:#f31010
+                            }
+                            .connection-indicator-connecting-color {
+                                stop-color:#f39810
+                            }
+                        }
+                    }
+                }
+            }
+
+            .autosave-icons {
                 svg {
                     cursor: pointer;
                 }
