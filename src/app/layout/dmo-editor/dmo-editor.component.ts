@@ -215,8 +215,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 		if (result.dmoStatus !== undefined && result.dmoStatus !== null) {
 			this.isDmoFinised = result.dmoStatus === 1;
-			if (this.currentShortDmo.dmoStatus != result.dmoStatus) {
-				this.updateGraphEvent.emit({isFinished: this.isDmoFinised});
+
+			if (this.currentShortDmo.dmoStatus !== undefined) {
+				if (this.currentShortDmo.dmoStatus != result.dmoStatus) {
+					this.updateGraphEvent.emit({isFinished: this.isDmoFinised});
+				}
 			}
 
 			this.currentShortDmo.dmoStatus = result.dmoStatus;

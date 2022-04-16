@@ -45,9 +45,20 @@
     }
     .add-collection-button-partial-width {
       flex-basis: 80%;
+      .nna-button-secondary {
+        margin-left: 0.75rem;
+        width: 100%;
+        justify-content: center;
+      }
     }
     .add-collection-button-full-width {
       flex-basis: 100%;
+      .nna-button-secondary {
+        margin-left: 0.75rem;
+        margin-right: 0.75rem;
+        width: 100%;
+        justify-content: center;
+      }
     }
     form {
       margin-top: 10px;
@@ -83,8 +94,7 @@
       @include collection-item;
 
       justify-content: center;
-      i {
-        color: $primary-color;
+      .nna-icon-button {
         margin: auto;
       }
     }

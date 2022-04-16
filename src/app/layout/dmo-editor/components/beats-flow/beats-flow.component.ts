@@ -175,9 +175,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 		if (key == 13) { // enter
 			if (this.shiftIsPressed == false) {
+				$event.preventDefault();
 				this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
 			} 
-			$event.preventDefault();
 			return;
 		}
 

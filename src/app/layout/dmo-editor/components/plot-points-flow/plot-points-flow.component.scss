@@ -1,9 +1,12 @@
 .plot-points-graph-container {
     height: 100%;
+    position: relative;
+    top:0;
+    bottom: 0;
 
     .plot-points {
         position:absolute;
-        margin-top: 2rem;
+        margin-top: 32px;
         z-index: 10;
         flex: 0 0 2rem;
         flex-direction: column;

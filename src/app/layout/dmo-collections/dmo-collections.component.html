@@ -4,10 +4,12 @@
         <app-nna-spinner></app-nna-spinner>
     </div>
         <div class="collection-buttons-row">
-            <div *ngIf="!isFormProcessing"  class="add-collection-button" (click)="toggleAddCollectionForm(false)" [hidden]="!showAddButton"
+            <div *ngIf="!isFormProcessing"  class="add-collection-button" [hidden]="!showAddButton"
                 [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }">
-                <i class="fa fa-plus control-icon" aria-hidden="true"></i>
-                <span>create collection</span>
+                
+                <button type="button" class='nna-button nna-button-secondary' (click)="toggleAddCollectionForm(false)">
+                    create collection
+                </button>
             </div>
 
             <form [formGroup]="addCollectionForm" (ngSubmit)="onAddCollection()" [hidden]="showAddButton" autocomplete="off">
@@ -35,10 +37,16 @@
                 </div>
             </form>
             
-            <div class="filter-collection-button" *ngIf='showSortButton' [hidden]="!showAddButton" (click)="sortCollections()" title="{{sortingTittle}}">                
-                <i [hidden]="collectionsByAcs || collectionsByDefault" class="fa fa-sort-numeric-up" aria-hidden="true" title="{{sortingTittle}}"></i>
-                <i [hidden]="collectionsByDesc || collectionsByDefault" class="fa fa-sort-numeric-down" aria-hidden="true" title="{{sortingTittle}}"></i>
-                <i [hidden]="collectionsByDesc || collectionsByAcs" class="fa fa-times" aria-hidden="true" title="{{sortingTittle}}"></i>
+            <div class="filter-collection-button" *ngIf='showSortButton' [hidden]="!showAddButton" (click)="sortCollections()" title="{{sortingTittle}}">
+                <button [hidden]="collectionsByAcs || collectionsByDefault" type="button" class='nna-icon-button'>
+                    <i class="fa fa-sort-numeric-up" aria-hidden="true" title="{{sortingTittle}}"></i>
+                </button>      
+                <button [hidden]="collectionsByDesc || collectionsByDefault" type="button" class='nna-icon-button'>
+                    <i class="fa fa-sort-numeric-down" aria-hidden="true" title="{{sortingTittle}}"></i>
+                </button>  
+                <button [hidden]="collectionsByDesc || collectionsByAcs" type="button" class='nna-icon-button'>
+                    <i class="fa fa-sort-numeric-down" aria-hidden="true" title="{{sortingTittle}}"></i>
+                </button>  
             </div>
         </div>
 
