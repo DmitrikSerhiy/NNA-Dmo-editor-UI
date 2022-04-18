@@ -87,15 +87,15 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 			this.dmoId = params['dmoId'];
 		});
 
+		this.dmoId 
+			? await this.loadDmo()
+			: await this.createDmo();
+	}
+
+	async prepareEditor(): Promise<void> {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-
-		if (this.dmoId) {
-			await this.loadDmo();
-		} else {
-			await this.createDmo();
-		}
 		this.autosaveTitle = this.savingIsDoneTitle;
 	}
 
@@ -152,6 +152,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 			return;
 		}
 
+		await this.prepareEditor();
 		const createdDmo = await this.editorHub.createDmo(popupResult);
 		if (createdDmo == null) {
 			return;
@@ -175,6 +176,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	}
 
 	async loadDmo() {
+		await this.prepareEditor();
+
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
 		if (shortDmo == null) {
 			return;

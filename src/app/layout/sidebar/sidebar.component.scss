@@ -282,8 +282,10 @@
 .toggle-button {
     bottom: 0;
     user-select: none;
-    i {
+
+    .toggle-bottom-icon {
         align-self: center;
+        margin-right: 18px;
     }
 
     background: $sidebar-border;

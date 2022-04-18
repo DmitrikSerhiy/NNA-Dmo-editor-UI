@@ -48,7 +48,7 @@
     </div>
 
     <div class="bottom-blocks toggle-button" *ngIf='isAuthorized' [ngClass]="{collapsed : !sidebarState}" (click)="toggleSidebar()">
-        <i class="fa fa-fw fa-angle-double-{{sidebarState?'left':'right'}}"></i>&nbsp;
+        <i class="fa fa-fw fa-angle-double-{{sidebarState?'left':'right'}}" [ngClass]="{'toggle-bottom-icon': sidebarState}"></i>  &nbsp;
         <span>collapse</span>
     </div>
 
