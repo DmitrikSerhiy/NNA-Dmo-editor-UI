@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	isAuthorized: boolean;
 	private verifySubscription: Subscription;
 	private refreshSubscription: Subscription;
+	userName: string;
 
 	constructor(
 		private router: Router, 
@@ -29,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 			.ping()
 			.subscribe(() =>  {
 					this.isAuthorized = true;
+					this.userName = this.userManager.getCurrentUser();
 				},
 				(response: any) => { 
 					if (response.headers.get('ExpiredToken')) {
@@ -39,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 									if (tokenResponse.accessToken && tokenResponse.refreshToken) {
 										this.userManager.updateTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
 										this.isAuthorized = true;
+										this.userName = this.userManager.getCurrentUser();
 									}
 								}, 
 								() => {

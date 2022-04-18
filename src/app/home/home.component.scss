@@ -57,7 +57,7 @@
                 color: $for-background-contrast-color;
 
                 .brand-color {
-                    color: $primary-color;
+                    color: $secondary-color !important;
                 }
 
                 .icon-shift {
@@ -123,6 +123,25 @@
                     text-transform: capitalize !important;
                     width: 6rem;
                     height: 2.4rem;
+                }
+
+                .logged-in-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+
+                    button {
+                        text-transform: capitalize !important;
+                        width: fit-content !important;
+                        height: 2.4rem;
+                    }
+
+                    .user-name-span {
+                        margin-top: 0.5rem;
+                        .login-font {
+                            color: $secondary-color;
+                        }
+                    }
                 }
             }
         }
@@ -344,10 +363,32 @@
                 button {
                     display: flex;
                     justify-content: center;
+                    text-transform: capitalize !important;
                     margin-left: .5rem;
+                    width: 6rem;
+                    height: 2.4rem;
+                }
+            }
+
+            .logged-in-container {
+                justify-content: center;
+
+                button {
+                    display: flex;
+                    justify-content: center;
                     text-transform: capitalize !important;
                     width: 6rem;
                     height: 2.4rem;
+                }
+
+                .user-name-span {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: .6rem;
+                    .login-font {
+                        margin-left: .5rem;
+                        color: $secondary-color;
+                    }
                 }
             }
 
@@ -358,7 +399,7 @@
                 width: 6rem;
                 height: 2.4rem;
                 margin: auto;
-                margin-top: 8rem;
+                margin-top: 6rem;
             }
 
             .home-footer {
