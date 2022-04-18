@@ -1,173 +1,188 @@
 @import "src/styles/colors.scss";
 
-$editor-font: 14px 'Courier New', Courier, monospace;  //this is open standart for screenplay text
-.beats-container {
-    min-height: 32px;
-    border: none;
-    display: flex;
-    flex-flow: column nowrap;
+$editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart for screenplay text
+.beats-wrapper {
+    height: 100%;
+    background-image: url("/assets/editor_background.jpeg");
 
-    .beats-header, .beats-footer {
-        height: 32px;
-        margin: auto 1rem;
-        display: flex;
-        align-items: center;
-        font: $editor-font;
-    }
+    .beats-inner-wrapper {
+        height: 100%;
+        -webkit-backdrop-filter: blur(1px);
+        backdrop-filter: blur(1px);
 
-    .beat-container {
-        min-height: 32px;
-        display: flex;
-
-        // [start]   ------- time-picker 
-
-        .time-picker-container {
-            flex: 0 0 70px;
-            max-height: 32px;
-            height: 32px;
+        .beats-container {
+            min-height: 32px;
+            border: none;
             display: flex;
-            align-items: center;
-            margin-left: 1rem;
-            $active-color: $secondary-color;
-        
-            @mixin setBorder($color) {
-                outline: none;
-                background: repeating-linear-gradient(
-                    90deg,
-                    $color 1px, 
-                    $color 8px,
-                    transparent 8px,
-                    transparent 16px,
-                    $color 16px,
-                    $color 22px,
-                    transparent 22px,
-                    transparent 24px,
-                    $color 24px,
-                    $color 30px,
-                    transparent 30px,
-                    transparent 39px,
-                    $color 39px,
-                    $color 45px,
-                    transparent 45px,
-                    transparent 47px,
-                    $color 47px,
-                    $color 53px,
-                    transparent 53px,
-                    transparent 70px
-                );
-                background-repeat: no-repeat;
-                background-size: 70px 1px;
-                background-position: bottom;
-            }
-        
-            .time-picker {
-                display: block;
-                border: none;
-                padding: 0;
-                width: 70px;
-                height: 20px;
+            flex-flow: column nowrap;
+            justify-content: flex-start;
+
+            .beats-header, .beats-footer {
+                height: 32px;
+                margin: auto 1rem;
+                display: flex;
+                align-items: center;
                 font: $editor-font;
-                font-size: 1.8ch;
-                background: transparent;
-        
-                &:focus {
-                    @include setBorder($active-color);
-                    color: $active-color;
-                }
-            }
-        
-            .time-picker[type="number"]::-webkit-outer-spin-button,
-            .time-picker[type="number"]::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            .time-picker[type="number"] {
-                -moz-appearance: textfield;
             }
 
-                .time-picker-field-container {
-                    margin-left: 3rem;
-                    min-height: 32px;
-                    width: 100%;
-                    border: none;
-            
+            .beat-container {
+                min-height: 32px;
+                display: flex;
+
+
+                // [start]   ------- time-picker 
+
+                .time-picker-container {
+                    flex: 0 0 70px;
+                    max-height: 32px;
+                    height: 32px;
                     display: flex;
                     align-items: center;
-                    &:focus {
+                    margin-left: 1rem;
+                    $active-color: $secondary-color;
+                
+                    @mixin setBorder($color) {
                         outline: none;
+                        background: repeating-linear-gradient(
+                            90deg,
+                            $color 1px, 
+                            $color 8px,
+                            transparent 8px,
+                            transparent 16px,
+                            $color 16px,
+                            $color 22px,
+                            transparent 22px,
+                            transparent 24px,
+                            $color 24px,
+                            $color 30px,
+                            transparent 30px,
+                            transparent 39px,
+                            $color 39px,
+                            $color 45px,
+                            transparent 45px,
+                            transparent 47px,
+                            $color 47px,
+                            $color 53px,
+                            transparent 53px,
+                            transparent 70px
+                        );
+                        background-repeat: no-repeat;
+                        background-size: 70px 1px;
+                        background-position: bottom;
                     }
-            
-                    .time-picker-field {
+                
+                    .time-picker {
+                        display: block;
+                        border: none;
+                        padding: 0;
+                        width: 70px;
+                        height: 20px;
+                        font: $editor-font;
+                        font-size: 1.8ch;
+                        background: transparent;
+                
+                        &:focus {
+                            @include setBorder($active-color);
+                            color: $active-color;
+                        }
+                    }
+                
+                    .time-picker[type="number"]::-webkit-outer-spin-button,
+                    .time-picker[type="number"]::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }
+                    .time-picker[type="number"] {
+                        -moz-appearance: textfield;
+                    }
+
+                        .time-picker-field-container {
+                            margin-left: 3rem;
+                            min-height: 32px;
+                            width: 100%;
+                            border: none;
+                    
+                            display: flex;
+                            align-items: center;
+                            &:focus {
+                                outline: none;
+                            }
+                    
+                            .time-picker-field {
+                                border: none;
+                                white-space: pre-wrap;
+                                font: $editor-font;
+                                line-height: 16px;
+                                &:focus {
+                                    outline: none;
+                                }
+                            }
+                    
+                            [contenteditable][placeholder]:empty:after {
+                                content: attr(placeholder);
+                                position: absolute;
+                                color: gray;
+                                background-color: transparent;
+                            }
+                        }
+                }
+
+                // [end]     ------- time-picker
+
+                // [start]   ------- beat-data-holder 
+
+
+                .beat-data-holder-container {
+                    width: 676px;
+                    max-width: 676px;
+                    flex: 1 1 100%;
+                    border: none;
+                    min-height: 32px;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 16px;
+
+                    &:hover {
+                        cursor: text;
+                    }
+
+
+                    .beat-data-holder {
+                        margin-left: .5rem;
+                        padding-left: .5rem;
+                        width: 100%;
+
                         border: none;
                         white-space: pre-wrap;
                         font: $editor-font;
                         line-height: 16px;
+                        border-left-style: solid;
+                        border-left-width: 1px;
+                        border-left-color: transparent;
+                        caret-color: $secondary-color;
+
+                        &:hover {
+                            cursor: text;
+                        }
+
                         &:focus {
                             outline: none;
+                            &:not(:empty) {
+                                border-left-color: $secondary-color;
+                            }
+                        }
+
+                        &:empty::before {
+                            content: attr(placeholder);
+                            color: rgba(128, 128, 128, 0.7);
+                            position: absolute;
                         }
                     }
-            
-                    [contenteditable][placeholder]:empty:after {
-                        content: attr(placeholder);
-                        position: absolute;
-                        color: gray;
-                        background-color: transparent;
-                      }
-                }
-        }
-
-        // [end]     ------- time-picker
-
-        // [start]   ------- beat-data-holder 
-
-        .beat-data-holder-container {
-            width: 676px;
-            max-width: 676px;
-            flex: 1 1 100%;
-            border: none;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-
-            &:hover {
-                cursor: text;
-            }
-
-
-            .beat-data-holder {
-                margin-left: .5rem;
-                padding-left: .5rem;
-                width: 100%;
-
-                border: none;
-                white-space: pre-wrap;
-                font: $editor-font;
-                line-height: 16px;
-                border-left-style: solid;
-                border-left-width: 1px;
-                border-left-color: transparent;
-                caret-color: $secondary-color;
-
-                &:hover {
-                    cursor: text;
                 }
 
-                &:focus {
-                    outline: none;
-                    &:not(:empty) {
-                        border-left-color: $secondary-color;
-                    }
-                }
-
-                &:empty::before {
-                    content: attr(placeholder);
-                    color: rgba(128, 128, 128, 0.7);
-                    position: absolute;
-                }
+                
+                // [end]   ------- beat-data-holder 
             }
         }
-
-        // [end]   ------- beat-data-holder 
     }
 }

@@ -1,39 +1,44 @@
-<div *ngIf="isDataLoaded" class="beats-container">
+<div class="beats-wrapper">
+    <div class="beats-inner-wrapper">
+        <div *ngIf="isDataLoaded" class="beats-container">
 
-    <div class="beats-header">
-        <span>Start</span>
-    </div>
+            <div class="beats-header">
+                <span>Start</span>
+            </div>
 
-    <div class="beat-container" *ngFor="let beat of beats; let i = index">
-        
-        <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
-            <input #timePickers class="time-picker" 
-                [id]="'time_picker_' + beat.beatId"
-                maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
-                placeholder="h:mm:ss" 
-                (keydown)="setTimePickerKeyMetaData($event)"
-                (keyup)="setTimePickerValue($event, i)"
-                (focusin)="prepareTimePicker($event)"
-                (focusout)="finalizeTimePicker($event)"
-                (dragover)="preventDrag($event)" />
-        </div>
+            <div class="beat-container" *ngFor="let beat of beats; let i = index">
+                
+                <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
+                    <input #timePickers class="time-picker" 
+                        [id]="'time_picker_' + beat.beatId"
+                        maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
+                        placeholder="h:mm:ss" 
+                        (keydown)="setTimePickerKeyMetaData($event)"
+                        (keyup)="setTimePickerValue($event, i)"
+                        (focusin)="prepareTimePicker($event)"
+                        (focusout)="finalizeTimePicker($event)"
+                        (dragover)="preventDrag($event)" />
+                </div>
 
-        <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
-            <div #beatDataHolders class="beat-data-holder"
-                [id]="'beat_' + beat.beatId"
-                type="text" contenteditable="true" draggable="false"  placeholder="add description"
-                (keydown)="setBeatKeyMetaData($event)"
-                (keyup)="setBeatValue($event)"
-                (focusout)="finalizeBeat($event)"
-                (input)="beatChanged($event, i)"
-                (dragover)="preventDrag($event)">
+                <div class="beat-data-holder-wrapper">
+                    <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
+                        <div #beatDataHolders class="beat-data-holder"
+                            [id]="'beat_' + beat.beatId"
+                            type="text" contenteditable="true" draggable="false"  placeholder="add description"
+                            (keydown)="setBeatKeyMetaData($event)"
+                            (keyup)="setBeatValue($event)"
+                            (focusout)="finalizeBeat($event)"
+                            (input)="beatChanged($event, i)"
+                            (dragover)="preventDrag($event)">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div *ngIf="isDmoFinished" class="beats-footer">
+                <span>End</span>
             </div>
         </div>
-
     </div>
-    
-    <div *ngIf="isDmoFinished" class="beats-footer">
-        <span>End</span>
-    </div>
-
 </div>
