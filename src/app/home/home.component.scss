@@ -158,7 +158,13 @@
             .fourth-info-block {
                 flex: 0 0 50%;
                 margin: auto;
-                padding-top: 8rem;
+                padding-top: 6rem;
+            }
+
+            .fifth-info-block {
+                flex: 0 0 50%;
+                margin: auto;
+                padding-top: 1rem;
             }
         }
 
@@ -287,6 +293,9 @@
                                     position: relative;
                                     top: 1px;
                                     left: 2px;
+                                }
+                                svg {
+                                    width: fit-content;
                                 }
                                 padding-top: 0.5rem;
                                 ul, ol {
