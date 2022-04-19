@@ -400,8 +400,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 
 	private clearInnerTagsIfBeatIsEmpty($event: any): void {
-		console.log($event);
-		console.log($event.target.childNodes);
 		if (!$event.target.lastChild) {
 			return;
 		}
@@ -543,7 +541,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			if (dataHolder.lastChild.nodeType == 3) { // TEXT_NODE
 				range.setStart(dataHolder.lastChild, dataHolder.lastChild.textContent.length);
 			} else { // any other element
-				range.setStart(dataHolder.lastChild.lastChild, dataHolder.lastChild.lastChild.textContent.length);
+				if (dataHolder.lastChild.lastChild) {
+					range.setStart(dataHolder.lastChild.lastChild, dataHolder.lastChild.lastChild.textContent.length);
+				} else {
+					dataHolder.focus();
+				}
 			}
 
 			range.collapse(true)
