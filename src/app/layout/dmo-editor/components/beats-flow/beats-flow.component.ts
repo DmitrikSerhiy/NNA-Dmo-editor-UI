@@ -31,6 +31,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	private valueBeforeRemove: string;
 	private shiftIsPressed: boolean;
 	private controlIsPressed: boolean;
+	private tabIsPressed: boolean;
 
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
@@ -167,11 +168,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.shiftIsPressed = true;
 		} 
 
+		if (key == 9) { // tab
+			this.tabIsPressed = true;
+			$event.preventDefault();
+		}
+
 		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
 			this.focusNextPreviousBeat(key, $event);
 			return;
 		}
-		
 
 		if (key == 13) { // enter
 			if (this.shiftIsPressed == false) {
@@ -180,12 +185,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			} 
 			return;
 		}
-
-		if (key == 9) { // tab
-			$event.preventDefault();
-			return;
-		}
-
 
 		if (key == 8 || key == 46) { // delete or backspace
 			this.valueBeforeRemove = $event.target.innerHTML;
@@ -205,6 +204,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.shiftIsPressed = false;
 		}
 
+		if (key == 9) { // tab
+			this.tabIsPressed = false;
+			$event.preventDefault();
+		}
+
 		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
 			return;
 		}
@@ -214,11 +218,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 				$event.preventDefault();
 				return;
 			}
-		}
-		
-		if (key == 9) { // tab
-			$event.preventDefault();
-			return;
 		}
 
 		if (key == 8 || key == 46) { // delete or backspace
@@ -255,7 +254,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	private focusNextPreviousBeat(key: number, $event: any): void {
 		if (key == 38) { // up
-			if (this.controlIsPressed) {
+			if (this.tabIsPressed) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						if (i != 0) {
@@ -268,7 +267,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			}
 			return;
 		} else if (key == 40 || key == 39) { // down or right
-			if (this.controlIsPressed) {
+			if (this.tabIsPressed) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						if (i != this.beatsIds.length - 1) {
@@ -281,7 +280,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			}
 		return;
 		} else if (key == 37) { // left
-			if (this.controlIsPressed) {
+			if (this.tabIsPressed || document.getSelection().focusOffset == 0) {
 				this.beatsIds.forEach((beatId, i) => {
 					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
 						let timePickerElement = this.timePickersElements.toArray()[i].nativeElement;
@@ -392,20 +391,25 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			key != 13 &&                // enter
 			key != 32 &&                // space
 			key != 17 &&				// control
-			key == 9 &&                 // tab
+			key != 9 &&                 // tab
 			!(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
 			event.preventDefault();
 			return;
 		}
 
 		if (key == 17) {
-			this.controlIsPressed = true;
+			this.controlIsPressed = true; // control
 		}
 
 		if (key == 13) { // enter
 			this.focusSiblingBeat(event);
 			event.preventDefault();
 			return;
+		}
+
+		if (key == 9) {
+			this.tabIsPressed = true;
+			event.preventDefault();
 		}
 
 		if (key == 8 || key == 46 ) { // delete and backspace
@@ -415,7 +419,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		if (key == 39) { // right arrow
-			if (event.target.selectionStart == 7 || this.controlIsPressed == true) {
+			if (event.target.selectionStart == 7 || this.tabIsPressed == true) {
 				this.focusSiblingBeat(event);
 				event.preventDefault();
 				return;
@@ -423,7 +427,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		if (key == 37) { // left arrow
-			if (event.target.selectionStart == 0 || this.controlIsPressed == true) {
+			if (event.target.selectionStart == 0 || this.tabIsPressed == true) {
 				this.focusPreviousTimePicker(event);
 			}
 		}
@@ -449,10 +453,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	setTimePickerValue(event: any, index: number): void {
 		let key = event.which || event.keyCode || event.charCode;
 
-		if (key == 17) {
+		if (key == 17) { // control
 			this.controlIsPressed = false;
 		}
 		
+		if (key == 9) { // tab
+			this.tabIsPressed = false;
+			event.preventDefault();
+		}
+
 		if (key == 13) { // enter
 			event.preventDefault();
 			return;
