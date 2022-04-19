@@ -434,6 +434,12 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			return;
 		}
 
+		if (this.preventInvalidMinutesOrSeconds(event.target, +event.key[0])) {
+			this.setValidMinutesOrSeconds(event.target);
+			event.preventDefault();
+			return;
+		}
+
 		if (this.replaceNextSpaceWithCharacter(event.target, +event.key[0])) {
 			event.preventDefault();
 			return;
@@ -637,6 +643,53 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			case 5: return `${time[0]}:${time[1]}${time[2]}:${time[3]}${time[4]}`;
 			default: return this.defaultTimePickerValue;
 		}
+	}
+
+	private setValidMinutesOrSeconds(nativeElement: any) {
+		const start = nativeElement.selectionStart;
+
+		if (start == 2 || start == 5) {
+			if (nativeElement.value[start] == ' ') {
+				nativeElement.value = nativeElement.value.substring(0, start) + '6' + nativeElement.value.substring(start + 1);
+				nativeElement.selectionStart = start + 1;
+				nativeElement.selectionEnd = start + 1;
+			}
+		} else if (start == 1 || start == 4) {
+			if (nativeElement.value[start+1] == ' ') {
+				nativeElement.value = nativeElement.value.substring(0, start + 1) + '6' + nativeElement.value.substring(start + 2);
+				nativeElement.selectionStart = start + 2;
+				nativeElement.selectionEnd = start + 2;
+			}
+		} else if (start == 3) {
+			nativeElement.value = nativeElement.value.substring(0, 3) + '0' + nativeElement.value.substring(3 + 1);
+			nativeElement.selectionStart = start + 1;
+			nativeElement.selectionEnd = start + 1;
+		} else if (start == 6) {
+			nativeElement.value = nativeElement.value.substring(0, 6) + '0' + nativeElement.value.substring(6 + 1);
+			nativeElement.selectionStart = start + 1;
+			nativeElement.selectionEnd = start + 1;
+		}
+	}
+
+	private preventInvalidMinutesOrSeconds(nativeElement: any, value: number): boolean {
+		if (Number.isNaN(value)) {
+			return false;
+		}
+
+		const start = nativeElement.selectionStart;
+		if (start == 2 || start == 5 || start == 1 || start == 4) {
+			return value > 6;
+		}
+
+		if (start == 3) {
+			return nativeElement.value[2] == '6';	
+		}  
+		
+		if (start == 6) {
+			return nativeElement.value[5] == '6';
+		}
+		
+		return false;
 	}
 
 	private replaceNextSpaceWithCharacter(nativeElement: any, value: number) : boolean {
