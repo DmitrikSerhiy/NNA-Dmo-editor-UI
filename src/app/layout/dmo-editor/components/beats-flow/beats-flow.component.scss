@@ -183,6 +183,12 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 
                 // [end]   ------- beat-data-holder 
             }
+
+            .beats-padding {
+                width: 100%;
+                height: 1px;
+                margin-bottom: calc(32px * 10);
+            }
         }
     }
 }
