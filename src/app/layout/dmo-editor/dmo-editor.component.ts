@@ -123,17 +123,14 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	}
 
 	async syncBeats(source: string) {
-		// console.log(`sync from ${source}`);
-		let prepared = this.buildDmoWithBeatsJson();
-		// console.log('prepared for saving');
-		// console.log(prepared);
+		let build = this.buildDmoWithBeatsJson();
+
 		this.beatsUpdating = true;
 		this.autosaveTitle = this.savingInProgressTitle;
-		await this.editorHub.updateDmosJson(prepared);
+		await this.editorHub.updateDmosJson(build);
 		this.beatsUpdating = false;
 		this.autosaveTitle = this.savingIsDoneTitle;
-
-		console.log('beats was synced')
+		console.log(`beats was synced. Source: ${source}`);
 	}
 
 
@@ -179,6 +176,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		await this.prepareEditor();
 
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
+		console.log(shortDmo);
 		if (shortDmo == null) {
 			return;
 		}
@@ -221,7 +219,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 			return null;
 		} 
 
-		let newDmoDetails = new ShortDmoDto(popupResult.name, popupResult.movieTitle);
+		let newDmoDetails = { name: popupResult.name, movieTitle: popupResult.movieTitle } as ShortDmoDto;
 		newDmoDetails.shortComment = popupResult.shortComment;
 		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
 		if (this.currentShortDmo && this.currentShortDmo.id) {
@@ -236,7 +234,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 	private initDmo(result: ShortDmoDto): void {
 		if (!this.currentShortDmo) {
-			this.currentShortDmo = new ShortDmoDto(result.name, result.movieTitle);
+			this.currentShortDmo = { name: result.name, movieTitle: result.movieTitle } as ShortDmoDto;
 		} else {
 			this.currentShortDmo.movieTitle = result.movieTitle;
 			this.currentShortDmo.name = result.name;
@@ -341,13 +339,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		// })
 		return this.beatElements.map((beatElement, i) => {
 				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
-				let beat: NnaBeatDto = {
-				beatId: beatId,
-				order: i,
-				text: beatElement.nativeElement.innerHTML,
-				time: this.buildTimeDtoFromBeat(beatId)
-			}
-			return beat;
+				const beat: NnaBeatDto = {
+					beatId: beatId,
+					order: i,
+					text: beatElement.nativeElement.innerHTML,
+					time: this.buildTimeDtoFromBeat(beatId)
+				}
+				return beat;
 		});
 		// console.log(this.beatsMetaData);
 		// return dtos;

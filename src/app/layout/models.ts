@@ -34,6 +34,23 @@ export class DmoDto {
     constructor() {}
 }
 
+export class ShortDmoDtoAPI {
+    Id: string;
+    Name: string;
+    MovieTitle: string;
+    ShortComment: string;
+    HasBeats: boolean;
+    DmoStatus: number;
+
+    constructor(dto: ShortDmoDto) {
+        this.Id = dto.id;
+        this.Name = dto.name;
+        this.DmoStatus = dto.dmoStatus;
+        this.HasBeats = dto.hasBeats;
+        this.MovieTitle = dto.movieTitle;
+        this.ShortComment = dto.shortComment;
+    }
+}
 export class ShortDmoDto {
     id: string;
     name: string;
@@ -42,9 +59,13 @@ export class ShortDmoDto {
     hasBeats: boolean;
     dmoStatus: number;
 
-    constructor(name: string, movieTitle: string) {
-        this.name = name;
-        this.movieTitle = movieTitle;
+    constructor(dto: ShortDmoDtoAPI) {
+        this.id = dto.Id;
+        this.name = dto.Name;
+        this.dmoStatus = dto.DmoStatus;
+        this.hasBeats = dto.HasBeats;
+        this.movieTitle = dto.MovieTitle;
+        this.shortComment = dto.ShortComment;
     }
 }
 

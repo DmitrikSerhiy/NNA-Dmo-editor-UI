@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -6,7 +6,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 	styleUrls: ['./plot-points-flow.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PlotPointsFlowComponent implements  AfterViewInit  {
+export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	@Input() initialPlotPoints: any[];
 	@Input() isDmoFinished: boolean;
@@ -47,6 +47,12 @@ export class PlotPointsFlowComponent implements  AfterViewInit  {
 		this.renderGraph();
 		this.setupEditorCallback();
 		this.setupSubscription();
+	}
+
+	ngOnDestroy(): void {
+		this.initialPlotPoints = [];
+		this.isDmoFinished = null;
+		this.updateGraph = null;
 	}
 
   	// #region  general settings

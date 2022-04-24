@@ -26,6 +26,7 @@
     "@angular/router": "12.2.11",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@microsoft/signalr": "^5.0.7",
+    "@microsoft/signalr-protocol-msgpack": "^6.0.4",
     "@ng-bootstrap/ng-bootstrap": "^10.0.0",
     "@popperjs/core": "^2.10.2",
     "angularx-social-login": "^4.0.1",

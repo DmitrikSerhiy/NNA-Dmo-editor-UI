@@ -1,4 +1,4 @@
-import { ShortDmoDto } from '../../models';
+import { ShortDmoDto, ShortDmoDtoAPI } from '../../models';
 
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -6,11 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, share } from 'rxjs/operators';
 
 import * as signalR from '@microsoft/signalr';
+import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { Observable, Subject } from 'rxjs';
-import { NnaDmoWithBeatsAsJson } from '../models/dmo-dtos';
+import { NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -96,8 +97,8 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        // .configureLogging(signalR.LogLevel.Trace)  // uncomment for testing
         .withAutomaticReconnect()
+        .withHubProtocol(new MessagePackHubProtocol())
         .build();
 
         
@@ -125,19 +126,19 @@ export class EditorHub {
     // ----- editor websocket methods ------
 
     async loadShortDmo(dmoId: string) : Promise<ShortDmoDto> {
-        return await this.invokeSocketMethod<ShortDmoDto>('LoadShortDmo', { id: dmoId });
+        return await this.invokeSocketMethod<ShortDmoDto>('LoadShortDmo', { Id: dmoId });
     }
 
     async createDmo(dmo: ShortDmoDto) : Promise<ShortDmoDto> {
-        return await this.invokeSocketMethod<ShortDmoDto>('CreateDmo', dmo);
+        return await this.invokeSocketMethod<ShortDmoDto>('CreateDmo', new ShortDmoDtoAPI(dmo));
     }
 
     async updateShortDmo(dmo: ShortDmoDto): Promise<any> {
-        return await this.invokeSocketMethodWithoutResponseData('UpdateShortDmo', dmo);
+        return await this.invokeSocketMethodWithoutResponseData('UpdateShortDmo', new ShortDmoDtoAPI(dmo));
     }
 
     async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<any> {
-        return await this.invokeSocketMethodWithoutResponseData('UpdateDmosJson', dmo);
+        return await this.invokeSocketMethodWithoutResponseData('UpdateDmosJson', new NnaDmoWithBeatsAsJsonAPI(dmo));
     }
 
     // ----- editor websocket methods ------

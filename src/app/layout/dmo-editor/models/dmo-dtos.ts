@@ -35,3 +35,13 @@ export class NnaDmoWithBeatsAsJson {
     dmoId: string;
     json: string; 
 }
+
+export class NnaDmoWithBeatsAsJsonAPI {
+    DmoId: string;
+    Data: string; 
+
+    constructor(dto: NnaDmoWithBeatsAsJson) {
+        this.DmoId = dto.dmoId;
+        this.Data = dto.json;
+    }
+}

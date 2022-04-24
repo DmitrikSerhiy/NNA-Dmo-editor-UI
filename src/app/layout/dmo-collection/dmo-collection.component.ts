@@ -176,11 +176,13 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		const collectionId = this.collectionManager.getCurrentCollectionId();
 		await this.dmoCollectionService.getExcludedDmos(collectionId).toPromise()
 			.then((dmos: ShortDmoDto[]) => collectionWithDmo.dmos = 
-				dmos.map(d => { 
-					let dmo = new ShortDmoDto(d.name, d.movieTitle);
-					dmo.id = d.id;
-					dmo.shortComment = d.shortComment;
-					return dmo;
+				dmos.map(dmo => { 
+					return {
+						id: dmo.id,
+						shortComment: dmo.shortComment,
+						name: dmo.name,
+						movieTitle: dmo.movieTitle,
+					} as ShortDmoDto;
 				})
 			);
 
