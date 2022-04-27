@@ -13,10 +13,10 @@
                         [id]="'time_picker_' + beat.beatId"
                         maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
                         placeholder="h:mm:ss" 
-                        (keydown)="setTimePickerKeyMetaData($event)"
+                        (keydown)="setTimePickerKeyMetaData($event, i)"
                         (keyup)="setTimePickerValue($event, i)"
                         (focusin)="prepareTimePicker($event)"
-                        (focusout)="finalizeTimePicker($event)"
+                        (focusout)="finalizeTimePicker($event, i)"
                         (dragover)="preventDrag($event)" />
                 </div>
 
@@ -27,8 +27,8 @@
                             type="text" contenteditable="true" draggable="false"  placeholder="add description"
                             (keydown)="setBeatKeyMetaData($event)"
                             (keyup)="setBeatValue($event)"
-                            (focusout)="finalizeBeat($event)"
-                            (input)="beatChanged($event, i)"
+                            (focusout)="finalizeBeat($event, i)"
+                            (input)="onBeatChanged(i)"
                             (dragover)="preventDrag($event)">
                         </div>
                     </div>

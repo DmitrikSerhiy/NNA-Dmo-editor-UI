@@ -63,7 +63,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		private sidebarManagerService: SidebarManagerService,
 		private cdRef: ChangeDetectorRef,
 		private dataGenerator: BeatGeneratorService		) {
-		// private editorChangeDetectorService: EditorChangeDetectorService,
 		this.beatsUpdating = false; 
 		this.beatWasSet = false;
 		this.isDmoInfoSet = false;
@@ -76,13 +75,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-		// this.editorChangeDetectorService.detector.subscribe(async (updates: Array<string>) => {
-		// this.beatsUpdating = true;
-		// await this.editorHub.updateDmosJson(this.buildDmoWithBeatsJson());
-		// this.beatsUpdating = false;
-
-		// });
-
 		this.activatedRoute.queryParams.subscribe(params => {
 			this.dmoId = params['dmoId'];
 		});
@@ -174,9 +166,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 	async loadDmo() {
 		await this.prepareEditor();
-
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
-		console.log(shortDmo);
 		if (shortDmo == null) {
 			return;
 		}
@@ -328,15 +318,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	}
 
 	private selectBeatDtos(): NnaBeatDto[] {
-		// console.log(this.beatsMetaData);
-		// let dtos = this.beatElements
-		// .filter((element, i) => {
-		//   if (this.beatsMetaData[i].isDirty == true) {
-		//     this.beatsMetaData[i].isDirty = undefined;
-		//     return true;
-		//   }
-		//   return false;
-		// })
 		return this.beatElements.map((beatElement, i) => {
 				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
 				const beat: NnaBeatDto = {
@@ -347,8 +328,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 				}
 				return beat;
 		});
-		// console.log(this.beatsMetaData);
-		// return dtos;
 	}
 
    // #endregion
