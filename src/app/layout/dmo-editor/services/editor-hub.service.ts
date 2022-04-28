@@ -120,6 +120,12 @@ export class EditorHub {
                 console.log('failed');
             }
         });
+
+        this.hubConnection.on("OnServerError", async (failedResponse: any) => {
+            console.log(failedResponse);
+            await this.abortConnection();
+            this.showErrorsOrValidations(failedResponse);
+        })
     
     }
     
@@ -181,13 +187,8 @@ export class EditorHub {
         }
         
         try {
-            var response = await this.hubConnection.invoke(methodName, params );
-            if (this.isResponseSuccessful(response)) {
-                return Promise.resolve()
-            }
-
-            this.showErrorsOrValidations(response);
-            return Promise.resolve(this.failedResponseObject);  
+            await this.hubConnection.send(methodName, params );
+            return Promise.resolve();
         } catch (failedResponse) {
             await this.abortConnection();
             this.showErrorsOrValidations(failedResponse);

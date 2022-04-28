@@ -157,10 +157,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		if (!popupResult) {
 			return;
 		}
-		const response = await this.editorHub.updateShortDmo(popupResult);
-		if (this.editorHub.isResponseFailed(response)) {
-			return;
-		}
+		await this.editorHub.updateShortDmo(popupResult);
+
 		this.initDmo(popupResult);
 	}
 
