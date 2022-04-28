@@ -122,7 +122,6 @@ export class EditorHub {
         });
 
         this.hubConnection.on("OnServerError", async (failedResponse: any) => {
-            console.log(failedResponse);
             await this.abortConnection();
             this.showErrorsOrValidations(failedResponse);
         })
@@ -139,12 +138,16 @@ export class EditorHub {
         return await this.invokeSocketMethod<ShortDmoDto>('CreateDmo', new ShortDmoDtoAPI(dmo));
     }
 
-    async updateShortDmo(dmo: ShortDmoDto): Promise<any> {
+    async updateShortDmo(dmo: ShortDmoDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('UpdateShortDmo', new ShortDmoDtoAPI(dmo));
     }
 
-    async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<any> {
+    async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('UpdateDmosJson', new NnaDmoWithBeatsAsJsonAPI(dmo));
+    }
+
+    async setBeatsId(dmoId: string): Promise<void> {
+        return await this.invokeSocketMethodWithoutResponseData('SetBeatsId', { Id: dmoId });
     }
 
     // ----- editor websocket methods ------
