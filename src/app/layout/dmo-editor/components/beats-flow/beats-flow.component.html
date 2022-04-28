@@ -25,7 +25,7 @@
                         <div #beatDataHolders class="beat-data-holder"
                             [id]="'beat_' + beat.beatId"
                             type="text" contenteditable="true" draggable="false"  placeholder="add description"
-                            (keydown)="setBeatKeyMetaData($event)"
+                            (keydown)="setBeatKeyMetaData($event, i)"
                             (keyup)="setBeatValue($event)"
                             (focusout)="finalizeBeat($event, i)"
                             (input)="onBeatChanged(i)"

@@ -93,13 +93,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		let lastBeatElement = this.beatDataHolderElements.last.nativeElement;
 		if (!lastBeatElement.innerHTML) {
 			if (lastTimePickerElement.value == this.defaultTimePickerValue) {
+				lastTimePickerElement.scrollIntoView();
 				lastTimePickerElement.focus();
 				lastTimePickerElement.setSelectionRange(0,0);
 			} else {
+				lastBeatElement.scrollIntoView();
 				lastBeatElement.focus();
 			}
 		} else {
+			lastBeatElement.scrollIntoView();
 			this.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
+	
 		}
 	}
 
@@ -113,7 +117,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		if (timePickerToFocus != null) {
 			this.beatsIds.forEach((beatId, i) => {
 			if (beatId == timePickerToFocus) {
-				let element = this.timePickersElements.toArray()[i].nativeElement;
+				const element = this.timePickersElements.toArray()[i].nativeElement;
+				element.scrollIntoView();
 				element.focus();
 				element.setSelectionRange(0,0);
 				return;
@@ -122,7 +127,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		} else if (beatIdToFocus != null) {
 			this.beatsIds.forEach((beatId, i) => {
 				if (beatId == beatIdToFocus) {
-					this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[i].nativeElement.parentElement);
+					const element = this.beatDataHolderElements.toArray()[i].nativeElement;
+					element.scrollIntoView();
+					this.shiftCursorToTheEndOfChildren(element.parentElement);
 					return;
 				}
 			});
@@ -285,7 +292,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 	}
 
-	setBeatKeyMetaData($event: any): void {
+	setBeatKeyMetaData($event: any, index: number): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
 
 		if (key == 17) { // control
@@ -302,7 +309,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		if (key == 37 || key == 38 || key == 39 || key == 40) { // arrow keys
-			this.focusNextPreviousBeat(key, $event);
+			this.focusNextPreviousBeat(key, $event, index);
 			return;
 		}
 
@@ -354,17 +361,13 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		if (key == 8 || key == 46) { // delete or backspace
-			let text = $event.target.innerHTML;
-			if (text.replace(/\s+/g, '').length == 0 && this.beatsIds.length != 1) {
-				if (this.valueBeforeRemove == '') {
-					this.removeBeat.emit({beatIdToRemove: this.selectBeatIdFromBeatDataHolder($event.target)});
-					return;
-				}
+			if (this.deleteBeatIfTextEmpty($event.target)) {
+				$event.preventDefault();
+				return;
 			}
 		}
 
 		this.onUpLines = this.calculateLineCount($event.target);
-
 		this.checkLineCounts($event.target);
 	}
 
@@ -402,6 +405,16 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 
     // #region beat data holders (helpers)
+
+	private deleteBeatIfTextEmpty(nativeElement: any): boolean {
+		if (nativeElement.innerHTML.replace(/\s+/g, '').length == 0 && this.beatsIds.length != 1) {
+			if (this.valueBeforeRemove == '') {
+				this.removeBeat.emit({beatIdToRemove: this.selectBeatIdFromBeatDataHolder(nativeElement)});
+				return true;
+			}
+		}
+		return false;
+	}
 
 	private focusNextDefaultTimePicker($event: any): boolean {
 		let currentBeatId = this.selectBeatIdFromBeatDataHolder($event.target)
@@ -452,41 +465,30 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 	}
 
-	private focusNextPreviousBeat(key: number, $event: any): void {
+	private focusNextPreviousBeat(key: number, $event: any, index: number): void {
 		if (key == 38) { // up
 			if (this.tabIsPressed) {
-				this.beatsIds.forEach((beatId, i) => {
-					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
-						if (i != 0) {
-							$event.preventDefault();
-							this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[i - 1].nativeElement.parentElement);
-							return;
-						}
-					}
-				});
+				if (index != 0) {
+					$event.preventDefault();
+					this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index - 1].nativeElement.parentElement);
+					return;
+				}
 			}
 			return;
 		} else if (key == 40 || key == 39) { // down or right
 			if (this.tabIsPressed) {
-				this.beatsIds.forEach((beatId, i) => {
-					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
-						if (i != this.beatsIds.length - 1) {
-							$event.preventDefault();
-							this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[i + 1].nativeElement.parentElement);
-							return;
-						}
-					}
-				});
+				if (index != this.beatsIds.length - 1) {
+					$event.preventDefault();
+					this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index + 1].nativeElement.parentElement);
+					return;
+				}
 			}
 			return;
 		} else if (key == 37) { // left
-			if (this.tabIsPressed || document.getSelection().focusOffset == 0) {
-				this.beatsIds.forEach((beatId, i) => {
-					if (beatId == this.selectBeatIdFromBeatDataHolder($event.target)) {
-						this.focusTimePicker(this.timePickersElements.toArray()[i].nativeElement);
-						return;
-					}
-				})
+			if (this.tabIsPressed) {
+				$event.preventDefault();
+				this.focusTimePicker(this.timePickersElements.toArray()[index].nativeElement);
+				return;
 			}
 		}
 	}
