@@ -9,7 +9,7 @@ import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson } from './models/dmo-dtos';
+import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson, RemoveBeatDto } from './models/dmo-dtos';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -114,14 +114,23 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		await this.syncBeats("manually");
 	}
 
-	async syncBeats(source: string) {
-		let build = this.buildDmoWithBeatsJson();
+	async syncBeats(source: string = null, metaData: any = null): Promise<void> {
+		if (source == 'add') {
+			await this.editorHub.addBeat(metaData);
+		} else if (source == 'remove') {
+			await this.editorHub.removeBeat(metaData);
+		}
 
-		this.beatsUpdating = true;
-		this.autosaveTitle = this.savingInProgressTitle;
-		await this.editorHub.updateDmosJson(build);
-		this.beatsUpdating = false;
-		this.autosaveTitle = this.savingIsDoneTitle;
+
+
+		// let build = this.buildDmoWithBeatsJson();
+
+		// this.beatsUpdating = true;
+		// this.autosaveTitle = this.savingInProgressTitle;
+		// await this.editorHub.updateDmosJson(build);
+		// this.beatsUpdating = false;
+		// this.autosaveTitle = this.savingIsDoneTitle;
+		console.log(this.beatElements);
 		console.log(`beats was synced. Source: ${source}`);
 	}
 
@@ -286,7 +295,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		this.cdRef.detectChanges();
 
 		if (callbackResult.lastAction != null) {
-			await this.syncBeats(callbackResult.lastAction);
+			await this.syncBeats(callbackResult.lastAction, callbackResult.lastActionMetaData);
 		}
 	}
 
@@ -313,6 +322,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 		return plotPointsData;
 	}
+
+	private 
 
 	private selectBeatDtos(): NnaBeatDto[] {
 		return this.beatElements.map((beatElement, i) => {
@@ -358,11 +369,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		});
 
 		let beats = this.selectBeatDtos();
-		let newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
-		beats.splice(indexToInsert + 1, 0 , newBeat)
+		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
+		beats.splice(indexToInsert + 1, 0 , newBeat);
 		beats = this.orderBeats(beats);
-
-		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add' });
+		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
 		this.updatePlotPoints();
   	}
 
@@ -379,9 +390,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		beats.splice(indexToRemove, 1);
 		beats = this.orderBeats(beats);
 
-		let beatIdToFocus = indexToRemove == 0 ? 0 : indexToRemove - 1;
+		const beatIdToFocus = indexToRemove == 0 ? 0 : indexToRemove - 1;
+		const beatDtoToRemove = {
+			id: fromBeat.beatIdToRemove,
+			dmoId: this.dmoId
+		} as RemoveBeatDto;
 
-		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove' });
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove', actionMetaData: beatDtoToRemove});
 		this.updatePlotPoints();
 	}
 

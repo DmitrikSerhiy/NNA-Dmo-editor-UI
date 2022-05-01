@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { create } from 'domain';
 import { UserManager } from 'src/app/shared/services/user-manager';
-import { NnaBeatDto, NnaBeatTimeDto } from '../models/dmo-dtos';
+import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto } from '../models/dmo-dtos';
 
 @Injectable({
 	providedIn: 'root'
@@ -26,5 +27,13 @@ export class BeatGeneratorService {
 
 	public generateTempBeatId(): string {
 		return `tempId_${this.userManager.getCurrentUser()}_${Math.floor(Math.random() * Math.floor(9999999))}`;
+	}
+
+	public getCreatedBeatDto(created: NnaBeatDto, dmoId: string): CreateBeatDto {
+		return {
+			tempId: created.beatId,
+			order: created.order,
+			dmoId: dmoId
+		} as CreateBeatDto;
 	}
 }

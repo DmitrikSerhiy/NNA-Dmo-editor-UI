@@ -79,9 +79,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			} else {
 				this.setupBeats(null, null, false);
 			}
-		
+
 			if (update.actionName != null) {
-				this.setupEditorCallback(update.actionName);
+				this.setupEditorCallback(update.actionName, update.actionMetaData);
 			} else {
 				this.setupEditorCallback();
 			}
@@ -138,13 +138,14 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 	}
 
-	private setupEditorCallback(lastAction: string = null): void {
+	private setupEditorCallback(lastAction: string = null, actionMetaData: string = null): void {
 		this.beatsSet.emit({
 			timePickers: this.timePickersElements, 
 			beats: this.beatDataHolderElements, 
 			beatMetadata: this.beatsMetaData,
 			beatsIds: this.beatsIds,
-			lastAction: lastAction
+			lastAction: lastAction,
+			lastActionMetaData: actionMetaData
 		});
 	}
 

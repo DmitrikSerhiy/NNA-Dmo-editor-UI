@@ -11,7 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { Observable, Subject } from 'rxjs';
-import { NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI } from '../models/dmo-dtos';
+import { CreateBeatDto, CreateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -148,6 +148,14 @@ export class EditorHub {
 
     async setBeatsId(dmoId: string): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('SetBeatsId', { Id: dmoId });
+    }
+
+    async addBeat(beat: CreateBeatDto) {
+        return await this.invokeSocketMethodWithoutResponseData('CreateBeat', new CreateBeatDtoAPI(beat));
+    }
+
+    async removeBeat(beat: RemoveBeatDto) {
+        return await this.invokeSocketMethodWithoutResponseData('RemoveBeat', new RemoveBeatDtoAPI(beat));
     }
 
     // ----- editor websocket methods ------

@@ -45,3 +45,37 @@ export class NnaDmoWithBeatsAsJsonAPI {
         this.Data = dto.json;
     }
 }
+
+export class CreateBeatDto {
+    tempId: string;
+    order: number;
+    dmoId: string;
+}
+
+export class CreateBeatDtoAPI {
+    TempId: string;
+    Order: number;
+    DmoId: string;
+
+    constructor(dto: CreateBeatDto) {
+        this.TempId = dto.tempId;
+        this.Order = dto.order;
+        this.DmoId = dto.dmoId;
+    }
+}
+
+export class RemoveBeatDto {
+    id: string;
+    dmoId: string;
+}
+
+export class RemoveBeatDtoAPI {
+    Id: string;
+    DmoId: string;
+
+    constructor(dto: RemoveBeatDto) {
+        this.Id = dto.id;
+        this.DmoId = dto.dmoId;
+    }
+}
+
