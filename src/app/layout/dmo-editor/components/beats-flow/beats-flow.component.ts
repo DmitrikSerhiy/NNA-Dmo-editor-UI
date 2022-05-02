@@ -56,7 +56,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 
 	ngAfterViewInit(): void {
-		this.beats = [ ...this.initialBeats];
+		this.beats = this.initialBeats;
 		this.isDataLoaded = true;
 
 		this.setupBeats(null, null, true);

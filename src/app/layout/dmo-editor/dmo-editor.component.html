@@ -38,16 +38,15 @@
 
     </div>
     <div *ngIf="!beatsLoading" class="editor-board-wrapper">
-       <app-plot-points-flow 
-            *ngIf="beatWasSet"
-            [initialPlotPoints]="buildPlotPointsData()" 
+       <app-plot-points-flow *ngIf="beatWasSet"
+            [initialPlotPoints]="plotPointsWithMetaData" 
             [isDmoFinished]="isDmoFinised"
             [updateGraph]="updateGraphEvent"
             (plotPointsSet)="plotPointsSet($event)">
        </app-plot-points-flow>
        
-       <app-beats-flow 
-            [initialBeats]="buildBeatsData()"
+       <app-beats-flow
+            [initialBeats]="this.initialDmoDto.beats"
             [isDmoFinished]="isDmoFinised"
             [updateBeatsEvent]="updateBeatsEvent"
             (beatsSet)="beatsSet($event)"

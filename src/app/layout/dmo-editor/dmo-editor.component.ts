@@ -3,7 +3,7 @@ import { InitialPopupComponent } from './components/initial-popup/initial-popup.
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
-import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { EventEmitter } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -14,9 +14,10 @@ import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAs
 @Component({
 	selector: 'app-dmo-editor',
 	templateUrl: './dmo-editor.component.html',
-	styleUrls: ['./dmo-editor.component.scss']
+	styleUrls: ['./dmo-editor.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DmoEditorComponent implements OnInit, OnDestroy {
+export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	isInitialPopupOpen: boolean;
 	initialPopup: MatDialogRef<InitialPopupComponent>;
@@ -47,13 +48,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	private isDmoFinised: boolean;
 	private beatsMetaData: any[];
 	private beatsIds: string[];
+	private plotPointsWithMetaData: any[];
 	private plotPointElements: QueryList<ElementRef>;   // elements
 	private beatElements: QueryList<ElementRef>;        // elements
 	private timePickerElements: QueryList<ElementRef>;  // elements
    // ------ [end] not state
 
 	private unsubscribe$: Subject<void> = new Subject();
-	private initialLoadSub: Subscription;
 
 	constructor(
 		private editorHub: EditorHub,
@@ -62,26 +63,31 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		public matModule: MatDialog,
 		private sidebarManagerService: SidebarManagerService,
 		private cdRef: ChangeDetectorRef,
-		private dataGenerator: BeatGeneratorService		) {
-		this.beatsUpdating = false; 
-		this.beatWasSet = false;
-		this.isDmoInfoSet = false;
-		this.isInitialPopupOpen = false;
-		this.beatsLoading = false;
-		this.updateGraphEvent = new EventEmitter<any>();
-		this.updateBeatsEvent = new EventEmitter<any>();
-		this.beatsMetaData = [];
-		this.beatsIds = [];
+		private dataGenerator: BeatGeneratorService) {
+			this.beatsUpdating = false; 
+			this.beatWasSet = false;
+			this.isDmoInfoSet = false;
+			this.isInitialPopupOpen = false;
+			this.beatsLoading = true;
+			this.updateGraphEvent = new EventEmitter<any>();
+			this.updateBeatsEvent = new EventEmitter<any>();
+			this.beatsMetaData = [];
+			this.beatsIds = [];
+			this.plotPointsWithMetaData = [];
 	}
 
-	async ngOnInit() {
+	async ngOnInit(): Promise<void> {
 		this.activatedRoute.queryParams.subscribe(params => {
 			this.dmoId = params['dmoId'];
 		});
+	}
 
+	async ngAfterViewInit(): Promise<void> {
 		this.dmoId 
 			? await this.loadDmo()
 			: await this.createDmo();
+
+		this.cdRef.detectChanges();
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -120,7 +126,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		} else if (source == 'remove') {
 			await this.editorHub.removeBeat(metaData);
 		}
-
+		
 
 
 		// let build = this.buildDmoWithBeatsJson();
@@ -130,19 +136,17 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		// await this.editorHub.updateDmosJson(build);
 		// this.beatsUpdating = false;
 		// this.autosaveTitle = this.savingIsDoneTitle;
-		console.log(this.beatElements);
 		console.log(`beats was synced. Source: ${source}`);
 	}
 
 
 	async ngOnDestroy() {
-		this.initialLoadSub?.unsubscribe();
 		await this.closeEditorAndClearData();
 	}
 
 
 
-  	// #region general settings
+	// #region general settings
 
 	async createDmo() {
 		const popupResult = await this.finalizePopup();
@@ -152,12 +156,11 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 		await this.prepareEditor();
 		const createdDmo = await this.editorHub.createDmo(popupResult);
-		if (createdDmo == null) {
-			return;
-		}
 
 		this.initDmo(createdDmo);
-		this.createInitialDmo();
+		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+		this.beatsLoading = false;
+		this.sidebarManagerService.collapseSidebar();
 	}
 	
 
@@ -173,17 +176,8 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 	async loadDmo() {
 		await this.prepareEditor();
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
-		if (shortDmo == null) {
-			return;
-		}
-
 		this.initDmo(shortDmo);
-		if (this.currentShortDmo.hasBeats) {
-			this.beatsLoading = true;
-			this.loadBeats();
-		} else {
-			this.createInitialDmo();
-		}
+		await this.loadBeats();
 	}
 
 	async closeEditor() {
@@ -192,13 +186,6 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		}
 		await this.closeEditorAndClearData();
 		this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
-	}
-
-	private createInitialDmo() {
-		this.initialDmoDto = new NnaDmoDto();
-		this.initialDmoDto.beats = [];
-		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
-		this.sidebarManagerService.collapseSidebar();
 	}
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
@@ -257,40 +244,41 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 			this.currentShortDmo.dmoStatus = result.dmoStatus;
 		}
 
+		this.initialDmoDto = new NnaDmoDto();
+		this.initialDmoDto.dmoId = this.dmoId;
+		this.initialDmoDto.beats = [];
+
 		this.isDmoInfoSet = true;
 	}
 
-	private loadBeats() {
-		let $initialLoad = this.editorHub.initialBeatsLoad(this.dmoId)
-			.pipe(takeUntil(this.unsubscribe$));
-		
-		this.initialLoadSub = $initialLoad.subscribe((result: any) => { 
-			this.initialDmoDto = new NnaDmoDto();
-			this.initialDmoDto.beats = [];
-
-			let beats = Object.assign<NnaBeatDto[], string>([], JSON.parse(result.beatsJson));
-
+	private async loadBeats() {
+		this.beatsLoading = true;
+		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId)
+		if (beats?.length == 0) {
+			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+		} else {
 			this.initialDmoDto.beats = beats;
-			this.initialDmoDto.dmoId = result.dmoId;
+		}
 
-			this.beatsLoading = false;
-			this.sidebarManagerService.collapseSidebar();
-		});
+		this.beatsLoading = false;
+		this.sidebarManagerService.collapseSidebar();
 	}
-
+	
   	// #endregion
 
 
 
 
 	  
-    // #region initial load
+    // #region callbacks from children
 
 	async beatsSet(callbackResult: any): Promise<void> {
 		this.beatElements = callbackResult.beats;
 		this.timePickerElements = callbackResult.timePickers;
 		this.beatsMetaData = callbackResult.beatMetadata
 		this.beatsIds = callbackResult.beatsIds;
+		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], plotPointMetaData: this.beatsMetaData[i], order: i} }); 
+
 		this.beatWasSet = true;
 		this.cdRef.detectChanges();
 
@@ -301,47 +289,13 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 
 	plotPointsSet(callbackResult): void {
 		this.plotPointElements = callbackResult.elements;
+		this.cdRef.detectChanges();
 	}
 
-	buildBeatsData() {
-		let plotPointsData: NnaBeatDto[] = [];
-
-		this.initialDmoDto.beats.map(b => b).forEach((beatDto: NnaBeatDto, i) => {
-			plotPointsData.push(beatDto);
-		});
-
-		return plotPointsData;
-	}
-
-	buildPlotPointsData() {
-		let plotPointsData: any[] = [];
-
-		this.beatElements.forEach((beatElement, i) => {
-			plotPointsData.push({beatId: this.beatsIds[i], plotPointMetaData: this.beatsMetaData[i], order: i});
-		});
-
-		return plotPointsData;
-	}
-
-	private 
-
-	private selectBeatDtos(): NnaBeatDto[] {
-		return this.beatElements.map((beatElement, i) => {
-				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
-				const beat: NnaBeatDto = {
-					beatId: beatId,
-					order: i,
-					text: beatElement.nativeElement.innerHTML,
-					time: this.buildTimeDtoFromBeat(beatId)
-				}
-				return beat;
-		});
-	}
-
-   // #endregion
+	// #endregion
 
 
-  	// #region CRUD
+	// #region CRUD
   
 	finishDmo(): void {
 		this.isDmoFinised = !this.isDmoFinised;
@@ -412,7 +366,7 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
   	// #endregion
 
 
-    // #region helpers
+	// #region helpers
 
 	private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
 		let shouldIncrement: boolean = false;
@@ -485,12 +439,25 @@ export class DmoEditorComponent implements OnInit, OnDestroy {
 		return timeDto;
 	}
 
-	private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
-		let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
-		dmoWithJson.json = JSON.stringify(this.selectBeatDtos());
-		dmoWithJson.dmoId = this.dmoId;
-		return dmoWithJson;
+	private selectBeatDtos(): NnaBeatDto[] {
+		return this.beatElements.map((beatElement, i) => {
+				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
+				const beat: NnaBeatDto = {
+					beatId: beatId,
+					order: i,
+					text: beatElement.nativeElement.innerHTML,
+					time: this.buildTimeDtoFromBeat(beatId)
+				}
+				return beat;
+		});
 	}
+
+	// private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
+	// 	let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
+	// 	dmoWithJson.json = JSON.stringify(this.selectBeatDtos());
+	// 	dmoWithJson.dmoId = this.dmoId;
+	// 	return dmoWithJson;
+	// }
 
 	private async closeEditorAndClearData() {
 		await this.editorHub.abortConnection();

@@ -3,7 +3,7 @@ import { ShortDmoDto, ShortDmoDtoAPI } from '../../models';
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, share } from 'rxjs/operators';
+import { catchError, map, share } from 'rxjs/operators';
 
 import * as signalR from '@microsoft/signalr';
 import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
@@ -11,7 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { Observable, Subject } from 'rxjs';
-import { CreateBeatDto, CreateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI } from '../models/dmo-dtos';
+import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -163,12 +163,21 @@ export class EditorHub {
 
     // ----- editor http methods --------
 
-    initialBeatsLoad(dmoId: string): Observable<string> {
+    initialBeatsLoadAsJson(dmoId: string): Observable<string> {
         return this.http
-            .get<string>(this.serverUrl + 'beats/initial/' + dmoId)
+            .get<string>(this.serverUrl + 'beats/initial/json/' + dmoId)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<string>(response, obs)));
     }
 
+    initialBeatsLoadBeatsAsArray(dmoId: string): Promise<NnaBeatDto[]> {
+        return this.http
+            .get<NnaBeatDto[]>(this.serverUrl + 'beats/initial/array/' + dmoId)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<NnaBeatDto[]>(response, obs)))
+            .toPromise();
+    }
+
+
+    
     // ----- editor http methods --------
 
 
