@@ -25,12 +25,34 @@ export class NnaBeatDto {
     time: NnaBeatTimeDto;
 }
 
+export class UpdateBeatDtoAPI {
+    BeatId: string;
+    Text: string;
+    Time: UpdateBeatTimeDtoAPI;
+
+    constructor(beatDto: NnaBeatDto) {
+        this.BeatId = beatDto.beatId;
+        this.Text = beatDto.text;
+        this.Time = new UpdateBeatTimeDtoAPI(beatDto.time);
+    }
+}
 export class NnaBeatTimeDto {
     hours: number;
     minutes: number;
     seconds: number;
 }
 
+export class UpdateBeatTimeDtoAPI {
+    Hours: number;
+    Minutes: number;
+    Seconds: number;
+
+    constructor(timeDto: NnaBeatTimeDto) {
+        this.Hours = timeDto.hours;
+        this.Minutes = timeDto.minutes;
+        this.Seconds = timeDto.seconds;
+    }
+}
 export class NnaDmoWithBeatsAsJson {
     dmoId: string;
     json: string; 

@@ -120,11 +120,14 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.syncBeats("manually");
 	}
 
-	async syncBeats(source: string = null, metaData: any = null): Promise<void> {
-		if (source == 'add') {
-			await this.editorHub.addBeat(metaData);
-		} else if (source == 'remove') {
-			await this.editorHub.removeBeat(metaData);
+	async syncBeats($event: any): Promise<void> {
+
+		if ($event.source == 'add') {
+			await this.editorHub.addBeat($event.metaData);
+		} else if ($event.source == 'remove') {
+			await this.editorHub.removeBeat($event.metaData);
+		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out') {
+			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
 		}
 		
 
@@ -136,7 +139,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		// await this.editorHub.updateDmosJson(build);
 		// this.beatsUpdating = false;
 		// this.autosaveTitle = this.savingIsDoneTitle;
-		console.log(`beats was synced. Source: ${source}`);
+		console.log(`beats was synced. Source: ${$event.source}`);
 	}
 
 
@@ -159,6 +162,15 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.initDmo(createdDmo);
 		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+
+		const initialBeat = {
+			dmoId: this.dmoId,
+			order: 0,
+			tempId: this.initialDmoDto.beats[0].beatId
+		} as CreateBeatDto;
+
+		await this.editorHub.addBeat(initialBeat);
+
 		this.beatsLoading = false;
 		this.sidebarManagerService.collapseSidebar();
 	}
@@ -283,7 +295,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.cdRef.detectChanges();
 
 		if (callbackResult.lastAction != null) {
-			await this.syncBeats(callbackResult.lastAction, callbackResult.lastActionMetaData);
+			await this.syncBeats({source: callbackResult.lastAction, metaData: callbackResult.lastActionMetaData});
 		}
 	}
 
@@ -441,7 +453,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private selectBeatDtos(): NnaBeatDto[] {
 		return this.beatElements.map((beatElement, i) => {
-				let beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
+				const beatId = this.selectBeatIdFromBeatDataHolder(beatElement.nativeElement);
 				const beat: NnaBeatDto = {
 					beatId: beatId,
 					order: i,
@@ -450,6 +462,18 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				}
 				return beat;
 		});
+	}
+
+	private selectSingleBeat(index: number): NnaBeatDto {
+		const beatElement = this.beatElements.toArray()[index].nativeElement;
+		const beatId = this.selectBeatIdFromBeatDataHolder(beatElement);
+
+		return {
+			beatId: beatId,
+			order: index,
+			text: beatElement.innerHTML,
+			time: this.buildTimeDtoFromBeat(beatId)
+		} as NnaBeatDto
 	}
 
 	// private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {

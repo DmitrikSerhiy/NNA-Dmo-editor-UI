@@ -42,10 +42,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		this.isDataLoaded = false;
 		this.shiftIsPressed = false;
 		this.beatsSet = new EventEmitter<any>();
+		this.syncBeats = new EventEmitter<any>();
 		this.lineCountChanged = new EventEmitter<any>();
 		this.addBeat = new EventEmitter<any>();
 		this.removeBeat = new EventEmitter<any>();
-		this.syncBeats = new EventEmitter<any>();
 		this.beatLineHeigth = 16;
 		this.beatContrainerMinHeight = 32;
 		this.onDownLines = [];
@@ -261,7 +261,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		event.target.value = this.fillEmtpyTimeDto(event.target.value);
 		if (event.relatedTarget == null) {
 			if (this.beatsMetaData[index].isDirty == true) {
-				this.syncBeats.emit('timePicker');
+				this.syncBeats.emit({ source: 'time_picker_focus_out', metaData: index });
 				this.beatsMetaData[index].isDirty = false;
 			}
 		} else {
@@ -270,7 +270,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 			if (beatId != timePickerId) {
 				if (this.beatsMetaData[index].isDirty == true) {
-					this.syncBeats.emit('timePicker');
+					this.syncBeats.emit({ source: 'time_picker_focus_out', metaData: index });
 					this.beatsMetaData[index].isDirty = false;
 				}
 			}
@@ -322,6 +322,11 @@ export class BeatsFlowComponent implements AfterViewInit  {
 					return;
 				}
 
+				if (this.beatsMetaData[index].isDirty == true) {
+					this.syncBeats.emit({ source: 'beat_data_holder_focus_out', metaData: index });
+					this.beatsMetaData[index].isDirty = false;
+				}
+				
 				this.addBeat.emit({ beatIdFrom: this.selectBeatIdFromBeatDataHolder($event.target) });
 			} 
 			return;
@@ -376,7 +381,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		this.clearInnerTagsIfBeatIsEmpty($event);
 		if ($event.relatedTarget == null) {
 			if (this.beatsMetaData[index].isDirty == true) {
-				this.syncBeats.emit('beat');
+				this.syncBeats.emit({ source: 'beat_data_holder_focus_out', metaData: index });
 				this.beatsMetaData[index].isDirty = false;
 			}
 		} else {
@@ -385,7 +390,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 			if (beatId != timePickerId) {
 				if (this.beatsMetaData[index].isDirty == true) {
-					this.syncBeats.emit('beat');
+					this.syncBeats.emit({ source: 'beat_data_holder_focus_out', metaData: index });
 					this.beatsMetaData[index].isDirty = false;
 				}
 			}
