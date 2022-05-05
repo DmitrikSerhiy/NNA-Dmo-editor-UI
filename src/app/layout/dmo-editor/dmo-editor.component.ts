@@ -359,7 +359,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		const beatIdToFocus = indexToRemove == 0 ? 0 : indexToRemove - 1;
 		const beatDtoToRemove = {
 			id: fromBeat.beatIdToRemove,
-			dmoId: this.dmoId
+			dmoId: this.dmoId,
+			order: indexToRemove
 		} as RemoveBeatDto;
 
 		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, beatIdToFocus: this.beatsIds[beatIdToFocus], actionName: 'remove', actionMetaData: beatDtoToRemove});

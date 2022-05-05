@@ -89,15 +89,18 @@ export class CreateBeatDtoAPI {
 export class RemoveBeatDto {
     id: string;
     dmoId: string;
+    order: number;
 }
 
 export class RemoveBeatDtoAPI {
     Id: string;
     DmoId: string;
+    Order: number;
 
     constructor(dto: RemoveBeatDto) {
         this.Id = dto.id;
         this.DmoId = dto.dmoId;
+        this.Order = dto.order;
     }
 }
 
