@@ -2,7 +2,7 @@
 @import '../../../styles/colors.scss';
 
 .general-editor-wrapper {
-    min-height: 100vh;
+    height: 100%;
     margin: -1rem;
     padding: 1rem;
     background: white;
@@ -67,7 +67,7 @@
     .editor-board-wrapper {
         display: flex;
         flex-flow: row nowrap;
-        min-height: 100vh;
+        height: 100%;
         
         app-plot-points-flow {
             flex: 0 0 2rem;

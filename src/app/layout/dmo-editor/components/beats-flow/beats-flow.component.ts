@@ -93,15 +93,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		let lastBeatElement = this.beatDataHolderElements.last.nativeElement;
 		if (!lastBeatElement.innerHTML) {
 			if (lastTimePickerElement.value == this.defaultTimePickerValue) {
-				lastTimePickerElement.scrollIntoView();
+				lastTimePickerElement.scrollIntoView(false);
 				lastTimePickerElement.focus();
 				lastTimePickerElement.setSelectionRange(0,0);
 			} else {
-				lastBeatElement.scrollIntoView();
+				lastBeatElement.scrollIntoView(false);
 				lastBeatElement.focus();
 			}
 		} else {
-			lastBeatElement.scrollIntoView();
+			lastBeatElement.scrollIntoView(false);
 			this.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
 	
 		}
@@ -118,7 +118,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.beatsIds.forEach((beatId, i) => {
 			if (beatId == timePickerToFocus) {
 				const element = this.timePickersElements.toArray()[i].nativeElement;
-				element.scrollIntoView();
+				element.scrollIntoView(false);
 				element.focus();
 				element.setSelectionRange(0,0);
 				return;
@@ -128,7 +128,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.beatsIds.forEach((beatId, i) => {
 				if (beatId == beatIdToFocus) {
 					const element = this.beatDataHolderElements.toArray()[i].nativeElement;
-					element.scrollIntoView();
+					element.scrollIntoView(false);
 					this.shiftCursorToTheEndOfChildren(element.parentElement);
 					return;
 				}
