@@ -170,6 +170,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 		if (key == 17) {
 			this.controlIsPressed = true; // control
+			return;
 		}
 
 		if (key == 13) { // enter
@@ -196,6 +197,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 				event.preventDefault();
 				return;
 			}
+			return;
 		}
 
 		if (key == 37) { // left arrow
@@ -204,6 +206,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 				event.preventDefault();
 				return;
 			}
+			return;
 		}
 
 		if (key == 40 || key == 38) { // up and down arrow
@@ -212,11 +215,15 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			return;
 		}
 
+
 		if (this.preventInvalidMinutesOrSeconds(event.target, +event.key[0])) {
 			this.setValidMinutesOrSeconds(event.target);
+			this.preventSecondsIfMinutesAreMax(event.target, +event.key[0]);
 			event.preventDefault();
 			return;
 		}
+
+		this.preventSecondsIfMinutesAreMax(event.target, +event.key[0]);
 
 		if (this.replaceNextSpaceWithCharacter(event.target, +event.key[0])) {
 			event.preventDefault();
@@ -229,11 +236,13 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
+			return;
 		}
 		
 		if (key == 9) { // tab
 			this.tabIsPressed = false;
 			event.preventDefault();
+			return;
 		}
 
 		if (key == 13) { // enter
@@ -754,6 +763,22 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			return '60';
 		}
 		return `${firstNum}${secondNum}`;
+	}
+
+	private preventSecondsIfMinutesAreMax(nativeElement: any, value: number): void {
+		const start = nativeElement.selectionStart;
+
+		if (start != 5 && start != 6 && start != 4) {
+			return;
+		}
+
+		if (nativeElement.value[2] != '6') {
+			return;
+		}
+
+		nativeElement.value = nativeElement.value.substring(0, 5) + '00';
+		nativeElement.selectionStart = 7;
+		nativeElement.selectionEnd = 7;
 	}
 
 	private setValidMinutesOrSeconds(nativeElement: any): void {
