@@ -6,10 +6,8 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { EventEmitter } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
-import { Subject, Subscription } from 'rxjs';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, NnaDmoWithBeatsAsJson, RemoveBeatDto } from './models/dmo-dtos';
+import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -23,12 +21,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	initialPopup: MatDialogRef<InitialPopupComponent>;
 
 	connectionState: string;
-	beatsUpdating: boolean;
 	autosaveTitle: string;
 	connectionStateTitle: string;
-	private savingIsDoneTitle: string = "Your work is autosaved";
-	private savingInProgressTitle: string = "Your work is saving";
-	editorIsConnected: boolean;
+
+	private savingIsDoneTitle: string = "Your progress was auto-saved";
+	private savingInProgressTitle: string = "Your progress is saving";
+	private autoSavingIsNotWorking: string = "Your progress won't be auto-saved";
 	
 	// initial fields
 	isDmoInfoSet: boolean;
@@ -37,8 +35,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	currentShortDmo: ShortDmoDto;
 	initialDmoDto: NnaDmoDto;
 	beatWasSet: boolean;
-
-
+	editorIsConnected: boolean;
+	editorIsReconnecting: boolean;
+	beatsUpdating: boolean;
 
 	// events
 	updateGraphEvent: EventEmitter<any>;
@@ -49,12 +48,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private beatsMetaData: any[];
 	private beatsIds: string[];
 	private plotPointsWithMetaData: any[];
+
 	private plotPointElements: QueryList<ElementRef>;   // elements
 	private beatElements: QueryList<ElementRef>;        // elements
 	private timePickerElements: QueryList<ElementRef>;  // elements
    // ------ [end] not state
-
-	private unsubscribe$: Subject<void> = new Subject();
 
 	constructor(
 		private editorHub: EditorHub,
@@ -94,34 +92,22 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-		this.autosaveTitle = this.savingIsDoneTitle;
 	}
 
-	setConnectionView(): void {
-		if (this.editorHub.isConnected) {
-			this.editorIsConnected = true;
-			this.connectionState = "online";
-			this.connectionStateTitle = "Connections is established";
-		} else if (this.editorHub.isReconnecting) {
-			this.editorIsConnected = true;
-			this.connectionState = "connecting";
-			this.connectionStateTitle = "Editor is connecting";
-		} else {
-			this.editorIsConnected = false;
-			this.connectionState = "offline";
-			this.connectionStateTitle = "Editor is disconnected";
-		}
-	}
 
-	async tryReconnect() {
+	async tryReconnect(): Promise<void> {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-		await this.syncBeats("manually");
+		await this.loadDmoWithBeats(true);
+		
+		// todo: what if user have some unsaved work here??? offer to swith to offline mode here.
 	}
 
 	async syncBeats($event: any): Promise<void> {
 
+		this.autosaveTitle = this.savingInProgressTitle;
+		this.beatsUpdating = true;
 		if ($event.source == 'add') {
 			await this.editorHub.addBeat($event.metaData);
 		} else if ($event.source == 'remove') {
@@ -129,21 +115,17 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out') {
 			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
 		}
-		
-
+		this.autosaveTitle = this.savingIsDoneTitle;
+		this.beatsUpdating = false;
 
 		// let build = this.buildDmoWithBeatsJson();
-
-		// this.beatsUpdating = true;
-		// this.autosaveTitle = this.savingInProgressTitle;
 		// await this.editorHub.updateDmosJson(build);
-		// this.beatsUpdating = false;
-		// this.autosaveTitle = this.savingIsDoneTitle;
+
 		console.log(`beats was synced. Source: ${$event.source}`);
 	}
 
 
-	async ngOnDestroy() {
+	async ngOnDestroy(): Promise<void> {
 		await this.closeEditorAndClearData();
 	}
 
@@ -151,7 +133,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	// #region general settings
 
-	async createDmo() {
+	async createDmo(): Promise<void> {
 		const popupResult = await this.finalizePopup();
 			if (!popupResult) {
 			return;
@@ -176,7 +158,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	
 
-	async editCurrentDmo() {
+	async editCurrentDmo(): Promise<void> {
 		const popupResult = await this.finalizePopup();
 		if (!popupResult) {
 			return;
@@ -187,12 +169,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async loadDmo() {
 		await this.prepareEditor();
-		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
-		this.initDmo(shortDmo);
-		await this.loadBeats();
+		await this.loadDmoWithBeats();
 	}
 
-	async closeEditor() {
+	async closeEditor(): Promise<void> {
 		if (!this.sidebarManagerService.IsOpen) {
 			this.sidebarManagerService.toggleSidebar();
 		}
@@ -228,6 +208,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 	private initDmo(result: ShortDmoDto): void {
+		if (!result) {
+			return;
+		}
 		if (!this.currentShortDmo) {
 			this.currentShortDmo = { name: result.name, movieTitle: result.movieTitle } as ShortDmoDto;
 		} else {
@@ -263,18 +246,57 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.isDmoInfoSet = true;
 	}
 
-	private async loadBeats() {
+	private async loadBeats(forceChangeDetection: boolean = false): Promise<void> {
 		this.beatsLoading = true;
-		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId)
+		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
 		if (beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
 		} else {
 			this.initialDmoDto.beats = beats;
 		}
 
+		if (forceChangeDetection) {
+			this.cdRef.detectChanges();
+		}
+
 		this.beatsLoading = false;
+		this.cdRef.detectChanges();
 		this.sidebarManagerService.collapseSidebar();
 	}
+
+	private async loadDmoWithBeats(forceChangeDetection: boolean = false) {
+		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
+		if (!shortDmo) {
+			return;
+		}
+
+		this.initDmo(shortDmo);
+		await this.loadBeats(forceChangeDetection);
+	}
+
+	private setConnectionView(): void {
+		if (this.editorHub.isConnected) {
+			this.editorIsConnected = true;
+			this.editorIsReconnecting = false;
+			this.connectionState = "online";
+			this.connectionStateTitle = "Connections is established";
+			this.autosaveTitle = this.savingIsDoneTitle;
+		} else if (this.editorHub.isReconnecting) {
+			this.editorIsConnected = false;
+			this.editorIsReconnecting = true;
+			this.connectionState = "connecting";
+			this.connectionStateTitle = "Editor is reconnecting. Wait a few seconds.";
+			this.autosaveTitle = this.autoSavingIsNotWorking;
+		} else {
+			this.editorIsConnected = false;
+			this.editorIsReconnecting = false;
+			this.connectionState = "offline";
+			this.connectionStateTitle = "Editor was disconnected";
+			this.autosaveTitle = this.autoSavingIsNotWorking;
+		}
+		this.cdRef.detectChanges();
+	}
+
 	
   	// #endregion
 
@@ -367,7 +389,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updatePlotPoints();
 	}
 
-	private updatePlotPoints() {
+	private updatePlotPoints(): void {
 		let newPlotPoints = []
 		this.beatsIds.forEach((beatId, i) => {
 			newPlotPoints.push({beatId: beatId, plotPointMetaData: this.beatsMetaData[i], order: i});
@@ -484,20 +506,34 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// 	return dmoWithJson;
 	// }
 
-	private async closeEditorAndClearData() {
+	private async closeEditorAndClearData(): Promise<void> {
 		await this.editorHub.abortConnection();
 		this.dmoId = '';
-		this.isDmoInfoSet = false;
 		this.isInitialPopupOpen = false;
 		this.matModule.closeAll();
+
 		this.initialPopup = null;
 		this.currentShortDmo = null;
+		this.isDmoInfoSet = false;
+		this.beatWasSet = false;
+		this.beatsLoading = true;
+		this.beatsUpdating = false;
+		this.initialDmoDto = null;
+		this.editorIsConnected = false;
+		this.editorIsReconnecting = false;
+
+		this.updateGraphEvent = null;
+		this.updateBeatsEvent = null;
+
+		this.connectionState = null;
+		this.autosaveTitle = '';
+		this.connectionStateTitle = '';
+
 		if (this.sidebarManagerService.IsOpen == false) {
 			this.sidebarManagerService.toggleSidebar();
 		}
-
-		this.unsubscribe$.next();
-		this.unsubscribe$.complete();
+		
+		this.cdRef.detectChanges();
 	}
 
   	// #endregion

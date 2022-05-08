@@ -3,7 +3,7 @@ import { ShortDmoDto, ShortDmoDtoAPI } from '../../models';
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, share } from 'rxjs/operators';
+import { catchError, share } from 'rxjs/operators';
 
 import * as signalR from '@microsoft/signalr';
 import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
@@ -64,22 +64,24 @@ export class EditorHub {
 
 
     async startConnection() {
-        if (this.userManager.isAuthorized) {
-            if (this.isConnected) {
-                return;
-            }
-
-            try {
-                await this.authService.ping().toPromise();
-            } catch (error) {
-                this.router.navigate(["/login"]); 
-                // todo: navigate to special error page
-                this.userManager.clearUserData();
-            }                
-
-            this.buildConnection();
-            await this.hubConnection.start();
+        if (!this.userManager.isAuthorized()) {
+            return;
         }
+
+        if (this.isConnected) {
+            return;
+        }
+
+        try {
+            await this.authService.ping().toPromise();
+        } catch (error) {
+            this.router.navigate(["/login"]); 
+            // todo: navigate to special error page
+            this.userManager.clearUserData();
+        }                
+
+        this.buildConnection();
+        await this.hubConnection.start();
     }
 
     async abortConnection() {
@@ -104,11 +106,8 @@ export class EditorHub {
         
 
         this.hubConnection.onreconnecting((error) => {
-            console.log('Reconnecting...');
             this.connectionStateEmit$.next();
-            if (error != null) {
-                console.log(error);
-            }
+            console.log('Reconnecting...');
         });
         this.hubConnection.onreconnected(() => {
             this.connectionStateEmit$.next();
@@ -117,7 +116,10 @@ export class EditorHub {
         this.hubConnection.onclose((error) => {
             this.connectionStateEmit$.next();
             if (error != null) {
-                console.log('failed');
+                console.log('Closed after error.');
+                if (error.message.includes("AuthenticationException: User already have active connection")) {
+                    this.showNotConnectedError();
+                }
             }
         });
 
@@ -187,6 +189,7 @@ export class EditorHub {
 
     private async invokeSocketMethod<TResponse>(methodName: string, params: any): Promise<TResponse> {
         if (!this.isConnected) {
+            this.showNotConnectedError();
             return;
         }
         
@@ -207,6 +210,7 @@ export class EditorHub {
 
     private async invokeSocketMethodWithoutResponseData(methodName: string, params: any): Promise<void> {
         if (!this.isConnected) {
+            this.showNotConnectedError();
             return;
         }
         
@@ -224,7 +228,6 @@ export class EditorHub {
         let toastShowed: boolean = false;
 		if (entry.errors != null && entry.errors.length != 0) {
 			entry.errors.forEach(error => {
-                console.log(entry);
                 this.toastr.showError(new ToastrErrorMessage(error.errorMessage, `${entry.message} ${entry.httpCode}`));
             });
             toastShowed = true;
@@ -232,7 +235,6 @@ export class EditorHub {
 
 		if (entry.warnings != null && entry.warnings.length != 0) {
             let validations = [];
-            console.log(entry);
             entry.warnings.forEach(warning => {validations.push({ fieldName: warning.fieldName, validationMessage: warning.validationMessage} ) });
             this.toastr.showValidationMessageForEditor(validations, entry.message);
             toastShowed = true;
@@ -249,6 +251,10 @@ export class EditorHub {
 		}
 
 		return entry.isSuccessful 
+    }
+
+    private showNotConnectedError() {
+        this.toastr.showError(new ToastrErrorMessage('Try to reconnect or to relogin', 'Editor was disconnected'));
     }
 
     private showUnverifiedSoketError() {
