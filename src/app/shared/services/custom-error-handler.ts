@@ -27,6 +27,7 @@ export class CustomErrorHandler {
 			});
 		}
 
+		
 		else if (response.status == 401) {
 			if (response.headers.get('ExpiredToken')) {
 				return this.refreshHelperService.tryRefreshTokens()
@@ -37,7 +38,11 @@ export class CustomErrorHandler {
 								return originalObs;
 							}
 					}));
-			} 
+			} else if (error.fromExceptionMiddleware) {
+				if (response.headers.get('RedirectToLogin')) {
+					return this.refreshHelperService.clearLocalStorageAndRedirectToLogin();
+				}
+			}
 		} 
 		
 		else if (response.status == 400) {
