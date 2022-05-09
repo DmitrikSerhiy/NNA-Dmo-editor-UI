@@ -11,7 +11,7 @@
             </div>
             <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
                 <ng-container matColumnDef="select">
-                    <th mat-header-cell *matHeaderCellDef class="column-header">
+                    <th mat-header-cell *matHeaderCellDef>
                         <mat-checkbox  (change)="$event ? dmosTableToggle() : null"
                             [checked]="selectedDmo.hasValue() && isAllDmoSelected()"
                             [indeterminate]="selectedDmo.hasValue() && !isAllDmoSelected()">
@@ -25,12 +25,12 @@
                 </ng-container>
 
                 <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="column-header" class="hoverable-element"> DMO name </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element dmo-cell-header"> DMO name </th>
                     <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.name}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="movieTitle">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="column-header" class="hoverable-element"> Movie title </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="hoverable-element dmo-cell-header"> Movie title </th>
                     <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
                 </ng-container>
 

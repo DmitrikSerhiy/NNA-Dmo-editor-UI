@@ -2,7 +2,6 @@
   .dmos-table-wrapper {
     .dmos-table-container {
 
-
       .search-container {
         flex: 0 1 100%;
         display: flex;
@@ -14,19 +13,11 @@
         }
   
         .search-input {
-          padding-left: 70px;
+          padding-left: 50px;
           &:focus {
             background-color: unset;
           }
         }
-      }
-
-      .nna-table {
-        .mat-header-row {
-          .hoverable-element {
-            padding: 0 !important;
-          }
-        } 
       }
     }
   }
