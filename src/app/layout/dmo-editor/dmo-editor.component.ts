@@ -84,8 +84,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.dmoId 
 			? await this.loadDmo()
 			: await this.createDmo();
-
-		this.cdRef.detectChanges();
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -99,7 +97,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-		await this.loadDmoWithBeats(true);
+		await this.loadDmoWithBeats();
+		this.cdRef.detectChanges();
 		
 		// todo: what if user have some unsaved work here??? offer to swith to offline mode here.
 	}
@@ -145,6 +144,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.initDmo(createdDmo);
 		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+		this.cdRef.detectChanges();
 
 		const initialBeat = {
 			dmoId: this.dmoId,
@@ -156,6 +156,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.beatsLoading = false;
 		this.sidebarManagerService.collapseSidebar();
+		this.cdRef.detectChanges();
 	}
 	
 
@@ -171,6 +172,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	async loadDmo() {
 		await this.prepareEditor();
 		await this.loadDmoWithBeats();
+		this.cdRef.detectChanges();
 	}
 
 	async closeEditor(): Promise<void> {
@@ -247,7 +249,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.isDmoInfoSet = true;
 	}
 
-	private async loadBeats(forceChangeDetection: boolean = false): Promise<void> {
+	private async loadBeats(): Promise<void> {
 		this.beatsLoading = true;
 		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
 		if (beats?.length == 0) {
@@ -256,23 +258,20 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.initialDmoDto.beats = beats;
 		}
 
-		if (forceChangeDetection) {
-			this.cdRef.detectChanges();
-		}
-
-		this.beatsLoading = false;
 		this.cdRef.detectChanges();
+		this.beatsLoading = false;
 		this.sidebarManagerService.collapseSidebar();
+		this.cdRef.detectChanges();
 	}
 
-	private async loadDmoWithBeats(forceChangeDetection: boolean = false) {
+	private async loadDmoWithBeats() {
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
 		if (!shortDmo) {
 			return;
 		}
 
 		this.initDmo(shortDmo);
-		await this.loadBeats(forceChangeDetection);
+		await this.loadBeats();
 	}
 
 	private setConnectionView(): void {
