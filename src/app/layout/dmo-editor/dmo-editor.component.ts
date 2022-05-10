@@ -117,6 +117,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		this.autosaveTitle = this.savingIsDoneTitle;
 		this.beatsUpdating = false;
+		this.cdRef.detectChanges();
 
 		// let build = this.buildDmoWithBeatsJson();
 		// await this.editorHub.updateDmosJson(build);
