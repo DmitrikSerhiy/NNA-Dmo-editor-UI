@@ -278,6 +278,9 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	}
 
 	private resetPasswordForm(): void {
+		this.missingPasswordValidation = false;
+		this.missingNewPasswordValidation = false;
+		this.minLenghtPasswordValidation = false;
 		this.passwrodTogglerTitle = this.showPasswordTitle;
 		this.passwordHidden = true;
 		this.oldPassword.reset();

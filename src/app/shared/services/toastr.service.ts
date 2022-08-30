@@ -19,7 +19,7 @@ export class Toastr {
     }
 
     showValidationMessage(result: ValidationResult): void {
-        this.toastr.show(this.formatValidationMessages(result.fields, result.title), "Warning", { disableTimeOut: true});
+        this.toastr.show(this.formatValidationMessages(result.fields, result.title), "Warning", { enableHtml: true, timeOut: this.longtoastrDelay });
     }
 
     showValidationMessageForEditor(validations: EditorValidationMessage[], subHeader: string): void {
