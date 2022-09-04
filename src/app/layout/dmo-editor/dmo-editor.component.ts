@@ -17,7 +17,7 @@ import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } f
 })
 export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
-	isInitialPopupOpen: boolean;
+	isInitialPopupOpen: boolean = false;
 	initialPopup: MatDialogRef<InitialPopupComponent>;
 
 	connectionState: string;
@@ -29,25 +29,25 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private autoSavingIsNotWorking: string = "Your progress won't be auto-saved";
 	
 	// initial fields
-	isDmoInfoSet: boolean;
-	beatsLoading: boolean;
+	isDmoInfoSet: boolean = false;
+	beatsLoading: boolean = true;
 	dmoId: string;
 	currentShortDmo: ShortDmoDto;
 	initialDmoDto: NnaDmoDto;
-	beatWasSet: boolean;
+	beatWasSet: boolean = false;
 	editorIsConnected: boolean;
 	editorIsReconnecting: boolean;
-	beatsUpdating: boolean;
+	beatsUpdating: boolean = false;
 
 	// events
-	updateGraphEvent: EventEmitter<any>;
-	updateBeatsEvent: EventEmitter<any>;
+	updateGraphEvent: EventEmitter<any> = new EventEmitter<any>();
+	updateBeatsEvent: EventEmitter<any> = new EventEmitter<any>();;
 
 	// ------ [start] not state
 	private isDmoFinised: boolean;
-	private beatsMetaData: any[];
-	private beatsIds: string[];
-	private plotPointsWithMetaData: any[];
+	private beatsMetaData: any[] = [];
+	private beatsIds: string[] = [];
+	private plotPointsWithMetaData: any[] = [];
 
 	private plotPointElements: QueryList<ElementRef>;   // elements
 	private beatElements: QueryList<ElementRef>;        // elements
@@ -61,22 +61,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		public matModule: MatDialog,
 		private sidebarManagerService: SidebarManagerService,
 		private cdRef: ChangeDetectorRef,
-		private dataGenerator: BeatGeneratorService) {
-			this.beatsUpdating = false; 
-			this.beatWasSet = false;
-			this.isDmoInfoSet = false;
-			this.isInitialPopupOpen = false;
-			this.beatsLoading = true;
-			this.updateGraphEvent = new EventEmitter<any>();
-			this.updateBeatsEvent = new EventEmitter<any>();
-			this.beatsMetaData = [];
-			this.beatsIds = [];
-			this.plotPointsWithMetaData = [];
-	}
+		private dataGenerator: BeatGeneratorService) { }
 
 	async ngOnInit(): Promise<void> {
 		this.activatedRoute.queryParams.subscribe(params => {
 			this.dmoId = params['dmoId'];
+			this.cdRef.detectChanges();
 		});
 	}
 
@@ -84,6 +74,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.dmoId 
 			? await this.loadDmo()
 			: await this.createDmo();
+
+		this.cdRef.detectChanges();
 	}
 
 	async prepareEditor(): Promise<void> {

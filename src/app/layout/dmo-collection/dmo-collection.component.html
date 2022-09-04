@@ -106,11 +106,11 @@
                      </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> 
                     <div #dmoActionButtons id="{{row.id}}" class="action-wrapper" >
-                        <button class='nna-icon-button' (click)="redirectToDmo()">                
-                            <i class="fa fa-pencil-alt" aria-hidden="true" title="Open in editor"></i>
+                        <button class='nna-icon-button' (click)="redirectToDmo()" title="Open in editor">                
+                            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                         </button>
-                        <button class='nna-icon-button' (click)="removeFromCollection()">                
-                            <i class="fas fa-trash" aria-hidden="true" title="Remove from collection"></i>
+                        <button class='nna-icon-button' (click)="removeFromCollection()" title="Remove Dmo from collection">                
+                            <i class="fas fa-minus" aria-hidden="true"></i>
                         </button>
                     </div>
                 </td>
@@ -127,7 +127,7 @@
 
     <div class="info-message" [hidden]="collectionLength != 0">
         <span *ngIf="currentDmoCollection">'{{currentDmoCollection.collectionName}}' is empty</span>
-        <button class="nna-button nna-button-primary" (click)="onAddDmo()">
+        <button class="nna-button nna-button-primary" (click)="onAddDmo()" title="">
             <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
         </button>
         <span> or </span>

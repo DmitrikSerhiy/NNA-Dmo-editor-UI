@@ -11,33 +11,25 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() initialPlotPoints: any[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateGraph: EventEmitter<any>;
-	@Output() plotPointsSet: EventEmitter<any>;
+	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
 
-	isDataLoaded: boolean;
+	isDataLoaded: boolean = false;
 	plotPoints: any[];
 
-	private plotPointContainerSize: number;
-	private defaultBeatMarginBottom: number;
-	private plotPointRadius: number;
-	private initialGraphTopMargin: number;
+	private plotPointContainerSize: number = 32;
+	private defaultBeatMarginBottom: number = 16;
+	private plotPointRadius: number = 6;
+	private initialGraphTopMargin: number = 16;
 	
 	graphHeigth: string;
-	plotFlowWidth: number;
+	plotFlowWidth: number = 32;
 	startCoord: string;
 	endCoord: string;
 	baseCoord: string;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 
-	constructor(private cdRef: ChangeDetectorRef) { 
-		this.isDataLoaded = false;
-		this.plotFlowWidth = 32;
-		this.plotPointContainerSize = 32;
-		this.initialGraphTopMargin = 16;
-		this.defaultBeatMarginBottom = 16;
-		this.plotPointRadius = 6;
-		this.plotPointsSet = new EventEmitter<any>();
-	}
+	constructor(private cdRef: ChangeDetectorRef) {}
 
 	ngAfterViewInit(): void {
 		this.plotPoints = [ ...this.initialPlotPoints]; // remove binding. check out it later maybe use json deserialize

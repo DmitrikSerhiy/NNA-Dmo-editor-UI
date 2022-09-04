@@ -12,25 +12,25 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	@Input() initialBeats: any[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
-	@Output() beatsSet: EventEmitter<any>;
-	@Output() lineCountChanged: EventEmitter<any>;
-	@Output() addBeat: EventEmitter<any>;
-	@Output() removeBeat: EventEmitter<any>;
-	@Output() syncBeats: EventEmitter<any>;
+	@Output() beatsSet: EventEmitter<any> = new EventEmitter<any>();
+	@Output() lineCountChanged: EventEmitter<any> = new EventEmitter<any>();
+	@Output() addBeat: EventEmitter<any> = new EventEmitter<any>();
+	@Output() removeBeat: EventEmitter<any> = new EventEmitter<any>();
+	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 
-	isDataLoaded: boolean;
+	isDataLoaded: boolean = false;
 	beats: any[];
 
-	private beatsIds: string[];
-	private beatsMetaData: any[];
+	private beatsIds: string[] = [];
+	private beatsMetaData: any[] = [];
 	private defaultTimePickerValue = '0:00:00';
 	private defaultEmptyTimePickerValue = ' :  :  ';
-	private beatLineHeigth: number
-	private beatContrainerMinHeight: number;
-	private onDownLines: any;
-	private onUpLines: any;
+	private beatLineHeigth: number = 16;
+	private beatContrainerMinHeight: number = 32;
+	private onDownLines: any = {};
+	private onUpLines: any = {};
 	private valueBeforeRemove: string;
-	private shiftIsPressed: boolean;
+	private shiftIsPressed: boolean = false;
 	private controlIsPressed: boolean;
 	private tabIsPressed: boolean;
 
@@ -38,22 +38,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
-	constructor(private cdRef: ChangeDetectorRef) {
-		this.isDataLoaded = false;
-		this.shiftIsPressed = false;
-		this.beatsSet = new EventEmitter<any>();
-		this.syncBeats = new EventEmitter<any>();
-		this.lineCountChanged = new EventEmitter<any>();
-		this.addBeat = new EventEmitter<any>();
-		this.removeBeat = new EventEmitter<any>();
-		this.beatLineHeigth = 16;
-		this.beatContrainerMinHeight = 32;
-		this.onDownLines = [];
-		this.onUpLines = [];
-		this.beatsMetaData = [];
-		this.beatsIds = [];
-	}
-
+	constructor(private cdRef: ChangeDetectorRef) {}
 
 	ngAfterViewInit(): void {
 		this.beats = this.initialBeats;
