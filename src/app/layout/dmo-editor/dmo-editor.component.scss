@@ -9,23 +9,26 @@
 
     .controls-panel {
         position: sticky;
-        top: -1rem;
+        top: 0;
         left: 0;
         right: 0;
         z-index: 100;
         display: flex;
         justify-content: flex-start;
+        align-items: center;
         background: white;
         margin-left: -1rem;
         margin-right: calc(-1rem - 1px);
         margin-top: -1rem;
         padding-right: calc(1rem + 1px);
         padding-left: 1rem;
-        padding-top: 1rem;
+        box-shadow: 0 0 1em rgba(0, 0, 0, .1);
+        height: 43px;
+
 
         .movie-title {
             @include font-primary-heading();
-            margin-bottom: 1rem;
+            margin-bottom: unset;
         }
 
         .nna-button, .nna-icon-button {
@@ -79,6 +82,7 @@
     }
     
 }
+
 
 .dmo-details-popup-button {
     display: flex;

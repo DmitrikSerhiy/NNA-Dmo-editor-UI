@@ -20,8 +20,8 @@
         padding: 15px;
         margin-right: -1px;
         margin-top: -1px;
-        overflow-x: hidden;
-        position: relative;
+        // overflow-x: hidden; // uncomment if find bug with horizontal scoll again and pay attention to fixed position of header in editor
+        // position: relative;
     }
     .collapsed {
         margin-left: 49px;
