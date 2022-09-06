@@ -3,13 +3,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
 
 @Component({
-	selector: 'app-initial-popup',
-	templateUrl: './initial-popup.component.html',
-	styleUrls: ['./initial-popup.component.scss']
+	selector: 'dmo-editor-popup',
+	templateUrl: './dmo-editor-popup.component.html',
+	styleUrls: ['./dmo-editor-popup.component.scss']
 })
-export class InitialPopupComponent implements OnInit {
+export class DmoEditorPopupComponent implements OnInit {
 
-  	maxEntityNameLength = 50;
+  maxEntityNameLength = 50;
 	maxShortCommentLength = 100;
 	shouldShowCustomDmoNameValidation = false;
 
@@ -34,7 +34,7 @@ export class InitialPopupComponent implements OnInit {
 
 
   	constructor(
-    	private dialogRef: MatDialogRef<InitialPopupComponent>,
+    	private dialogRef: MatDialogRef<DmoEditorPopupComponent>,
     	@Inject(MAT_DIALOG_DATA) public data: any) {
 			if (data) {
 				this.initialData = data;

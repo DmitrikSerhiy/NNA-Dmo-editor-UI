@@ -34,6 +34,20 @@ export class DmoDto {
     constructor() {}
 }
 
+export class CretedDmoDtoAPI {
+    Id: string;
+    Name: string;
+    MovieTitle: string;
+    ShortComment: string;
+
+    HasBeats: boolean;
+    DmoStatus: number;
+
+    constructor() {
+        this.HasBeats = false;
+    }
+}
+
 export class ShortDmoDtoAPI {
     Id: string;
     Name: string;

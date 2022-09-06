@@ -6,7 +6,7 @@
 
     <div class="list-group">
         <!-- Id should be the same as LeftMenuTab -->
-        <a *ngIf="isAuthorized" id="dmo-tab" [routerLink]="['/app/editor']" [routerLinkActive]="['router-link-active']" (click)="sendDmoEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized" id="dmo-tab" (click)="sendDmoEvent($event)" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Create DMO' }}</span>
         </a>

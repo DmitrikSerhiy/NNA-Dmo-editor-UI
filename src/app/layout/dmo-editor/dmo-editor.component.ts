@@ -1,5 +1,4 @@
 import { ShortDmoDto } from './../models';
-import { InitialPopupComponent } from './components/initial-popup/initial-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
@@ -8,6 +7,7 @@ import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.s
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
+import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -18,7 +18,7 @@ import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } f
 export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	isInitialPopupOpen: boolean = false;
-	initialPopup: MatDialogRef<InitialPopupComponent>;
+	initialPopup: MatDialogRef<DmoEditorPopupComponent>;
 
 	connectionState: string;
 	autosaveTitle: string;
@@ -64,59 +64,15 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		private dataGenerator: BeatGeneratorService) { }
 
 	async ngOnInit(): Promise<void> {
-		this.activatedRoute.queryParams.subscribe(params => {
+
+		this.activatedRoute.queryParams.subscribe(async (params) => {
 			this.dmoId = params['dmoId'];
 			this.cdRef.detectChanges();
 		});
 	}
 
-
-// 	// The debounce function receives our function as a parameter
-// const debounce = (fn) => {
-
-// 	// This holds the requestAnimationFrame reference, so we can cancel it if we wish
-// 	let frame;
-  
-// 	// The debounce function returns a new function that can receive a variable number of arguments
-// 	return (...params) => {
-	  
-// 	  // If the frame variable has been defined, clear it now, and queue for next frame
-// 	  if (frame) { 
-// 		cancelAnimationFrame(frame);
-// 	  }
-  
-// 	  // Queue our function call for the next frame
-// 	  frame = requestAnimationFrame(() => {
-		
-// 		// Call our function and pass any params we received
-// 		fn(...params);
-// 	  });
-  
-// 	} 
-//   };
-  
-  
-//   // Reads out the scroll position and stores it in the data attribute
-//   // so we can use it in our stylesheets
-//   const storeScroll = () => {
-// 	document.documentElement.dataset.scroll = window.scrollY;
-//   }
-  
-//   // Listen for new scroll events, here we debounce our `storeScroll` function
-//   document.addEventListener('scroll', debounce(storeScroll), { passive: true });
-  
-//   // Update scroll position for first time
-//   storeScroll();
-
-
-
-
 	async ngAfterViewInit(): Promise<void> {
-		this.dmoId 
-			? await this.loadDmo()
-			: await this.createDmo();
-
-		this.cdRef.detectChanges();
+		await this.loadDmo()
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -166,33 +122,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	// #region general settings
 
-	async createDmo(): Promise<void> {
-		const popupResult = await this.finalizePopup();
-			if (!popupResult) {
-			return;
-		}
-
-		await this.prepareEditor();
-		const createdDmo = await this.editorHub.createDmo(popupResult);
-
-		this.initDmo(createdDmo);
-		this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
-		this.cdRef.detectChanges();
-
-		const initialBeat = {
-			dmoId: this.dmoId,
-			order: 0,
-			tempId: this.initialDmoDto.beats[0].beatId
-		} as CreateBeatDto;
-
-		await this.editorHub.addBeat(initialBeat);
-
-		this.beatsLoading = false;
-		this.sidebarManagerService.collapseSidebar();
-		this.cdRef.detectChanges();
-	}
-	
-
 	async editCurrentDmo(): Promise<void> {
 		const popupResult = await this.finalizePopup();
 		if (!popupResult) {
@@ -213,7 +142,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.sidebarManagerService.toggleSidebar();
 		}
 		await this.closeEditorAndClearData();
-		this.router.navigate([], { queryParams: {dmoId: null}, replaceUrl: true, relativeTo: this.activatedRoute });
+		this.router.navigate(['app/dmos'], { replaceUrl: true });
+		
 	}
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
@@ -221,7 +151,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (this.currentShortDmo) {
 			popupData = this.currentShortDmo;
 		}
-		this.initialPopup = this.matModule.open(InitialPopupComponent, { data: popupData, width: '400px' });
+		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: popupData, width: '400px' });
 		this.isInitialPopupOpen = true;
 
 		const popupResult = await this.initialPopup.afterClosed().toPromise();

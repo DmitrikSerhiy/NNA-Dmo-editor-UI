@@ -13,7 +13,7 @@
 		<app-right-menu-grabber [menuName]="currentMenuName" [userFriendlyMenuName]="currentUserFriendlyMenuName" [shouldbeShown]="isGrabberShouldBeShown" (toggleMenu)="openRightMenuByGrabber($event)" ></app-right-menu-grabber>
 		<!-- <app-nav-menu></app-nav-menu> -->
 
-		<app-sidebar [updateUserNameDisplay]="updateUserNameDisplay$" (toggleRightMenu$)="openRightMenu($event)"></app-sidebar>  
+		<app-sidebar [updateUserNameDisplay]="updateUserNameDisplay$" (toggleRightMenu$)="openRightMenu($event)" (innerEvent$)="handleInnerSidebarEvent($event)"></app-sidebar>  
 		<section class="main-container" [ngClass]="{collapsed: !sidebarManagerService.IsOpen}">
 			<router-outlet></router-outlet>
 		</section>

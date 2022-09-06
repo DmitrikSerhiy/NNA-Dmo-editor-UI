@@ -175,7 +175,6 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			return;
 		} 
 
-		console.log(this.passwordForm);
 		if (this.passwordForm.valid) {
 			this.isProcessing = true;
 			this.passwordSubscription = this.authService
