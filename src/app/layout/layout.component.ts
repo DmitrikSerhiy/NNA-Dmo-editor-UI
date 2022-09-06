@@ -5,7 +5,7 @@ import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
@@ -38,6 +38,7 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         private rightMenuGrabberService: RightMenuGrabberService,
         public sidebarManagerService: SidebarManagerService,
         private route: ActivatedRoute,
+        private router: Router,
         private nnaHelpersService: NnaHelpersService) { }
 
     ngOnInit() { 
@@ -76,6 +77,20 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         this.grabberSubscription?.unsubscribe();
         this.urlSubsription?.unsubscribe();
         this.styleUrlSubscription?.unsubscribe();
+    }
+
+    async handleInnerSidebarEvent($event: any) {
+        if ($event == null) {
+            this.currentSidebarService.setPrevious();
+            return;
+        }
+        
+        this.resetMenues();
+        if (window.location.href.includes('editor')) {
+            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id}}).then((_ => window.location.reload()));
+        } else {
+            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id}});
+        }
     }
 
     closeByBackdrop() {
