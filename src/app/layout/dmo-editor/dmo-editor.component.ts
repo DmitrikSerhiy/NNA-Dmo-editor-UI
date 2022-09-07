@@ -228,15 +228,26 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private async loadBeats(): Promise<void> {
 		this.beatsLoading = true;
+		this.cdRef.detectChanges();
+
 		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
+		console.log(beats);
 		if (beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
+			
+			const initialBeat = {
+				dmoId: this.dmoId,
+				order: 0,
+				tempId: this.initialDmoDto.beats[0].beatId
+			} as CreateBeatDto;
+	
+			await this.editorHub.addBeat(initialBeat);		
 		} else {
 			this.initialDmoDto.beats = beats;
 		}
 
-		this.cdRef.detectChanges();
 		this.beatsLoading = false;
+		this.cdRef.detectChanges();
 		this.sidebarManagerService.collapseSidebar();
 		this.cdRef.detectChanges();
 	}
