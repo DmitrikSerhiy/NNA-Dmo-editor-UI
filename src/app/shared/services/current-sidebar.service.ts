@@ -40,17 +40,7 @@ export class CurrentSidebarService {
 		this.previousTab = menu;
 	}
 
-	private setSelectedStyle(sideBarTab: SidebarTabs) {
-		this.clearTabs();
-		if (!sideBarTab || sideBarTab == SidebarTabs.none) {
-			return;
-		}
-		
-		const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
-		this.renderer.addClass(selectedTab, 'router-link-active');
-	}
-
-	private clearTabs() {
+	resetTabs() {
 		Object.keys(SidebarTabs)
 			.filter(t => t!=  SidebarTabs.none)
 			.forEach(sideBarTab => {
@@ -59,4 +49,13 @@ export class CurrentSidebarService {
 		});
 	}
 
+	private setSelectedStyle(sideBarTab: SidebarTabs) {
+		this.resetTabs();
+		if (!sideBarTab || sideBarTab == SidebarTabs.none) {
+			return;
+		}
+		
+		const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
+		this.renderer.addClass(selectedTab, 'router-link-active');
+	}
 }

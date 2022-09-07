@@ -86,29 +86,33 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
 	async sendDmoEvent($event: any) {
 		$event.preventDefault();
-		if (this.isAuthorized) {
-			this.currestSidebarService.setMenu(SidebarTabs.dmo);
-			this.toggleRightMenu$.emit(RightMenues.dmo);
-
-			this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: null, width: '400px' });
-			const popupResult = await this.initialPopup.afterClosed().toPromise();
-
-			if (!popupResult || popupResult.cancelled) {
-				this.innerEvent$.emit(null);
-				return;
-			} 
-
-			let newDmoDetails = { name: popupResult.name, movieTitle: popupResult.movieTitle } as ShortDmoDto;
-			newDmoDetails.shortComment = popupResult.shortComment;
-			newDmoDetails.dmoStatus = +popupResult.dmoStatus;
-
-			this.dmosService.createDmo(newDmoDetails).pipe(take(1))
-				.subscribe((newDmoResult) => {
-					this.initialPopup = null;
-					this.matModule.ngOnDestroy();
-					this.innerEvent$.emit(newDmoResult);
-				});
+		if (!this.isAuthorized) {
+			return;
 		}
+		
+		this.currestSidebarService.currentMenuSource$
+		this.currestSidebarService.setMenu(SidebarTabs.dmo);
+		this.toggleRightMenu$.emit(RightMenues.dmo);
+
+		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: null, width: '400px' });
+		const popupResult = await this.initialPopup.afterClosed().toPromise();
+
+		if (!popupResult || popupResult.cancelled) {
+			this.innerEvent$.emit(null);
+			return;
+		} 
+
+		let newDmoDetails = { name: popupResult.name, movieTitle: popupResult.movieTitle } as ShortDmoDto;
+		newDmoDetails.shortComment = popupResult.shortComment;
+		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
+
+		this.dmosService.createDmo(newDmoDetails).pipe(take(1))
+			.subscribe((newDmoResult) => {
+				this.initialPopup = null;
+				this.matModule.ngOnDestroy();
+				this.innerEvent$.emit(newDmoResult);
+			});
+		
 	}
 
 	ngOnDestroy(): void {

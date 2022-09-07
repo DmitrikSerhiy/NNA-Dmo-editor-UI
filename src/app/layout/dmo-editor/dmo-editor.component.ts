@@ -65,7 +65,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async ngOnInit(): Promise<void> {
 
-		this.activatedRoute.queryParams.subscribe(async (params) => {
+		this.activatedRoute.queryParams.subscribe((params) => {
 			this.dmoId = params['dmoId'];
 			this.cdRef.detectChanges();
 		});
@@ -129,6 +129,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		await this.editorHub.updateShortDmo(popupResult);
 		this.initDmo(popupResult);
+		this.cdRef.detectChanges();
 	}
 
 	async loadDmo() {
@@ -157,6 +158,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		const popupResult = await this.initialPopup.afterClosed().toPromise();
 		this.isInitialPopupOpen = false;
 		if (!popupResult || popupResult.cancelled) {
+			this.initialPopup = null;
+			this.matModule.ngOnDestroy();
 			return null;
 		} 
 
@@ -212,6 +215,17 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.isDmoInfoSet = true;
 	}
 
+	private async loadDmoWithBeats() {
+		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
+		if (!shortDmo) {
+			return;
+		}
+
+		this.initDmo(shortDmo);
+		await this.loadBeats();
+		this.cdRef.detectChanges();
+	}
+
 	private async loadBeats(): Promise<void> {
 		this.beatsLoading = true;
 		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
@@ -225,16 +239,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.beatsLoading = false;
 		this.sidebarManagerService.collapseSidebar();
 		this.cdRef.detectChanges();
-	}
-
-	private async loadDmoWithBeats() {
-		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
-		if (!shortDmo) {
-			return;
-		}
-
-		this.initDmo(shortDmo);
-		await this.loadBeats();
 	}
 
 	private setConnectionView(): void {

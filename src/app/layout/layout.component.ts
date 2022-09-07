@@ -81,22 +81,31 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
     async handleInnerSidebarEvent($event: any) {
         if ($event == null) {
-            this.currentSidebarService.setPrevious();
+            if (window.location.href.includes('editor')) {
+                this.currentSidebarService.resetTabs();
+            } else {
+                this.currentSidebarService.setPrevious();
+            }
             return;
         }
         
         this.resetMenues();
+        this.currentSidebarService.resetTabs();
         if (window.location.href.includes('editor')) {
             this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id}}).then((_ => window.location.reload()));
         } else {
-            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id}});
+            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id} });
         }
     }
 
     closeByBackdrop() {
         if (!this.collectionService.getCurrentCollectionId()) {
             this.resetMenues();
-            this.currentSidebarService.setPrevious();
+            if (window.location.href.includes('editor')) {
+                this.currentSidebarService.resetTabs();
+            } else {
+                this.currentSidebarService.setPrevious();
+            }
         }
     }
 
