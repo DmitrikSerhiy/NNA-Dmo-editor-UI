@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
-import { EditorHub } from '../dmo-editor/services/editor-hub.service';
 import { DmosService } from 'src/app/shared/services/dmos.service';
 import { take } from 'rxjs/internal/operators/take';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-sidebar',
@@ -32,12 +32,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   	constructor(
 		private userManager: UserManager,
 		private currestSidebarService: CurrentSidebarService,
-		private sidebarManagerService: SidebarManagerService,
+		public sidebarManagerService: SidebarManagerService,
 		private router: Router,
-		public matModule: MatDialog,
+		private matModule: MatDialog,
 		private dmosService: DmosService) { }
 
-  	ngOnInit() {
+  	async ngOnInit() {
 		this.isAuthorized = this.userManager.isAuthorized();
 		this.currMenuSubscription = this.currestSidebarService.currentMenuSource$.subscribe();
 		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; })
@@ -89,7 +89,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		if (!this.isAuthorized) {
 			return;
 		}
-		
+
 		this.currestSidebarService.currentMenuSource$
 		this.currestSidebarService.setMenu(SidebarTabs.dmo);
 		this.toggleRightMenu$.emit(RightMenues.dmo);

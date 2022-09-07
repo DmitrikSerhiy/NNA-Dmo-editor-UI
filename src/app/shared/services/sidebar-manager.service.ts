@@ -5,28 +5,34 @@ import { BehaviorSubject, Observable } from 'rxjs';
   	providedIn: 'root'
 })
 export class SidebarManagerService {
+	private storageSidebarKey: string = 'sidebar state';
 	private sidebar : BehaviorSubject<boolean>;
 	sidebarObserver$: Observable<boolean>; 
 
-	private _isOpen: boolean;
-
 	public get IsOpen(): boolean {
-		return this._isOpen;
+		return localStorage.getItem(this.storageSidebarKey) == "true";
+	}
+	private set IsOpen(value: boolean) {
+		localStorage.setItem(this.storageSidebarKey, `${value}`);
 	}
 
 	constructor() {
-		this._isOpen = true;
-		this.sidebar = new BehaviorSubject<boolean>(true);
+		const savedState = localStorage.getItem(this.storageSidebarKey);
+		if (!savedState) {
+			this.IsOpen = true;
+		}
+
+		this.sidebar = new BehaviorSubject<boolean>(this.IsOpen);
 		this.sidebarObserver$ = this.sidebar.asObservable();
 	}
 
 	toggleSidebar() { 
-		this._isOpen = !this._isOpen;
-		this.sidebar.next(this._isOpen)
+		this.IsOpen = !this.IsOpen;
+		this.sidebar.next(this.IsOpen)
 	}
 
 	collapseSidebar() {
-		this._isOpen = false;
+		this.IsOpen = false;
 		this.sidebar.next(false);
 	}
 }
