@@ -128,11 +128,11 @@
     <div class="info-message" [hidden]="collectionLength != 0">
         <span *ngIf="currentDmoCollection">'{{currentDmoCollection.collectionName}}' is empty</span>
         <button class="nna-button nna-button-primary" (click)="onAddDmo()" title="">
-            <i class="fa fa-plus" aria-hidden="true"></i> &#160; DMO 
+            Add Dmo to collection 
         </button>
         <span> or </span>
-        <button type="button" class='nna-button nna-icon-button'(click)='onRemoveCollection()'>
-            &#160; <i class="fa fa-trash" aria-hidden="true"></i> &#160;
+        <button type="button" class='nna-button nna-button-secondary'(click)='onRemoveCollection()'>
+            Delete collection
         </button>
     </div>
 

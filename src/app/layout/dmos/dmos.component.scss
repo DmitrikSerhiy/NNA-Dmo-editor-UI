@@ -2,10 +2,17 @@
 @import "src/styles/fonts-mixins.scss";
 
 .dmos-page {
+  height: 100%;
+
+  .info-message {
+    height: 100%;
+    margin: auto;
+  }
+  
   .dmos-table-details {
     display: flex;
     width: 100%;
-    height: 38px;
+    height: 52px;
 
     .dmo-info {
       display: flex;

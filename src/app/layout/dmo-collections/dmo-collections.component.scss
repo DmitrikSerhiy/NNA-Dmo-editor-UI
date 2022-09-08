@@ -3,6 +3,7 @@
 
 .dmo-collections {
   border: none;
+  height: 100%;
 
   @mixin collection-item {
     padding: .75rem .75rem;
@@ -141,7 +142,8 @@
   }
 
   .info-message {
-    margin-top: 4rem;
+    height: 100%;
+    margin: auto;
   }
 
   .collection-item:last-child {

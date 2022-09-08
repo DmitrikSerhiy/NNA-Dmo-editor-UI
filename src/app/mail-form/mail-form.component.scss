@@ -59,6 +59,9 @@
                     &::-webkit-scrollbar-track {
                         background: transparent;
                     }
+                    
+                    scrollbar-color: transparent transparent !important;
+                    scrollbar-width: none !important;
 
                     .auth-input {
                         scroll-snap-align: start;

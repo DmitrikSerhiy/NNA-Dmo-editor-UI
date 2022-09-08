@@ -55,7 +55,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
 
 	ngOnInit() {
-			this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
+		this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
 			this.toggleAddCollectionForm(true);
 		});
 

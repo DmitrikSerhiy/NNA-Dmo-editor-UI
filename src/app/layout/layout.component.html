@@ -6,7 +6,7 @@
 			<app-user-cabinet *ngSwitchCase="'userCabinet'" [rightMenuIsClosing$]='rightMenuIsClosing$' [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)" (updateUserName)="updateUserName()"></app-user-cabinet>    
 			<!-- <app-test-right-menu *ngSwitchCase="'test'" [rightMenuIsClosing$]='rightMenuIsClosing$'  [rightMenuIsOpening$]='rightMenuIsOpening$' (closeRightMenu)="closeRightMenu($event)"></app-test-right-menu> -->
 			<!-- ' -->
-			<div *ngSwitchDefault>No selected menu</div>
+			<div *ngSwitchDefault><!-- No selected menu --></div>
 		</div>
 	</mat-sidenav>
 	<mat-sidenav-content class="nna-main-container-wrapper">
