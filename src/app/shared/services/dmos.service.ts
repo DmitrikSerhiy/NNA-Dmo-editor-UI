@@ -1,11 +1,11 @@
 import { CretedDmoDtoAPI, DmoDto, ShortDmoDto } from './../../layout/models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
 	providedIn: 'root'

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { SendMailReason } from '../shared/models/serverResponse';
 import { AuthService } from '../shared/services/auth.service';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';

@@ -5,12 +5,12 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angu
 import { UserManager } from 'src/app/shared/services/user-manager';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { DmosService } from 'src/app/shared/services/dmos.service';
 import { take } from 'rxjs/internal/operators/take';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
 	selector: 'app-sidebar',

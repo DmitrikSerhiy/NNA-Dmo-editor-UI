@@ -10,12 +10,13 @@ import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
-import { Observable, Subject } from 'rxjs';
 import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
+import { Subject } from 'rxjs/internal/Subject';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'

@@ -4,8 +4,8 @@ import { AuthService } from './../shared/services/auth.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
 	selector: 'app-login',

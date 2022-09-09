@@ -2,13 +2,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { SendMailReason, UserDetails } from '../models/serverResponse';
 
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
 import { AuthGoogleDto, PersonalInfoDto } from '../models/authDto';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable()
 export class AuthService {

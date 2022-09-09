@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { from, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
+import { from } from 'rxjs/internal/observable/from';
+import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { ToastrErrorMessage, TokenDetails } from '../models/serverResponse';

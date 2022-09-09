@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
 import { RemoveDmoPopupComponent } from './../../shared/components/remove-dmo-popup/remove-dmo-popup.component';
-import { Subject, Observable, throwError, Subscription } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Toastr } from './../../shared/services/toastr.service';
@@ -10,6 +9,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { concatMap, takeUntil, catchError } from 'rxjs/operators';
 import { ShortDmoDto } from '../models';
+import { Subject } from 'rxjs/internal/Subject';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { throwError } from 'rxjs/internal/observable/throwError';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-dmos',

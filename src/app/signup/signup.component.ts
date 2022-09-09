@@ -1,11 +1,11 @@
 import { UserManager } from '../shared/services/user-manager';
 import { AuthService } from './../shared/services/auth.service';
-import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Toastr } from '../shared/services/toastr.service';
-import { Subscription } from 'rxjs';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
 	selector: 'app-signup',
