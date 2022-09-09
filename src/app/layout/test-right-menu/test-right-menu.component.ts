@@ -13,8 +13,8 @@ export class TestRightMenuComponent implements OnInit, OnDestroy {
 	@Input() rightMenuIsClosing$: Observable<void>;
 	@Input() rightMenuIsOpening$: EventEmitter<void>;
 	@Output() closeRightMenu = new EventEmitter<void>();
-	rightMenuOpnSubscription: Subscription;
-	rightMenuClsSubscription: Subscription;
+	private rightMenuOpnSubscription: Subscription;
+	private rightMenuClsSubscription: Subscription;
 
 	private unsubscribe$: Subject<void> = new Subject();
 

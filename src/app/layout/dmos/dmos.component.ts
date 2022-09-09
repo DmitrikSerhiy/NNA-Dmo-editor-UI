@@ -32,6 +32,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
   private unsubscribe$: Subject<void> = new Subject();
   selectedDmo: ShortDmoDto;
   dmoSubscription: Subscription;
+  deleteDmoModalSubscription: Subscription;
 
   constructor(
     private dmosService: DmosService,
@@ -52,6 +53,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     this.dmoSubscription?.unsubscribe();
+    this.deleteDmoModalSubscription?.unsubscribe();
   }
 
   redirectToDmo() {
@@ -63,7 +65,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
       data: this.selectedDmo.name
     });
 
-    delteDMOModal.afterClosed().subscribe({
+    this.deleteDmoModalSubscription = delteDMOModal.afterClosed().subscribe({
       next: (shouldDelete: boolean) => {
         if (!shouldDelete) {
           return;

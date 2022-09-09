@@ -39,6 +39,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 	private collectionSubsctiption: Subscription;
 	private addToCollectionSubsctiption: Subscription;
 	private deleteCollectionSubsctiption: Subscription;
+	private delteCollectionModalSubscription: Subscription;
 
 	@Input() rightMenuIsClosing$: Observable<void>;
 	@Input() rightMenuIsOpening$: EventEmitter<void>;
@@ -85,6 +86,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 		this.collectionSubsctiption?.unsubscribe();
 		this.addToCollectionSubsctiption?.unsubscribe();
 		this.deleteCollectionSubsctiption?.unsubscribe();
+		this.delteCollectionModalSubscription?.unsubscribe();
 	}
 
 	sortCollections() {
@@ -147,7 +149,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 			data: dmoList.collectionName
 		});
 
-		delteCollectionModal.afterClosed().subscribe({
+		this.delteCollectionModalSubscription = delteCollectionModal.afterClosed().subscribe({
 			next: (shouldDelete: boolean) => {
 				if (!shouldDelete) {
 					return;
@@ -209,7 +211,6 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 	private loadCollections() : Subscription {
 		this.showLoader();
 		return this.dmoCollectionsService.getCollections()
-			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(
 				(response: DmoCollectionShortDto[]) => {
 					this.dmoLists = response;

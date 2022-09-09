@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { take } from 'rxjs/operators';
 import { TokenDetails } from '../shared/models/serverResponse';
 import { AuthService } from '../shared/services/auth.service';
 import { RefreshHelperService } from '../shared/services/refresh-helper.service';
@@ -15,7 +16,6 @@ import { UserManager } from '../shared/services/user-manager';
 export class HomeComponent implements OnInit, OnDestroy {
 
 	isAuthorized: boolean;
-	private verifySubscription: Subscription;
 	private refreshSubscription: Subscription;
 	userName: string;
 
@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	ngOnInit() {
 		this.authService
 			.ping()
+			.pipe(take(1))
 			.subscribe(() =>  {
 					this.isAuthorized = true;
 					this.userName = this.userManager.getCurrentUser();
@@ -60,8 +61,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 	}
 
 	toLayout() {
-		this.verifySubscription = this.authService
+		this.authService
 			.ping()
+			.pipe(take(1))
 			.subscribe({
 				next: () =>  this.router.navigate(["/app"]),
 				error: (_) => { 
@@ -72,11 +74,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		if (this.verifySubscription) {
-			this.verifySubscription.unsubscribe();
-		}
-		if (this.refreshSubscription) {
-			this.refreshSubscription.unsubscribe();
-		}
+		this.refreshSubscription?.unsubscribe();
 	}
 }

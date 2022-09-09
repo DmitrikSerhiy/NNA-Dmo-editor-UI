@@ -141,6 +141,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		this.isFormProcessingAfterEdit = true;
 		this.authService
 			.sendConfirmEmail(this.personalInfo.userEmail)
+			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(() => {
 				this.emailForAccountConfirmationHasBeenSent = true;
 				this.isFormProcessingAfterEdit = false;

@@ -8,8 +8,6 @@ import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { DmosService } from 'src/app/shared/services/dmos.service';
-import { take } from 'rxjs/internal/operators/take';
-import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -26,6 +24,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	private currMenuSubscription: Subscription;
 	private sidebarSubscription: Subscription;
 	private currentUserEmailSubscription: Subscription;
+	private createDmoSubscription: Subscription;
 	userName: string;
 	initialPopup: MatDialogRef<DmoEditorPopupComponent>;
 
@@ -106,7 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		newDmoDetails.shortComment = popupResult.shortComment;
 		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
 
-		this.dmosService.createDmo(newDmoDetails).pipe(take(1))
+		this.createDmoSubscription = this.dmosService.createDmo(newDmoDetails)
 			.subscribe((newDmoResult) => {
 				this.initialPopup = null;
 				this.matModule.ngOnDestroy();
@@ -119,5 +118,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.currMenuSubscription?.unsubscribe();
 		this.sidebarSubscription?.unsubscribe();
 		this.currentUserEmailSubscription?.unsubscribe();
+		this.createDmoSubscription?.unsubscribe();
 	}
 }

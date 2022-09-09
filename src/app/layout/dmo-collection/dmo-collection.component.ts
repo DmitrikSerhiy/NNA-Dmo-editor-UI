@@ -39,6 +39,8 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	private addToCollectionSub: Subscription;
 	private deleteCollectionSub: Subscription;
 	private loadDmosSub: Subscription;
+	private dialogSubscription: Subscription;
+	private delteCollectionModalSubscription: Subscription;
 
 	@ViewChild('collectionPaginator', { static: true }) collectionPaginator: MatPaginator;
 	@ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
@@ -86,6 +88,8 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.addToCollectionSub?.unsubscribe();
 		this.deleteCollectionSub?.unsubscribe();
 		this.loadDmosSub?.unsubscribe();
+		this.dialogSubscription?.unsubscribe();
+		this.delteCollectionModalSubscription?.unsubscribe();
 		
 		this.collectionManager.setCollectionId('');
 		this.unsubscribe$.next();
@@ -133,7 +137,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 			.removeFromCollection(this.selectedDmoInCollection.id, this.currentDmoCollection.id);
 
 		const removeAndReload$ = removeFromCollection$.pipe(
-			takeUntil(this.unsubscribe$),
 			map(() => this.loadDmos(this.currentDmoCollection.id)));
 
 		this.removeFromCollectionSub = removeAndReload$.subscribe();
@@ -192,7 +195,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 			minWidth: '430px'
 		});
 
-		dialogRef.afterClosed().subscribe({
+		this.dialogSubscription = dialogRef.afterClosed().subscribe({
 			next: (selectDmos: ShortDmoDto[]) => {
 				this.showPopupOverview = false;
 				if (!selectDmos) {
@@ -204,7 +207,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 				dto.dmos = selectDmos.map(d => new DmosIdDto(d.id));
 
 				const addToCollection$ = this.dmoCollectionService.addDmosToCollection(dto);
-				addToCollection$.pipe(takeUntil(this.unsubscribe$));
 
 				this.addToCollectionSub = addToCollection$.subscribe({
 					next: () => this.loadDmos(this.currentDmoCollection.id)
@@ -218,7 +220,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 			data: this.currentDmoCollection.collectionName
 		});
 
-		delteCollectionModal.afterClosed().subscribe({
+		this.delteCollectionModalSubscription = delteCollectionModal.afterClosed().subscribe({
 			next: (shouldDelete: boolean) => {
 				if (!shouldDelete) {
 					return;
@@ -275,7 +277,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	private loadDmos(collectionId: string) {
 		this.resetCollectionTable();
 		this.loadDmosSub = this.dmoCollectionService.getWithDmos(collectionId)
-			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe({
 				next: (response: DmoCollectionDto) => {
 					this.currentDmoCollection = response;
