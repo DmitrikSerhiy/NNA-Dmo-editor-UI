@@ -1,6 +1,6 @@
 import { ShortDmoDto } from './../models';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { SidebarManagerService } from 'src/app/shared/services/sidebar-manager.service';
@@ -8,6 +8,8 @@ import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
+import { filter } from 'rxjs/internal/operators/filter';
+import { map } from 'rxjs/internal/operators/map';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -64,6 +66,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		private dataGenerator: BeatGeneratorService) { }
 
 	async ngOnInit(): Promise<void> {
+		this.router.routeReuseStrategy.shouldReuseRoute = () =>  false; // todo: check this line if some navigation occures in future.
 
 		this.activatedRoute.queryParams.subscribe((params) => {
 			this.dmoId = params['dmoId'];
@@ -142,8 +145,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (!this.sidebarManagerService.IsOpen) {
 			this.sidebarManagerService.toggleSidebar();
 		}
-		await this.closeEditorAndClearData();
-		this.router.navigate(['app/dmos'], { replaceUrl: true });
+		await this.closeEditorAndClearData(true);
+		this.router.navigate(['app/dmos']);
 		
 	}
 
@@ -483,7 +486,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// 	return dmoWithJson;
 	// }
 
-	private async closeEditorAndClearData(): Promise<void> {
+	private async closeEditorAndClearData(manualClose: boolean = false): Promise<void> {
 		await this.editorHub.abortConnection();
 		this.dmoId = '';
 		this.isInitialPopupOpen = false;
@@ -506,8 +509,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.autosaveTitle = '';
 		this.connectionStateTitle = '';
 
-		if (this.sidebarManagerService.IsOpen == false) {
-			this.sidebarManagerService.toggleSidebar();
+		if (manualClose) {
+			if (this.sidebarManagerService.IsOpen == false) {
+				this.sidebarManagerService.toggleSidebar();
+			}
 		}
 		
 		this.cdRef.detectChanges();

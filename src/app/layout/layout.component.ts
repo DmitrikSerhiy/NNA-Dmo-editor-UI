@@ -5,10 +5,12 @@ import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { filter } from 'rxjs/internal/operators/filter';
+import { map } from 'rxjs/internal/operators/map';
 
 @Component({
     selector: 'app-layout',
@@ -91,11 +93,7 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         
         this.resetMenues();
         this.currentSidebarService.resetTabs();
-        if (window.location.href.includes('editor')) {
-            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id}}).then((_ => window.location.reload()));
-        } else {
-            this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id} });
-        }
+        this.router.navigate(['/app/editor'], {queryParams: {dmoId: $event.id} });
     }
 
     closeByBackdrop() {
