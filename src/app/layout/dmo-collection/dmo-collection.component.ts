@@ -29,6 +29,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	awaitingForDmos = false;
 	showPopupOverview = false;
 	showSearchContainer = false;
+	showFilterMark: boolean = false;
 	collectionTable: MatTableDataSource<ShortDmoDto>;
 	collectionTableColumn: string[];
 	collectionLength = 0;
@@ -252,9 +253,14 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	}
 
 	applyCollectionFilter(event: Event) {
-		const filterValue = (event.target as HTMLInputElement).value;
-		this.collectionTable.filter = filterValue.trim().toLowerCase();
-
+		const filterValue = (event.target as HTMLInputElement).value?.trim().toLowerCase();;
+		if (filterValue) {
+			this.showFilterMark = true;
+		} else {
+			this.showFilterMark = false;
+		}
+	
+		this.collectionTable.filter = filterValue;
 		if (this.collectionTable.paginator) {
 			this.collectionTable.paginator.firstPage();
 		}

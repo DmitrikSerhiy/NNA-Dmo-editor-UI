@@ -53,6 +53,7 @@
             <!-- <div> number of acts, bits, episodes etc. </div> -->
 
             <div class="search-container">
+                <i [hidden]="!showFilterMark" class="fa fa-filter " aria-hidden="true" title="Table is filtred"></i>
                 <i class="fa fa-search text-muted"></i>
                 <input type="text" class="nna-input search-input" (focus)="resetSelected()"
                     placeholder="dmo, movie, rating etc." (keyup)="applyCollectionFilter($event)" autocomplete="off">

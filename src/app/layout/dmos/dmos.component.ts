@@ -2,7 +2,6 @@ import { Router } from '@angular/router';
 import { RemoveDmoPopupComponent } from './../../shared/components/remove-dmo-popup/remove-dmo-popup.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Toastr } from './../../shared/services/toastr.service';
 import { DmosService } from '../../shared/services/dmos.service';
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
@@ -27,8 +26,10 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
   dmosTable: MatTableDataSource<ShortDmoDto>;
   dmosTableColumns: string[];
   dmosCount = 0;
+  showFilterMark: boolean = false;
   @ViewChild('dmosPaginator', { static: true }) dmosPaginator: MatPaginator;
   @ViewChild('dmosSorter', { static: true }) dmosSorter: MatSort;
+  
   private unsubscribe$: Subject<void> = new Subject();
   selectedDmo: ShortDmoDto;
   dmoSubscription: Subscription;
@@ -36,7 +37,6 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private dmosService: DmosService,
-    private toastr: Toastr,
     public matModule: MatDialog,
     private router: Router,
     private cd: ChangeDetectorRef) { }
@@ -95,8 +95,13 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyDmosFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dmosTable.filter = filterValue.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value?.trim().toLowerCase();
+    if (filterValue) {
+      this.showFilterMark = true;
+    } else {
+      this.showFilterMark = false;
+    }
+    this.dmosTable.filter = filterValue;
 
     if (this.dmosTable.paginator) {
       this.dmosTable.paginator.firstPage();

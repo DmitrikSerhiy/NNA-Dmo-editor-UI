@@ -77,17 +77,29 @@
       }
 
       .search-container {
-        flex: 0 1 240px;
+        flex: 1 1 100%;
         display: flex;
-        margin-left: auto;
-        align-self: flex-end;
-        i {
-          position: absolute;
+        align-self: center;
+        justify-content: flex-end;
+        cursor: pointer;
+
+        .fa-search { 
+          margin-right: -1rem;
+          cursor: pointer;
+        }
+  
+        .fa-filter {
+          margin-right: .5rem;
         }
   
         .search-input {
+          width: 0px;
           padding-left: 2rem;
+          transition: width .5s !important;
+          cursor: pointer;
+          
           &:focus {
+            width: 240px;
             background-color: unset;
           }
         }
@@ -125,6 +137,6 @@
   }
 
   .dmo-collection-table-paginator {
-    background-color: $background-color;
+    background-color: white;
   }
 }
