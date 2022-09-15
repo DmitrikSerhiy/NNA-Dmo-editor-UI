@@ -97,7 +97,9 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     closeByBackdrop() {
-        this.resetMenues();
+        if (!this.collectionService.getCurrentCollectionId()) {
+            this.resetMenues();
+        }
         if (window.location.href.includes('editor')) {
             this.currentSidebarService.resetTabs();
         } else {
