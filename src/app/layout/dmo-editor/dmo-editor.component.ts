@@ -142,7 +142,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async closeEditor(): Promise<void> {
-		if (!this.sidebarManagerService.IsOpen) {
+		if (this.sidebarManagerService.IsOpen == false) {
 			this.sidebarManagerService.toggleSidebar();
 		}
 		await this.closeEditorAndClearData(true);
@@ -250,7 +250,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.beatsLoading = false;
 		this.cdRef.detectChanges();
-		this.sidebarManagerService.collapseSidebar();
+		if (this.sidebarManagerService.IsOpen == true) {
+			this.sidebarManagerService.collapseSidebar();
+		}
 		this.cdRef.detectChanges();
 	}
 

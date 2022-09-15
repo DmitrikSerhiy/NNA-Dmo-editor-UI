@@ -5,12 +5,11 @@ import { RightMenues, SidebarTabs } from './models';
 import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { filter } from 'rxjs/internal/operators/filter';
-import { map } from 'rxjs/internal/operators/map';
+
 
 @Component({
     selector: 'app-layout',
