@@ -85,6 +85,11 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                             @include setBorder($active-color);
                             color: $active-color;
                         }
+
+                        &::selection {
+                            color: $secondary-color;
+                            background-color: rgba(248, 195, 60, .7); // primary with opacity
+                        }
                     }
                 
                     .time-picker[type="number"]::-webkit-outer-spin-button,
@@ -113,6 +118,7 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                                 white-space: pre-wrap;
                                 font: $editor-font;
                                 line-height: 16px;
+
                                 &:focus {
                                     outline: none;
                                 }
@@ -176,6 +182,11 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                             content: attr(placeholder);
                             color: rgba(128, 128, 128, 0.7);
                             position: absolute;
+                        }
+
+                        &::selection {
+                            color: $secondary-color;
+                            background-color: rgba(248, 195, 60, .7); // primary with opacity
                         }
                     }
                 }
