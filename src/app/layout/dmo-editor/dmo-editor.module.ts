@@ -12,7 +12,7 @@ import { NnaSpinnerComponent } from 'src/app/shared/components/nna-spinner/nna-s
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 
 const routes: Routes = [
-  { path: '', component: DmoEditor }
+  { path: '', component: DmoEditor, data: { shouldReuse: false } }
 ];
 
 @NgModule({

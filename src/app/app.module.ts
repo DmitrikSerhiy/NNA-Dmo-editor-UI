@@ -3,7 +3,7 @@ import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { UserManager } from './shared/services/user-manager';
 import { AuthService } from './shared/services/auth.service';
 import { AuthGuard } from './shared/services/auth.guards';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, RouteReuseStrategy } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +21,7 @@ import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-logi
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { environment } from 'src/environments/environment';
 import { ToastrWrapperComponent } from './shared/components/toastr-wrapper/toastr-wrapper.component';
+import { EditorRouteReuseStrategyService } from './shared/services/editor-route-reuse-strategy.service';
 
 const routes: Routes = [
 	{ path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
@@ -73,7 +74,8 @@ const routes: Routes = [
 					provider: new GoogleLoginProvider(environment.google_client_id, { scope: 'profile email' })
 				}]
 			} as SocialAuthServiceConfig,
-		}
+		},
+		{ provide: RouteReuseStrategy, useClass: EditorRouteReuseStrategyService }
 	],
   	bootstrap: [AppComponent],
 })
