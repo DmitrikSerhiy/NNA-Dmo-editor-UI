@@ -1,44 +1,46 @@
 @import "src/styles/colors.scss";
 @import "src/styles/fonts-mixins.scss";
 
-.right-menu-grabber-container {
-    position: fixed;
-    right: -18px;
-    top: 14rem;
-    z-index: 800;
-    display: flex;
-    transition: right 0.4s;
-    border-right: 0;
-    @include font-primary-info();
-    padding: 0 !important;
-    
-    &:hover {
-        cursor: pointer;
-        right: 0rem;
-    }
+.right-menu-grabber-wrapper {
+    position: relative;
 
-    .right-menu-grabber {
-        margin: auto;
+    .right-menu-grabber-container {
+        position: absolute;
+        right: -18px;
+        top: 14rem;
+        z-index: 800;
         display: flex;
-
-        div {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            padding-bottom: 29px;
-            user-select: none;
+        transition: right 0.4s;
+        border-right: 0;
+        @include font-primary-info();
+        padding: 0 !important;
+        
+        &:hover {
+            cursor: pointer;
+            right: 0rem;
         }
 
-        i {
-            padding-left: 4px;
-            padding-top: 6px;
-            user-select: none;
-            margin: unset;
-        }
+        .right-menu-grabber {
+            margin: auto;
+            display: flex;
 
-        .fa-list {
-            padding-top: 1px;
+            div {
+                writing-mode: vertical-rl;
+                transform: rotate(180deg);
+                padding-bottom: 29px;
+                user-select: none;
+            }
+
+            i {
+                padding-left: 4px;
+                padding-top: 6px;
+                user-select: none;
+                margin: unset;
+            }
+
+            .fa-list {
+                padding-top: 1px;
+            }
         }
     }
-
-
 }

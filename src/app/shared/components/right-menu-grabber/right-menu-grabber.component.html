@@ -1,6 +1,8 @@
-<div *ngIf="shouldbeShown && userFriendlyMenuName" class="right-menu-grabber-container nna-button-secondary" (click)="toggleRightMenu()">
-    <div class="right-menu-grabber">  
-        <i class="fa fa-arrow-left" aria-hidden="true"></i> 
-        <div>{{userFriendlyMenuName}} </div>
+<div class="right-menu-grabber-wrapper">
+    <div *ngIf="shouldbeShown && userFriendlyMenuName" class="right-menu-grabber-container nna-button-secondary" (click)="toggleRightMenu()">
+        <div class="right-menu-grabber">  
+            <i class="fa fa-arrow-left" aria-hidden="true"></i> 
+            <div>{{userFriendlyMenuName}} </div>
+        </div>
     </div>
 </div>

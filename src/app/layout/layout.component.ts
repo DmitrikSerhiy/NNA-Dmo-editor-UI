@@ -98,6 +98,9 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     closeByBackdrop() {
         if (!this.collectionService.getCurrentCollectionId()) {
             this.resetMenues();
+        } else {
+            this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.dmoCollections);
+            this.rightMenuGrabberService.showGrabber();
         }
         if (window.location.href.includes('editor')) {
             this.currentSidebarService.resetTabs();
@@ -114,10 +117,8 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         this.resetMenues();
         this.rightMenuIsOpening$.emit();
         if ($event === RightMenues.dmoCollections) {
-            this.currentMenuName = RightMenues.dmoCollections;
-            this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu($event);
+            this.setCollectionsRightMenu();
             this.rightMenuGrabberService.showGrabber();
-            this.toggleRightMenu = $event;
         } else if ($event === RightMenues.dmos) {
             this.rightMenuGrabberService.hideGrabber();
         } else if ($event === RightMenues.dmo) {
@@ -150,6 +151,12 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
             // case RightMenues.test: return 'Test'
             default: return '';
         }
+    }
+
+    private setCollectionsRightMenu() {
+        this.currentMenuName = RightMenues.dmoCollections;
+        this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.dmoCollections);
+        this.toggleRightMenu = RightMenues.dmoCollections;
     }
 
     private resetMenues() {
