@@ -69,6 +69,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngAfterViewInit(): Promise<void> {
+		this.beatsLoading = true;
+		this.cdRef.detectChanges();
 		await this.loadDmo()
 	}
 
@@ -216,14 +218,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 
 		this.initDmo(shortDmo);
+		this.cdRef.detectChanges();
 		await this.loadBeats();
 		this.cdRef.detectChanges();
 	}
 
 	private async loadBeats(): Promise<void> {
-		this.beatsLoading = true;
-		this.cdRef.detectChanges();
-
 		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
 		if (beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
@@ -240,7 +240,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 
 		this.beatsLoading = false;
-		this.cdRef.detectChanges();
 	}
 
 	private setConnectionView(): void {
