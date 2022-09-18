@@ -23,6 +23,12 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 display: flex;
                 align-items: center;
                 font: $editor-font;
+                cursor: default;
+
+                &::selection {
+                    color: $secondary-color;
+                    background-color: rgba(248, 195, 60, .7); // primary with opacity
+                }
             }
 
             .beat-container {
