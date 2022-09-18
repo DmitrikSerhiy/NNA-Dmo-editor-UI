@@ -69,8 +69,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngAfterViewInit(): Promise<void> {
-		this.beatsLoading = true;
-		this.cdRef.detectChanges();
 		await this.loadDmo()
 	}
 
