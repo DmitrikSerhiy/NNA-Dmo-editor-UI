@@ -1,10 +1,12 @@
-<div *ngIf="isDataLoaded" class="plot-points-graph-container">
+<div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
         <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;"  
             draggable="true" 
             (dragstart)="onBeginBeatReorder($event, plotPoint.beatId, plotPoint.order)" 
             (drop)="onBeatDrop($event, plotPoint.beatId, plotPoint.order)"
             (dragover)="onBeatMove($event)"
+            (dragenter)="onBeatDragHoverBeggin($event)"
+            (dragleave)="onBeatDragHoverEnd($event)"
             (dragend)="onReoderBeats($event)" >
 
             <svg 

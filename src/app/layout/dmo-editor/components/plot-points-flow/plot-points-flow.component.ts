@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -31,6 +31,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private beatToReplace: any = {};
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
+	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
 
 	constructor(private cdRef: ChangeDetectorRef) {}
 
@@ -53,6 +54,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
   	// #region  general settings
 
 	onBeginBeatReorder($event: any, beatIdToMove: string, beatOrderToMove: number): void {
+		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
 		$event.dataTransfer.clearData();
 		this.beatToMove = {};
 		this.beatToReplace = {};
@@ -61,12 +63,24 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		$event.dataTransfer.setData("application/beat-order-to-move", beatOrderToMove);
 
 		// todo: set some global backgroud
+		// todo: limit horizontal graggin withing graph container
 	}
 
 
 	onBeatMove($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
+		// todo: add style to graggable plotpoint
+
+	}
+
+	onBeatDragHoverBeggin($event: any): void {
+		$event.preventDefault();
+		$event.dataTransfer.dropEffect = "move";
+	}
+
+	onBeatDragHoverEnd($event: any): void {
+
 	}
 
 	onBeatDrop($event: any, beatIdToReplace: string, beatOrderToReplace: number): void {
@@ -93,6 +107,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		// todo: remove background
 		this.beatToMove = {};
 		this.beatToReplace = {};
+		this.plotPointsContainerElement.nativeElement.classList.remove('dragging');
+
 	}
 	
 
@@ -169,7 +185,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.plotPointsElements.forEach((plotPoint, i) => {
 			let nativeElement = plotPoint.nativeElement.firstChild;
 			if (this.plotPoints.find(p => p.beatId === this.selectBeatId(nativeElement))) {
-				nativeElement.parentElement.setAttribute('style', `margin-bottom: ${this.calculatePlotPointMargin(i)}px`);
+				nativeElement.parentElement.setAttribute('style', `padding-bottom: ${this.calculatePlotPointMargin(i)}px`);
 			}
 		});
 	}

@@ -1,9 +1,13 @@
+@import "src/styles/colors.scss";
+
 .plot-points-graph-container {
     height: 100%;
-    width: 32px;
+    width: 34px;
     position: relative;
     top:0;
     bottom: 0;
+    display: flex;
+    justify-content: center;
 
     .plot-points {
         position:absolute;
@@ -39,4 +43,14 @@
             stroke-width: 2;
         }
     }
+}
+
+.dragging {
+    border-left-color: $secondary-color;
+    border-left-width: 1px;
+    border-left-style: dashed;
+
+    border-right-color: $secondary-color;
+    border-right-width: 1px;
+    border-right-style: dashed;
 }
