@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -27,6 +27,9 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	endCoord: string;
 	baseCoord: string;
 
+	private beatToMove: any = {};
+	private beatToReplace: any = {};
+
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 
 	constructor(private cdRef: ChangeDetectorRef) {}
@@ -49,6 +52,49 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
   	// #region  general settings
 
+	onBeginBeatReorder($event: any, beatIdToMove: string, beatOrderToMove: number): void {
+		$event.dataTransfer.clearData();
+		this.beatToMove = {};
+		this.beatToReplace = {};
+		$event.dataTransfer.dropEffect = "move";
+		$event.dataTransfer.setData("application/beat-id-to-move", beatIdToMove);
+		$event.dataTransfer.setData("application/beat-order-to-move", beatOrderToMove);
+
+		// todo: set some global backgroud
+	}
+
+
+	onBeatMove($event: any): void {
+		$event.preventDefault();
+		$event.dataTransfer.dropEffect = "move";
+	}
+
+	onBeatDrop($event: any, beatIdToReplace: string, beatOrderToReplace: number): void {
+		$event.preventDefault();
+		console.log('drop');
+		this.beatToMove = { id: $event.dataTransfer.getData("application/beat-id-to-move"), order: +$event.dataTransfer.getData("application/beat-order-to-move")};
+		this.beatToReplace = { id: beatIdToReplace, order: beatOrderToReplace};
+		if (this.beatToMove.order == this.beatToReplace.order) {
+			return;
+		}
+	}
+
+	onReoderBeats($event: any): void {
+		if ($event.dataTransfer.dropEffect == "move") {
+			console.log('reorder success');
+			
+			console.log('from:');
+			console.log(this.beatToMove);
+			console.log('to:');
+			console.log(this.beatToReplace);
+			// todo: send request to reorder beats and re-render graph
+		} 
+		// todo: $event.target.classList.remove("dragging");
+		// todo: remove background
+		this.beatToMove = {};
+		this.beatToReplace = {};
+	}
+	
 
 	private setupSubscription(): void {
 		this.updateGraph.subscribe(update => {

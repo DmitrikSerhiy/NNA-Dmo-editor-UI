@@ -396,8 +396,9 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		this.beatsMetaData[index].isDirty = true;
 	}
 
-	preventDrag(event: any): void {
-		event.preventDefault();
+	preventDrag($event: any): void {
+		$event.dataTransfer.dropEffect = 'none'; 
+		$event.preventDefault();
 	}
 	
 
