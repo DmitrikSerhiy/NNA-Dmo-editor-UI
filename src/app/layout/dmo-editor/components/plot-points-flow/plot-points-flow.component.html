@@ -1,16 +1,17 @@
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
         <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;"  
+            [attr.data-id]="plotPoint.beatId"
             draggable="true" 
-            (dragstart)="onBeginBeatReorder($event, plotPoint.beatId, plotPoint.order)" 
-            (drop)="onBeatDrop($event, plotPoint.beatId, plotPoint.order)"
+            (dragstart)="onBeginBeatReorder($event)" 
+            (drop)="onBeatDrop($event)"
             (dragover)="onBeatMove($event)"
             (dragenter)="onBeatDragHoverBeggin($event)"
             (dragleave)="onBeatDragHoverEnd($event)"
             (dragend)="onReoderBeats($event)" >
 
             <svg 
-                class="plot-point" 
+                #plotPointsSvgs class="plot-point" 
                 [attr.id]="'plot_point_' + plotPoint.beatId"
                 [attr.width]="plotPointContainerSize" 
                 [attr.height]="plotPointContainerSize">
@@ -18,7 +19,7 @@
                 <circle 
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
-                    [attr.r]="plotPointRadius" />
+                    [attr.r]="plotPointRadius"/>
             </svg>
         </div>
     </div>

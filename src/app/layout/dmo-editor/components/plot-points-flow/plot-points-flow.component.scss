@@ -17,13 +17,20 @@
         flex-direction: column;
 
         .plot-point-container {
+            z-index: 100;
             .plot-point  {
                 circle {
-                    &:hover {
-                        cursor: grab;
-                    }
+                    cursor: grab;
                 }
             }
+
+            .ignore-events {
+                pointer-events: none;
+            }
+        }
+
+        .droppable {
+            background-color: lightgray;
         }
     }
 
