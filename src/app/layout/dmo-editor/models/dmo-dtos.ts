@@ -104,3 +104,24 @@ export class RemoveBeatDtoAPI {
     }
 }
 
+export class BeatToMoveDto {
+    id: string;
+    order: number;
+
+    constructor(id: string, order: number) {
+        this.id = id;
+        this.order = order;
+    }
+}
+
+export class BeatsToSwapDto {
+    dmoId: string;
+    beatToMove: BeatToMoveDto;
+    beatToReplace: BeatToMoveDto;
+
+    constructor(beatToMove: BeatToMoveDto, beatToReplace: BeatToMoveDto) {
+        this.beatToMove = beatToMove;
+        this.beatToReplace = beatToReplace;
+    }
+}
+

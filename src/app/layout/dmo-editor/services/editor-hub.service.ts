@@ -10,7 +10,7 @@ import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
-import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI } from '../models/dmo-dtos';
+import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI, BeatToMoveDto, BeatsToSwapDto } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -163,6 +163,10 @@ export class EditorHub {
 
     async updateBeat(beat: NnaBeatDto) {
         return await this.invokeSocketMethodWithoutResponseData('UpdateBeat', new UpdateBeatDtoAPI(beat));
+    }
+
+    async swapBeats(beatsToSwapDto: BeatsToSwapDto) {
+        return await this.invokeSocketMethodWithoutResponseData('SwapBeats', beatsToSwapDto);
     }
 
     // ----- editor websocket methods ------

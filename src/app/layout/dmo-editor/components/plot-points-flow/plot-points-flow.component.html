@@ -2,6 +2,7 @@
     <div class="plot-points">
         <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;"  
             [attr.data-id]="plotPoint.beatId"
+            [attr.data-order]="plotPoint.order"
             draggable="true" 
             (dragstart)="onBeginBeatReorder($event)" 
             (drop)="onBeatDrop($event)"

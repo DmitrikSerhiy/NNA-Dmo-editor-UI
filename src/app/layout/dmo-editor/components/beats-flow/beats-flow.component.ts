@@ -791,8 +791,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		const start = nativeElement.selectionStart;
-		console.log(start);
-
 		if (start == 2 || start == 5 || start == 1 || start == 4) {
 			return value > 5;
 		}

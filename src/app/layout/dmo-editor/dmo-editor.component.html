@@ -43,7 +43,8 @@
             [initialPlotPoints]="plotPointsWithMetaData" 
             [isDmoFinished]="isDmoFinised"
             [updateGraph]="updateGraphEvent"
-            (plotPointsSet)="plotPointsSet($event)">
+            (plotPointsSet)="plotPointsSet($event)"
+            (reorderBeats)="reorderBeats($event)">
        </app-plot-points-flow>
        
        <app-beats-flow

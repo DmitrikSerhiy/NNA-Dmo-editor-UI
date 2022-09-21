@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { BeatsToSwapDto, BeatToMoveDto } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -12,6 +13,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() isDmoFinished: boolean;
 	@Input() updateGraph: EventEmitter<any>;
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
+	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
 
 	isDataLoaded: boolean = false;
 	plotPoints: any[];
@@ -27,8 +29,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	endCoord: string;
 	baseCoord: string;
 
-	private beatIdToMove: any = null;
-	private beatIdToReplace: any = null;
+	private beatToMove: BeatToMoveDto = null;
+	private beatToReplace: BeatToMoveDto = null;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;
@@ -59,10 +61,11 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
 		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
 		$event.dataTransfer.clearData();
-		this.beatIdToMove = $event.target.dataset.id;
-		this.beatIdToReplace = null;
+		this.beatToMove = new BeatToMoveDto($event.target.dataset.id, +$event.target.dataset.order);
+		this.beatToReplace = null;
 		$event.dataTransfer.dropEffect = "move";
 		$event.dataTransfer.setData("application/beat-id-to-move", $event.target.dataset.id);
+		$event.dataTransfer.setData("application/beat-order-to-move", $event.target.dataset.order);
 	}
 
 
@@ -74,7 +77,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	onBeatDragHoverBeggin($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
-		if (this.beatIdToMove != $event.target.dataset.id) {
+		if (this.beatToMove != $event.target.dataset.id) {
 			$event.target.classList.add("droppable");
 		} else {
 			$event.target.classList.add("dragabble");
@@ -92,8 +95,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			return;
 		}
 
-		this.beatIdToMove = { id: $event.dataTransfer.getData("application/beat-id-to-move")};
-		this.beatIdToReplace = { id: $event.target.dataset.id};
+		this.beatToMove = new BeatToMoveDto($event.dataTransfer.getData("application/beat-id-to-move"), +$event.dataTransfer.getData("application/beat-order-to-move"));
+		this.beatToReplace = new BeatToMoveDto($event.target.dataset.id, +$event.target.dataset.order);
 	}
 
 	onReoderBeats($event: any): void {
@@ -105,15 +108,17 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.plotPointsContainerElement.nativeElement.classList.remove("dragging");
 		
 		if ($event.dataTransfer.dropEffect == "move") {
-			if (this.beatIdToMove == null || this.beatIdToReplace == null) {
+			if (this.beatToMove == null || this.beatToReplace == null) {
+				this.beatToMove = null;
+				this.beatToReplace = null;
 				return;
 			}
 
-			// todo: send request to reorder beats and re-render graph
+			this.reorderBeats.emit(new BeatsToSwapDto(this.beatToMove, this.beatToReplace));
 		} 
 
-		this.beatIdToMove = null;
-		this.beatIdToReplace = null;
+		this.beatToMove = null;
+		this.beatToReplace = null;
 	}
 	
 

@@ -5,7 +5,7 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
+import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 
 @Component({
@@ -99,6 +99,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			await this.editorHub.removeBeat($event.metaData);
 		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out') {
 			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
+		} else if ($event.source == 'swap') {
+			await this.editorHub.swapBeats($event.metaData);
+			this.initialDmoDto.beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
+			this.updateBeatsEvent.emit({ beats: this.initialDmoDto.beats });
+			this.updatePlotPoints();
 		}
 		this.autosaveTitle = this.savingIsDoneTitle;
 		this.beatsUpdating = false;
@@ -285,6 +290,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (callbackResult.lastAction != null) {
 			await this.syncBeats({source: callbackResult.lastAction, metaData: callbackResult.lastActionMetaData});
 		}
+	}
+
+	async reorderBeats(beatsToSwap: BeatsToSwapDto): Promise<void>  {
+		beatsToSwap.dmoId = this.dmoId;
+		await this.syncBeats({source: "swap", metaData: beatsToSwap})
 	}
 
 	plotPointsSet(callbackResult): void {
