@@ -13,11 +13,13 @@
         position:absolute;
         margin-top: 32px;
         z-index: 10;
-        flex: 0 0 2rem;
+        flex: 0 0 30px;
         flex-direction: column;
 
         .plot-point-container {
             z-index: 100;
+            border-top: 1px transparent solid;
+            border-bottom: 1px transparent solid;
             .plot-point  {
                 circle {
                     cursor: grab;
@@ -30,7 +32,15 @@
         }
 
         .droppable {
-            background-color: lightgray;
+            background-color: rgba(155, 0, 209, .1);
+            border-top: 1px $secondary-color dashed !important;
+            border-bottom: 1px $secondary-color dashed !important;
+        }
+
+        .dragabble {
+            border-top: 1px $primary-color dashed !important;
+            border-bottom: 1px $primary-color dashed !important;
+            background-color: rgba(248, 195, 60, .2);
         }
     }
 

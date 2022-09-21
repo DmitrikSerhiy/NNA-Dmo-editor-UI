@@ -27,8 +27,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	endCoord: string;
 	baseCoord: string;
 
-	private beatToMove: any = null;
-	private beatToReplace: any = null;
+	private beatIdToMove: any = null;
+	private beatIdToReplace: any = null;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;
@@ -59,26 +59,27 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
 		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
 		$event.dataTransfer.clearData();
-		this.beatToMove = null;
-		this.beatToReplace = null;
+		this.beatIdToMove = $event.target.dataset.id;
+		this.beatIdToReplace = null;
 		$event.dataTransfer.dropEffect = "move";
 		$event.dataTransfer.setData("application/beat-id-to-move", $event.target.dataset.id);
-
-		// todo: set some global backgroud
-		// todo: limit horizontal graggin withing graph container
 	}
 
 
 	onBeatMove($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
-		// todo: add style to graggable plotpoint
 	}
 
 	onBeatDragHoverBeggin($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
-		$event.target.classList.add("droppable");
+		if (this.beatIdToMove != $event.target.dataset.id) {
+			$event.target.classList.add("droppable");
+		} else {
+			$event.target.classList.add("dragabble");
+
+		}
 	}
 
 	onBeatDragHoverEnd($event: any): void {
@@ -91,34 +92,28 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			return;
 		}
 
-		this.beatToMove = { id: $event.dataTransfer.getData("application/beat-id-to-move")};
-		this.beatToReplace = { id: $event.target.dataset.id};
+		this.beatIdToMove = { id: $event.dataTransfer.getData("application/beat-id-to-move")};
+		this.beatIdToReplace = { id: $event.target.dataset.id};
 	}
 
 	onReoderBeats($event: any): void {
 		this.plotPointsSvgElements.forEach(plotPointSvgElement => plotPointSvgElement.nativeElement.classList.remove("ignore-events"));
-		this.plotPointsElements.forEach(plotPointElement => plotPointElement.nativeElement.classList.remove("droppable"))
+		this.plotPointsElements.forEach(plotPointElement => {
+			plotPointElement.nativeElement.classList.remove("droppable");
+			plotPointElement.nativeElement.classList.remove("dragabble");
+		});
 		this.plotPointsContainerElement.nativeElement.classList.remove("dragging");
 		
 		if ($event.dataTransfer.dropEffect == "move") {
-			if (this.beatToMove == null || this.beatToReplace == null) {
+			if (this.beatIdToMove == null || this.beatIdToReplace == null) {
 				return;
 			}
 
-		console.log('reorder success');
-			
-			console.log('from:');
-			console.log(this.beatToMove);
-			console.log('to:');
-			console.log(this.beatToReplace);
 			// todo: send request to reorder beats and re-render graph
 		} 
-		// todo: $event.target.classList.remove("dragging");
-		// todo: remove background
-		this.beatToMove = null;
-		this.beatToReplace = null;
 
-
+		this.beatIdToMove = null;
+		this.beatIdToReplace = null;
 	}
 	
 
@@ -182,6 +177,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		if (this.isDmoFinished == true) {
 			let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
 			heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize);
+			heigth += this.initialGraphTopMargin * 2;
 
 			if (latsPlotPoint.lines % 2 != 0 && latsPlotPoint.lines > 2) {
 				heigth -= this.defaultBeatMarginBottom;
