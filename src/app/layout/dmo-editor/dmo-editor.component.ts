@@ -101,9 +101,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
-			this.initialDmoDto.beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
-			this.updateBeatsEvent.emit({ beats: this.initialDmoDto.beats });
-			this.updatePlotPoints();
 		}
 		this.autosaveTitle = this.savingIsDoneTitle;
 		this.beatsUpdating = false;
@@ -293,8 +290,22 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async reorderBeats(beatsToSwap: BeatsToSwapDto): Promise<void>  {
+		let beats = this.selectBeatDtos();
+		beats.forEach(beat => {
+			if (beat.beatId == beatsToSwap.beatToMove.id) {
+				beat.order = beatsToSwap.beatToReplace.order;
+			}
+
+			if (beat.beatId == beatsToSwap.beatToReplace.id) {
+				beat.order = beatsToSwap.beatToMove.order;
+			} 
+		});
+
+		const sortedBeats = beats.sort((a, b) => Number(a.order) - Number(b.order));
 		beatsToSwap.dmoId = this.dmoId;
-		await this.syncBeats({source: "swap", metaData: beatsToSwap})
+
+		this.updateBeatsEvent.emit({ beats: sortedBeats, isFinished: this.isDmoFinised, actionName: 'swap', actionMetaData: beatsToSwap });
+		this.updatePlotPoints();
 	}
 
 	plotPointsSet(callbackResult): void {

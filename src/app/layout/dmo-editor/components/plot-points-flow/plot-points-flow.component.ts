@@ -77,7 +77,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	onBeatDragHoverBeggin($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
-		if (this.beatToMove != $event.target.dataset.id) {
+		if (this.beatToMove.id != $event.target.dataset.id) {
 			$event.target.classList.add("droppable");
 		} else {
 			$event.target.classList.add("dragabble");
