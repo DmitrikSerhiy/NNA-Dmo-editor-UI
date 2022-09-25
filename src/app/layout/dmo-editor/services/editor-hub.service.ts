@@ -169,6 +169,10 @@ export class EditorHub {
         return await this.invokeSocketMethodWithoutResponseData('SwapBeats', beatsToSwapDto);
     }
 
+    async sanitizeTempIds(dmoId: string) {
+        return await this.invokeSocketMethodWithoutResponseData('SanitizeTempIds', { dmoId: dmoId } );
+    }
+
     // ----- editor websocket methods ------
 
 

@@ -7,6 +7,7 @@ import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -138,9 +139,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async closeEditor(): Promise<void> {
-		await this.closeEditorAndClearData();
 		this.router.navigate(['app/dmos']);
-		
 	}
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
@@ -494,6 +493,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// }
 
 	private async closeEditorAndClearData(): Promise<void> {
+		await this.editorHub.sanitizeTempIds(this.dmoId);
 		await this.editorHub.abortConnection();
 		this.dmoId = '';
 		this.isInitialPopupOpen = false;
