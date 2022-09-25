@@ -189,6 +189,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			}
 		}
 
+		heigth += (2 * plotPoints.length);
+
 		return heigth.toString();
 	}
 
