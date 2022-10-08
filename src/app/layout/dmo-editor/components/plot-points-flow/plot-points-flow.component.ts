@@ -182,7 +182,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		if (this.isDmoFinished == true) {
 			let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
 			heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize);
-			heigth += this.initialGraphTopMargin * 2;
+			heigth += this.initialGraphTopMargin;
 
 			if (latsPlotPoint.lines % 2 != 0 && latsPlotPoint.lines > 2) {
 				heigth -= this.defaultBeatMarginBottom;
