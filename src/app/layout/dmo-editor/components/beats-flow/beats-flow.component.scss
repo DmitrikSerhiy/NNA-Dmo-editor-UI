@@ -3,7 +3,6 @@
 $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart for screenplay text
 .beats-wrapper {
     height: 100%;
-    background-image: url("/assets/editor_background.jpeg");
 
     .beats-inner-wrapper {
         height: 100%;
@@ -159,6 +158,11 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                     display: flex;
                     align-items: center;
                     margin-bottom: 16px;
+
+                    @media (max-width: 900px) and (min-width: 600px) {
+                        width: unset;
+                        max-width: unset;
+                    }
 
                     &:hover {
                         cursor: text;

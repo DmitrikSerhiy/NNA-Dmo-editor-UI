@@ -10,7 +10,7 @@
     justify-content: center;
 
     .plot-points {
-        position:absolute;
+        position: absolute;
         margin-top: 32px;
         z-index: 10;
         flex: 0 0 30px;
@@ -20,9 +20,10 @@
             z-index: 100;
             border-top: 1px transparent solid;
             border-bottom: 1px transparent solid;
+            cursor: grab;
             .plot-point  {
                 circle {
-                    cursor: grab;
+                    cursor: pointer;
                 }
             }
 
@@ -45,7 +46,7 @@
     }
 
     .plot-points-graph {
-        position:absolute;
+        position: absolute;
         height: 100%;
 
         .start-end-coord {

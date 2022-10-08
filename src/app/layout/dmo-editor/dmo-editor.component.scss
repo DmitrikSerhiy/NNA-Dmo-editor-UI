@@ -5,7 +5,7 @@
     height: 100%;
     margin: -1rem;
     padding: 1rem;
-    background: white;
+    background-image: url("../../../assets/editor_background.jpeg") !important;
 
     .controls-panel {
         position: sticky;
@@ -71,6 +71,11 @@
         flex-flow: row nowrap;
         height: 100%;
         margin-top: 1rem;
+
+        @media (min-width: 900px) {
+            justify-content: center;
+        }
+
         
         app-plot-points-flow {
             flex: 0 0 2rem;
@@ -78,6 +83,9 @@
 
         app-beats-flow {
             flex: 1 1 auto;
+            @media (min-width: 900px) {
+                flex: 0 1 50% !important;
+            }
         }
     }
     
