@@ -22,6 +22,10 @@
         margin-top: -1px;
         // overflow-x: hidden; // uncomment if find bug with horizontal scoll again and pay attention to fixed position of header in editor
         // position: relative;
+
+        background-image: url("../../assets/editor_background.jpeg") !important;
+        min-height: 100%;
+
     }
     .collapsed {
         margin-left: 49px;

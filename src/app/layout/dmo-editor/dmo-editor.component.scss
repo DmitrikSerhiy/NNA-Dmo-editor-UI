@@ -5,7 +5,6 @@
     height: 100%;
     margin: -1rem;
     padding: 1rem;
-    background-image: url("../../../assets/editor_background.jpeg") !important;
 
     .controls-panel {
         position: sticky;
@@ -72,7 +71,7 @@
         height: 100%;
         margin-top: 1rem;
 
-        @media (min-width: 900px) {
+        @media (min-width: 1100px) {
             justify-content: center;
         }
 
@@ -83,7 +82,7 @@
 
         app-beats-flow {
             flex: 1 1 auto;
-            @media (min-width: 900px) {
+            @media (min-width: 1100px) {
                 flex: 0 1 50% !important;
             }
         }
