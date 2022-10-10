@@ -1,5 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BeatsToSwapDto, BeatToMoveDto } from '../../models/dmo-dtos';
+import { computePosition, offset, arrow } from '@floating-ui/dom';
+
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -33,9 +35,12 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private beatToReplace: BeatToMoveDto = null;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
-	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;
+	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
 
 	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
+	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
+	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
+
 
 	constructor(private cdRef: ChangeDetectorRef) {}
 
@@ -47,13 +52,60 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.renderGraph();
 		this.setupEditorCallback();
 		this.setupSubscription();
+
+		this.applyTooltopStylesStyles();
 	}
+
+
 
 	ngOnDestroy(): void {
 		this.initialPlotPoints = [];
 		this.isDmoFinished = null;
 		this.updateGraph = null;
 	}
+
+
+	// #region beatType tooltip
+
+	showBeatTypeTooltip(beatCircleElement: any): void {
+		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
+		this.setTooltipPosition(beatCircleElement);
+	}
+
+	hideBeatTypeTooltip() {
+		this.beatTypeTooltipElement.nativeElement.style.display = '';
+	}
+
+	
+	private setTooltipPosition(hostingElement) {
+		computePosition(hostingElement, this.beatTypeTooltipElement.nativeElement, {
+			placement: 'right',
+			middleware: [offset(8), arrow({element: this.tooltipArrowElement.nativeElement})]
+		  }).then((callback) =>  this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData));
+	}
+
+	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}) {
+		Object.assign(this.beatTypeTooltipElement.nativeElement.style, {
+			position: strategy,
+			left: `${x}px`,
+			top: `${y}px`
+		});
+
+		if (middlewareData == null || middlewareData.arrow == null) {
+			return;
+		}
+
+		Object.assign(this.tooltipArrowElement.nativeElement.style, {
+			left: '-5px',
+			top: middlewareData.arrow.y != null ? `${middlewareData.arrow.y}px` : '',
+			right: '',
+			bottom: ''
+		 });
+	}
+
+	// #endregion
+
+
 
   	// #region  general settings
 

@@ -1,3 +1,5 @@
+<div #beatTypeTooltip class="beatTypeTooltipContainer">  Tooltip  <div #tooltipArrow class="tooltipArrow"></div> </div>
+
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
         <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;"  
@@ -20,7 +22,10 @@
                 <circle 
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
-                    [attr.r]="plotPointRadius"/>
+                    [attr.r]="plotPointRadius"
+                    (click)="showBeatTypeTooltip($event.target)"
+                    (blur)="hideBeatTypeTooltip()"
+                    />
             </svg>
         </div>
     </div>
