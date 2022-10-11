@@ -97,6 +97,32 @@ html, body {
   background-color: transparent !important;
 }
 
+.mat-radio-button {
+  font-family: $primary-font !important;
+}
+
+.mat-radio-outer-circle {
+  border-color: black;
+  border-width: 1px !important;
+}
+
+.cdk-program-focused .cdk-focused{
+  pointer-events: none !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: transparent !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: $primary-color !important;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: $primary-color !important;
+}
+
+
 .mat-dialog-container {
   border-radius: 0 !important;
   border-style: solid !important;

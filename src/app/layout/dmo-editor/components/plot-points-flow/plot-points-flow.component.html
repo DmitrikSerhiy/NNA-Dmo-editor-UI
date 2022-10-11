@@ -1,4 +1,16 @@
-<div #beatTypeTooltip class="beatTypeTooltipContainer" (mouseleave)="hideBeatTypeTooltip()" (mouseenter)="delayBeatTypeTooltipVisibility()">  Tooltip  <div #tooltipArrow class="tooltipArrow"></div> </div>
+<div #beatTypeTooltip class="beatTypeTooltipContainer" (mouseenter)="delayBeatTypeTooltipVisibility()" (mouseleave)="hideBeatTypeTooltip()">  
+
+
+
+    <mat-radio-group [(ngModel)]="selectedBeatType" (change)="onBeatTypeChanged($event)" [disabled]="!allowBeatTypeToChange" class="beat-type-options">
+        <mat-radio-button #beatTypeRadio class="beat-type-option" [value]="1">Beat</mat-radio-button>
+        <mat-radio-button #beatTypeRadio class="beat-type-option" [value]="2">Exposition beat</mat-radio-button>
+        <mat-radio-button #beatTypeRadio class="beat-type-option" [value]="3">Character beat</mat-radio-button>
+        <mat-radio-button #beatTypeRadio class="beat-type-option" [value]="4">Ecstatic beat</mat-radio-button>
+    </mat-radio-group>
+    
+    <div #tooltipArrow class="tooltipArrow"></div> 
+</div>
 
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
@@ -23,7 +35,7 @@
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
                     [attr.r]="plotPointRadius"
-                    (click)="onBeatSvgIconClick($event.target)"
+                    (click)="onBeatSvgIconClick($event.target, plotPoint.beatId)"
                     />
             </svg>
         </div>

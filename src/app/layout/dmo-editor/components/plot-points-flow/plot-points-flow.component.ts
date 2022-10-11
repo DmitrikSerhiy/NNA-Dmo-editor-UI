@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BeatsToSwapDto, BeatToMoveDto } from '../../models/dmo-dtos';
 import { computePosition, offset, arrow } from '@floating-ui/dom';
 
@@ -36,15 +36,20 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private resizeObserver: ResizeObserver 
 	private beatTypeTooltipIsPristine: boolean = true;
 	private isCursorNearInitialBeatTypeTooltip: boolean = false;
+	private currentBeatIdToChangeBeatType: string;
+	allowBeatTypeToChange: boolean = true;
+	selectedBeatType: string = '';
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
+	@ViewChildren('beatTypeRadio') beatTypeRadioElements: QueryList<ElementRef>;	
+
+	
 
 	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
 	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
 	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
-
-
+	
 	constructor(private cdRef: ChangeDetectorRef, private host: ElementRef) {}
 
 	ngAfterViewInit(): void {
@@ -71,7 +76,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 	}
 
-	// todo: remove tooltip backdrop
 
 	ngOnDestroy(): void {
 		this.initialPlotPoints = [];
@@ -83,24 +87,40 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	// #region beatType tooltip
 
-	onBeatSvgIconClick(beatCircleElement: any): void {
-		this.isCursorNearInitialBeatTypeTooltip = true;
-		this.showBeatTypeTooltip(beatCircleElement);
+	onBeatTypeChanged($event: any): void {
+		console.log(this.currentBeatIdToChangeBeatType);
+		console.log(this.selectedBeatType);
+
+		this.allowBeatTypeToChange = false;
+		// todo: send request to api
+		setTimeout(() => {
+			this.hideBeatTypeTooltip();
+			this.resetBeatTypeRadioButtons();
+			this.allowBeatTypeToChange = true;
+		}, 250);
 	}
 
-	showBeatTypeTooltip(beatCircleElement: any): void {
-		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
-		this.setTooltipPosition(beatCircleElement);
-		
+	onBeatSvgIconClick(beatCircleElement: any, beatId: string): void {
+		this.isCursorNearInitialBeatTypeTooltip = true;
+		this.resetBeatTypeRadioButtons();
+		// todo: get beat type from metadata
+		this.showBeatTypeTooltip(beatCircleElement, beatId);
+	}
+
+	showBeatTypeTooltip(beatCircleElement: any, beatId: string): void {
+		this.currentBeatIdToChangeBeatType = beatId;
 		setTimeout(() => {
 			if (this.beatTypeTooltipIsPristine == true && this.isCursorNearInitialBeatTypeTooltip == false) {
 				this.hideBeatTypeTooltip();
 			}
 		}, 1000);
-
+		
+		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
+		this.setTooltipPosition(beatCircleElement);
 	}
 
 	hideBeatTypeTooltip() {
+		this.currentBeatIdToChangeBeatType = '';
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
 		this.beatTypeTooltipIsPristine = true;
 	}
@@ -108,6 +128,10 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	delayBeatTypeTooltipVisibility() {
 		this.beatTypeTooltipIsPristine = false;
 
+	}
+
+	private resetBeatTypeRadioButtons() {
+		this.selectedBeatType = '';
 	}
 	
 	private setTooltipPosition(hostingElement) {

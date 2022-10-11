@@ -1,5 +1,6 @@
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -24,7 +25,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatDialogModule,
     MatTabsModule,
-    SharedModule
+    SharedModule,
+    FormsModule,
+    MatRadioModule
   ]
 })
 export class DmoEditorModule { }
