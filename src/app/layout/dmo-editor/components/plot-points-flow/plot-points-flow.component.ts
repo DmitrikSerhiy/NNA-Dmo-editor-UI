@@ -2,7 +2,6 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { BeatsToSwapDto, BeatToMoveDto } from '../../models/dmo-dtos';
 import { computePosition, offset, arrow } from '@floating-ui/dom';
 
-
 @Component({
 	selector: 'app-plot-points-flow',
 	templateUrl: './plot-points-flow.component.html',
@@ -34,15 +33,18 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private beatToMove: BeatToMoveDto = null;
 	private beatToReplace: BeatToMoveDto = null;
 
+	private resizeObserver: ResizeObserver 
+
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
 
 	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
 	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
+	@ViewChild('beatTypeTooltipBackdrop') beatTypeTooltipBackdropElement: ElementRef;
 	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
 
 
-	constructor(private cdRef: ChangeDetectorRef) {}
+	constructor(private cdRef: ChangeDetectorRef, private host: ElementRef) {}
 
 	ngAfterViewInit(): void {
 		this.plotPoints = [ ...this.initialPlotPoints];
@@ -54,14 +56,20 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.setupSubscription();
 
 		this.applyTooltopStylesStyles();
+		this.resizeObserver = new ResizeObserver((entries) => { 
+			this.hideBeatTypeTooltip()
+		});
+
+		this.resizeObserver.observe(this.host.nativeElement);
 	}
 
-
+	// todo: remove tooltip backdrop
 
 	ngOnDestroy(): void {
 		this.initialPlotPoints = [];
 		this.isDmoFinished = null;
 		this.updateGraph = null;
+		this.resizeObserver.disconnect();
 	}
 
 
@@ -69,11 +77,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	showBeatTypeTooltip(beatCircleElement: any): void {
 		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
+		this.beatTypeTooltipBackdropElement.nativeElement.style.display = 'block';
 		this.setTooltipPosition(beatCircleElement);
 	}
 
 	hideBeatTypeTooltip() {
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
+		this.beatTypeTooltipBackdropElement.nativeElement.style.display = '';
 	}
 
 	

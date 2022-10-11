@@ -14,7 +14,7 @@
 		<!-- <app-nav-menu></app-nav-menu> -->
 
 		<app-sidebar [updateUserNameDisplay]="updateUserNameDisplay$" (toggleRightMenu$)="openRightMenu($event)" (innerEvent$)="handleInnerSidebarEvent($event)"></app-sidebar>  
-		<section class="main-container" [ngClass]="{collapsed: !sidebarManagerService.IsOpen}">
+		<section #mainContainer class="main-container" [ngClass]="{collapsed: !sidebarManagerService.IsOpen}">
 			<router-outlet></router-outlet>
 		</section>
 	</mat-sidenav-content>

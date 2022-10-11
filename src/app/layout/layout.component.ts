@@ -2,13 +2,14 @@ import { RightMenuGrabberService } from './../shared/services/right-menu-grabber
 import { CurrentSidebarService } from './../shared/services/current-sidebar.service';
 import { CollectionsManagerService } from './../shared/services/collections-manager.service';
 import { RightMenues, SidebarTabs } from './models';
-import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, EventEmitter, OnDestroy, ElementRef } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SidebarManagerService } from '../shared/services/sidebar-manager.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NnaHelpersService } from '../shared/services/nna-helpers.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { filter } from 'rxjs/operators';
 
 
 @Component({
@@ -19,6 +20,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild('rightMenu', { static: true }) rightMenu: MatSidenav;
+    @ViewChild('mainContainer', { static: true }) mainContainer: ElementRef;
+    
     toggleRightMenu: RightMenues;
     currentMenuName: string;
     currentUserFriendlyMenuName: string;
@@ -72,6 +75,19 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
         this.rightMenuIsClosing$ = this.rightMenu.closedStart;
+
+        if (this.router.url.includes('editor')) {
+            this.mainContainer.nativeElement.style.backgroundImage = 'url("../../assets/editor_background.jpeg")';
+        }
+
+        this.router.events.pipe(filter(event => event instanceof NavigationStart))
+            .subscribe((event:NavigationStart) => {
+                if (event.url.includes('editor')) {
+                    this.mainContainer.nativeElement.style.backgroundImage = 'url("../../assets/editor_background.jpeg")';
+                } else {
+                    this.mainContainer.nativeElement.style.backgroundImage = 'unset';
+                }
+            });
     }
 
     ngOnDestroy(): void {
