@@ -1,5 +1,4 @@
-<div #beatTypeTooltip class="beatTypeTooltipContainer">  Tooltip  <div #tooltipArrow class="tooltipArrow"></div> </div>
-<div #beatTypeTooltipBackdrop (click)="hideBeatTypeTooltip()" class="beatTypeTooltipBackdrop"></div>
+<div #beatTypeTooltip class="beatTypeTooltipContainer" (mouseleave)="hideBeatTypeTooltip()" (mouseenter)="delayBeatTypeTooltipVisibility()">  Tooltip  <div #tooltipArrow class="tooltipArrow"></div> </div>
 
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
@@ -24,7 +23,7 @@
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
                     [attr.r]="plotPointRadius"
-                    (click)="showBeatTypeTooltip($event.target)"
+                    (click)="onBeatSvgIconClick($event.target)"
                     />
             </svg>
         </div>

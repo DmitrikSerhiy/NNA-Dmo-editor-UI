@@ -34,13 +34,14 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private beatToReplace: BeatToMoveDto = null;
 
 	private resizeObserver: ResizeObserver 
+	private beatTypeTooltipIsPristine: boolean = true;
+	private isCursorNearInitialBeatTypeTooltip: boolean = false;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
 
 	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
 	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
-	@ViewChild('beatTypeTooltipBackdrop') beatTypeTooltipBackdropElement: ElementRef;
 	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
 
 
@@ -61,6 +62,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 
 		this.resizeObserver.observe(this.host.nativeElement);
+
+		this.host.nativeElement.addEventListener('mouseleave', () => {
+			this.isCursorNearInitialBeatTypeTooltip = false;
+			if (this.beatTypeTooltipIsPristine == true) {
+				this.hideBeatTypeTooltip();
+			}
+		});
 	}
 
 	// todo: remove tooltip backdrop
@@ -75,17 +83,32 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	// #region beatType tooltip
 
+	onBeatSvgIconClick(beatCircleElement: any): void {
+		this.isCursorNearInitialBeatTypeTooltip = true;
+		this.showBeatTypeTooltip(beatCircleElement);
+	}
+
 	showBeatTypeTooltip(beatCircleElement: any): void {
 		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
-		this.beatTypeTooltipBackdropElement.nativeElement.style.display = 'block';
 		this.setTooltipPosition(beatCircleElement);
+		
+		setTimeout(() => {
+			if (this.beatTypeTooltipIsPristine == true && this.isCursorNearInitialBeatTypeTooltip == false) {
+				this.hideBeatTypeTooltip();
+			}
+		}, 1000);
+
 	}
 
 	hideBeatTypeTooltip() {
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
-		this.beatTypeTooltipBackdropElement.nativeElement.style.display = '';
+		this.beatTypeTooltipIsPristine = true;
 	}
 
+	delayBeatTypeTooltipVisibility() {
+		this.beatTypeTooltipIsPristine = false;
+
+	}
 	
 	private setTooltipPosition(hostingElement) {
 		computePosition(hostingElement, this.beatTypeTooltipElement.nativeElement, {
