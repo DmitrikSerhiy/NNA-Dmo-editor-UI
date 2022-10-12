@@ -23,17 +23,20 @@ export class NnaBeatDto {
     text: string;
     order: number;
     time: NnaBeatTimeDto;
+    type: number;
 }
 
 export class UpdateBeatDtoAPI {
     BeatId: string;
     Text: string;
     Time: UpdateBeatTimeDtoAPI;
+    Type: number;
 
     constructor(beatDto: NnaBeatDto) {
         this.BeatId = beatDto.beatId;
         this.Text = beatDto.text;
         this.Time = new UpdateBeatTimeDtoAPI(beatDto.time);
+        this.Type = beatDto.type;
     }
 }
 export class NnaBeatTimeDto {
@@ -72,6 +75,7 @@ export class CreateBeatDto {
     tempId: string;
     order: number;
     dmoId: string;
+    type: number;
 }
 
 export class CreateBeatDtoAPI {
@@ -122,6 +126,16 @@ export class BeatsToSwapDto {
     constructor(beatToMove: BeatToMoveDto, beatToReplace: BeatToMoveDto) {
         this.beatToMove = beatToMove;
         this.beatToReplace = beatToReplace;
+    }
+}
+
+export class UpdateBeatType {
+    beatId: string;
+    newType: number;
+
+    constructor(beatId: string, newType: number) {
+        this.beatId = beatId;
+        this.newType = newType;
     }
 }
 

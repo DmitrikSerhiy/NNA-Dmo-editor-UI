@@ -9,7 +9,7 @@ import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 })
 export class BeatsFlowComponent implements AfterViewInit  {
 
-	@Input() initialBeats: any[];
+	@Input() initialBeats: NnaBeatDto[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
 	@Output() beatsSet: EventEmitter<any> = new EventEmitter<any>();
@@ -19,7 +19,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 
 	isDataLoaded: boolean = false;
-	beats: any[];
+	beats: NnaBeatDto[];
 
 	private beatsIds: string[] = [];
 	private beatsMetaData: any[] = [];
@@ -540,6 +540,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			}
 
 			beatDataHolder.nativeElement.innerHTML = beat.text;
+			beatDataHolder.nativeElement.dataset.beatType = beat.type;
 			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
 		});

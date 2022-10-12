@@ -5,9 +5,8 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto } from './models/dmo-dtos';
+import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
-import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -91,14 +90,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async syncBeats($event: any): Promise<void> {
-
 		this.autosaveTitle = this.savingInProgressTitle;
 		this.beatsUpdating = true;
 		if ($event.source == 'add') {
 			await this.editorHub.addBeat($event.metaData);
 		} else if ($event.source == 'remove') {
 			await this.editorHub.removeBeat($event.metaData);
-		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out') {
+		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out' || $event.source == 'change_beat_type') {
 			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
@@ -113,11 +111,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		console.log(`beats was synced. Source: ${$event.source}`);
 	}
 
-
 	async ngOnDestroy(): Promise<void> {
 		await this.closeEditorAndClearData();
 	}
-
 
 
 	// #region general settings
@@ -230,7 +226,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			const initialBeat = {
 				dmoId: this.dmoId,
 				order: 0,
-				tempId: this.initialDmoDto.beats[0].beatId
+				tempId: this.initialDmoDto.beats[0].beatId,
+				type: 1
 			} as CreateBeatDto;
 	
 			await this.editorHub.addBeat(initialBeat);		
@@ -274,11 +271,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
     // #region callbacks from children
 
 	async beatsSet(callbackResult: any): Promise<void> {
+		console.log(callbackResult);
 		this.beatElements = callbackResult.beats;
 		this.timePickerElements = callbackResult.timePickers;
 		this.beatsMetaData = callbackResult.beatMetadata
 		this.beatsIds = callbackResult.beatsIds;
-		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], plotPointMetaData: this.beatsMetaData[i], order: i} }); 
+		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], beatType: beatElement.nativeElement.dataset.beatType, plotPointMetaData: this.beatsMetaData[i], order: i} }); 
 
 		this.beatWasSet = true;
 		this.cdRef.detectChanges();
@@ -310,6 +308,21 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	plotPointsSet(callbackResult): void {
 		this.plotPointElements = callbackResult.elements;
 		this.cdRef.detectChanges();
+	}
+
+	async updateBeatType(updateBeatTypeResult: UpdateBeatType): Promise<void> {
+		let beats = this.selectBeatDtos();
+		let beatIndexToChangeType;
+		beats.forEach((b, i) =>  {
+			if (b.beatId == updateBeatTypeResult.beatId) {
+				b.type = updateBeatTypeResult.newType;
+				beatIndexToChangeType = i;
+				return;
+			} 
+		});
+
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, actionName: 'change_beat_type', actionMetaData: beatIndexToChangeType });
+		this.updatePlotPoints();
 	}
 
 	// #endregion
@@ -377,8 +390,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private updatePlotPoints(): void {
 		let newPlotPoints = []
-		this.beatsIds.forEach((beatId, i) => {
-			newPlotPoints.push({beatId: beatId, plotPointMetaData: this.beatsMetaData[i], order: i});
+		this.plotPointsWithMetaData.forEach((plotPointWithMetaData, i) => {
+			newPlotPoints.push({beatId: plotPointWithMetaData.beatId, beatType: plotPointWithMetaData.beatType, plotPointMetaData: this.beatsMetaData[i], order: i});
 		});
 
 		this.updateGraphEvent.emit({newplotPoints: newPlotPoints, isFinished: this.isDmoFinised});
@@ -467,7 +480,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 					beatId: beatId,
 					order: i,
 					text: beatElement.nativeElement.innerHTML,
-					time: this.buildTimeDtoFromBeat(beatId)
+					time: this.buildTimeDtoFromBeat(beatId),
+					type: beatElement.nativeElement.dataset.beatType
 				}
 				return beat;
 		});
@@ -481,7 +495,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			beatId: beatId,
 			order: index,
 			text: beatElement.innerHTML,
-			time: this.buildTimeDtoFromBeat(beatId)
+			time: this.buildTimeDtoFromBeat(beatId),
+			type: beatElement.dataset.beatType
 		} as NnaBeatDto
 	}
 

@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { BeatsToSwapDto, BeatToMoveDto } from '../../models/dmo-dtos';
+import { BeatsToSwapDto, BeatToMoveDto, UpdateBeatType } from '../../models/dmo-dtos';
 import { computePosition, offset, arrow } from '@floating-ui/dom';
 
 @Component({
@@ -15,6 +15,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() updateGraph: EventEmitter<any>;
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
+	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
 
 	isDataLoaded: boolean = false;
 	plotPoints: any[];
@@ -38,13 +39,10 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private isCursorNearInitialBeatTypeTooltip: boolean = false;
 	private currentBeatIdToChangeBeatType: string;
 	allowBeatTypeToChange: boolean = true;
-	selectedBeatType: string = '';
+	selectedBeatType: number = 1;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
-	@ViewChildren('beatTypeRadio') beatTypeRadioElements: QueryList<ElementRef>;	
-
-	
 
 	@ViewChild('plotPointsContainer') plotPointsContainerElement: ElementRef;
 	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
@@ -53,9 +51,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	constructor(private cdRef: ChangeDetectorRef, private host: ElementRef) {}
 
 	ngAfterViewInit(): void {
-		this.plotPoints = [ ...this.initialPlotPoints];
-		this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
-		this.isDataLoaded = true;
+		this.setupPlotPoints();
 
 		this.renderGraph();
 		this.setupEditorCallback();
@@ -88,50 +84,65 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	// #region beatType tooltip
 
 	onBeatTypeChanged($event: any): void {
-		console.log(this.currentBeatIdToChangeBeatType);
-		console.log(this.selectedBeatType);
-
 		this.allowBeatTypeToChange = false;
+		this.cdRef.detectChanges();
+		this.updateBeatType.emit(new UpdateBeatType(this.currentBeatIdToChangeBeatType, this.selectedBeatType));
 		// todo: send request to api
 		setTimeout(() => {
 			this.hideBeatTypeTooltip();
-			this.resetBeatTypeRadioButtons();
 			this.allowBeatTypeToChange = true;
+			this.cdRef.detectChanges();
 		}, 250);
 	}
 
 	onBeatSvgIconClick(beatCircleElement: any, beatId: string): void {
 		this.isCursorNearInitialBeatTypeTooltip = true;
-		this.resetBeatTypeRadioButtons();
-		// todo: get beat type from metadata
-		this.showBeatTypeTooltip(beatCircleElement, beatId);
+		let beatType;
+
+		this.plotPoints.forEach(beat => {
+			if (beat.beatId == beatId) {
+				beatType = beat.beatType;
+				return;
+			}
+		});
+		this.showBeatTypeTooltip(beatCircleElement, beatId, beatType);
 	}
 
-	showBeatTypeTooltip(beatCircleElement: any, beatId: string): void {
+	showBeatTypeTooltip(beatCircleElement: any, beatId: string, currentBeatType: number): void {
 		this.currentBeatIdToChangeBeatType = beatId;
+		this.selectedBeatType = +currentBeatType;
+		this.cdRef.detectChanges();
+
 		setTimeout(() => {
 			if (this.beatTypeTooltipIsPristine == true && this.isCursorNearInitialBeatTypeTooltip == false) {
 				this.hideBeatTypeTooltip();
 			}
 		}, 1000);
 		
-		this.beatTypeTooltipElement.nativeElement.style.display = 'block';
-		this.setTooltipPosition(beatCircleElement);
+		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation
+			this.beatTypeTooltipElement.nativeElement.style.display = 'block';
+			this.setTooltipPosition(beatCircleElement);
+			this.cdRef.detectChanges();
+		}, 150);
 	}
 
 	hideBeatTypeTooltip() {
 		this.currentBeatIdToChangeBeatType = '';
+		this.selectedBeatType = 1;
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
 		this.beatTypeTooltipIsPristine = true;
+		this.resetBeatTypeRadioButtons();
+		this.cdRef.detectChanges();
 	}
 
-	delayBeatTypeTooltipVisibility() {
+	makeBeatTypeTooltipDirty() {
 		this.beatTypeTooltipIsPristine = false;
-
+		this.cdRef.detectChanges();
 	}
 
 	private resetBeatTypeRadioButtons() {
-		this.selectedBeatType = '';
+		this.selectedBeatType = 1;
+		this.cdRef.detectChanges();
 	}
 	
 	private setTooltipPosition(hostingElement) {
@@ -240,6 +251,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 				this.isDmoFinished = update.isFinished;
 			}
 			this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
+			this.cdRef.detectChanges();
 
 			this.renderGraph();
 			this.setupEditorCallback();
@@ -257,6 +269,14 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 
   	// #region plot points graph
+	private setupPlotPoints() {
+		this.plotPoints = [ ...this.initialPlotPoints];
+		console.log(this.plotPoints);
+		this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
+		this.isDataLoaded = true;
+		this.cdRef.detectChanges();
+	}
+
 	private setupEditorCallback() {
 		this.plotPointsSet.emit({elements: this.plotPointsElements});
 	}

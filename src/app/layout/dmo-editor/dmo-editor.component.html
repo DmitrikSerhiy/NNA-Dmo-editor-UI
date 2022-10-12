@@ -44,7 +44,8 @@
             [isDmoFinished]="isDmoFinised"
             [updateGraph]="updateGraphEvent"
             (plotPointsSet)="plotPointsSet($event)"
-            (reorderBeats)="reorderBeats($event)">
+            (reorderBeats)="reorderBeats($event)"
+            (updateBeatType)="updateBeatType($event)">
        </app-plot-points-flow>
        
        <app-beats-flow
