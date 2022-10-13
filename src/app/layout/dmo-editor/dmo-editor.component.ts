@@ -59,7 +59,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		private router: Router,
 		public matModule: MatDialog,
 		private cdRef: ChangeDetectorRef,
-		private dataGenerator: BeatGeneratorService) { }
+		private dataGenerator: BeatGeneratorService
+		) { }
 
 	async ngOnInit(): Promise<void> {
 		this.activatedRoute.queryParams.subscribe((params) => {
@@ -70,6 +71,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async ngAfterViewInit(): Promise<void> {
 		await this.loadDmo()
+		this.subscribeToClipboard();
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -136,6 +138,28 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async closeEditor(): Promise<void> {
 		this.router.navigate(['app/dmos']);
+	}
+
+	private subscribeToClipboard() {
+		document.addEventListener('paste', this.pasteSanitizer);
+	}
+
+	private pasteSanitizer($event: any): void {
+		if ($event.target.nodeName != "DIV" || !$event.target.className.includes("beat-data-holder")) {
+			return;
+		}
+		$event.preventDefault();
+		const paste = $event.clipboardData.getData('text');
+		const selection = window.getSelection();
+		if (!selection.rangeCount) {
+			return;
+		}
+		selection.deleteFromDocument();
+		selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+	}
+
+	private unsubscribeFromClipboard() {
+		document.removeEventListener('paste', this.pasteSanitizer);
 	}
 
 	private async finalizePopup(): Promise<ShortDmoDto> {
@@ -509,6 +533,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private async closeEditorAndClearData(): Promise<void> {
 		await this.editorHub.sanitizeTempIds(this.dmoId);
 		await this.editorHub.abortConnection();
+		this.unsubscribeFromClipboard();
 		this.dmoId = '';
 		this.isInitialPopupOpen = false;
 		this.matModule.closeAll();
