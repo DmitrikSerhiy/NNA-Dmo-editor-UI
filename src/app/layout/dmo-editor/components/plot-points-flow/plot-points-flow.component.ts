@@ -87,7 +87,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.allowBeatTypeToChange = false;
 		this.cdRef.detectChanges();
 		this.updateBeatType.emit(new UpdateBeatType(this.currentBeatIdToChangeBeatType, this.selectedBeatType));
-		// todo: send request to api
 		setTimeout(() => {
 			this.hideBeatTypeTooltip();
 			this.allowBeatTypeToChange = true;
@@ -105,6 +104,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 				return;
 			}
 		});
+
 		this.showBeatTypeTooltip(beatCircleElement, beatId, beatType);
 	}
 

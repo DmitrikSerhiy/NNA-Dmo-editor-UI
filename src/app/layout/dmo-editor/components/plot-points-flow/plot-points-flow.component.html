@@ -32,26 +32,26 @@
                 transform="scale(1.5)"
                 >
 
-                <circle *ngIf="plotPoint.beatType == 1" 
+                <circle #beatIcon *ngIf="plotPoint.beatType == 1" 
                     class="beat-icon"
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
                     [attr.r]="plotPointRadius"
-                    (click)="onBeatSvgIconClick($event.target, plotPoint.beatId)"
+                    (click)="onBeatSvgIconClick(beatIcon, plotPoint.beatId)"
                     />
 
-                <circle *ngIf="plotPoint.beatType == 2"
+                <circle #expBeatIcon *ngIf="plotPoint.beatType == 2"
                     fill="white" stroke="black" stroke-width="1" class="beat-icon"
                     [attr.cx]="plotPointContainerSize/2" 
                     [attr.cy]="plotPointContainerSize/2" 
                     [attr.r]="plotPointRadius"
-                    (click)="onBeatSvgIconClick($event.target, plotPoint.beatId)"
+                    (click)="onBeatSvgIconClick(expBeatIcon, plotPoint.beatId)"
                     />
                     
-                <g *ngIf="plotPoint.beatType == 3" 
+                <g #characterBeatIcon *ngIf="plotPoint.beatType == 3" 
                     class="beat-icon" 
                     transform="translate(9, 9)"
-                    (click)="onBeatSvgIconClick($event.target, plotPoint.beatId)"
+                    (click)="onBeatSvgIconClick(characterBeatIcon, plotPoint.beatId)"
                     >
                         <circle cx="7" cy="7" r="6" fill="white" stroke="black" stroke-width="1" />
                         <circle cx="6.99999" cy="5.83333" r="1.83333" fill="white" stroke="black"/>
@@ -59,10 +59,10 @@
                 </g>
 
 
-                <g *ngIf="plotPoint.beatType == 4" 
+                <g #astBeatIcon *ngIf="plotPoint.beatType == 4" 
                     class="beat-icon" 
                     transform="translate(9, 9)"
-                    (click)="onBeatSvgIconClick($event.target, plotPoint.beatId)">
+                    (click)="onBeatSvgIconClick(astBeatIcon, plotPoint.beatId)">
                         <circle cx="7" cy="7" r="1.5" fill="black" stroke="black"/>
                         <path d="M13.5 7C13.5 7.33309 13.2975 7.69585 12.844 7.99819C12.394 8.29819 11.7435 8.5 11 8.5C10.2565 8.5 9.60604 8.29819 9.15603 7.99819C8.70253 7.69585 8.5 7.33309 8.5 7C8.5 6.66691 8.70253 6.30415 9.15603 6.00181C9.60604 5.70181 10.2565 5.5 11 5.5C11.7435 5.5 12.394 5.70181 12.844 6.00181C13.2975 6.30415 13.5 6.66691 13.5 7Z" fill="white" stroke="black"/>
                         <path d="M11.3033 2.76777C11.5388 3.0033 11.6521 3.40302 11.5452 3.93748C11.4392 4.46782 11.1219 5.07048 10.5962 5.5962C10.0705 6.12192 9.46781 6.43918 8.93748 6.54525C8.40302 6.65214 8.0033 6.53884 7.76777 6.30331C7.53223 6.06777 7.41893 5.66805 7.52582 5.1336C7.63189 4.60326 7.94915 4.0006 8.47487 3.47488C9.0006 2.94916 9.60325 2.6319 10.1336 2.52583C10.668 2.41894 11.0678 2.53224 11.3033 2.76777Z" fill="white" stroke="black"/>
