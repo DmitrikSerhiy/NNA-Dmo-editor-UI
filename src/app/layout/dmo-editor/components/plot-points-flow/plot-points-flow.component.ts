@@ -271,7 +271,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
   	// #region plot points graph
 	private setupPlotPoints() {
 		this.plotPoints = [ ...this.initialPlotPoints];
-		console.log(this.plotPoints);
 		this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
 		this.isDataLoaded = true;
 		this.cdRef.detectChanges();

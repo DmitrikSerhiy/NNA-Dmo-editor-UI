@@ -271,7 +271,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
     // #region callbacks from children
 
 	async beatsSet(callbackResult: any): Promise<void> {
-		console.log(callbackResult);
 		this.beatElements = callbackResult.beats;
 		this.timePickerElements = callbackResult.timePickers;
 		this.beatsMetaData = callbackResult.beatMetadata
