@@ -33,6 +33,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
 	private invalidEmailValidation: string;
 	private emtpyEmailValidation: string;
+	private tooLongNameValidation: string;
 	private takenEmailValidaiton: string;
 	private emtpyNameValidation: string;
 	private takenNameValidaiton: string;
@@ -58,11 +59,12 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.invalidEmailValidation = "Email is invalid";
 		this.emtpyEmailValidation = "Email is missing";
 		this.takenEmailValidaiton = "Email is already taken";
-		this.emtpyNameValidation = "Name is missing";
-		this.takenNameValidaiton = "Name is already taken";
+		this.emtpyNameValidation = "Nickname is missing";
+		this.takenNameValidaiton = "Nickname is already taken";
+		this.tooLongNameValidation = "Maximum nickname length is 50";
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must be at least 10 characters long";
-		this.failureMessage = 'Failed to create user';
+		this.failureMessage = "Failed to create user";
 		this.nonAllowedSymbols = "Non-allowed symbols detected";
 	}
 
@@ -193,6 +195,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.nameInvalid = true;
 		if (errors['required']) {
 			this.nameValidationToShow = this.emtpyNameValidation;
+			this.nameInput.nativeElement.focus();
+		} else if (errors['maxlength']) {
+			this.nameValidationToShow = this.tooLongNameValidation;
 			this.nameInput.nativeElement.focus();
 		}
 			return;

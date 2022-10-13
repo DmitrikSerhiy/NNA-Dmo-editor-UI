@@ -20,10 +20,10 @@
                     </div>
 
                     <div id="name-input" class="nna-input-group auth-input">
-                        <input #nameInpup type="text" name="new-name" id="new-name" formControlName="new-name" class="form-control nna-input" placeholder="Name"
+                        <input #nameInpup type="text" name="new-name" id="new-name" formControlName="new-name" class="form-control nna-input" placeholder="Nickname"
                             (keyup)="specialTrigger($event, 2)" (keydown)="checkKey($event)" autocomplete="off"/>
                         <label for="new-name" class="nna-input-label"> 
-                            <span *ngIf="!nameInvalid">Name</span> 
+                            <span *ngIf="!nameInvalid">Nickname</span> 
                             <span class="validation-container" *ngIf="nameInvalid">{{nameValidationToShow}}</span>
                         </label>
                         <span [hidden]="!nameInvalid" class="validation-icon material-icons" title="{{nameValidationToShow}}"> warning_amber</span>

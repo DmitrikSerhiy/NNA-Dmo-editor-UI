@@ -24,7 +24,7 @@
             <div class="block-with-button">
                 <div class="nna-input-group">
                     <input #demoName autocomplete="off" type="text" name="demoName" id="demoName" class="nna-input" disabled />
-                    <label for="demoName" class="nna-input-label">Name</label>
+                    <label for="demoName" class="nna-input-label">Nickname</label>
                 </div>
                 <button type="button" class='nna-icon-button nna-button-primary' (click)='toggleChangeUserNameForm(true)'>
                     <i class="fa fa-pencil-alt" aria-hidden="true"></i>
@@ -35,8 +35,8 @@
         <form [hidden]="!showUserNameChangeForm" [formGroup]="changeUserNameForm" (ngSubmit)="onUserNameChange()" autocomplete="off" class="personal-info-block change-username-form-wrapper">
             <div class="change-username-form">
                 <div class="nna-input-group">
-                    <input id="userName" #userName autocomplete="off" type="text" name="userName" formControlName="userName" class="nna-input" placeholder="Name">
-                    <label for="userName" class="nna-input-label">Name</label>
+                    <input id="userName" #userName autocomplete="off" type="text" name="userName" formControlName="userName" class="nna-input" placeholder="Nickname">
+                    <label for="userName" class="nna-input-label">Nickname</label>
                 </div>
                 <button type="submit" [disabled]="!changeUserNameForm.valid" class='nna-icon-button nna-button-primary'
                     [ngClass]="{'nna-diabled-button': !changeUserNameForm.valid}">
@@ -49,10 +49,10 @@
             <div *ngIf="changeUserNameForm.invalid && changeUserNameForm.dirty && !hasServerValidationMessage" class="validation-wrapper">
                 <div *ngIf="changeUserNameForm.controls.userName.errors" class="validation-container">
                     <div *ngIf="changeUserNameForm.controls.userName.errors.required">
-                        <p class="validation-text">Name is missing</p>
+                        <p class="validation-text">Nickname is missing</p>
                     </div>
                     <div *ngIf="changeUserNameForm.controls.userName.errors.maxlength">
-                        <p class="validation-text">Maximum name length is 50</p>
+                        <p class="validation-text">Maximum nickname length is 50</p>
                     </div>
                 </div>
             </div>
