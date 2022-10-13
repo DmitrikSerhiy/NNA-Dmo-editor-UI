@@ -21,6 +21,7 @@ export class BeatGeneratorService {
 		defaultBeatDetails.text = '';
 		defaultBeatDetails.order = -1;
 		defaultBeatDetails.time = defaultTime;
+		defaultBeatDetails.type = 1;
 
 		return defaultBeatDetails;
 	}

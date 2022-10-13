@@ -159,7 +159,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 
 		if (key == 13) { // enter
-			this.focusSiblingBeat(index);
+			this.focusBeat(index);
 			event.preventDefault();
 			return;
 		}
@@ -178,7 +178,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 		if (key == 39) { // right arrow
 			if (event.target.selectionStart == 7 || this.tabIsPressed == true) {
-				this.focusSiblingBeat(index);
+				this.focusBeat(index);
 				event.preventDefault();
 				return;
 			}
@@ -246,7 +246,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			(key >= 96 && key <= 105) || // numbers on numeric keyboard
 			key == 32 ||                 // space
 			(key == 8 || key == 46)) {   // backspace and delete
-			console.log('beat time dirty');
 			this.beatsMetaData[index].isDirty = true;
 		}
 	}
@@ -392,7 +391,6 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	}
 
 	onBeatChanged(index: number): void {
-		console.log('beat dirty');
 		this.beatsMetaData[index].isDirty = true;
 	}
 
@@ -433,10 +431,16 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			return false;
 		}
 
-		const isBeatEmtpy = this.beatDataHolderElements.toArray()[currentPosition + 1].nativeElement.innerText == '';
-		const isTimePickerEmpty = this.timePickersElements.toArray()[currentPosition + 1].nativeElement.value == this.defaultTimePickerValue;
 
-		if (isBeatEmtpy && isTimePickerEmpty) {
+		const isNextBeatAesthetic = this.beats[currentPosition + 1].type == 4;
+		const isBeatEmtpy = this.beatDataHolderElements.toArray()[currentPosition + 1].nativeElement.innerText == '';
+		if (isNextBeatAesthetic == true && isBeatEmtpy == true) {
+			this.focusBeat(currentPosition + 1);
+			return true;
+		}
+
+		const isTimePickerEmpty = this.timePickersElements.toArray()[currentPosition + 1].nativeElement.value == this.defaultTimePickerValue;
+		if (isBeatEmtpy == true && isTimePickerEmpty == true) {
 			this.focusTimePicker(this.timePickersElements.toArray()[currentPosition + 1].nativeElement);
 			return true;
 
@@ -623,12 +627,16 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	private setupTimePickerValues(): void {
 		this.timePickersElements.forEach((picker) => {
-			let beat = this.beats.find((b: NnaBeatDto)=> b.beatId == this.selectBeatIdFromTimePicker(picker.nativeElement));
+			const beat = this.beats.find((b: NnaBeatDto)=> b.beatId == this.selectBeatIdFromTimePicker(picker.nativeElement));
 			if (!beat) {
 				return;
 			}
-
-			picker.nativeElement.value = this.adjastSingleMinutesAndSeconds(this.getTimeView(beat.time, true));;
+			if (beat.type == 4) {
+				picker.nativeElement.value = this.defaultTimePickerValue;
+				picker.nativeElement.style.display = 'none';
+			} else {
+				picker.nativeElement.value = this.adjastSingleMinutesAndSeconds(this.getTimeView(beat.time, true));
+			}
 		});
 	}
 
@@ -845,7 +853,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		return `${value.substr(0, index)}${replace}${value.substr(index + 1)}`;
 	}
 
-	private focusSiblingBeat(index: number): void {
+	private focusBeat(index: number): void {
 		this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index].nativeElement.parentElement);
 	}
 
@@ -858,14 +866,32 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	}
 
 	private focusPreviousTimePicker(index: number): void {
-		if (index != 0) {
-			this.focusTimePicker(this.timePickersElements.toArray()[index - 1].nativeElement)
+		if (index == 0) {
+			return;
+		}
+
+		for (let i = index - 1; i >= 0; i--) {
+			if (this.beats[i].type == 4) {
+				this.focusPreviousTimePicker(i - 1);
+				continue;
+			}
+			this.focusTimePicker(this.timePickersElements.toArray()[i].nativeElement)
+			break;
 		}
 	}
 
 	private focusNextTimePicker(index: number): void {
-		if (index != this.beatsIds.length - 1) {
-			this.focusTimePicker(this.timePickersElements.toArray()[index + 1].nativeElement)
+		if (index == this.beats.length - 1) {
+			return;
+		}
+
+		for (let i = index + 1; i <= this.beats.length - 1; i++) {
+			if (this.beats[i].type == 4) { 
+				this.focusNextTimePicker(i + 1);
+				continue;
+			}
+			this.focusTimePicker(this.timePickersElements.toArray()[i].nativeElement);
+			break;
 		}
 	}
 
