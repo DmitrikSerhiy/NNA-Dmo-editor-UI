@@ -23,11 +23,6 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 align-items: center;
                 font: $editor-font;
                 cursor: default;
-
-                &::selection {
-                    color: $secondary-color;
-                    background-color: rgba(248, 195, 60, .7); // primary with opacity
-                }
             }
 
             .beats-footer {
@@ -95,11 +90,6 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                         &:focus {
                             @include setBorder($active-color);
                             color: $active-color;
-                        }
-
-                        &::selection {
-                            color: $secondary-color;
-                            background-color: rgba(248, 195, 60, .7); // primary with opacity
                         }
                     }
                 
@@ -198,11 +188,6 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                             content: attr(placeholder);
                             color: rgba(128, 128, 128, 0.7);
                             position: absolute;
-                        }
-
-                        &::selection {
-                            color: $secondary-color;
-                            background-color: rgba(248, 195, 60, .7); // primary with opacity
                         }
                     }
                 }

@@ -22,6 +22,11 @@ html, body {
   scrollbar-width: thin !important;
 }
 
+::selection {
+  color: $secondary-color;
+  background-color: rgba(248, 195, 60, .7); // primary with opacity
+}
+
 ::-webkit-scrollbar-track {
   background-color:  $background-color;
 }
