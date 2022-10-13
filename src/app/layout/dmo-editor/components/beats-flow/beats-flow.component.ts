@@ -78,17 +78,16 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		let lastBeatElement = this.beatDataHolderElements.last.nativeElement;
 		if (!lastBeatElement.innerHTML) {
 			if (lastTimePickerElement.value == this.defaultTimePickerValue) {
-				lastTimePickerElement.scrollIntoView(false);
 				lastTimePickerElement.focus();
+				this.scrollToElement(lastTimePickerElement);
 				lastTimePickerElement.setSelectionRange(0,0);
 			} else {
-				lastBeatElement.scrollIntoView(false);
 				lastBeatElement.focus();
+				this.scrollToElement(lastBeatElement);
 			}
 		} else {
-			lastBeatElement.scrollIntoView(false);
 			this.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
-	
+			this.scrollToElement(lastBeatElement);
 		}
 	}
 
@@ -103,8 +102,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.beatsIds.forEach((beatId, i) => {
 			if (beatId == timePickerToFocus) {
 				const element = this.timePickersElements.toArray()[i].nativeElement;
-				element.scrollIntoView(false);
 				element.focus();
+				this.scrollToElement(element);
 				element.setSelectionRange(0,0);
 				return;
 			}
@@ -113,7 +112,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			this.beatsIds.forEach((beatId, i) => {
 				if (beatId == beatIdToFocus) {
 					const element = this.beatDataHolderElements.toArray()[i].nativeElement;
-					element.scrollIntoView(false);
+					element.focus();
+					this.scrollToElement(element);
 					this.shiftCursorToTheEndOfChildren(element.parentElement);
 					return;
 				}
@@ -132,6 +132,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			lastAction: lastAction,
 			lastActionMetaData: actionMetaData
 		});
+	}
+
+	private scrollToElement(element: any): void {
+		element.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
 	}
 
   	// #endregion
@@ -569,6 +573,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 		if (!dataHolder.lastChild) {
 			dataHolder.focus();
+			this.scrollToElement(dataHolder);
 			return;
 		} else {
 			if (dataHolder.lastChild.nodeType == 3) { // TEXT_NODE
@@ -578,6 +583,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 					range.setStart(dataHolder.lastChild.lastChild, dataHolder.lastChild.lastChild.textContent.length);
 				} else {
 					dataHolder.focus();
+					this.scrollToElement(dataHolder);
 				}
 			}
 
@@ -617,6 +623,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	private focusTimePicker(nativeElement: any): void {
 		nativeElement.focus();
+		this.scrollToElement(nativeElement);
 		if (nativeElement.value == this.defaultEmptyTimePickerValue) {
 			nativeElement.setSelectionRange(0,0);
 		} else {
