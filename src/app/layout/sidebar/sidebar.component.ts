@@ -39,8 +39,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   	async ngOnInit() {
 		this.isAuthorized = this.userManager.isAuthorized();
 		this.currMenuSubscription = this.currestSidebarService.currentMenuSource$.subscribe();
-		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((event$) => { this.sidebarState = event$; })
+		this.sidebarManagerService.init();
 		this.sidebarState = this.sidebarManagerService.IsOpen;
+		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((state) => { this.sidebarState = state; })
 		this.userName = this.userManager.getCurrentUser();
 		this.updateUserNameDisplay.subscribe(() => { this.userName = this.userManager.getCurrentUser(); } );
   	}

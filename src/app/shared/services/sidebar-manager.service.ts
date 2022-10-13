@@ -14,13 +14,15 @@ export class SidebarManagerService {
 		return localStorage.getItem(this.storageSidebarKey) == "true";
 	}
 	private set IsOpen(value: boolean) {
-		localStorage.setItem(this.storageSidebarKey, `${value}`);
+		this.setSidebarState(value);
 	}
 
-	constructor() {
+	constructor() {}
+
+	init() {
 		const savedState = localStorage.getItem(this.storageSidebarKey);
-		if (!savedState) {
-			this.IsOpen = true;
+		if (savedState === null) {
+			this.setSidebarState(true);
 		}
 
 		this.sidebar = new BehaviorSubject<boolean>(this.IsOpen);
@@ -35,5 +37,9 @@ export class SidebarManagerService {
 	collapseSidebar() {
 		this.IsOpen = false;
 		this.sidebar.next(false);
+	}
+
+	private setSidebarState(value: boolean) {
+		localStorage.setItem(this.storageSidebarKey, `${value}`)
 	}
 }
