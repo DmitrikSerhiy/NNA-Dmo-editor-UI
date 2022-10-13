@@ -254,13 +254,18 @@ export class SignupComponent implements OnInit, OnDestroy {
 						this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 						this.router.navigateByUrl('/app');
 					}, 
-					(messageForUI) => {
-						if (messageForUI.unhandledError) {
-							this.isProcessing = false;
+					(badResponse) => {
+						this.isProcessing = false;
+						if (badResponse.unhandledError) {
 							return;
 						}
-						this.isProcessing = false;
-						this.passValidationToShow = messageForUI;
+
+						if (badResponse.title) {
+							this.passValidationToShow = badResponse.title;
+						} else {
+							this.passValidationToShow = badResponse;
+						}
+
 						this.passwordInvalid = true;
 						this.passwordInput.nativeElement.focus();
 						
