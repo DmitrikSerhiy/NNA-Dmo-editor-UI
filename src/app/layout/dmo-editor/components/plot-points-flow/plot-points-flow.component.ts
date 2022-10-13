@@ -177,6 +177,11 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
   	// #region  general settings
 
+	getSvgCanvas(): string {
+		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
+	}
+	  
+
 	onBeginBeatReorder($event: any): void {
 		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
 		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
@@ -269,6 +274,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 
   	// #region plot points graph
+
 	private setupPlotPoints() {
 		this.plotPoints = [ ...this.initialPlotPoints];
 		this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
