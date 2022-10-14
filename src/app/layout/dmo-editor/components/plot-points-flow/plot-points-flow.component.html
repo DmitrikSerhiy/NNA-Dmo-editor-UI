@@ -1,6 +1,6 @@
-<div #beatTypeTooltip class="beatTypeTooltipContainer" (mouseenter)="makeBeatTypeTooltipDirty()" (mouseleave)="hideBeatTypeTooltip()">  
+<div #beatTypeTooltip class="beatTypeTooltipContainer" (mouseleave)="hideBeatTypeTooltip()">  
 
-    <mat-radio-group [(ngModel)]="selectedBeatType" (change)="onBeatTypeChanged($event)" [disabled]="!allowBeatTypeToChange" class="beat-type-options">
+    <mat-radio-group [(ngModel)]="selectedBeatType" (change)="onBeatTypeChanged()" [disabled]="!allowBeatTypeToChange" class="beat-type-options">
         <mat-radio-button class="beat-type-option" [value]="1">Beat</mat-radio-button>
         <mat-radio-button class="beat-type-option" [value]="2">Exposition beat</mat-radio-button>
         <mat-radio-button class="beat-type-option" [value]="3">Character beat</mat-radio-button>

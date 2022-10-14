@@ -4,7 +4,7 @@
 
 export const environment = {
 	production: false,
-	server_user: 'https://localhost:4000/api/',
+	server_user: 'http://localhost:4000/api/',
 	google_client_id: "778642260315-r01qeplmh6bo0169uv587o07stv06nab.apps.googleusercontent.com"
 };
 

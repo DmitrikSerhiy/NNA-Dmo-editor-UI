@@ -28,6 +28,7 @@
                             (keydown)="setBeatKeyMetaData($event, i)"
                             (keyup)="setBeatValue($event)"
                             (focusout)="finalizeBeat($event, i)"
+                            (focusin)="prepareBeatDataHolder()"
                             (input)="onBeatChanged(i)"
                             (dragover)="preventDrag($event)">
                         </div>

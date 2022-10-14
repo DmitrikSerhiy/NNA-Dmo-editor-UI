@@ -13,6 +13,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() initialPlotPoints: any[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateGraph: EventEmitter<any>;
+	@Input() openBeatTypeTooltip: EventEmitter<any>;
+	@Input() closeBeatTypeTooltip: EventEmitter<any>;
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
@@ -24,6 +26,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private defaultBeatMarginBottom: number = 16;
 	private plotPointRadius: number = 6;
 	private initialGraphTopMargin: number = 16;
+
 	
 	graphHeigth: string;
 	plotFlowWidth: number = 32;
@@ -35,11 +38,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private beatToReplace: BeatToMoveDto = null;
 
 	private resizeObserver: ResizeObserver 
-	private beatTypeTooltipIsPristine: boolean = true;
-	private isCursorNearInitialBeatTypeTooltip: boolean = false;
+
+	private isBeatTypeTooltipShown: boolean = false;
 	private currentBeatIdToChangeBeatType: string;
+	private plotPointSyfix = 'plot_point_';
 	allowBeatTypeToChange: boolean = true;
 	selectedBeatType: number = 1;
+	private toolTipUnsubscribe: AbortController;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
@@ -59,17 +64,12 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 		this.applyTooltopStylesStyles();
 		this.resizeObserver = new ResizeObserver((entries) => { 
-			this.hideBeatTypeTooltip()
+			if (this.isBeatTypeTooltipShown == true) {
+				this.hideBeatTypeTooltip()
+			}
 		});
 
 		this.resizeObserver.observe(this.host.nativeElement);
-
-		this.host.nativeElement.addEventListener('mouseleave', () => {
-			this.isCursorNearInitialBeatTypeTooltip = false;
-			if (this.beatTypeTooltipIsPristine == true) {
-				this.hideBeatTypeTooltip();
-			}
-		});
 	}
 
 
@@ -83,7 +83,11 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	// #region beatType tooltip
 
-	onBeatTypeChanged($event: any): void {
+	onBeatTypeChanged(): void {
+		this.changeBeatType();
+	}
+
+	private changeBeatType() {
 		this.allowBeatTypeToChange = false;
 		this.cdRef.detectChanges();
 		this.updateBeatType.emit(new UpdateBeatType(this.currentBeatIdToChangeBeatType, this.selectedBeatType));
@@ -94,10 +98,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		}, 250);
 	}
 
-	onBeatSvgIconClick(beatCircleElement: any, beatId: string): void {
-		this.isCursorNearInitialBeatTypeTooltip = true;
+	onBeatSvgIconClick(beatIconElement: any, beatId: string): void {
 		let beatType;
-
 		this.plotPoints.forEach(beat => {
 			if (beat.beatId == beatId) {
 				beatType = beat.beatType;
@@ -105,38 +107,29 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			}
 		});
 
-		this.showBeatTypeTooltip(beatCircleElement, beatId, beatType);
+		this.showBeatTypeTooltip(beatIconElement, beatId, beatType);
 	}
 
-	showBeatTypeTooltip(beatCircleElement: any, beatId: string, currentBeatType: number): void {
+	showBeatTypeTooltip(beatIconElement: any, beatId: string, currentBeatType: number): void {
 		this.currentBeatIdToChangeBeatType = beatId;
 		this.selectedBeatType = +currentBeatType;
 		this.cdRef.detectChanges();
-
-		setTimeout(() => {
-			if (this.beatTypeTooltipIsPristine == true && this.isCursorNearInitialBeatTypeTooltip == false) {
-				this.hideBeatTypeTooltip();
-			}
-		}, 1000);
+		this.subscribeToGlobalKeyboardEvents();
 		
-		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation
+		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation on initial open
 			this.beatTypeTooltipElement.nativeElement.style.display = 'block';
-			this.setTooltipPosition(beatCircleElement);
+			this.setTooltipPosition(beatIconElement);
+			this.isBeatTypeTooltipShown = true;
 			this.cdRef.detectChanges();
 		}, 150);
 	}
 
 	hideBeatTypeTooltip() {
 		this.currentBeatIdToChangeBeatType = '';
-		this.selectedBeatType = 1;
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
-		this.beatTypeTooltipIsPristine = true;
+		this.isBeatTypeTooltipShown = false;
 		this.resetBeatTypeRadioButtons();
-		this.cdRef.detectChanges();
-	}
-
-	makeBeatTypeTooltipDirty() {
-		this.beatTypeTooltipIsPristine = false;
+		this.unsubscribeFromGlobalKeyboardEvents();
 		this.cdRef.detectChanges();
 	}
 
@@ -177,11 +170,59 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
   	// #region  general settings
 
+	private handleUpAndDownBeatTypeSelect($event: any, selectedBeatType: number): number {
+		$event.preventDefault();
+		const key = $event.which || $event.keyCode || $event.charCode;
+		if (key != 40 && key != 38) { // up and down arrow
+			return selectedBeatType;
+		}
+		if (key == 38) { // up
+			if (selectedBeatType != 1) {
+				selectedBeatType--;
+			}
+		} else if (key == 40) { // down
+			if (selectedBeatType != 4) {
+				selectedBeatType++;
+			}
+		}
+
+		console.log('global handler keydown from plot points flow');
+		return selectedBeatType;
+	}
+
+	private handleTooltipClosing($event) {
+		const key = $event.which || $event.keyCode || $event.charCode;
+		if (key == 13) { // enter
+			this.changeBeatType();
+		} else if (key == 27) { // esc
+			this.hideBeatTypeTooltip();
+		}
+	}
+
+	private subscribeToGlobalKeyboardEvents(): void {
+		this.toolTipUnsubscribe = new AbortController();
+		console.log(document.eventListeners('keydown'));
+		document.addEventListener('keydown', $event => { 
+			this.selectedBeatType = this.handleUpAndDownBeatTypeSelect($event, this.selectedBeatType); 
+			this.cdRef.detectChanges(); 
+			this.handleTooltipClosing($event);
+		}, { signal: this.toolTipUnsubscribe.signal } as AddEventListenerOptions );
+	}
+
+	private unsubscribeFromGlobalKeyboardEvents(): void {
+		this.toolTipUnsubscribe.abort();
+		// todo: can't remove handler
+		// document.removeEventListener('keydown', $event => {
+		// 	this.selectedBeatType = this.handleUpAndDownBeatTypeSelect($event, this.selectedBeatType); 
+		// 	this.handleTooltipClosing($event);
+		// });
+	}
+
+
 	getSvgCanvas(): string {
 		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
 	}
 	  
-
 	onBeginBeatReorder($event: any): void {
 		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
 		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
@@ -261,6 +302,15 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			this.renderGraph();
 			this.setupEditorCallback();
 		});
+
+		this.openBeatTypeTooltip.subscribe($event => {
+			this.showBeatTypeTooltip(this.selectPlotPointSvgIconFromBeatId($event.beatId), $event.beatId, $event.beatType);
+		});
+
+		this.closeBeatTypeTooltip.subscribe($event => {
+			if (this.isBeatTypeTooltipShown == true)
+				this.hideBeatTypeTooltip();
+		})
 	}
 
 	private renderGraph(): void {
@@ -337,9 +387,12 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 	}
 
-	private selectBeatId(plotPoint: any): string {
-		let plotPointSyfix = 'plot_point_';
-		return plotPoint.getAttribute('id').substring(plotPointSyfix.length);
+	private selectBeatId(plotPointElement: any): string {
+		return plotPointElement.getAttribute('id').substring(this.plotPointSyfix.length);
+	}
+
+	private selectBeatIconElement(plotPointElement: any): any {
+		return plotPointElement.children[0];
 	}
 
 	private calculatePlotPointMargin(i: number): number {
@@ -347,6 +400,18 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			return this.defaultBeatMarginBottom;
 		}
 		return (this.plotPointContainerSize / 2) * (this.plotPoints[i].plotPointMetaData.lines - 2) + this.defaultBeatMarginBottom;
+	}
+
+	private selectPlotPointSvgIconFromBeatId(beatId: string): any {
+		let selectedPlotPointSvg;
+		this.plotPointsSvgElements.forEach(plotPointSvg => {
+			if (beatId == this.selectBeatId(plotPointSvg.nativeElement)) {
+				selectedPlotPointSvg = plotPointSvg.nativeElement;
+				return;
+			}
+		})  
+		
+		return this.selectBeatIconElement(selectedPlotPointSvg)
 	}
 
   	// #endregion

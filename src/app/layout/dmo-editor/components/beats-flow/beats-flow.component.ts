@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
 import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 
 @Component({
@@ -7,7 +7,7 @@ import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 	styleUrls: ['./beats-flow.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BeatsFlowComponent implements AfterViewInit  {
+export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	@Input() initialBeats: NnaBeatDto[];
 	@Input() isDmoFinished: boolean;
@@ -17,6 +17,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	@Output() addBeat: EventEmitter<any> = new EventEmitter<any>();
 	@Output() removeBeat: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
+	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
+	@Output() closeBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
@@ -33,6 +35,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
 	private shiftIsPressed: boolean = false;
 	private controlIsPressed: boolean;
 	private tabIsPressed: boolean;
+	private isTimePickerFocused: boolean = false;
+	private isBeatDataHolderFocused: boolean = false;
+	
+	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 81 }; // q
 
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
@@ -47,6 +53,12 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		this.setupBeats(null, null, true);
 		this.setupEditorCallback();
 		this.setupSubscription();
+
+		this.subscribeToGlobalEditorKeyListeners();
+	}
+
+	ngOnDestroy(): void {
+		this.unsubscribeFromGlobalEditorKeyListeners();
 	}
 
 
@@ -71,6 +83,61 @@ export class BeatsFlowComponent implements AfterViewInit  {
 				this.setupEditorCallback();
 			}
 		});
+	}
+
+	private subscribeToGlobalEditorKeyListeners() {
+		document.addEventListener('keydown', ($event) => this.handleGlobalKeydownEvent($event, this.isTimePickerFocused, this.isBeatDataHolderFocused, this.controlIsPressed, this.specialHotKeys));
+	}
+
+	private unsubscribeFromGlobalEditorKeyListeners() {
+		document.removeEventListener('keydown', ($event) => this.handleGlobalKeydownEvent($event, this.isTimePickerFocused, this.isBeatDataHolderFocused, this.controlIsPressed, this.specialHotKeys));
+	}
+
+	private handleGlobalKeydownEvent($event: any, isTimePickerFocused: boolean, isBeatDataHolderFocused: boolean, controlIsPressed: boolean, specialHotKeys: any): void {
+		if (isTimePickerFocused == false && isBeatDataHolderFocused == false) {
+			return;
+		}
+
+		if (!controlIsPressed) {
+			return;
+		}
+
+		const key = $event.which || $event.keyCode || $event.charCode;
+		if (key == specialHotKeys.openBeatTypeTooltipKeyCode) {
+			$event.preventDefault();
+			const currentElement = document.activeElement as HTMLElement;
+			const beatId = currentElement.nodeName == "DIV"
+				? this.selectBeatIdFromBeatDataHolder(currentElement)
+				: this.selectBeatIdFromTimePicker(currentElement);
+
+				currentElement.blur();
+				this.openBeatTypeTooltip.emit( {beatId, beatType: currentElement.dataset.beatType } )
+			return;
+		} else {
+			$event.preventDefault();
+		}
+
+		console.log('global handler keydown from beats flow');
+	}
+
+	private setEditableElementsFocusMetaData(beatDataHolderFocused: boolean, timePickerFocused: boolean) {
+		if (beatDataHolderFocused == true && timePickerFocused == true) {
+			return; // timePicker and beatDataHolder can't be focused in the same time
+		}
+		if (beatDataHolderFocused == false && timePickerFocused == false) {
+			this.isBeatDataHolderFocused = false;
+			this.isTimePickerFocused = false;
+			return;
+		}
+
+		if (beatDataHolderFocused == true) {
+			this.isBeatDataHolderFocused = true;
+			this.isTimePickerFocused = false;
+		}
+		if (timePickerFocused == true) {
+			this.isTimePickerFocused = true;
+			this.isBeatDataHolderFocused = false;
+		}
 	}
 
 	private focusLastIfInitial(): void {
@@ -101,20 +168,20 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		if (timePickerToFocus != null) {
 			this.beatsIds.forEach((beatId, i) => {
 			if (beatId == timePickerToFocus) {
-				const element = this.timePickersElements.toArray()[i].nativeElement;
-				element.focus();
-				this.scrollToElement(element);
-				element.setSelectionRange(0,0);
+				const timePickerElement = this.timePickersElements.toArray()[i].nativeElement;
+				timePickerElement.focus();
+				this.scrollToElement(timePickerElement);
+				timePickerElement.setSelectionRange(0,0);
 				return;
 			}
 		});
 		} else if (beatIdToFocus != null) {
 			this.beatsIds.forEach((beatId, i) => {
 				if (beatId == beatIdToFocus) {
-					const element = this.beatDataHolderElements.toArray()[i].nativeElement;
-					element.focus();
-					this.scrollToElement(element);
-					this.shiftCursorToTheEndOfChildren(element.parentElement);
+					const beatDataHolderElement = this.beatDataHolderElements.toArray()[i].nativeElement;
+					beatDataHolderElement.focus();
+					this.scrollToElement(beatDataHolderElement);
+					this.shiftCursorToTheEndOfChildren(beatDataHolderElement.parentElement);
 					return;
 				}
 			});
@@ -143,8 +210,8 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	// #region key event handlers
 	
-	setTimePickerKeyMetaData(event: any, index: number): void {
-		let key = event.which || event.keyCode || event.charCode;
+	setTimePickerKeyMetaData($event: any, index: number): void {
+		let key = $event.which || $event.keyCode || $event.charCode;
 		if (((key < 48 || key > 59) &&  // numbers
 			(key < 96 || key > 105)) && // numbers on numeric keyboard
 			key != 8 && key != 46 &&    // delete and backspace
@@ -153,95 +220,95 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			key != 17 &&				// control
 			key != 9 &&                 // tab
 			!(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 		if (key == 17) {
-			this.controlIsPressed = true; // control
+			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
 			return;
 		}
 
 		if (key == 13) { // enter
 			this.focusBeat(index);
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 		if (key == 9) {
 			this.tabIsPressed = true;
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 		if (key == 8 || key == 46 ) { // delete and backspace
-			event.preventDefault();
-			this.shiftCursorOnColon(event.target, key);
+			$event.preventDefault();
+			this.shiftCursorOnColon($event.target, key);
 			return;
 		}
 
 		if (key == 39) { // right arrow
-			if (event.target.selectionStart == 7 || this.tabIsPressed == true) {
+			if ($event.target.selectionStart == 7 || this.tabIsPressed == true) {
 				this.focusBeat(index);
-				event.preventDefault();
+				$event.preventDefault();
 				return;
 			}
 			return;
 		}
 
 		if (key == 37) { // left arrow
-			if (event.target.selectionStart == 0 || this.tabIsPressed == true) {
+			if ($event.target.selectionStart == 0 || this.tabIsPressed == true) {
 				this.focusPreviousTimePicker(index);
-				event.preventDefault();
+				$event.preventDefault();
 				return;
 			}
 			return;
 		}
 
-		if (key == 40 || key == 38) { // up and down arrow
+		if ((key == 40 || key == 38) && this.tabIsPressed == true) { // up and down arrow
 			this.focusPreviousNextTimePicker(key, index);
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 
-		if (this.preventInvalidMinutesOrSeconds(event.target, +event.key[0])) {
-			this.setValidMinutesOrSeconds(event.target);
-			this.preventSecondsIfMinutesAreMax(event.target, +event.key[0]);
-			event.preventDefault();
+		if (this.preventInvalidMinutesOrSeconds($event.target, +$event.key[0])) {
+			this.setValidMinutesOrSeconds($event.target);
+			this.preventSecondsIfMinutesAreMax($event.target, +$event.key[0]);
+			$event.preventDefault();
 			return;
 		}
 
-		this.preventSecondsIfMinutesAreMax(event.target, +event.key[0]);
+		this.preventSecondsIfMinutesAreMax($event.target, +$event.key[0]);
 
-		if (this.replaceNextSpaceWithCharacter(event.target, +event.key[0])) {
-			event.preventDefault();
+		if (this.replaceNextSpaceWithCharacter($event.target, +$event.key[0])) {
+			$event.preventDefault();
 			return;
 		}
 	}
 
-	setTimePickerValue(event: any, index: number): void {
-		let key = event.which || event.keyCode || event.charCode;
+	setTimePickerValue($event: any, index: number): void {
+		let key = $event.which || $event.keyCode || $event.charCode;
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
 			return;
 		}
-		
+
 		if (key == 9) { // tab
 			this.tabIsPressed = false;
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 		if (key == 13) { // enter
-			event.preventDefault();
+			$event.preventDefault();
 			return;
 		}
 
 		if (key == 8 || key == 46 ) { // backspace and delete
-			if (this.deleteBeatIfEmpty(event.target, key)) {
-				event.preventDefault();
+			if (this.deleteBeatIfEmpty($event.target, key)) {
+				$event.preventDefault();
 				return;
 			}
 		}
@@ -254,16 +321,17 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 	}
  
-	finalizeTimePicker(event: any, index: number): void {
-		event.target.value = this.fillEmtpyTimeDto(event.target.value);
-		if (event.relatedTarget == null) {
+	finalizeTimePicker($event: any, index: number): void {
+		$event.target.value = this.fillEmtpyTimeDto($event.target.value);
+		this.setEditableElementsFocusMetaData(false, false);
+		if ($event.relatedTarget == null) {
 			if (this.beatsMetaData[index].isDirty == true) {
 				this.syncBeats.emit({ source: 'time_picker_focus_out', metaData: index });
 				this.beatsMetaData[index].isDirty = false;
 			}
 		} else {
-			let beatId = this.selectBeatIdFromTimePicker(event.target);
-			let timePickerId = this.selectBeatIdFromBeatDataHolder(event.relatedTarget);
+			let beatId = this.selectBeatIdFromTimePicker($event.target);
+			let timePickerId = this.selectBeatIdFromBeatDataHolder($event.relatedTarget);
 
 			if (beatId != timePickerId) {
 				if (this.beatsMetaData[index].isDirty == true) {
@@ -274,13 +342,20 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		}
 	}
 
-	prepareTimePicker(event: any): void {
-		if (event.target.value == this.defaultTimePickerValue) {
-			event.target.value = this.defaultEmptyTimePickerValue;
-			event.target.setSelectionRange(0, 0);
+	prepareTimePicker($event: any): void {
+		this.closeBeatTypeTooltip.emit();
+		this.setEditableElementsFocusMetaData(true, false);
+		if ($event.target.value == this.defaultTimePickerValue) {
+			$event.target.value = this.defaultEmptyTimePickerValue;
+			$event.target.setSelectionRange(0, 0);
 		} else {
-			event.target.setSelectionRange(8, 8);
+			$event.target.setSelectionRange(8, 8);
 		}
+	}
+
+	prepareBeatDataHolder() {
+		this.closeBeatTypeTooltip.emit();
+		this.setEditableElementsFocusMetaData(false, true);
 	}
 
 	beatContainerClick($event: any): void {
@@ -294,7 +369,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 		let key = $event.which || $event.keyCode || $event.charCode;
 
 		if (key == 17) { // control
-			this.controlIsPressed = true;
+			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
 		}
 
 		if (key == 16) { // shift
@@ -376,6 +451,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	finalizeBeat($event: any, index: number): void {
 		this.clearInnerTagsIfBeatIsEmpty($event);
+		this.setEditableElementsFocusMetaData(false, false);
 		if ($event.relatedTarget == null) {
 			if (this.beatsMetaData[index].isDirty == true) {
 				this.syncBeats.emit({ source: 'beat_data_holder_focus_out', metaData: index });
@@ -638,6 +714,7 @@ export class BeatsFlowComponent implements AfterViewInit  {
 			if (!beat) {
 				return;
 			}
+			picker.nativeElement.dataset.beatType = beat.type;
 			if (beat.type == 4) {
 				picker.nativeElement.value = this.defaultTimePickerValue;
 				picker.nativeElement.style.display = 'none';
@@ -862,6 +939,10 @@ export class BeatsFlowComponent implements AfterViewInit  {
 
 	private focusBeat(index: number): void {
 		this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index].nativeElement.parentElement);
+	}
+
+	private focusBeatByElement(nativeEnement: any): void {
+		this.shiftCursorToTheEndOfChildren(nativeEnement);
 	}
 
 	private focusPreviousNextTimePicker(key: number, index: number): void {

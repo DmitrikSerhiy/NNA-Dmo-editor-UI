@@ -42,10 +42,13 @@
        <app-plot-points-flow *ngIf="beatWasSet"
             [initialPlotPoints]="plotPointsWithMetaData" 
             [isDmoFinished]="isDmoFinised"
+            [openBeatTypeTooltip]="openBeatTypeTooltipEvent"
+            [closeBeatTypeTooltip]="closeBeatTypeTooltipEvent"
             [updateGraph]="updateGraphEvent"
             (plotPointsSet)="plotPointsSet($event)"
             (reorderBeats)="reorderBeats($event)"
-            (updateBeatType)="updateBeatType($event)">
+            (updateBeatType)="updateBeatType($event)"
+            >
        </app-plot-points-flow>
        
        <app-beats-flow
@@ -56,7 +59,10 @@
             (syncBeats)="syncBeats($event)"
             (addBeat)="addBeat($event)"
             (removeBeat)="removeBeat($event)"
-            (lineCountChanged)="lineCountChanged($event)">
+            (lineCountChanged)="lineCountChanged($event)"
+            (openBeatTypeTooltip)="openBeatTypeTooltip($event)"
+            (closeBeatTypeTooltip)="closeBeatTypeTooltip($event)"
+            >
        </app-beats-flow>
 
     </div>

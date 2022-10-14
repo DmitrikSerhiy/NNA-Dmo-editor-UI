@@ -40,7 +40,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	// events
 	updateGraphEvent: EventEmitter<any> = new EventEmitter<any>();
-	updateBeatsEvent: EventEmitter<any> = new EventEmitter<any>();;
+	updateBeatsEvent: EventEmitter<any> = new EventEmitter<any>();
+	openBeatTypeTooltipEvent: EventEmitter<any> = new EventEmitter<any>();
+	closeBeatTypeTooltipEvent: EventEmitter<any> = new EventEmitter<any>();
+	focusElementInBeatsFlowEvent: EventEmitter<any> = new EventEmitter<any>();
 
 	// ------ [start] not state
 	private isDmoFinised: boolean;
@@ -328,11 +331,18 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updatePlotPoints();
 	}
 
-	plotPointsSet(callbackResult): void {
+	plotPointsSet(callbackResult: any): void {
 		this.plotPointElements = callbackResult.elements;
 		this.cdRef.detectChanges();
 	}
 
+	openBeatTypeTooltip($event: any): void {
+		this.openBeatTypeTooltipEvent.emit($event);
+	}
+
+	closeBeatTypeTooltip($event: any): void {
+		this.closeBeatTypeTooltipEvent.emit($event)
+	}
 	async updateBeatType(updateBeatTypeResult: UpdateBeatType): Promise<void> {
 		let beats = this.selectBeatDtos();
 		let beatIndexToChangeType;

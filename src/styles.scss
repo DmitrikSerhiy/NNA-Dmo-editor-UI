@@ -121,6 +121,9 @@ html, body {
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle {
   background-color: $primary-color !important;
+  &:active {
+    background-color: $secondary-color !important;
+  }
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
