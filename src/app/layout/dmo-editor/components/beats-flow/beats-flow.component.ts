@@ -96,11 +96,11 @@ export class BeatsFlowComponent implements AfterViewInit {
 		this.handleGlobalKeydownEvent($event)
 	}.bind(this);
 
-	private subscribeToGlobalEditorKeyListeners() {
+	private subscribeToSpecialHotKeysListeners() {
 		document.addEventListener('keydown', this.handleGlobalKeydownEventWrapper);
 	}
 
-	private unsubscribeFromGlobalEditorKeyListeners() {
+	private unsubscribeFromSpecialHotKeysListeners() {
 		document.removeEventListener('keydown', this.handleGlobalKeydownEventWrapper);
 	}
 
@@ -245,9 +245,9 @@ export class BeatsFlowComponent implements AfterViewInit {
 		}
 
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
-			this.subscribeToGlobalEditorKeyListeners();
+			this.subscribeToSpecialHotKeysListeners();
 		} else {
-			this.unsubscribeFromGlobalEditorKeyListeners();
+			this.unsubscribeFromSpecialHotKeysListeners();
 		}
 
 		if (key == 13) { // enter
@@ -313,6 +313,7 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
+			this.unsubscribeFromSpecialHotKeysListeners();
 			return;
 		}
 
@@ -394,9 +395,9 @@ export class BeatsFlowComponent implements AfterViewInit {
 		}
 
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
-			this.subscribeToGlobalEditorKeyListeners();
+			this.subscribeToSpecialHotKeysListeners();
 		} else {
-			this.unsubscribeFromGlobalEditorKeyListeners();
+			this.unsubscribeFromSpecialHotKeysListeners();
 		}
 
 		if (key == 16) { // shift
@@ -443,6 +444,7 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
+			this.unsubscribeFromSpecialHotKeysListeners();
 		}
 
 		if (key == 16) { // shift
