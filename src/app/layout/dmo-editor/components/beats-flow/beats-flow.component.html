@@ -11,6 +11,7 @@
                 <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
                     <input #timePickers class="time-picker" 
                         [id]="'time_picker_' + beat.beatId"
+                        [attr.data-order]="i"
                         maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
                         placeholder="h:mm:ss" 
                         (keydown)="setTimePickerKeyMetaData($event, i)"
@@ -24,6 +25,7 @@
                     <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
                         <div #beatDataHolders class="beat-data-holder"
                             [id]="'beat_' + beat.beatId"
+                            [attr.data-order]="i"
                             type="text" contenteditable="true" draggable="false"  placeholder="add description"
                             (keydown)="setBeatKeyMetaData($event, i)"
                             (keyup)="setBeatValue($event)"

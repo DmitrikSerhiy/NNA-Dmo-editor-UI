@@ -48,6 +48,7 @@
             (plotPointsSet)="plotPointsSet($event)"
             (reorderBeats)="reorderBeats($event)"
             (updateBeatType)="updateBeatType($event)"
+            (focusElementInBeatsFlow)="focusElementInBeatsFlow($event)"
             >
        </app-plot-points-flow>
        
@@ -55,6 +56,7 @@
             [initialBeats]="this.initialDmoDto.beats"
             [isDmoFinished]="isDmoFinised"
             [updateBeatsEvent]="updateBeatsEvent"
+            [focusElement]="focusElementEvent"
             (beatsSet)="beatsSet($event)"
             (syncBeats)="syncBeats($event)"
             (addBeat)="addBeat($event)"

@@ -18,10 +18,12 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
+	@Output() focusElementInBeatsFlow: EventEmitter<any> = new EventEmitter<any>();
 
 	isDataLoaded: boolean = false;
 	plotPoints: any[];
 
+	private initialBeatType: number;
 	private plotPointContainerSize: number = 32;
 	private defaultBeatMarginBottom: number = 16;
 	private plotPointRadius: number = 6;
@@ -40,6 +42,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private resizeObserver: ResizeObserver 
 
 	private isBeatTypeTooltipShown: boolean = false;
+	private elementToFocusAfterClose: any = null;
 	private currentBeatIdToChangeBeatType: string;
 	private plotPointSyfix = 'plot_point_';
 	allowBeatTypeToChange: boolean = true;
@@ -84,12 +87,19 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	onBeatTypeChanged(): void {
 		this.changeBeatType();
+		if (this.selectedBeatType == this.initialBeatType) {
+			this.hideBeatTypeTooltip();
+			return;
+		}
 		this.setBeatTypeTooltipClossingDelay();
 	}
 
 	private changeBeatType() {
 		this.allowBeatTypeToChange = false;
 		this.cdRef.detectChanges();
+		if (this.selectedBeatType == this.initialBeatType) {
+			return;
+		}
 		this.updateBeatType.emit(new UpdateBeatType(this.currentBeatIdToChangeBeatType, this.selectedBeatType));
 	}
 
@@ -116,8 +126,9 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	showBeatTypeTooltip(beatIconElement: any, beatId: string, currentBeatType: number): void {
 		this.currentBeatIdToChangeBeatType = beatId;
 		this.selectedBeatType = +currentBeatType;
+		this.initialBeatType = +currentBeatType;
 		this.cdRef.detectChanges();
-		this.subscribeToGlobalKeyboardEvents();
+		this.subscribeToBeatTypeTooltipKeyboardEvents();
 		
 		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation on initial open
 			this.beatTypeTooltipElement.nativeElement.style.display = 'block';
@@ -133,12 +144,19 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.isBeatTypeTooltipShown = false;
 		this.allowBeatTypeToChange = true;
 		this.resetBeatTypeRadioButtons();
-		this.unsubscribeFromGlobalKeyboardEvents();
+
+		if (this.elementToFocusAfterClose) {
+			this.focusElementInBeatsFlow.emit(this.elementToFocusAfterClose);
+		}
+
+		this.elementToFocusAfterClose = null;
+		this.unsubscribeFromBeatTypeTooltipKeyboardEvents();
 		this.cdRef.detectChanges();
 	}
 
 	private resetBeatTypeRadioButtons() {
 		this.selectedBeatType = 1;
+		this.initialBeatType = 1;
 		this.cdRef.detectChanges();
 	}
 	
@@ -172,7 +190,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 
 
-  	// #region  general settings
+
 
 	private handleBeatTypeChangeByKeyboard($event: any): void {
 		$event.preventDefault();
@@ -191,13 +209,17 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		}
 
 		this.cdRef.detectChanges(); 
-		this.handleTooltipClosing(key);
+		this.handleBeatTypeTooltipClosing(key);
 
-		console.log('global handler keydown from plot points flow');
+		console.log('global handler keydown from PLOT POINTS FLOW');
 	}
 
-	private handleTooltipClosing(key: number): void {
+	private handleBeatTypeTooltipClosing(key: number): void {
 		if (key == 13) { // enter
+			if (this.selectedBeatType == this.initialBeatType) {
+				this.hideBeatTypeTooltip();
+				return;
+			}
 			this.changeBeatType();
 			this.setBeatTypeTooltipClossingDelay();
 		} else if (key == 27) { // esc
@@ -209,18 +231,16 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.handleBeatTypeChangeByKeyboard($event);
 	}.bind(this);
 
-	private subscribeToGlobalKeyboardEvents(): void {
+	private subscribeToBeatTypeTooltipKeyboardEvents(): void {
 		document.addEventListener('keydown', this.handleBeatTypeChangeByKeyboardWrapper);
 	}
 
-	private unsubscribeFromGlobalKeyboardEvents(): void {
+	private unsubscribeFromBeatTypeTooltipKeyboardEvents(): void {
 		document.removeEventListener('keydown', this.handleBeatTypeChangeByKeyboardWrapper);
 	}
 
 
-	getSvgCanvas(): string {
-		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
-	}
+	//#region beatsReordering
 	  
 	onBeginBeatReorder($event: any): void {
 		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
@@ -286,6 +306,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.beatToReplace = null;
 	}
 	
+	//#endregion
+
+	// #region  general settings
+
+	getSvgCanvas(): string {
+		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
+	}
 
 	private setupSubscription(): void {
 		this.updateGraph.subscribe(update => {
@@ -303,6 +330,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 
 		this.openBeatTypeTooltip.subscribe($event => {
+			this.elementToFocusAfterClose = $event.elementToFocusAfterClose;
 			this.showBeatTypeTooltip(this.selectPlotPointSvgIconFromBeatId($event.beatId), $event.beatId, $event.beatType);
 		});
 

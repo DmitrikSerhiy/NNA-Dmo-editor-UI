@@ -7,11 +7,12 @@ import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 	styleUrls: ['./beats-flow.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
+export class BeatsFlowComponent implements AfterViewInit {
 
 	@Input() initialBeats: NnaBeatDto[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
+	@Input() focusElement: EventEmitter<any>;
 	@Output() beatsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() lineCountChanged: EventEmitter<any> = new EventEmitter<any>();
 	@Output() addBeat: EventEmitter<any> = new EventEmitter<any>();
@@ -33,7 +34,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 	private onUpLines: any = {};
 	private valueBeforeRemove: string;
 	private shiftIsPressed: boolean = false;
-	private controlIsPressed: boolean;
+	private controlIsPressed: boolean = false;
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
@@ -54,12 +55,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.setupEditorCallback();
 		this.setupSubscription();
 
-		this.subscribeToGlobalEditorKeyListeners();
 	}
 
-	ngOnDestroy(): void {
-		this.unsubscribeFromGlobalEditorKeyListeners();
-	}
 
 
   	// #region general settings
@@ -83,41 +80,58 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 				this.setupEditorCallback();
 			}
 		});
+
+		this.focusElement.subscribe((element) => {
+			setTimeout(() => {
+				this.isDiv(element) == true 
+					? this.focusBeat(element.dataset.order)
+					: this.focusTimePickerByIndex(element.dataset.order);
+			}, 200);
+
+
+		});
 	}
 
+	private handleGlobalKeydownEventWrapper = function($event) {
+		this.handleGlobalKeydownEvent($event)
+	}.bind(this);
+
 	private subscribeToGlobalEditorKeyListeners() {
-		document.addEventListener('keydown', ($event) => this.handleGlobalKeydownEvent($event, this.isTimePickerFocused, this.isBeatDataHolderFocused, this.controlIsPressed, this.specialHotKeys));
+		document.addEventListener('keydown', this.handleGlobalKeydownEventWrapper);
 	}
 
 	private unsubscribeFromGlobalEditorKeyListeners() {
-		document.removeEventListener('keydown', ($event) => this.handleGlobalKeydownEvent($event, this.isTimePickerFocused, this.isBeatDataHolderFocused, this.controlIsPressed, this.specialHotKeys));
+		document.removeEventListener('keydown', this.handleGlobalKeydownEventWrapper);
 	}
 
-	private handleGlobalKeydownEvent($event: any, isTimePickerFocused: boolean, isBeatDataHolderFocused: boolean, controlIsPressed: boolean, specialHotKeys: any): void {
-		if (isTimePickerFocused == false && isBeatDataHolderFocused == false) {
+	private handleGlobalKeydownEvent($event: any): void {
+		if (this.isTimePickerFocused == false && this.isBeatDataHolderFocused == false) {
 			return;
 		}
 
-		if (!controlIsPressed) {
+		if (!this.controlIsPressed) {
 			return;
 		}
 
+		console.log('global handler keydown from BEATS FLOW');
 		const key = $event.which || $event.keyCode || $event.charCode;
-		if (key == specialHotKeys.openBeatTypeTooltipKeyCode) {
+		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
 			$event.preventDefault();
 			const currentElement = document.activeElement as HTMLElement;
-			const beatId = currentElement.nodeName == "DIV"
+			const beatId = this.isDiv(currentElement)
 				? this.selectBeatIdFromBeatDataHolder(currentElement)
 				: this.selectBeatIdFromTimePicker(currentElement);
 
 				currentElement.blur();
-				this.openBeatTypeTooltip.emit( {beatId, beatType: currentElement.dataset.beatType } )
+				this.openBeatTypeTooltip.emit({ beatId, beatType: currentElement.dataset.beatType, elementToFocusAfterClose: currentElement })
 			return;
-		} else {
-			$event.preventDefault();
 		}
 
-		console.log('global handler keydown from beats flow');
+
+	}
+
+	private isDiv(element: any): boolean {
+		return element.nodeName == "DIV"
 	}
 
 	private setEditableElementsFocusMetaData(beatDataHolderFocused: boolean, timePickerFocused: boolean) {
@@ -219,6 +233,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 			key != 32 &&                // space
 			key != 17 &&				// control
 			key != 9 &&                 // tab
+			key != this.specialHotKeys.openBeatTypeTooltipKeyCode &&
 			!(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
 			$event.preventDefault();
 			return;
@@ -227,6 +242,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 		if (key == 17) {
 			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
 			return;
+		}
+
+		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
+			this.subscribeToGlobalEditorKeyListeners();
+		} else {
+			this.unsubscribeFromGlobalEditorKeyListeners();
 		}
 
 		if (key == 13) { // enter
@@ -370,6 +391,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 
 		if (key == 17) { // control
 			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
+		}
+
+		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
+			this.subscribeToGlobalEditorKeyListeners();
+		} else {
+			this.unsubscribeFromGlobalEditorKeyListeners();
 		}
 
 		if (key == 16) { // shift
@@ -695,6 +722,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy  {
 		}
 
 		return beatWasDeleted;
+	}
+
+	private focusTimePickerByIndex(index) {
+		if (this.beats[index].type == 4) {
+			this.focusBeat(index);
+			return;
+		}
+		this.focusTimePicker(this.timePickersElements.toArray()[index].nativeElement);
 	}
 
 	private focusTimePicker(nativeElement: any): void {
