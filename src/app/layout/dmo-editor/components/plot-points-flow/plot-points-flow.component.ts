@@ -44,7 +44,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private plotPointSyfix = 'plot_point_';
 	allowBeatTypeToChange: boolean = true;
 	selectedBeatType: number = 1;
-	private toolTipUnsubscribe: AbortController;
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
 	@ViewChildren('plotPointsSvgs') plotPointsSvgElements: QueryList<ElementRef>;	
@@ -85,12 +84,16 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	onBeatTypeChanged(): void {
 		this.changeBeatType();
+		this.setBeatTypeTooltipClossingDelay();
 	}
 
 	private changeBeatType() {
 		this.allowBeatTypeToChange = false;
 		this.cdRef.detectChanges();
 		this.updateBeatType.emit(new UpdateBeatType(this.currentBeatIdToChangeBeatType, this.selectedBeatType));
+	}
+
+	private setBeatTypeTooltipClossingDelay() {
 		setTimeout(() => {
 			this.hideBeatTypeTooltip();
 			this.allowBeatTypeToChange = true;
@@ -128,6 +131,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.currentBeatIdToChangeBeatType = '';
 		this.beatTypeTooltipElement.nativeElement.style.display = '';
 		this.isBeatTypeTooltipShown = false;
+		this.allowBeatTypeToChange = true;
 		this.resetBeatTypeRadioButtons();
 		this.unsubscribeFromGlobalKeyboardEvents();
 		this.cdRef.detectChanges();
@@ -170,52 +174,47 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
   	// #region  general settings
 
-	private handleUpAndDownBeatTypeSelect($event: any, selectedBeatType: number): number {
+	private handleBeatTypeChangeByKeyboard($event: any): void {
 		$event.preventDefault();
 		const key = $event.which || $event.keyCode || $event.charCode;
-		if (key != 40 && key != 38) { // up and down arrow
-			return selectedBeatType;
+		if (key != 40 && key != 38 && key != 13 && key != 27) { // up and down arrow
+			return;
 		}
 		if (key == 38) { // up
-			if (selectedBeatType != 1) {
-				selectedBeatType--;
+			if (this.selectedBeatType != 1) {
+				this.selectedBeatType--;
 			}
 		} else if (key == 40) { // down
-			if (selectedBeatType != 4) {
-				selectedBeatType++;
+			if (this.selectedBeatType != 4) {
+				this.selectedBeatType++;
 			}
 		}
 
+		this.cdRef.detectChanges(); 
+		this.handleTooltipClosing(key);
+
 		console.log('global handler keydown from plot points flow');
-		return selectedBeatType;
 	}
 
-	private handleTooltipClosing($event) {
-		const key = $event.which || $event.keyCode || $event.charCode;
+	private handleTooltipClosing(key: number): void {
 		if (key == 13) { // enter
 			this.changeBeatType();
+			this.setBeatTypeTooltipClossingDelay();
 		} else if (key == 27) { // esc
 			this.hideBeatTypeTooltip();
 		}
 	}
 
+	private handleBeatTypeChangeByKeyboardWrapper = function name($event) {
+		this.handleBeatTypeChangeByKeyboard($event);
+	}.bind(this);
+
 	private subscribeToGlobalKeyboardEvents(): void {
-		this.toolTipUnsubscribe = new AbortController();
-		console.log(document.eventListeners('keydown'));
-		document.addEventListener('keydown', $event => { 
-			this.selectedBeatType = this.handleUpAndDownBeatTypeSelect($event, this.selectedBeatType); 
-			this.cdRef.detectChanges(); 
-			this.handleTooltipClosing($event);
-		}, { signal: this.toolTipUnsubscribe.signal } as AddEventListenerOptions );
+		document.addEventListener('keydown', this.handleBeatTypeChangeByKeyboardWrapper);
 	}
 
 	private unsubscribeFromGlobalKeyboardEvents(): void {
-		this.toolTipUnsubscribe.abort();
-		// todo: can't remove handler
-		// document.removeEventListener('keydown', $event => {
-		// 	this.selectedBeatType = this.handleUpAndDownBeatTypeSelect($event, this.selectedBeatType); 
-		// 	this.handleTooltipClosing($event);
-		// });
+		document.removeEventListener('keydown', this.handleBeatTypeChangeByKeyboardWrapper);
 	}
 
 
