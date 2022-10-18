@@ -33,7 +33,7 @@
 
                 </div>
 
-                <div *ngIf='!additionalValidationForSsoEmail && !firstStep'  class="link-container">
+                <div *ngIf='!additionalValidationForSsoEmail'  class="link-container">
                     <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
                 </div> 
                 
