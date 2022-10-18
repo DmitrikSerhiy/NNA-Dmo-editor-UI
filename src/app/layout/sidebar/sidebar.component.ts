@@ -30,7 +30,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   	constructor(
 		private userManager: UserManager,
-		private currestSidebarService: CurrentSidebarService,
+		private currentSidebarService: CurrentSidebarService,
 		public sidebarManagerService: SidebarManagerService,
 		private router: Router,
 		private matModule: MatDialog,
@@ -38,13 +38,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   	async ngOnInit() {
 		this.isAuthorized = this.userManager.isAuthorized();
-		this.currMenuSubscription = this.currestSidebarService.currentMenuSource$.subscribe();
+		this.currMenuSubscription = this.currentSidebarService.currentMenuSource$.subscribe();
 		this.sidebarManagerService.init();
 		this.sidebarState = this.sidebarManagerService.IsOpen;
 		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((state) => { this.sidebarState = state; })
 		this.userName = this.userManager.getCurrentUser();
-		this.updateUserNameDisplay.subscribe(() => { this.userName = this.userManager.getCurrentUser(); } );
-  	}
+		this.updateUserNameDisplay.subscribe(() => { this.userName = this.userManager.getCurrentUser(); } );	
+	}
 
 	toggleSidebar() {
 		if (this.isAuthorized) {
@@ -54,14 +54,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
 	sendDmoCollectionsEvent() {
 		if (this.isAuthorized) {
-			this.currestSidebarService.setMenu(SidebarTabs.dmoCollections);
+			this.currentSidebarService.setMenu(SidebarTabs.dmoCollections);
 			this.toggleRightMenu$.emit(RightMenues.dmoCollections);
 		}
 	}
 
 	sendUserCabinetEvent() {
 		if (this.isAuthorized) {
-			this.currestSidebarService.setMenu(SidebarTabs.userCabinet);
+			this.currentSidebarService.setMenu(SidebarTabs.userCabinet);
 			this.toggleRightMenu$.emit(RightMenues.userCabinet);
 		}
 	}
@@ -79,7 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
 	sendDmosEvent() {
 		if (this.isAuthorized) {
-			this.currestSidebarService.setMenu(SidebarTabs.dmos);
+			this.currentSidebarService.setMenu(SidebarTabs.dmos);
 			this.toggleRightMenu$.emit(RightMenues.dmos);
 		}
 	}
@@ -90,8 +90,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		this.currestSidebarService.currentMenuSource$
-		this.currestSidebarService.setMenu(SidebarTabs.dmo);
+		this.currentSidebarService.currentMenuSource$
+		this.currentSidebarService.setMenu(SidebarTabs.dmo);
 		this.toggleRightMenu$.emit(RightMenues.dmo);
 
 		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: null, width: '400px' });

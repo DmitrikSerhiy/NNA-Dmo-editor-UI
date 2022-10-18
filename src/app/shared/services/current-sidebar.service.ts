@@ -1,6 +1,7 @@
 import { SidebarTabs } from './../../layout/models';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   	providedIn: 'root'
@@ -32,6 +33,13 @@ export class CurrentSidebarService {
 	}
 
 	setPrevious() {
+		if (!this.previousTab) {
+			let currntPosition = location.pathname.split('/').pop();
+			if (currntPosition == 'dmoCollection') {
+				currntPosition = 'dmoCollections';
+			}
+			this.previousTab = currntPosition as SidebarTabs; // stupid bugfix because of stupid service realization
+		}
 		this.setSelectedStyle(this.previousTab);
 		this.currentMenuSource.next(this.previousTab);
 
