@@ -7,7 +7,7 @@ import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 	styleUrls: ['./beats-flow.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BeatsFlowComponent implements AfterViewInit {
+export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	@Input() initialBeats: NnaBeatDto[];
 	@Input() isDmoFinished: boolean;
@@ -47,6 +47,7 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 	constructor(private cdRef: ChangeDetectorRef) {}
 
+
 	ngAfterViewInit(): void {
 		this.beats = this.initialBeats;
 		this.isDataLoaded = true;
@@ -54,10 +55,11 @@ export class BeatsFlowComponent implements AfterViewInit {
 		this.setupBeats(null, null, true);
 		this.setupEditorCallback();
 		this.setupSubscription();
-
 	}
 
-
+	ngOnDestroy(): void {
+		this.unsubscribeFromSpecialHotKeysListeners();
+	}
 
   	// #region general settings
 
@@ -97,7 +99,7 @@ export class BeatsFlowComponent implements AfterViewInit {
 	}.bind(this);
 
 	private subscribeToSpecialHotKeysListeners() {
-		document.addEventListener('keydown', this.handleGlobalKeydownEventWrapper);
+		document.addEventListener('keydown', this.handleGlobalKeydownEventWrapper, { once: true });
 	}
 
 	private unsubscribeFromSpecialHotKeysListeners() {
@@ -113,6 +115,8 @@ export class BeatsFlowComponent implements AfterViewInit {
 			return;
 		}
 
+		this.controlIsPressed = false;
+ 
 		console.log('global handler keydown from BEATS FLOW');
 		const key = $event.which || $event.keyCode || $event.charCode;
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
@@ -123,11 +127,9 @@ export class BeatsFlowComponent implements AfterViewInit {
 				: this.selectBeatIdFromTimePicker(currentElement);
 
 				currentElement.blur();
-				this.openBeatTypeTooltip.emit({ beatId, beatType: currentElement.dataset.beatType, elementToFocusAfterClose: currentElement })
-			return;
+				this.openBeatTypeTooltip.emit({ beatId, beatType: currentElement.dataset.beatType, elementToFocusAfterClose: currentElement });
+				return;
 		}
-
-
 	}
 
 	private isDiv(element: any): boolean {
@@ -246,8 +248,7 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
 			this.subscribeToSpecialHotKeysListeners();
-		} else {
-			this.unsubscribeFromSpecialHotKeysListeners();
+			return;
 		}
 
 		if (key == 13) { // enter
@@ -313,7 +314,6 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
-			this.unsubscribeFromSpecialHotKeysListeners();
 			return;
 		}
 
@@ -396,8 +396,6 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
 			this.subscribeToSpecialHotKeysListeners();
-		} else {
-			this.unsubscribeFromSpecialHotKeysListeners();
 		}
 
 		if (key == 16) { // shift
@@ -444,7 +442,6 @@ export class BeatsFlowComponent implements AfterViewInit {
 
 		if (key == 17) { // control
 			this.controlIsPressed = false;
-			this.unsubscribeFromSpecialHotKeysListeners();
 		}
 
 		if (key == 16) { // shift

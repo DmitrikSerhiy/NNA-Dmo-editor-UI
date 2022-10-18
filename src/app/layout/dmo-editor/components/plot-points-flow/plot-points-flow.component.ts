@@ -123,10 +123,11 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.showBeatTypeTooltip(beatIconElement, beatId, beatType);
 	}
 
-	showBeatTypeTooltip(beatIconElement: any, beatId: string, currentBeatType: number): void {
+	showBeatTypeTooltip(beatIconElement: any, beatId: string, currentBeatType: number, elementToFocusAfterClose: boolean = null): void {
 		this.currentBeatIdToChangeBeatType = beatId;
 		this.selectedBeatType = +currentBeatType;
 		this.initialBeatType = +currentBeatType;
+		this.elementToFocusAfterClose = elementToFocusAfterClose;
 		this.cdRef.detectChanges();
 		this.subscribeToBeatTypeTooltipKeyboardEvents();
 		
@@ -330,8 +331,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 
 		this.openBeatTypeTooltip.subscribe($event => {
-			this.elementToFocusAfterClose = $event.elementToFocusAfterClose;
-			this.showBeatTypeTooltip(this.selectPlotPointSvgIconFromBeatId($event.beatId), $event.beatId, $event.beatType);
+			this.showBeatTypeTooltip(this.selectPlotPointSvgIconFromBeatId($event.beatId), $event.beatId, $event.beatType, $event.elementToFocusAfterClose);
 		});
 
 		this.closeBeatTypeTooltip.subscribe($event => {
