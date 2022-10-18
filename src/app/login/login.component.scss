@@ -162,4 +162,9 @@
             }
         }
     }
+
+    .transparent-sso-container {
+        opacity: 0;
+        pointer-events: none;
+    }
 }

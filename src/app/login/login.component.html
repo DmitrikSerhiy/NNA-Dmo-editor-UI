@@ -58,10 +58,7 @@
                 </div>
             </div>
         </form>
+    </div>    
 
-    </div>
-
-    <app-sso-container *ngIf="firstStep" [isRegister]="false" (ssoButtonClicked)="ssoButtonClicked($event)"></app-sso-container>
-    
+    <app-sso-container [isRegister]="false" (ssoButtonClicked)="ssoButtonClicked($event)" [ngClass]="{'transparent-sso-container': !firstStep}"></app-sso-container>
 </div>
-
