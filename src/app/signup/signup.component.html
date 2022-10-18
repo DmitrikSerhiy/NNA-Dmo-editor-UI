@@ -60,5 +60,5 @@
 
     </div>
 
-    <app-sso-container [isRegister]="true" (ssoButtonClicked)="ssoButtonClicked($event)"></app-sso-container>
+    <app-sso-container *ngIf="firstStep" [isRegister]="true" (ssoButtonClicked)="ssoButtonClicked($event)"></app-sso-container>
 </div>

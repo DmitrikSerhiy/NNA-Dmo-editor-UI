@@ -4,8 +4,8 @@
 
 <div class="sso-container">
     <div class="sso-description-container" [ngSwitch]="isTextForSignUp">
-        <span class="sso-description" *ngSwitchCase="false">Sign in with: </span>
-        <span class="sso-description" *ngSwitchCase="true">Sign up with: </span>
+        <span class="sso-description" *ngSwitchCase="false">Login with: </span>
+        <span class="sso-description" *ngSwitchCase="true">Register with: </span>
     </div>
     
     <app-google-button [disabled]="false" (googleButtonClicked)="onGoogleButtonClicked()"></app-google-button>

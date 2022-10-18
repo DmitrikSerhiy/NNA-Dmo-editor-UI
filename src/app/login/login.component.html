@@ -33,7 +33,7 @@
 
                 </div>
 
-                <div class="link-container" *ngIf='!additionalValidationForSsoEmail'>
+                <div *ngIf='!additionalValidationForSsoEmail && !firstStep'  class="link-container">
                     <a class="nna-link" [routerLink]="['/email']" [queryParams]="{reason: 'reset'}">Forgot your password?</a>
                 </div> 
                 
@@ -61,7 +61,7 @@
 
     </div>
 
-    <app-sso-container [isRegister]="false" (ssoButtonClicked)="ssoButtonClicked($event)"></app-sso-container>
+    <app-sso-container *ngIf="firstStep" [isRegister]="false" (ssoButtonClicked)="ssoButtonClicked($event)"></app-sso-container>
     
 </div>
 
