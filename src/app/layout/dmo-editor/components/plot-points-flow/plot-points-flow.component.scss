@@ -69,7 +69,7 @@
         }
 
         .droppable {
-            background-color: rgba(155, 0, 209, .1);
+            background-color: $droppable-background-color;
             border-top: 1px $secondary-color dashed !important;
             border-bottom: 1px $secondary-color dashed !important;
         }
@@ -77,7 +77,7 @@
         .dragabble {
             border-top: 1px $primary-color dashed !important;
             border-bottom: 1px $primary-color dashed !important;
-            background-color: rgba(248, 195, 60, .2);
+            background-color: $dragabble-background-color;
         }
     }
 

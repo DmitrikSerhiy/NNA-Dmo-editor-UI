@@ -24,7 +24,7 @@ html, body {
 
 ::selection {
   color: $secondary-color;
-  background-color: rgba(248, 195, 60, .7); // primary with opacity
+  background-color: $global-selection-background-color;
 }
 
 ::-webkit-scrollbar-track {
