@@ -7,6 +7,15 @@
             <i class="fa fa-pencil-alt" aria-hidden="true"></i>
         </button>
 
+        <button *ngIf="this.initialDmoDto.characters.length == 0" type="button" class='nna-icon-button nna-button-primary'>
+            <span class="material-icons"> group_add </span>
+        </button>
+
+        
+        <button *ngIf="this.initialDmoDto.characters.length > 0" type="button" class='nna-icon-button nna-button-primary'>
+            <span class="material-icons"> groups </span>
+        </button>
+
         <!-- <button class="nna-button nna-button-primary" (click)='save()'>Save</button> -->
 
         <div class="editor-board-tools"> 

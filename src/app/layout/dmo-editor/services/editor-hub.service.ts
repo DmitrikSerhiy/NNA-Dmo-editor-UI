@@ -10,7 +10,7 @@ import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
-import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI, BeatToMoveDto, BeatsToSwapDto } from '../models/dmo-dtos';
+import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI, BeatToMoveDto, BeatsToSwapDto, DmoWithDataDto } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -178,16 +178,10 @@ export class EditorHub {
 
     // ----- editor http methods --------
 
-    initialBeatsLoadAsJson(dmoId: string): Observable<string> {
+    initialDmoLoadWithData(dmoId: string): Promise<DmoWithDataDto> {
         return this.http
-            .get<string>(this.serverUrl + 'beats/initial/json/' + dmoId)
-            .pipe(catchError( (response, obs) => this.errorHandler.handle<string>(response, obs)));
-    }
-
-    initialBeatsLoadBeatsAsArray(dmoId: string): Promise<NnaBeatDto[]> {
-        return this.http
-            .get<NnaBeatDto[]>(this.serverUrl + 'beats/initial/array/' + dmoId)
-            .pipe(catchError( (response, obs) => this.errorHandler.handle<NnaBeatDto[]>(response, obs)))
+            .get<DmoWithDataDto>(this.serverUrl + 'dmos/withdata?Id=' + dmoId)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoWithDataDto>(response, obs)))
             .toPromise();
     }
 

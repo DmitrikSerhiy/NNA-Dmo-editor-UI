@@ -230,6 +230,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.initialDmoDto = new NnaDmoDto();
 		this.initialDmoDto.dmoId = this.dmoId;
 		this.initialDmoDto.beats = [];
+		this.initialDmoDto.characters = [];
 
 		this.isDmoInfoSet = true;
 	}
@@ -242,13 +243,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.initDmo(shortDmo);
 		this.cdRef.detectChanges();
-		await this.loadBeats();
+		await this.loadDmoWithData();
 		this.cdRef.detectChanges();
 	}
 
-	private async loadBeats(): Promise<void> {
-		const beats = await this.editorHub.initialBeatsLoadBeatsAsArray(this.dmoId);
-		if (beats?.length == 0) {
+	private async loadDmoWithData(): Promise<void> {
+		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId);
+		if (dmoWithData?.beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
 			
 			const initialBeat = {
@@ -260,9 +261,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	
 			await this.editorHub.addBeat(initialBeat);		
 		} else {
-			this.initialDmoDto.beats = beats;
+			this.initialDmoDto.beats = dmoWithData.beats;
 		}
 
+		this.initialDmoDto.characters = dmoWithData.characters;
 		this.beatsLoading = false;
 	}
 
