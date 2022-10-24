@@ -72,8 +72,10 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			if (this.addOrEditAction == true) {
 				if (this.selectedCharacter == null) {
 					this.onCharacterAdd();
+					return;
 				} else {
 					this.onCharacterEdit();
+					return;
 				}
 			}
 			this.onCharacterToAdd();
@@ -178,7 +180,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.nameInput.setValue(this.selectedCharacter.name);
 		this.aliasesInput.setValue(this.selectedCharacter.aliases);
 
-		console.log(this.selectedCharacter.name == this.nameInput.value)
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
 		}, 150);
