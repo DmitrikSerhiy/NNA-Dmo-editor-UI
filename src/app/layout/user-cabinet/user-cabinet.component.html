@@ -1,5 +1,5 @@
 <div class="card card-default mb-3 user-cabinet">
-    <div class="card-header user-cabinet-header"> Personal info </div>
+    <div class="card-header user-cabinet-header no-select"> Personal info </div>
     <div *ngIf="isFormProcessing || isFormProcessingAfterEdit" class="personal-info-spinner">
         <app-nna-spinner></app-nna-spinner>
     </div>
@@ -69,7 +69,7 @@
         <div [hidden]="!personalInfo?.hasPassword || passwordChanged" class="personal-info-block">
 
             <div [hidden]="showPasswordChangeForm" class="change-password-button">
-                <button type="button" class='nna-button nna-button-secondary' (click)="toggleChangePasswordForm(true)">
+                <button type="button" class='nna-button nna-button-secondary no-select' (click)="toggleChangePasswordForm(true)">
                     Change password
                 </button>
             </div>
@@ -129,7 +129,7 @@
         
         <div *ngIf="personalInfo?.authProviders && personalInfo?.authProviders?.length > 0" class="personal-info-block">
             <div class="linked-accounts-container">
-                <p>Linked accounts:</p>
+                <p class="no-select">Linked accounts:</p>
                 <app-google-button *ngIf="googleIsLinked" [disabled]="true"></app-google-button>
             </div>
         </div>

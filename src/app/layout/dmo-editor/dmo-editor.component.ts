@@ -1,5 +1,5 @@
 import { ShortDmoDto } from './../models';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
@@ -7,6 +7,7 @@ import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
+import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -15,9 +16,6 @@ import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.co
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
-
-	isInitialPopupOpen: boolean = false;
-	initialPopup: MatDialogRef<DmoEditorPopupComponent>;
 
 	connectionState: string;
 	autosaveTitle: string;
@@ -125,7 +123,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// #region general settings
 
 	async editCurrentDmo(): Promise<void> {
-		const popupResult = await this.finalizePopup();
+		const popupResult = await this.finalizeInitialPopup();
 		if (!popupResult) {
 			return;
 		}
@@ -166,18 +164,18 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		document.removeEventListener('paste', this.pasteSanitizer);
 	}
 
-	private async finalizePopup(): Promise<ShortDmoDto> {
+	private async finalizeInitialPopup(): Promise<ShortDmoDto> {
 		let popupData = null;
 		if (this.currentShortDmo) {
 			popupData = this.currentShortDmo;
 		}
-		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: popupData, width: '400px' });
-		this.isInitialPopupOpen = true;
+	 
+		const popupResult = await this.matModule
+			.open(DmoEditorPopupComponent, { data: popupData, width: '400px' })
+			.afterClosed()
+			.toPromise();
 
-		const popupResult = await this.initialPopup.afterClosed().toPromise();
-		this.isInitialPopupOpen = false;
 		if (!popupResult || popupResult.cancelled) {
-			this.initialPopup = null;
 			this.matModule.ngOnDestroy();
 			return null;
 		} 
@@ -189,7 +187,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			newDmoDetails.id = this.currentShortDmo.id;
 		}
 
-		this.initialPopup = null;
 		this.matModule.ngOnDestroy();
 		return newDmoDetails;
 	}
@@ -295,6 +292,36 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   	// #endregion
 
 
+	// #region characters popup
+
+	async openCharactersPopup(): Promise<void> {
+		await this.finalizeCharactersPopup();
+
+	}
+
+	
+	private async finalizeCharactersPopup(): Promise<void> {
+		const popupResult = await this.matModule
+			.open(CharactersPopupComponent, { data: {characters: this.initialDmoDto.characters, dmoId: this.dmoId }, width: '400px' })
+			.afterClosed()
+			.toPromise();
+
+		if (!popupResult || popupResult.hasChanges === false) {
+			this.matModule.ngOnDestroy();
+			return;
+		} 
+
+
+		if (popupResult.hasChanges === true) {
+			this.initialDmoDto.characters = popupResult.changes;
+			this.cdRef.detectChanges();
+		}
+
+		this.matModule.ngOnDestroy();
+	}
+
+
+	// #endregion
 
 
 	  
@@ -553,10 +580,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.editorHub.abortConnection();
 		this.unsubscribeFromClipboard();
 		this.dmoId = '';
-		this.isInitialPopupOpen = false;
 		this.matModule.closeAll();
 
-		this.initialPopup = null;
 		this.currentShortDmo = null;
 		this.isDmoInfoSet = false;
 		this.beatWasSet = false;

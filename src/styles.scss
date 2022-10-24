@@ -57,6 +57,9 @@ html, body {
   color: $validation-color;
 }
 
+.no-select {
+  user-select: none;
+}
 
 .info-message {
   width: 100%;

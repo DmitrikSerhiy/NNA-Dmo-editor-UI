@@ -1,0 +1,93 @@
+<div class="base-modal">
+    <div class="base-modal-header">
+        <p *ngIf="deleteAction == false && addOrEditAction == false" class="modal-title no-select">Characters</p>
+        <p *ngIf="deleteAction == true && addOrEditAction == false" class="modal-title no-select">Delete character</p>
+        <p *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter == null" class="modal-title no-select">Create character</p>
+        <p *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter != null" class="modal-title no-select">Edit character</p>
+    </div>
+    <div [hidden]="!charactersTable || charactersCount == 0" class="base-modal-body">
+        <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element no-select" (click)="resetSelected()"> Name </th>
+                <td mat-cell class=" " *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="aliases">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="aliases" class="hoverable-element no-select" (click)="resetSelected()"> Aliases </th>
+                <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.aliases}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="charactersTableColumn"></tr>
+            <tr mat-row *matRowDef="let row; columns: charactersTableColumn;" [class.clicked-row]="selectedCharacter == row" (click)="onRowSelect(row)"> </tr>
+
+        </table>
+        <mat-paginator [hidden]="charactersCount < 6" #charactersPaginator [length]="charactersCount" [pageSize]="5"></mat-paginator>
+    </div>
+
+    <div *ngIf="deleteAction == false && addOrEditAction == false && charactersCount == 0" class="base-modal-body">
+        <p>This Dmo has no characters.</p>
+        <p>Try to add one.</p>
+    </div>
+
+    <div *ngIf="deleteAction == true && addOrEditAction == false && selectedCharacter" class="base-modal-body">
+        <p>Are you sure you want to delete character '{{selectedCharacter.name}}'?</p>
+    </div>
+
+    <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-body">
+        <form role="form" [formGroup]="charactersForm">
+            <div class="nna-input-group">
+                <input #characterNameInput autocomplete="off" type="text" name="characterNameInput" id="characterNameInput" formControlName="characterNameInput" 
+                    class="form-control nna-input" placeholder="Name*" />
+                <label for="characterNameInput" class="nna-input-label">Name*</label>
+            </div>
+
+            <div class="nna-input-group">
+                <input #characterAliasesInput autocomplete="off" type="text" name="characterAliasesInput" id="characterAliasesInput" formControlName="characterAliasesInput" 
+                    class="form-control nna-input" placeholder="Aliases [separated by comas]" />
+                <label for="characterAliasesInput" class="nna-input-label">Aliases [separated by ;]</label>
+            </div>
+
+            <div class="validation-wrapper validation-wrapper-popup nna-input-group-validation">
+                <div *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched) && !serverValidation" class="validation-container">
+                    <div *ngIf="nameInput.errors.required">
+                        <p class="validation-text">Character's name is missing</p> 
+                    </div>
+                </div>
+                <div *ngIf="serverValidation != null" class="validation-container">
+                    <div>
+                        <p class="validation-text">{{serverValidation}}</p> 
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false"  class="base-modal-footer">
+        <button type="button" class="nna-button-secondary" (click)="onCharacterToDelete()">Delete</button>
+        <button type="button" class="nna-button-primary"(click)="onCharacterToEdit()">Edit</button>
+    </div>
+
+    <div *ngIf="selectedCharacter == null && deleteAction == false && addOrEditAction == false" class="base-modal-footer">
+        <button type="button" class="nna-button-secondary" (click)="onClose(true)">Close</button>
+        <button type="button" class="nna-button-primary"(click)="onCharacterToAdd()">Add character</button>
+    </div>
+
+    <div *ngIf="selectedCharacter && deleteAction == true && addOrEditAction == false" class="base-modal-footer">
+        <button type="button" class="nna-button-secondary" (click)="onCharacterCancelDelete()">Cancel</button>
+        <button type="button" class="nna-button-primary"(click)="onCharacterDelete()">Delete</button>
+    </div>
+
+    <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-footer">
+        
+        <button *ngIf="selectedCharacter != null" type="button" class="nna-button-secondary" (click)="onCharacterCancelEdit()">Cancel</button>
+        <button *ngIf="selectedCharacter != null" type="button" class="nna-button-primary"(click)="onCharacterEdit()"
+            [disabled]="!charactersForm.valid" [ngClass]="{'nna-diabled-button': !charactersForm.valid }">Save</button>
+        
+        <button *ngIf="selectedCharacter == null" type="button" class="nna-button-secondary" (click)="onCharacterCancelAdd()">Cancel</button>
+        <button *ngIf="selectedCharacter == null" type="button" class="nna-button-primary" 
+            [disabled]="!charactersForm.valid"  [ngClass]="{'nna-diabled-button': !charactersForm.valid}" (click)="onCharacterAdd()">Create character</button>
+    
+    </div>
+</div>

@@ -32,32 +32,32 @@
 
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
-                    class="hoverable-element column-header">
+                    class="hoverable-element column-header no-select">
                     DMO name </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="movieTitle">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Movie title </th>
+                    class="hoverable-element column-header no-select"> Movie title </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
             </ng-container>
 
             <ng-container matColumnDef="dmoStatus">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="dmoStatus" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Status </th>
+                    class="hoverable-element column-header no-select"> Status </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.dmoStatus}} </td>
             </ng-container>
 
             <ng-container matColumnDef="shortComment">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="shortComment" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Comment </th>
+                    class="hoverable-element column-header no-select"> Comment </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.shortComment}} </td>
             </ng-container>
 
             <ng-container matColumnDef="mark">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="mark" (click)="resetSelected()"
-                    class="hoverable-element column-header">
+                    class="hoverable-element column-header no-select">
                     Rating </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.mark}} </td>
             </ng-container>

@@ -3,7 +3,7 @@
         <div class="table-details">
             <div class="collection-name-container">
                 <div class="collection-name-header">
-                    <p class="collection-header" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
+                    <p class="collection-header no-select" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary' (click)='showEditCollectionNameForm()'>
                         <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                     </button>
@@ -70,25 +70,25 @@
 
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
-                    class="hoverable-element column-header"> DMO name </th>
+                    class="hoverable-element column-header no-select"> DMO name </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="movieTitle">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Movie title </th>
+                    class="hoverable-element column-header no-select"> Movie title </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
             </ng-container>
 
             <ng-container matColumnDef="dmoStatus">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="dmoStatus" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Status </th>
+                    class="hoverable-element column-header no-select"> Status </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.dmoStatus}} </td>
             </ng-container>
 
             <ng-container matColumnDef="shortComment">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="shortComment" (click)="resetSelected()"
-                    class="hoverable-element column-header"> Comment </th>
+                    class="hoverable-element column-header no-select"> Comment </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> <p class="short-comment"> {{row.shortComment}} </p> </td>
             </ng-container>
             

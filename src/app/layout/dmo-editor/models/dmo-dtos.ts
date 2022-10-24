@@ -26,8 +26,21 @@ export class DmoWithDataDto {
 
 export class NnaMovieCharacterDto {
     id: string;
-    Name: string;
-    Aliases: string;
+    name: string;
+    aliases: string;
+}
+
+export class NnaMovieCharacterToCreateDto {
+    dmoId: string;
+    name: string;
+    aliases: string;
+}
+
+export class NnaMovieCharacterToUpdateDto {
+    dmoId: string;
+    id: string;
+    name: string;
+    aliases: string;
 }
 
 export class NnaBeatDto {

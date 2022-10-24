@@ -1,5 +1,5 @@
 <div class="card card-default mb-3 dmo-collections">
-    <div class="card-header collections-header"> Collentions </div>
+    <div class="card-header collections-header no-select"> Collentions </div>
     <div *ngIf="isFormProcessing" class="dmo-collections-spinner">
         <app-nna-spinner></app-nna-spinner>
     </div>
@@ -7,7 +7,7 @@
             <div *ngIf="!isFormProcessing"  class="add-collection-button" [hidden]="!showAddButton"
                 [ngClass]="{'add-collection-button-partial-width': showSortButton, 'add-collection-button-full-width': !showSortButton }">
                 
-                <button type="button" class='nna-button nna-button-secondary' (click)="toggleAddCollectionForm(false)">
+                <button type="button" class='nna-button nna-button-secondary no-select' (click)="toggleAddCollectionForm(false)">
                     create collection
                 </button>
             </div>

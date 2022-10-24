@@ -1,19 +1,15 @@
 
 <div *ngIf='isDmoInfoSet' class="general-editor-wrapper">
     <div class="controls-panel">
-        <p class="movie-title">{{currentShortDmo.movieTitle}} </p>
+        <p class="movie-title no-select">{{currentShortDmo.movieTitle}} </p>
 
         <button type="button" class='nna-icon-button nna-button-primary' (click)='editCurrentDmo()'>
             <i class="fa fa-pencil-alt" aria-hidden="true"></i>
         </button>
 
-        <button *ngIf="this.initialDmoDto.characters.length == 0" type="button" class='nna-icon-button nna-button-primary'>
-            <span class="material-icons"> group_add </span>
-        </button>
-
-        
-        <button *ngIf="this.initialDmoDto.characters.length > 0" type="button" class='nna-icon-button nna-button-primary'>
-            <span class="material-icons"> groups </span>
+        <button type="button" class='nna-icon-button nna-button-primary no-select' (click)="openCharactersPopup()">
+            <span *ngIf="this.initialDmoDto.characters.length == 0" class="material-icons"> group_add </span>
+            <span *ngIf="this.initialDmoDto.characters.length > 0" class="material-icons"> groups </span>
         </button>
 
         <!-- <button class="nna-button nna-button-primary" (click)='save()'>Save</button> -->

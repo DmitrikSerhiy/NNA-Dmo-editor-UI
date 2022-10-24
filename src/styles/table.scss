@@ -1,93 +1,103 @@
 @import "src/styles/colors.scss";
 
 .nna-table {
-    width: 100%;
-    background: white;
-  
-    .mat-header-row {
-        @include font-primary-info();
-        div button:focus {
-            outline: none;
-        }
-    }
-  
-    .hoverable-element, tr {
-      padding: 0.75rem;
-      cursor: pointer;
-      padding-left: 24px;
-  
-      td {
-        border: none;
-      }
-    }
-  
-    ::ng-deep .mat-sort-header-container {
-      button {
-        outline: none;
-      }
-    }
-  
-    .table-cell {
-      padding-left: 24px;
-    }
-  
-    .mat-row {
-      @include font-secondary-info();
-    }
-  
-    .clicked-row {
-      background: $input-underline-gradient, $input-underline-gradient;
-      background-repeat: no-repeat;
-      background-size: 100% 1px;
-      background-position: bottom, top;
-  
-      td {
-        border: none;
-      }
-    }
+	width: 100%;
+	background: white;
 
-    tr {
-      .dmo-cell {
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding-left: 1rem;
-      }
-    }
-
-    thead {
-      .dmo-cell-header {
-          padding-left: 1rem !important;
-      }
-    }
-  }
-
-  .nna-table-for-popoup {
-    background: none !important;
-
-    tr {
-      cursor: default !important;
-    }
-  }
+	.mat-header-row {
+		@include font-primary-info();
+		div button:focus {
+			outline: none;
+		}
+	}
   
-  .mat-paginator {
-    @include font-primary-info();
-  }
+	.hoverable-element, tr {
+		padding: 0.75rem;
+		cursor: pointer;
+		padding-left: 24px;
+		td {
+			border: none;
+		}
+	}
+  
+	::ng-deep .mat-sort-header-container {
+		button {
+			outline: none;
+		}
+	}
+  
+	.table-cell {
+		padding-left: 24px;
+	}
 
-  .mat-paginator .mat-paginator-outer-container .mat-paginator-container .mat-paginator-range-actions button {
-    @include nna-button();
-    width: 1.75rem;
-    height: 1.75rem;
-    display: flex;
-    justify-content: center;
-    margin-left: .5rem;
+	.mat-row {
+		@include font-secondary-info();
+	}
+  
+  	.clicked-row {
+		background: $input-underline-gradient, $input-underline-gradient;
+		background-repeat: no-repeat;
+		background-size: 100% 1px;
+		background-position: bottom, top;
 
-    svg {
-      width: 20px;;
-    }
+		td {
+			border: none;
+		}
+  	}
 
+	tr {
+		.dmo-cell {
+			max-width: 200px;
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+			padding-left: 1rem;
+		}
+	}
 
-    &:focus {
-      outline: none;
-    }
-  }
+	thead {
+		.dmo-cell-header {
+			padding-left: 1rem !important;
+		}
+	}
+}
+
+.nna-table-for-popoup {
+  	background: none !important;
+
+	tr {
+		cursor: default !important;
+		td {
+			border: none;
+			max-width: 130px !important;
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
+  
+.mat-paginator {
+  	@include font-primary-info();
+}
+
+[mat-sort-header].cdk-keyboard-focused .mat-sort-header-container,
+[mat-sort-header].cdk-program-focused .mat-sort-header-container {
+  	border-bottom: none !important;
+}
+
+.mat-paginator .mat-paginator-outer-container .mat-paginator-container .mat-paginator-range-actions button {
+	@include nna-button();
+	width: 1.75rem;
+	height: 1.75rem;
+	display: flex;
+	justify-content: center;
+	margin-left: .5rem;
+
+	svg {
+		width: 20px;;
+	}
+
+	&:focus {
+		outline: none;
+	}
+}

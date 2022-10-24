@@ -39,6 +39,5 @@ export class DmosService {
 		return this.http
 			.post<CretedDmoDtoAPI>(this.serverUrl, dmoToCreate)
 			.pipe(catchError((response, obs) => this.errorHandler.handle<CretedDmoDtoAPI>(response, obs)));
-
 	}
 }
