@@ -37,7 +37,7 @@
         <form role="form" [formGroup]="charactersForm">
             <div class="nna-input-group">
                 <input #characterNameInput autocomplete="off" type="text" name="characterNameInput" id="characterNameInput" formControlName="characterNameInput" 
-                    class="form-control nna-input" placeholder="Name*" />
+                    class="form-control nna-input" placeholder="Name*" (focusout)="preventValidationToBlink()" />
                 <label for="characterNameInput" class="nna-input-label">Name*</label>
             </div>
 

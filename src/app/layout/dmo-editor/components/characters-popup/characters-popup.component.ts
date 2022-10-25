@@ -102,10 +102,19 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		}, 150);
 	}
 
+	preventValidationToBlink(): void {
+		if (this.addOrEditAction == true) {
+			if (this.nameInput.value == '') {
+				this.nameInput.markAsPristine();
+				this.nameInput.markAsUntouched();
+			}
+		}
+	}
+
 	onCharacterCancelAdd() {
+		this.resetForm();
 		this.selectedCharacter = null;
 		this.addOrEditAction = false;
-		this.resetForm();
 		this.initializeCharactersTable();
 	}
 

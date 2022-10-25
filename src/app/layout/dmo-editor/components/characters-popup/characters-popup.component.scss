@@ -1,9 +1,17 @@
 .base-modal {
+    min-height: 300px;
+    display: flex;
+    flex-flow: column;
+    flex-wrap: nowrap;
     .base-modal-body {
         form {
             .nna-input-group, .nna-input-group-validation {
                 margin-top: 1rem;
             }
         }
+    }
+
+    .base-modal-footer {
+        margin-top: auto;
     }
 }
