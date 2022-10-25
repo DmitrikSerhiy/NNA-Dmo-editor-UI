@@ -78,14 +78,17 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.router.url.includes('editor')) {
             this.mainContainer.nativeElement.style.backgroundImage = 'url("../../assets/editor_background.jpeg")';
+            this.mainContainer.nativeElement.style.height = 'unset';
         }
 
         this.router.events.pipe(filter(event => event instanceof NavigationStart))
             .subscribe((event:NavigationStart) => {
                 if (event.url.includes('editor')) {
                     this.mainContainer.nativeElement.style.backgroundImage = 'url("../../assets/editor_background.jpeg")';
+                    this.mainContainer.nativeElement.style.height = 'unset';
                 } else {
                     this.mainContainer.nativeElement.style.backgroundImage = 'unset';
+                    this.mainContainer.nativeElement.style.height = '100%';
                 }
             });
     }
