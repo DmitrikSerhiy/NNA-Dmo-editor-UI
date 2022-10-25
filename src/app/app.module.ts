@@ -22,6 +22,8 @@ import { GoogleLoginProvider } from 'angularx-social-login';
 import { environment } from 'src/environments/environment';
 import { ToastrWrapperComponent } from './shared/components/toastr-wrapper/toastr-wrapper.component';
 import { EditorRouteReuseStrategyService } from './shared/services/editor-route-reuse-strategy.service';
+import { NnaMatPaginatorService } from './shared/services/nna-mat-paginator.service';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 const routes: Routes = [
 	{ path: 'app', loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule) },
@@ -75,6 +77,7 @@ const routes: Routes = [
 				}]
 			} as SocialAuthServiceConfig,
 		},
+		{ provide: MatPaginatorIntl, useClass: NnaMatPaginatorService },
 		{ provide: RouteReuseStrategy, useClass: EditorRouteReuseStrategyService }
 	],
   	bootstrap: [AppComponent],

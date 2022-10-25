@@ -38,7 +38,7 @@
                 <tr mat-row *matRowDef="let row; columns: dmosTableColumn;"> </tr>
 
             </table>
-            <mat-paginator [hidden]="dmosCount < 6" #dmosPaginator [length]="dmosCount" [pageSize]="5"></mat-paginator>
+            <mat-paginator [hidden]="dmosCount < 6" #dmosPaginator [length]="dmosCount" [hidePageSize]="true" [pageSize]="5"></mat-paginator>
         </div>
 
         <div class="base-modal-footer">

@@ -142,6 +142,11 @@ html, body {
   box-shadow: none !important;
 }
 
+.mat-paginator-range-label {
+  margin: 0 6px 0 24px !important;
+  user-select: none;
+}
+
 .base-modal {
   .base-modal-header p {
     margin: 0;
