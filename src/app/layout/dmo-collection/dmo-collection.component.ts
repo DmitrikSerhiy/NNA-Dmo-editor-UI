@@ -97,6 +97,10 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.unsubscribe$.complete();
 	}
 
+	onPaginateChange() : void {
+		this.resetSelected();
+	}
+
 	onRowSelect(row: ShortDmoDto) {
 		if (this.showEditForm) {
 			return;

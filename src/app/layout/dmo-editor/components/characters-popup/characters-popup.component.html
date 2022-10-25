@@ -21,7 +21,7 @@
             <tr mat-row *matRowDef="let row; columns: charactersTableColumn;" [class.clicked-row]="selectedCharacter == row" (click)="onRowSelect(row)"> </tr>
 
         </table>
-        <mat-paginator [hidden]="charactersCount < 6" #charactersPaginator [length]="charactersCount" [pageSize]="5"></mat-paginator>
+        <mat-paginator [hidden]="charactersCount < 6" #charactersPaginator [length]="charactersCount" [pageSize]="5" (page)="onPaginateChange()"></mat-paginator>
     </div>
 
     <div *ngIf="deleteAction == false && addOrEditAction == false && charactersCount == 0" class="base-modal-body">

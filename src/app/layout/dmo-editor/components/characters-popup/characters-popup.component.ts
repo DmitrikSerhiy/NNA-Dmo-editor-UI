@@ -91,6 +91,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		document.removeEventListener('keydown', this.keydownHandlerWrapper);
 	}
 
+	onPaginateChange() {
+		this.resetSelected();
+	}
 
 	onCharacterToAdd() {
 		this.selectedCharacter = null;

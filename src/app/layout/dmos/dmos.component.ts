@@ -56,6 +56,10 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.deleteDmoModalSubscription?.unsubscribe();
   }
 
+  onPaginateChange() {
+    this.resetSelected();
+  }
+
   redirectToDmo() {
     this.router.navigateByUrl('/app/editor?dmoId=' + this.selectedDmo.id);
   }

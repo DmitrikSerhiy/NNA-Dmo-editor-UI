@@ -68,6 +68,6 @@
             </tr>
         </table>
 
-        <mat-paginator [hidden]="dmosCount < 11" class="dmos-table-paginator" #dmosPaginator [length]="dmosCount" [pageSize]="10"></mat-paginator>
+        <mat-paginator [hidden]="dmosCount < 11" class="dmos-table-paginator" #dmosPaginator [length]="dmosCount" [pageSize]="10" (page)="onPaginateChange()"></mat-paginator>
     </div>
 </div>
