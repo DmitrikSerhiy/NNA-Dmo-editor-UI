@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 
 @Component({
@@ -39,13 +40,17 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
 	
-	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 81 }; // q
-
+	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 85 }; 
+	// q for beat type tooltip
+	// u for character tooltip
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
-	constructor(private cdRef: ChangeDetectorRef) {}
+	@ViewChild('charactersTooltip') charactersTooltip: ElementRef;
+	@ViewChild('charactersTooltipArrow') charactersTooltipArrow: ElementRef;
+
+	constructor(private cdRef: ChangeDetectorRef, private nnaTooltipService: NnaTooltipService) {}
 
 
 	ngAfterViewInit(): void {
@@ -59,6 +64,28 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.unsubscribeFromSpecialHotKeysListeners();
+	}
+
+	showCharactersTooltip(hostNativeElement: any, selection: Selection): void {
+		console.log(selection);
+
+		if (selection.isCollapsed == false) {
+			selection.collapse(hostNativeElement);
+		}
+		let placeInText = selection.focusOffset;
+
+		this.nnaTooltipService.addTooltip(
+			'characters',
+			hostNativeElement,
+			this.charactersTooltip.nativeElement,
+			{ arrowNativeElenemt: this.charactersTooltipArrow.nativeElement, placement: 'bottom'}
+		)
+		this.nnaTooltipService.showTooltip('characters');
+	}
+
+	hideCharactersTooltip(): void {
+		this.nnaTooltipService.hideTooltip('characters');
+		this.nnaTooltipService.removeTooltip('characters');
 	}
 
   	// #region general settings
@@ -129,6 +156,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				currentElement.blur();
 				this.openBeatTypeTooltip.emit({ beatId, beatType: currentElement.dataset.beatType, elementToFocusAfterClose: currentElement });
 				return;
+		}
+
+		if (key == this.specialHotKeys.openCharacterTooltipKeyCode) {
+			$event.preventDefault();
+			const currentElement = document.activeElement as HTMLElement;
+			this.showCharactersTooltip(currentElement, window.getSelection());
+			currentElement.blur();
+			return;
 		}
 	}
 
@@ -396,7 +431,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
 			this.subscribeToSpecialHotKeysListeners();
+			return;
 		}
+
+		if (key == this.specialHotKeys.openCharacterTooltipKeyCode && this.controlIsPressed) {
+			this.subscribeToSpecialHotKeysListeners();
+			return;
+		}
+
 
 		if (key == 16) { // shift
 			this.shiftIsPressed = true;

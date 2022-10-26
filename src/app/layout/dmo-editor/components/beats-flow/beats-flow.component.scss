@@ -29,6 +29,10 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 margin-top: 16px;
             }
 
+            .characters-tooltip {
+                padding: 5px;
+            }
+
             .beat-container {
                 min-height: 32px;
                 display: flex;
@@ -163,6 +167,8 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                         margin-left: .5rem;
                         padding-left: .5rem;
                         width: 100%;
+
+                        background-color: aqua;
 
                         border: none;
                         white-space: pre-wrap;

@@ -20,3 +20,11 @@
     height: 8px;
     transform: rotate(45deg);
 }
+
+.nna-tooltip-arrow-to-top {
+    border-left: solid;
+    border-left-width: 1px;
+    border-top: solid;
+    border-top-width: 1px;
+    border-image: $button-border-gradient;
+}

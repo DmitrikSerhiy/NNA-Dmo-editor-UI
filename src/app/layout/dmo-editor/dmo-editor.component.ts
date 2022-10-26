@@ -9,7 +9,6 @@ import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, R
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
-import { arrow, computePosition, shift } from '@floating-ui/dom';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -90,10 +89,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.nnaTooltipService.addTooltip(
 			'connectionState', 
-			this.connectionStateElement,
-			this.connectionStateTooltipElement,
+			this.connectionStateElement.nativeElement,
+			this.connectionStateTooltipElement.nativeElement,
 			{ 
-				arrowElenemt: this.connectionStateTooltipArrowElement,
+				arrowNativeElenemt: this.connectionStateTooltipArrowElement.nativeElement,
 				placement: 'bottom',
 				shift: 5
 			}
@@ -101,10 +100,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.nnaTooltipService.addTooltip(
 			'connectionStateIcon', 
-			this.connectionStateIconElmElement,
-			this.connectionStateIconTooltipElement,
+			this.connectionStateIconElmElement.nativeElement,
+			this.connectionStateIconTooltipElement.nativeElement,
 			{ 
-				arrowElenemt: this.connectionStateIconTooltipArrowElement,
+				arrowNativeElenemt: this.connectionStateIconTooltipArrowElement.nativeElement,
 				placement: 'bottom',
 				shift: 5
 			}

@@ -1,10 +1,11 @@
 import { ElementRef, Injectable } from '@angular/core';
-import { arrow, computePosition, shift } from '@floating-ui/dom';
+import { arrow, computePosition, offset, shift } from '@floating-ui/dom';
 
 export interface NnaTooltipOptions {
-	arrowElenemt: ElementRef;
+	arrowNativeElenemt: any;
 	placement: string;
 	shift?: number;
+	offset?: number;
 }
 
 @Injectable({
@@ -16,16 +17,35 @@ export class NnaTooltipService {
 
   	constructor() { }
 
-	addTooltip(name: string, hostingElement: ElementRef, tooltipElement: ElementRef, options: NnaTooltipOptions): void {
+	addTooltip(name: string, hostingNativeElement: any, tooltipNativeElement: any, options: NnaTooltipOptions): void {
 		if (this.tooltips.find(t => t.name == name) != undefined) {
 			return;
 		}
+
+		if (options.shift === undefined) {
+			options.shift = 5;
+		}
+		if (options.offset === undefined) {
+			options.offset = 5;
+		}
+		if (!options.placement) {
+			options.placement = 'top';
+		}
 		this.tooltips.push({
 			name: name,
-			hostingElement,
-			tooltipElement,
+			hostingElement: hostingNativeElement,
+			tooltipElement: tooltipNativeElement,
 			options
 		})
+	}
+
+	removeTooltip(name: string) {
+		const tooltipToDeleteIndex = this.tooltips.indexOf(t => t.name == name);
+		if (tooltipToDeleteIndex == -1) {
+			return;
+		}
+
+		this.tooltips.splice(tooltipToDeleteIndex, 1);
 	}
 
 	showTooltip(name: string): void {
@@ -34,9 +54,9 @@ export class NnaTooltipService {
 			return;
 		}
 
-		computePosition(tooltipObj.hostingElement.nativeElement, tooltipObj.tooltipElement.nativeElement, {
+		computePosition(tooltipObj.hostingElement, tooltipObj.tooltipElement, {
 			placement: tooltipObj.options.placement,
-			middleware: [shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowElenemt.nativeElement, padding: tooltipObj.options.shift*2}) ]
+			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]
 		  }).then((callback) =>  this.applyTooltopStylesStyles(
 			callback.x, 
 			callback.y, 
@@ -46,7 +66,7 @@ export class NnaTooltipService {
 			tooltipObj.options
 			));
 
-			tooltipObj.tooltipElement.nativeElement.style.display = 'block';
+			tooltipObj.tooltipElement.style.display = 'block';
 	}
 
 	hideTooltip(name: string): void {
@@ -54,12 +74,12 @@ export class NnaTooltipService {
 		if (tooltipObj == undefined) {
 			return;
 		}	
-		tooltipObj.tooltipElement.nativeElement.style.display = 'none';
+		tooltipObj.tooltipElement.style.display = 'none';
 	}
 
 
-	applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipElement: ElementRef, tooltipOptions: NnaTooltipOptions) {
-		Object.assign(tooltipElement.nativeElement.style, {
+	applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
+		Object.assign(tooltipNativeElement.style, {
 			position: strategy,
 			left: `${x}px`,
 			top: `${y}px`
@@ -76,7 +96,7 @@ export class NnaTooltipService {
 			left: 'right',
 		}[tooltipOptions.placement.split('-')[0]];
 
-		Object.assign(tooltipOptions.arrowElenemt.nativeElement.style, {
+		Object.assign(tooltipOptions.arrowNativeElenemt.style, {
 			top: middlewareData.arrow.y != null ? `${middlewareData.arrow.y}px` : '',
 			left: middlewareData.arrow.x != null ? `${middlewareData.arrow.x}px` : '',
 			[staticSide]: `-${tooltipOptions.shift}px`
