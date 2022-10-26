@@ -2,12 +2,14 @@ import { ShortDmoDto } from './../models';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
-import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit, ViewChild } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
+import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { arrow, computePosition, shift } from '@floating-ui/dom';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -21,7 +23,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	autosaveTitle: string;
 	connectionStateTitle: string;
 
-	private savingIsDoneTitle: string = "Your progress was auto-saved";
+	private savingIsDoneTitle: string = "Your progress is auto-saved";
 	private savingInProgressTitle: string = "Your progress is saving";
 	private autoSavingIsNotWorking: string = "Your progress won't be auto-saved";
 	
@@ -35,6 +37,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	editorIsConnected: boolean;
 	editorIsReconnecting: boolean;
 	beatsUpdating: boolean = false;
+	connectionStateTooltipIsShown: boolean = false
+	connectionStateIconTooltipIsShown: boolean = false
 
 	// events
 	updateGraphEvent: EventEmitter<any> = new EventEmitter<any>();
@@ -55,13 +59,22 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private timePickerElements: QueryList<ElementRef>;  // elements
    // ------ [end] not state
 
+   @ViewChild('connectionStateElm') connectionStateElement: ElementRef;
+   @ViewChild('connectionStateTooltip') connectionStateTooltipElement: ElementRef;
+   @ViewChild('connectionStateTooltipArrow') connectionStateTooltipArrowElement: ElementRef;
+
+   @ViewChild('connectionStateIconElm') connectionStateIconElmElement: ElementRef;
+   @ViewChild('connectionStateIconTooltip') connectionStateIconTooltipElement: ElementRef;
+   @ViewChild('connectionStateIconTooltipArrow') connectionStateIconTooltipArrowElement: ElementRef;
+
 	constructor(
 		private editorHub: EditorHub,
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
 		public matModule: MatDialog,
 		private cdRef: ChangeDetectorRef,
-		private dataGenerator: BeatGeneratorService
+		private dataGenerator: BeatGeneratorService,
+		private nnaTooltipService: NnaTooltipService
 		) { }
 
 	async ngOnInit(): Promise<void> {
@@ -74,6 +87,28 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	async ngAfterViewInit(): Promise<void> {
 		await this.loadDmo()
 		this.subscribeToClipboard();
+
+		this.nnaTooltipService.addTooltip(
+			'connectionState', 
+			this.connectionStateElement,
+			this.connectionStateTooltipElement,
+			{ 
+				arrowElenemt: this.connectionStateTooltipArrowElement,
+				placement: 'bottom',
+				shift: 5
+			}
+		);
+
+		this.nnaTooltipService.addTooltip(
+			'connectionStateIcon', 
+			this.connectionStateIconElmElement,
+			this.connectionStateIconTooltipElement,
+			{ 
+				arrowElenemt: this.connectionStateIconTooltipArrowElement,
+				placement: 'bottom',
+				shift: 5
+			}
+		);
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -270,13 +305,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.editorIsConnected = true;
 			this.editorIsReconnecting = false;
 			this.connectionState = "online";
-			this.connectionStateTitle = "Connections is established";
+			this.connectionStateTitle = "Connection is established";
 			this.autosaveTitle = this.savingIsDoneTitle;
 		} else if (this.editorHub.isReconnecting) {
 			this.editorIsConnected = false;
 			this.editorIsReconnecting = true;
 			this.connectionState = "connecting";
-			this.connectionStateTitle = "Editor is reconnecting. Wait a few seconds.";
+			this.connectionStateTitle = "Editor is reconnecting";
 			this.autosaveTitle = this.autoSavingIsNotWorking;
 		} else {
 			this.editorIsConnected = false;
@@ -288,6 +323,45 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.cdRef.detectChanges();
 	}
 
+	showConnectionStateTooltip(): void {
+		if (this.connectionStateTooltipIsShown == true) {
+			return;
+		}
+		this.nnaTooltipService.showTooltip('connectionState');
+		this.connectionStateTooltipIsShown = true;
+	}
+
+	hideConnectionStateTooltop(): void {
+		if (this.connectionStateIconTooltipIsShown == true) {
+			this.hideConnectionStateIconTooltop();
+		}
+		this.connectionStateTooltipIsShown = false;
+		setTimeout(() => {
+			if (this.connectionStateTooltipIsShown == false) {
+				this.nnaTooltipService.hideTooltip('connectionState');
+			}
+		}, 500);
+	}
+
+	showConnectionStateIconTooltip(): void {
+		if (this.connectionStateIconTooltipIsShown == true) {
+			return;
+		}
+		this.nnaTooltipService.showTooltip('connectionStateIcon');
+		this.connectionStateIconTooltipIsShown = true;
+	}
+
+	hideConnectionStateIconTooltop(): void {
+		if (this.connectionStateTooltipIsShown == true) {
+			this.hideConnectionStateTooltop();
+		}
+		this.connectionStateIconTooltipIsShown = false;
+		setTimeout(() => {
+			if (this.connectionStateIconTooltipIsShown == false) {
+				this.nnaTooltipService.hideTooltip('connectionStateIcon');
+			}
+		}, 500);
+	}
 	
   	// #endregion
 

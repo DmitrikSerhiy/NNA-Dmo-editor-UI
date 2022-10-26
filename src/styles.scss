@@ -4,6 +4,7 @@
 @import "styles/inputs.scss";
 @import "styles/table.scss";
 @import "styles/link.scss";
+@import "styles/tooltip.scss";
 
 * {
   box-sizing: border-box; 
@@ -143,7 +144,7 @@ html, body {
 }
 
 .mat-paginator-range-label {
-  margin: 0 6px 0 24px !important;
+  margin: 4px 6px 0 24px !important;
   user-select: none;
 }
 

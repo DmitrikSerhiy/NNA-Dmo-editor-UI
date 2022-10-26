@@ -55,7 +55,9 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
 	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
 	
-	constructor(private cdRef: ChangeDetectorRef, private host: ElementRef) {}
+	constructor(
+		private cdRef: ChangeDetectorRef, 
+		private host: ElementRef) {}
 
 	ngAfterViewInit(): void {
 		this.setupPlotPoints();

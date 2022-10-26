@@ -43,6 +43,21 @@
             display: flex;
             margin-left: auto;
 
+            .socket-status-tooltip {
+                padding: 5px;
+                z-index: 250;
+                width: fit-content;
+                height: fit-content;
+
+                .socket-status-tooltip-arrow {
+                    border-left: solid;
+                    border-left-width: 1px;
+                    border-top: solid;
+                    border-top-width: 1px;
+                    border-image: $button-border-gradient;
+                }
+            }
+
             .socket-status-icon {
                 svg {
                     cursor: pointer;
