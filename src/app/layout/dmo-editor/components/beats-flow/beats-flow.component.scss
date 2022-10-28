@@ -30,7 +30,62 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
             }
 
             .characters-tooltip {
-                padding: 5px;
+                width: 200px;
+                padding: 10px 5px;
+
+                .character-tooltip-search-block {
+                    ul {
+                        padding: 0;
+                        margin: 0;
+                        padding-top: 10px;
+                    
+                        li {
+                            padding: 5px 0;
+                            user-select: none;
+                            list-style-type: none;
+                        }
+    
+                        .character-option {
+                            max-width: 180px;
+                            overflow-x: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+                    }
+
+                    .character-tooltip-empty-search-block {
+                        display: flex;
+                        flex-direction: column;
+                        margin: auto;
+
+                        p {
+                            margin: auto;
+                            margin-bottom: 5px;
+                        }
+                        
+                        button {
+                            width: fit-content;
+                            margin: auto;
+                        }
+                    }
+                }
+
+                .character-tooltip-info-block {
+                    display: flex;
+                    flex-direction: column;
+                    margin: auto;
+
+                    p {
+                        margin: auto;
+                        margin-bottom: 5px;
+                    }
+
+                    button {
+                        width: fit-content;
+                        margin: auto;
+                    }
+                    
+                }
             }
 
             .beat-container {

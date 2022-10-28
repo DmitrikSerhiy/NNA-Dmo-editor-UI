@@ -69,6 +69,7 @@
        
        <app-beats-flow
             [initialBeats]="this.initialDmoDto.beats"
+            [initialCharacters]="this.initialDmoDto.characters" 
             [isDmoFinished]="isDmoFinised"
             [updateBeatsEvent]="updateBeatsEvent"
             [focusElement]="focusElementEvent"
@@ -79,6 +80,7 @@
             (lineCountChanged)="lineCountChanged($event)"
             (openBeatTypeTooltip)="openBeatTypeTooltip($event)"
             (closeBeatTypeTooltip)="closeBeatTypeTooltip($event)"
+            (openCharactersPopup)="openCharactersPopup()"
             >
        </app-beats-flow>
 

@@ -3,7 +3,21 @@
         <div *ngIf="isDataLoaded" class="beats-container">
 
             <div #charactersTooltip class="nna-tooltip-base characters-tooltip" (mouseleave)="hideCharactersTooltip()">
-                
+                <div class="character-tooltip-search-block" *ngIf="initialCharacters?.length > 0">
+                    <input #characterFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Character name or alias" (input)="filterCharacters($event.target.value)">
+                    <ul>
+                        <li class="character-option" *ngFor="let character of filtredCharacters">{{character.name}} <span *ngIf="character.aliases">[</span> {{character.aliases}} <span *ngIf="character.aliases">]</span> </li>
+                    </ul>
+
+                    <div class="character-tooltip-empty-search-block no-select" *ngIf="filtredCharacters?.length == 0">
+                        <p>No search result</p>
+                        <button type="button" class="nna-button-primary"(click)="onOpenCharactersPopup()">Add character</button>
+                    </div>
+                </div>
+                <div class="character-tooltip-info-block no-select" *ngIf="initialCharacters?.length == 0">
+                    <p>This Dmo has no characters</p>
+                    <button type="button" class="nna-button-primary"(click)="onOpenCharactersPopup()">Add character</button>
+                </div>
                 <div #charactersTooltipArrow class="nna-tooltip-arrow-base nna-tooltip-arrow-to-top"></div>
             </div>
 

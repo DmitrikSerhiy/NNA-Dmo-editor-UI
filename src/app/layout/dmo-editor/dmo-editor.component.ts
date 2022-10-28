@@ -22,9 +22,14 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	autosaveTitle: string;
 	connectionStateTitle: string;
 
-	private savingIsDoneTitle: string = "Your progress is auto-saved";
+	private savingIsDoneTitle: string = "Your progress was auto-saved";
 	private savingInProgressTitle: string = "Your progress is saving";
 	private autoSavingIsNotWorking: string = "Your progress won't be auto-saved";
+	private connectionEstablishedTitle: string = "Connection established";
+	private connectionReconnectionTitle: string = "Reconnecting";
+	private connectionDisconnectedTitle: string = "Connection lost";
+
+
 	
 	// initial fields
 	isDmoInfoSet: boolean = false;
@@ -305,19 +310,19 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.editorIsConnected = true;
 			this.editorIsReconnecting = false;
 			this.connectionState = "online";
-			this.connectionStateTitle = "Connection is established";
+			this.connectionStateTitle = this.connectionEstablishedTitle;
 			this.autosaveTitle = this.savingIsDoneTitle;
 		} else if (this.editorHub.isReconnecting) {
 			this.editorIsConnected = false;
 			this.editorIsReconnecting = true;
 			this.connectionState = "connecting";
-			this.connectionStateTitle = "Editor is reconnecting";
+			this.connectionStateTitle = this.connectionReconnectionTitle;
 			this.autosaveTitle = this.autoSavingIsNotWorking;
 		} else {
 			this.editorIsConnected = false;
 			this.editorIsReconnecting = false;
 			this.connectionState = "offline";
-			this.connectionStateTitle = "Editor was disconnected";
+			this.connectionStateTitle = this.connectionDisconnectedTitle;
 			this.autosaveTitle = this.autoSavingIsNotWorking;
 		}
 		this.cdRef.detectChanges();
@@ -370,7 +375,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async openCharactersPopup(): Promise<void> {
 		await this.finalizeCharactersPopup();
-
 	}
 
 	

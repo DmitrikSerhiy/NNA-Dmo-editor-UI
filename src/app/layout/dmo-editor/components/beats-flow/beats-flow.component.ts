@@ -1,8 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { computePosition } from '@floating-ui/core';
-import { NodeScroll, Rect } from '@floating-ui/dom';
-import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
-import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
+import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { NnaBeatDto, NnaBeatTimeDto, NnaMovieCharacterDto } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-beats-flow',
@@ -13,6 +11,7 @@ import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	@Input() initialBeats: NnaBeatDto[];
+	@Input() initialCharacters: NnaMovieCharacterDto[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
 	@Input() focusElement: EventEmitter<any>;
@@ -23,9 +22,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() closeBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
+	@Output() openCharactersPopup: EventEmitter<void> = new EventEmitter<void>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
+	filtredCharacters: NnaMovieCharacterDto[];
 
 	private beatsIds: string[] = [];
 	private beatsMetaData: any[] = [];
@@ -41,7 +42,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
-	private beatDataholderWidht: number = 660;
 	
 	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 85 }; 
 	// q for beat type tooltip
@@ -52,6 +52,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	@ViewChild('charactersTooltip') charactersTooltip: ElementRef;
 	@ViewChild('charactersTooltipArrow') charactersTooltipArrow: ElementRef;
+	
+	@ViewChild('characterFilterInput') characterFilterInputElement: ElementRef;
 
 	constructor(private cdRef: ChangeDetectorRef, private nnaTooltipService: NnaTooltipService) {}
 
@@ -70,6 +72,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	showCharactersTooltip(): void {
+		this.filtredCharacters = this.initialCharacters;
 		const range = window.getSelection().getRangeAt(0);
 		const span = document.createElement('span');
 		range.insertNode(span);
@@ -86,12 +89,39 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		);
 
 		this.nnaTooltipService.showTooltip('characters');
+		
+		setTimeout(() => {
+			this.characterFilterInputElement?.nativeElement?.focus();
+		}, 200);
 	}
 
+	filterCharacters(filterValue: string): void {
+		const formedFilterValue = filterValue?.trim()?.toLowerCase(); 
+		if (formedFilterValue == '') {
+			this.resetCharacterFilter();
+			return;
+		}
+
+		this.filtredCharacters = this.filtredCharacters.filter(character => 
+			character.name.toLowerCase().includes(formedFilterValue) || character.aliases.toLowerCase().includes(formedFilterValue));
+		}
+
+	private resetCharacterFilter() {
+		this.filtredCharacters = this.initialCharacters;
+		if (this.characterFilterInputElement) {
+			this.characterFilterInputElement.nativeElement.value = '';
+		}	
+	}
 
 	hideCharactersTooltip(): void {
+		this.resetCharacterFilter();
 		this.nnaTooltipService.hideTooltip('characters');
 		this.nnaTooltipService.removeTooltip('characters');
+	}
+
+	onOpenCharactersPopup() {
+		this.hideCharactersTooltip();
+		this.openCharactersPopup.emit();
 	}
 
   	// #region general settings
