@@ -1,11 +1,16 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { arrow, computePosition, offset, shift } from '@floating-ui/dom';
+
+export interface TooltipOffsetOptions {
+	mainAxis: number;
+	crossAxis: number;
+}
 
 export interface NnaTooltipOptions {
 	arrowNativeElenemt: any;
 	placement: string;
 	shift?: number;
-	offset?: number;
+	offset?: TooltipOffsetOptions;
 }
 
 @Injectable({
@@ -19,28 +24,20 @@ export class NnaTooltipService {
 
 	addTooltip(name: string, hostingNativeElement: any, tooltipNativeElement: any, options: NnaTooltipOptions): void {
 		if (this.tooltips.find(t => t.name == name) != undefined) {
-			return;
+			this.removeTooltip(name);
 		}
 
-		if (options.shift === undefined) {
-			options.shift = 5;
-		}
-		if (options.offset === undefined) {
-			options.offset = 5;
-		}
-		if (!options.placement) {
-			options.placement = 'top';
-		}
+		options = this.setOptions(options);
 		this.tooltips.push({
 			name: name,
 			hostingElement: hostingNativeElement,
 			tooltipElement: tooltipNativeElement,
 			options
-		})
+		});
 	}
 
 	removeTooltip(name: string) {
-		const tooltipToDeleteIndex = this.tooltips.indexOf(t => t.name == name);
+		const tooltipToDeleteIndex = this.tooltips.findIndex(t => t.name == name);
 		if (tooltipToDeleteIndex == -1) {
 			return;
 		}
@@ -78,7 +75,7 @@ export class NnaTooltipService {
 	}
 
 
-	applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
+	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
 		Object.assign(tooltipNativeElement.style, {
 			position: strategy,
 			left: `${x}px`,
@@ -98,8 +95,48 @@ export class NnaTooltipService {
 
 		Object.assign(tooltipOptions.arrowNativeElenemt.style, {
 			top: middlewareData.arrow.y != null ? `${middlewareData.arrow.y}px` : '',
-			left: middlewareData.arrow.x != null ? `${middlewareData.arrow.x}px` : '',
+			left: middlewareData.arrow.x != null ? `${this.getHorizontalArrowOffset(middlewareData.arrow, staticSide, tooltipOptions.offset.crossAxis)}px` : '',
 			[staticSide]: `-${tooltipOptions.shift}px`
 		});
+	}
+
+	private getHorizontalArrowOffset(arrowData: any, placement: string, crossAxisOffset?: number): number {
+		if (placement == 'left' || placement == 'right') {
+			return arrowData.x;
+		}
+		let initialPosition =  arrowData.x;
+
+		if (crossAxisOffset == 0 && arrowData.centerOffset == 0) {
+			return initialPosition;
+		}
+
+		if (arrowData.centerOffset > 0) {
+			initialPosition = initialPosition - arrowData.centerOffset
+		} else if (arrowData.centerOffset < 0) {
+			initialPosition = initialPosition + arrowData.centerOffset
+		}
+
+		if (crossAxisOffset > 0) {
+			initialPosition = initialPosition + crossAxisOffset
+		} else if (crossAxisOffset < 0) {
+			initialPosition = initialPosition + crossAxisOffset + arrowData.centerOffset*2;
+		}
+
+		return initialPosition;
+	}
+
+	private setOptions(options: NnaTooltipOptions): NnaTooltipOptions {
+		let validOptions: NnaTooltipOptions;
+		if (options.shift === undefined) {
+			options.shift = 5;
+		}
+		if (options.offset === undefined) {
+			options.offset = { mainAxis: 5, crossAxis: 0 } as TooltipOffsetOptions ;
+		}
+		if (!options.placement) {
+			options.placement = 'top';
+		}
+		validOptions = options;
+		return validOptions;
 	}
 }

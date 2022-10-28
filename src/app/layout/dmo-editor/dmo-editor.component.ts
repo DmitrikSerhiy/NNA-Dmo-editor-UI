@@ -86,6 +86,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	async ngAfterViewInit(): Promise<void> {
 		await this.loadDmo()
 		this.subscribeToClipboard();
+		this.cdRef.detectChanges();
 
 		this.nnaTooltipService.addTooltip(
 			'connectionState', 
