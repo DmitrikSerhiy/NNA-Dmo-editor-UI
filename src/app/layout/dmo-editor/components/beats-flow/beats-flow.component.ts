@@ -1,4 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { computePosition } from '@floating-ui/core';
+import { NodeScroll, Rect } from '@floating-ui/dom';
 import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
 import { NnaBeatDto, NnaBeatTimeDto } from '../../models/dmo-dtos';
 
@@ -67,61 +69,25 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.unsubscribeFromSpecialHotKeysListeners();
 	}
 
-	showCharactersTooltip(hostNativeElement: any): void {
-		// const caretCoords = this.getCaretCoords();
-		// const hostCoords = this.getElementCoords(hostNativeElement);
+	showCharactersTooltip(): void {
+		const range = window.getSelection().getRangeAt(0);
+		const span = document.createElement('span');
+		range.insertNode(span);
 
 		this.nnaTooltipService.addTooltip(
 			'characters',
-			hostNativeElement,
+			span,
 			this.charactersTooltip.nativeElement,
 			{ 
-				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement, 
-				placement: 'bottom', 
-				offset: {
-					mainAxis: 0, 
-					crossAxis: 0
-				} as TooltipOffsetOptions 
+				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
+				placement: 'bottom',
+				removeHostElementAfter: true
 			}
 		);
 
 		this.nnaTooltipService.showTooltip('characters');
 	}
 
-	private getCaretCoords(): any {
-		let range = window.getSelection().getRangeAt(0);
-		let span = document.createElement('span');
-		range.insertNode(span);
-		let cursorCoords = span.getBoundingClientRect();
-		span.remove();
-		return { 
-			x: cursorCoords.x, 
-			y: cursorCoords.y,
-			verticalPosition: cursorCoords.top + document.documentElement.scrollTop,
-			horizontalPosition: cursorCoords.left + document.documentElement.scrollLeft,
-		};
-	}
-
-	private getElementCoords(element: any): any {
-		const rect = element.getBoundingClientRect()
-		return { 
-			x: rect.x, 
-			y: rect.y,
-			verticalPosition: rect.top + document.documentElement.scrollTop,
-			horizontalPosition: rect.left + document.documentElement.scrollLeft
-		};
-	}
-
-
-	private calculateHorizontalCursorOffset(positionInText: number): number {
-		const blockCenter = this.beatDataholderWidht / 2;
-		if (positionInText < blockCenter) {
-			return (blockCenter - positionInText) * -1;
-		} else if (positionInText > blockCenter) {
-			return blockCenter + (blockCenter - positionInText);
-		} 
-		return blockCenter;
-	}
 
 	hideCharactersTooltip(): void {
 		this.nnaTooltipService.hideTooltip('characters');
@@ -201,7 +167,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		if (key == this.specialHotKeys.openCharacterTooltipKeyCode) {
 			$event.preventDefault();
 			const currentElement = document.activeElement as HTMLElement;
-			this.showCharactersTooltip(currentElement);
+			this.showCharactersTooltip();
 			currentElement.blur();
 			return;
 		}

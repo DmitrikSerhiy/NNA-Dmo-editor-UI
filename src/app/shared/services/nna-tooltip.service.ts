@@ -9,6 +9,7 @@ export interface TooltipOffsetOptions {
 export interface NnaTooltipOptions {
 	arrowNativeElenemt: any;
 	placement: string;
+	removeHostElementAfter?: boolean;
 	shift?: number;
 	offset?: TooltipOffsetOptions;
 }
@@ -53,17 +54,15 @@ export class NnaTooltipService {
 
 		computePosition(tooltipObj.hostingElement, tooltipObj.tooltipElement, {
 			placement: tooltipObj.options.placement,
-			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]
-		  }).then((callback) =>  this.applyTooltopStylesStyles(
-			callback.x, 
-			callback.y, 
-			callback.strategy, 
-			callback.middlewareData,
-			tooltipObj.tooltipElement,
-			tooltipObj.options
-			));
+			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]})
+				.then((callback) => {
+					this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData, tooltipObj.tooltipElement, tooltipObj.options);
+					if (tooltipObj.options.removeHostElementAfter == true) {
+						tooltipObj.hostingElement.remove();
+					}
+				});
 
-			tooltipObj.tooltipElement.style.display = 'block';
+		tooltipObj.tooltipElement.style.display = 'block';
 	}
 
 	hideTooltip(name: string): void {
