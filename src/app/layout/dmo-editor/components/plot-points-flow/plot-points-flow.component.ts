@@ -1,6 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BeatsToSwapDto, BeatToMoveDto, UpdateBeatType } from '../../models/dmo-dtos';
 import { computePosition, offset, arrow } from '@floating-ui/dom';
+import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -57,7 +58,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	
 	constructor(
 		private cdRef: ChangeDetectorRef, 
-		private host: ElementRef) {}
+		private host: ElementRef,
+		private nnaTooltipService: NnaTooltipService) {}
 
 	ngAfterViewInit(): void {
 		this.setupPlotPoints();
@@ -130,6 +132,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.selectedBeatType = +currentBeatType;
 		this.initialBeatType = +currentBeatType;
 		this.elementToFocusAfterClose = elementToFocusAfterClose;
+		this.nnaTooltipService.hideAllTooltips();
 		this.cdRef.detectChanges();
 		this.subscribeToBeatTypeTooltipKeyboardEvents();
 		

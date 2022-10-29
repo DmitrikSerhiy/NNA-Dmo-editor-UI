@@ -9,7 +9,8 @@ export interface TooltipOffsetOptions {
 export interface NnaTooltipOptions {
 	arrowNativeElenemt: any;
 	placement: string;
-	removeHostElementAfter?: boolean;
+	removeFakeHostElementAfter?: boolean;
+	clearHostingElementInnerTextAfter?: boolean;
 	shift?: number;
 	offset?: TooltipOffsetOptions;
 }
@@ -23,7 +24,7 @@ export class NnaTooltipService {
 
   	constructor() { }
 
-	addTooltip(name: string, hostingNativeElement: any, tooltipNativeElement: any, options: NnaTooltipOptions): void {
+	addTooltip(name: string, hostingNativeElement: any, tooltipNativeElement: any, options: NnaTooltipOptions, fakeHostingNativeElement: any = null): void {
 		if (this.tooltips.find(t => t.name == name) != undefined) {
 			this.removeTooltip(name);
 		}
@@ -32,6 +33,7 @@ export class NnaTooltipService {
 		this.tooltips.push({
 			name: name,
 			hostingElement: hostingNativeElement,
+			fakeHostingElement: fakeHostingNativeElement,
 			tooltipElement: tooltipNativeElement,
 			options
 		});
@@ -52,13 +54,19 @@ export class NnaTooltipService {
 			return;
 		}
 
-		computePosition(tooltipObj.hostingElement, tooltipObj.tooltipElement, {
+		computePosition(tooltipObj.fakeHostingElement == null ? tooltipObj.hostingElement : tooltipObj.fakeHostingElement, tooltipObj.tooltipElement, {
 			placement: tooltipObj.options.placement,
 			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]})
 				.then((callback) => {
 					this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData, tooltipObj.tooltipElement, tooltipObj.options);
-					if (tooltipObj.options.removeHostElementAfter == true) {
-						tooltipObj.hostingElement.remove();
+					console.log(tooltipObj.options.clearHostingElementInnerTextAfter);
+					if (tooltipObj.options.clearHostingElementInnerTextAfter == true) {
+						if (tooltipObj.hostingElement.innerText) {
+							tooltipObj.hostingElement.innerText = '';
+						}
+					}
+					if (tooltipObj.options.removeFakeHostElementAfter == true) {
+						tooltipObj.fakeHostingElement.remove();
 					}
 				});
 
@@ -73,6 +81,20 @@ export class NnaTooltipService {
 		tooltipObj.tooltipElement.style.display = 'none';
 	}
 
+	hideAllTooltips(): void {
+		this.tooltips.forEach(tooltip => {
+			this.hideTooltip(tooltip.name);
+		});
+	}
+
+	hideAllTooltipsExcept(name: string): void {
+		this.tooltips.forEach(tooltip => {
+			if (tooltip.name == name) {
+				return;
+			}
+			this.hideTooltip(tooltip.name);
+		});
+	}
 
 	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
 		Object.assign(tooltipNativeElement.style, {

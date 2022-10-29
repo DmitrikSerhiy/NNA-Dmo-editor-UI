@@ -71,21 +71,28 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.unsubscribeFromSpecialHotKeysListeners();
 	}
 
-	showCharactersTooltip(): void {
+	showCharactersTooltip(hostingElement: any): void {
+		let clearHostingElementInnerText: boolean = false;
+		if (hostingElement.innerText?.length == 0) {
+			hostingElement.innerText = '1';
+			clearHostingElementInnerText = true;
+		}
 		this.filtredCharacters = this.initialCharacters;
 		const range = window.getSelection().getRangeAt(0);
-		const span = document.createElement('span');
-		range.insertNode(span);
+		const tempSpan = document.createElement('span');
+		range.insertNode(tempSpan);
 
 		this.nnaTooltipService.addTooltip(
 			'characters',
-			span,
+			hostingElement,
 			this.charactersTooltip.nativeElement,
 			{ 
 				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
 				placement: 'bottom',
-				removeHostElementAfter: true
-			}
+				removeFakeHostElementAfter: true,
+				clearHostingElementInnerTextAfter: clearHostingElementInnerText
+			},
+			tempSpan
 		);
 
 		this.nnaTooltipService.showTooltip('characters');
@@ -197,7 +204,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		if (key == this.specialHotKeys.openCharacterTooltipKeyCode) {
 			$event.preventDefault();
 			const currentElement = document.activeElement as HTMLElement;
-			this.showCharactersTooltip();
+			this.showCharactersTooltip(currentElement);
 			currentElement.blur();
 			return;
 		}
@@ -437,6 +444,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	prepareTimePicker($event: any): void {
 		this.closeBeatTypeTooltip.emit();
+		this.nnaTooltipService.hideAllTooltips();
 		this.setEditableElementsFocusMetaData(true, false);
 		if ($event.target.value == this.defaultTimePickerValue) {
 			$event.target.value = this.defaultEmptyTimePickerValue;
@@ -448,6 +456,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	prepareBeatDataHolder() {
 		this.closeBeatTypeTooltip.emit();
+		this.nnaTooltipService.hideAllTooltips();
 		this.setEditableElementsFocusMetaData(false, true);
 	}
 
@@ -748,8 +757,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		let range = document.createRange();
-		let dataHolder = dataHolderContainer.lastChild;
+		const dataHolder = dataHolderContainer.lastChild;
 
 		if (!dataHolder.lastChild) {
 			dataHolder.focus();
@@ -757,20 +765,16 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		} else {
 			if (dataHolder.lastChild.nodeType == 3) { // TEXT_NODE
+				const range = document.createRange();
 				range.setStart(dataHolder.lastChild, dataHolder.lastChild.textContent.length);
+				range.collapse(true);
+				const selection = window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
 			} else { // any other element
-				if (dataHolder.lastChild.lastChild) {
-					range.setStart(dataHolder.lastChild.lastChild, dataHolder.lastChild.lastChild.textContent.length);
-				} else {
-					dataHolder.focus();
-					this.scrollToElement(dataHolder);
-				}
+				dataHolder.lastChild.focus();
+				this.scrollToElement(dataHolder.lastChild);
 			}
-
-			range.collapse(true)
-			let selection = window.getSelection();
-			selection.removeAllRanges();
-			selection.addRange(range);
 		}
 	}
 
