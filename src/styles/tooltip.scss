@@ -2,7 +2,7 @@
 
 .nna-tooltip-base {
     position: absolute;
-    z-index: 500;
+    z-index: 250;
     top: 0;
     left: 0;
     display: none;
@@ -29,3 +29,21 @@
     border-top-width: 1px;
     border-image: $button-border-gradient;
 }
+
+
+.nna-tooltip-arrow-to-top {
+    border-left: solid;
+    border-left-width: 1px;
+    border-top: solid;
+    border-top-width: 1px;
+    border-image: $button-border-gradient;
+}
+
+.nna-tooltip-arrow-to-left {
+    border-left: solid;
+    border-left-width: 1px;
+    border-bottom: solid;
+    border-bottom-width: 1px;
+    border-image: $button-border-gradient;
+}
+

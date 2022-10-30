@@ -34,6 +34,9 @@ export class NnaTooltipService {
 		return 'connectionStateIcon';
 	}
 
+	get beatTypeTooltipName(): string {
+		return 'beatType';
+	}
 	
 
   	constructor() { }

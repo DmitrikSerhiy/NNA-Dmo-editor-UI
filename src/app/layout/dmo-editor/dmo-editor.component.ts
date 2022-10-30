@@ -49,7 +49,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	updateBeatsEvent: EventEmitter<any> = new EventEmitter<any>();
 	focusElementEvent: EventEmitter<any> = new EventEmitter<any>();
 	openBeatTypeTooltipEvent: EventEmitter<any> = new EventEmitter<any>();
-	closeBeatTypeTooltipEvent: EventEmitter<any> = new EventEmitter<any>();
 	focusElementInBeatsFlowEvent: EventEmitter<any> = new EventEmitter<any>();
 
 	// ------ [start] not state
@@ -163,7 +162,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// #region general settings
 
 	async editCurrentDmo(): Promise<void> {
-		this.closeBeatTypeTooltipEvent.emit();
 		this.nnaTooltipService.hideAllTooltips();
 		const popupResult = await this.finalizeInitialPopup();
 		if (!popupResult) {
@@ -377,7 +375,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async openCharactersPopup(): Promise<void> {
 		this.nnaTooltipService.hideAllTooltips();
-		this.closeBeatTypeTooltipEvent.emit()
 		await this.finalizeCharactersPopup();
 	}
 
@@ -450,10 +447,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	openBeatTypeTooltip($event: any): void {
 		this.openBeatTypeTooltipEvent.emit($event);
-	}
-
-	closeBeatTypeTooltip($event: any): void {
-		this.closeBeatTypeTooltipEvent.emit($event)
 	}
 
 	focusElementInBeatsFlow($event: any): void {

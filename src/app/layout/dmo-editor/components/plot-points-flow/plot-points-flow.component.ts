@@ -1,7 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BeatsToSwapDto, BeatToMoveDto, UpdateBeatType } from '../../models/dmo-dtos';
-import { computePosition, offset, arrow } from '@floating-ui/dom';
-import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -15,7 +14,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() isDmoFinished: boolean;
 	@Input() updateGraph: EventEmitter<any>;
 	@Input() openBeatTypeTooltip: EventEmitter<any>;
-	@Input() closeBeatTypeTooltip: EventEmitter<any>;
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
@@ -68,7 +66,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.setupEditorCallback();
 		this.setupSubscription();
 
-		this.applyTooltopStylesStyles();
 		this.resizeObserver = new ResizeObserver((entries) => { 
 			if (this.isBeatTypeTooltipShown == true) {
 				this.hideBeatTypeTooltip()
@@ -132,13 +129,22 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.selectedBeatType = +currentBeatType;
 		this.initialBeatType = +currentBeatType;
 		this.elementToFocusAfterClose = elementToFocusAfterClose;
-		this.nnaTooltipService.hideAllTooltips();
 		this.cdRef.detectChanges();
 		this.subscribeToBeatTypeTooltipKeyboardEvents();
+
+		this.nnaTooltipService.addTooltip(
+			this.nnaTooltipService.beatTypeTooltipName,
+			beatIconElement,
+			this.beatTypeTooltipElement.nativeElement,
+			{ 
+				arrowNativeElenemt: this.tooltipArrowElement.nativeElement,
+				placement: 'right',
+				offset: { mainAxis: 10 } as TooltipOffsetOptions
+			}
+		);
 		
 		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation on initial open
-			this.beatTypeTooltipElement.nativeElement.style.display = 'block';
-			this.setTooltipPosition(beatIconElement);
+			this.nnaTooltipService.showTooltip(this.nnaTooltipService.beatTypeTooltipName);
 			this.isBeatTypeTooltipShown = true;
 			this.cdRef.detectChanges();
 		}, 150);
@@ -146,7 +152,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	hideBeatTypeTooltip() {
 		this.currentBeatIdToChangeBeatType = '';
-		this.beatTypeTooltipElement.nativeElement.style.display = '';
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.beatTypeTooltipName);
 		this.isBeatTypeTooltipShown = false;
 		this.allowBeatTypeToChange = true;
 		this.resetBeatTypeRadioButtons();
@@ -166,36 +172,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.cdRef.detectChanges();
 	}
 	
-	private setTooltipPosition(hostingElement) {
-		computePosition(hostingElement, this.beatTypeTooltipElement.nativeElement, {
-			placement: 'right',
-			middleware: [offset(8), arrow({element: this.tooltipArrowElement.nativeElement})]
-		  }).then((callback) =>  this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData));
-	}
-
-	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}) {
-		Object.assign(this.beatTypeTooltipElement.nativeElement.style, {
-			position: strategy,
-			left: `${x}px`,
-			top: `${y}px`
-		});
-
-		if (middlewareData == null || middlewareData.arrow == null) {
-			return;
-		}
-
-		Object.assign(this.tooltipArrowElement.nativeElement.style, {
-			left: '-5px',
-			top: middlewareData.arrow.y != null ? `${middlewareData.arrow.y}px` : '',
-			right: '',
-			bottom: ''
-		 });
-	}
 
 	// #endregion
-
-
-
 
 
 	private handleBeatTypeChangeByKeyboard($event: any): void {
@@ -312,7 +290,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.beatToReplace = null;
 	}
 	
-	//#endregion
+	// #endregion
 
 	// #region  general settings
 
@@ -338,11 +316,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.openBeatTypeTooltip.subscribe($event => {
 			this.showBeatTypeTooltip(this.selectPlotPointSvgIconFromBeatId($event.beatId), $event.beatId, $event.beatType, $event.elementToFocusAfterClose);
 		});
-
-		this.closeBeatTypeTooltip.subscribe($event => {
-			if (this.isBeatTypeTooltipShown == true)
-				this.hideBeatTypeTooltip();
-		})
 	}
 
 	private renderGraph(): void {

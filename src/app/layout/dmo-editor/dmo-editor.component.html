@@ -58,7 +58,6 @@
             [initialPlotPoints]="plotPointsWithMetaData" 
             [isDmoFinished]="isDmoFinised"
             [openBeatTypeTooltip]="openBeatTypeTooltipEvent"
-            [closeBeatTypeTooltip]="closeBeatTypeTooltipEvent"
             [updateGraph]="updateGraphEvent"
             (plotPointsSet)="plotPointsSet($event)"
             (reorderBeats)="reorderBeats($event)"
@@ -79,7 +78,6 @@
             (removeBeat)="removeBeat($event)"
             (lineCountChanged)="lineCountChanged($event)"
             (openBeatTypeTooltip)="openBeatTypeTooltip($event)"
-            (closeBeatTypeTooltip)="closeBeatTypeTooltip($event)"
             (openCharactersPopup)="openCharactersPopup()"
             >
        </app-beats-flow>

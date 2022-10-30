@@ -21,7 +21,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() removeBeat: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
-	@Output() closeBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openCharactersPopup: EventEmitter<void> = new EventEmitter<void>();
 
 	isDataLoaded: boolean = false;
@@ -387,7 +386,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	prepareTimePicker($event: any): void {
-		this.closeBeatTypeTooltip.emit();
 		this.nnaTooltipService.hideAllTooltips();
 		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(true, false);
@@ -400,7 +398,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	prepareBeatDataHolder() {
-		this.closeBeatTypeTooltip.emit();
 		this.nnaTooltipService.hideAllTooltips();
 		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(false, true);
@@ -1129,7 +1126,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	onOpenCharactersPopup() {
-		this.cleanupTooltips();
+		this.hideCharactersTooltip();
 		this.openCharactersPopup.emit();
 	}
 
@@ -1151,12 +1148,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		const characterPlaceHolderElement = document.getElementById(this.characterPlaceHolderElementId);
 		characterPlaceHolderElement.parentNode.insertBefore(characterElem, characterPlaceHolderElement);
 		characterPlaceHolderElement.remove();
-	}
-
-	private cleanupTooltips(): void {
-		this.hideCharactersTooltip();
-		this.nnaTooltipService.hideAllTooltips();
-		this.closeBeatTypeTooltip.emit();
 	}
 
 	// #endregion
