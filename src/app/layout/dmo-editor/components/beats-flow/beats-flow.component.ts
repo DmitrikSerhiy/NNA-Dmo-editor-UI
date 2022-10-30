@@ -47,6 +47,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	// q for beat type tooltip
 	// u for character tooltip
 
+	private characterPlaceHolderElementId: string = 'characterPlaceHolderElement';
+
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
@@ -71,65 +73,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.unsubscribeFromSpecialHotKeysListeners();
 	}
 
-	showCharactersTooltip(hostingElement: any): void {
-		let clearHostingElementInnerText: boolean = false;
-		if (hostingElement.innerText?.length == 0) {
-			hostingElement.innerText = '1';
-			clearHostingElementInnerText = true;
-		}
-		this.filtredCharacters = this.initialCharacters;
-		const range = window.getSelection().getRangeAt(0);
-		const tempSpan = document.createElement('span');
-		range.insertNode(tempSpan);
 
-		this.nnaTooltipService.addTooltip(
-			'characters',
-			hostingElement,
-			this.charactersTooltip.nativeElement,
-			{ 
-				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
-				placement: 'bottom',
-				removeFakeHostElementAfter: true,
-				clearHostingElementInnerTextAfter: clearHostingElementInnerText
-			},
-			tempSpan
-		);
-
-		this.nnaTooltipService.showTooltip('characters');
-		
-		setTimeout(() => {
-			this.characterFilterInputElement?.nativeElement?.focus();
-		}, 200);
-	}
-
-	filterCharacters(filterValue: string): void {
-		const formedFilterValue = filterValue?.trim()?.toLowerCase(); 
-		if (formedFilterValue == '') {
-			this.resetCharacterFilter();
-			return;
-		}
-
-		this.filtredCharacters = this.filtredCharacters.filter(character => 
-			character.name.toLowerCase().includes(formedFilterValue) || character.aliases.toLowerCase().includes(formedFilterValue));
-		}
-
-	private resetCharacterFilter() {
-		this.filtredCharacters = this.initialCharacters;
-		if (this.characterFilterInputElement) {
-			this.characterFilterInputElement.nativeElement.value = '';
-		}	
-	}
-
-	hideCharactersTooltip(): void {
-		this.resetCharacterFilter();
-		this.nnaTooltipService.hideTooltip('characters');
-		this.nnaTooltipService.removeTooltip('characters');
-	}
-
-	onOpenCharactersPopup() {
-		this.hideCharactersTooltip();
-		this.openCharactersPopup.emit();
-	}
 
   	// #region general settings
 
@@ -445,6 +389,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	prepareTimePicker($event: any): void {
 		this.closeBeatTypeTooltip.emit();
 		this.nnaTooltipService.hideAllTooltips();
+		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(true, false);
 		if ($event.target.value == this.defaultTimePickerValue) {
 			$event.target.value = this.defaultEmptyTimePickerValue;
@@ -457,6 +402,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	prepareBeatDataHolder() {
 		this.closeBeatTypeTooltip.emit();
 		this.nnaTooltipService.hideAllTooltips();
+		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(false, true);
 	}
 
@@ -757,7 +703,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		const dataHolder = dataHolderContainer.lastChild;
+		const dataHolder = dataHolderContainer.lastChild as HTMLElement;
 
 		if (!dataHolder.lastChild) {
 			dataHolder.focus();
@@ -772,7 +718,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				selection.removeAllRanges();
 				selection.addRange(range);
 			} else { // any other element
-				dataHolder.lastChild.focus();
+				(dataHolder.lastChild as HTMLElement).focus();
 				this.scrollToElement(dataHolder.lastChild);
 			}
 		}
@@ -1113,4 +1059,105 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
   	// #endregion
+
+
+	// #region characters management
+
+	pickCharacter(character: NnaMovieCharacterDto): void {
+		this.createAndInsertCharacterTag(character);
+		this.hideCharactersTooltip();
+	}
+
+
+	showCharactersTooltip(hostingElement: any): void {
+		let clearHostingElementInnerText: boolean = false;
+
+		if (hostingElement.innerText?.length == 0) {
+			hostingElement.appendChild(document.createTextNode('1'));
+			clearHostingElementInnerText = true;
+		}
+
+		this.filtredCharacters = this.initialCharacters;
+		const range = window.getSelection().getRangeAt(0);
+		range.collapse(false);
+		const characterPlaceHolderElement = document.createElement('span');
+		characterPlaceHolderElement.setAttribute('id', this.characterPlaceHolderElementId);
+		range.insertNode(characterPlaceHolderElement);
+
+		this.nnaTooltipService.addTooltip(
+			this.nnaTooltipService.charactersTooltipName,
+			hostingElement,
+			this.charactersTooltip.nativeElement,
+			{ 
+				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
+				placement: 'bottom',
+				clearHostingElementInnerTextAfter: clearHostingElementInnerText
+			},
+			characterPlaceHolderElement
+		);
+
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.charactersTooltipName);
+		
+		setTimeout(() => {
+			this.characterFilterInputElement?.nativeElement?.focus();
+		}, 200);
+	}
+
+	filterCharacters(filterValue: string): void {
+		const formedFilterValue = filterValue?.trim()?.toLowerCase(); 
+		if (formedFilterValue == '') {
+			this.resetCharacterFilter();
+			return;
+		}
+
+		this.filtredCharacters = this.filtredCharacters.filter(character => 
+			character.name.toLowerCase().includes(formedFilterValue) || character.aliases.toLowerCase().includes(formedFilterValue));
+		}
+
+	private resetCharacterFilter() {
+		this.filtredCharacters = this.initialCharacters;
+		if (this.characterFilterInputElement) {
+			this.characterFilterInputElement.nativeElement.value = '';
+		}	
+	}
+
+	hideCharactersTooltip(): void {
+		this.resetCharacterFilter();
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
+		const characterPlaceHolderElement = document.getElementById(this.characterPlaceHolderElementId);
+		characterPlaceHolderElement?.remove();
+	}
+
+	onOpenCharactersPopup() {
+		this.cleanupTooltips();
+		this.openCharactersPopup.emit();
+	}
+
+
+	private createAndInsertCharacterTag(character: NnaMovieCharacterDto): void {
+		let characterElem = document.createElement('nna-character');
+		characterElem.style.cursor = 'pointer';
+		characterElem.style.padding= '2px';
+		characterElem.style.backgroundColor = '#d3d3d3';
+		characterElem.dataset.characterId = character.id;
+		characterElem.setAttribute('contenteditable', "false");
+		characterElem.innerText = character.name;
+		characterElem.addEventListener('click', ($event) => { 
+			const beatDataHolder = ($event.target as HTMLElement).parentNode.parentNode;
+			($event.target as HTMLElement).remove();
+			this.focusBeatByElement(beatDataHolder);
+		});
+
+		const characterPlaceHolderElement = document.getElementById(this.characterPlaceHolderElementId);
+		characterPlaceHolderElement.parentNode.insertBefore(characterElem, characterPlaceHolderElement);
+		characterPlaceHolderElement.remove();
+	}
+
+	private cleanupTooltips(): void {
+		this.hideCharactersTooltip();
+		this.nnaTooltipService.hideAllTooltips();
+		this.closeBeatTypeTooltip.emit();
+	}
+
+	// #endregion
 }

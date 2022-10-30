@@ -50,6 +50,16 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                             overflow-x: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
+
+                            &:hover {
+                                background-color: $active-primary-background-color;
+                                cursor: pointer;
+                            }
+
+                            &:active {
+                                background-color: $active-primary-background-color;
+                                cursor: pointer;
+                            }
                         }
                     }
 

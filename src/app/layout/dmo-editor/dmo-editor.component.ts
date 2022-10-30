@@ -94,7 +94,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.cdRef.detectChanges();
 
 		this.nnaTooltipService.addTooltip(
-			'connectionState', 
+			this.nnaTooltipService.connectionStateTooltipName, 
 			this.connectionStateElement.nativeElement,
 			this.connectionStateTooltipElement.nativeElement,
 			{ 
@@ -105,7 +105,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		);
 
 		this.nnaTooltipService.addTooltip(
-			'connectionStateIcon', 
+			this.nnaTooltipService.connectionStateIconTooltipName, 
 			this.connectionStateIconElmElement.nativeElement,
 			this.connectionStateIconTooltipElement.nativeElement,
 			{ 
@@ -163,6 +163,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// #region general settings
 
 	async editCurrentDmo(): Promise<void> {
+		this.closeBeatTypeTooltipEvent.emit();
+		this.nnaTooltipService.hideAllTooltips();
 		const popupResult = await this.finalizeInitialPopup();
 		if (!popupResult) {
 			return;
@@ -332,7 +334,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (this.connectionStateTooltipIsShown == true) {
 			return;
 		}
-		this.nnaTooltipService.showTooltip('connectionState');
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.connectionStateTooltipName);
 		this.connectionStateTooltipIsShown = true;
 	}
 
@@ -343,7 +345,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.connectionStateTooltipIsShown = false;
 		setTimeout(() => {
 			if (this.connectionStateTooltipIsShown == false) {
-				this.nnaTooltipService.hideTooltip('connectionState');
+				this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateTooltipName);
 			}
 		}, 500);
 	}
@@ -352,7 +354,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (this.connectionStateIconTooltipIsShown == true) {
 			return;
 		}
-		this.nnaTooltipService.showTooltip('connectionStateIcon');
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
 		this.connectionStateIconTooltipIsShown = true;
 	}
 
@@ -363,7 +365,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.connectionStateIconTooltipIsShown = false;
 		setTimeout(() => {
 			if (this.connectionStateIconTooltipIsShown == false) {
-				this.nnaTooltipService.hideTooltip('connectionStateIcon');
+				this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
 			}
 		}, 500);
 	}
@@ -374,6 +376,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// #region characters popup
 
 	async openCharactersPopup(): Promise<void> {
+		this.nnaTooltipService.hideAllTooltips();
+		this.closeBeatTypeTooltipEvent.emit()
 		await this.finalizeCharactersPopup();
 	}
 

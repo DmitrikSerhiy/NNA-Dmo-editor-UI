@@ -22,6 +22,20 @@ export class NnaTooltipService {
 
 	private tooltips: any[] = [];
 
+	get charactersTooltipName() : string {
+		return 'characters';
+	}
+
+	get connectionStateTooltipName() : string {
+		return 'connectionState';
+	}
+
+	get connectionStateIconTooltipName() : string {
+		return 'connectionStateIcon';
+	}
+
+	
+
   	constructor() { }
 
 	addTooltip(name: string, hostingNativeElement: any, tooltipNativeElement: any, options: NnaTooltipOptions, fakeHostingNativeElement: any = null): void {
@@ -54,16 +68,15 @@ export class NnaTooltipService {
 			return;
 		}
 
+		this.hideAllTooltipsExcept(name);
+
 		computePosition(tooltipObj.fakeHostingElement == null ? tooltipObj.hostingElement : tooltipObj.fakeHostingElement, tooltipObj.tooltipElement, {
 			placement: tooltipObj.options.placement,
 			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]})
 				.then((callback) => {
 					this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData, tooltipObj.tooltipElement, tooltipObj.options);
-					console.log(tooltipObj.options.clearHostingElementInnerTextAfter);
 					if (tooltipObj.options.clearHostingElementInnerTextAfter == true) {
-						if (tooltipObj.hostingElement.innerText) {
-							tooltipObj.hostingElement.innerText = '';
-						}
+						tooltipObj.hostingElement.lastChild.nodeValue = '';
 					}
 					if (tooltipObj.options.removeFakeHostElementAfter == true) {
 						tooltipObj.fakeHostingElement.remove();
@@ -78,6 +91,7 @@ export class NnaTooltipService {
 		if (tooltipObj == undefined) {
 			return;
 		}	
+
 		tooltipObj.tooltipElement.style.display = 'none';
 	}
 
