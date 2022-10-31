@@ -2,7 +2,7 @@
     <div class="beats-inner-wrapper">
         <div *ngIf="isDataLoaded" class="beats-container">
 
-            <div #charactersTooltip class="nna-tooltip-base characters-tooltip" (mouseleave)="hideCharactersTooltip()">
+            <div #charactersTooltip class="nna-tooltip-base characters-tooltip" (mouseleave)="hideCharactersTooltipByMouseLeave()">
                 <div class="character-tooltip-search-block" *ngIf="initialCharacters?.length > 0">
                     <input #characterFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Character name or alias" (input)="filterCharacters($event.target.value)">
                     <ul>

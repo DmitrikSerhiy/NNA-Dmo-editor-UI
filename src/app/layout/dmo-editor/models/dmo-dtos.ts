@@ -45,6 +45,7 @@ export class NnaMovieCharacterToUpdateDto {
 
 export class NnaMovieCharacterInBeatDto {
     id: string;
+    characterId: string;
     name: string;
 }
 
@@ -72,14 +73,28 @@ export class UpdateBeatDtoAPI {
 }
 
 export class AttachCharacterToBeatDtoAPI {
+    Id: string;
     DmoId: string;
     BeatId: string;
     CharacterId: string;
 
-    constructor(dmoId: string, beatId: string, characterId: string) {
+    constructor(id: string, dmoId: string, beatId: string, characterId: string) {
+        this.Id = id;
         this.DmoId = dmoId;
         this.BeatId = beatId;
         this.CharacterId = characterId;
+    }
+}
+
+export class DetachCharacterFromBeatDtoAPI {
+    Id: string;
+    DmoId: string;
+    BeatId: string;
+
+    constructor(id: string, dmoId: string, beatId: string) {
+        this.Id = id;
+        this.DmoId = dmoId;
+        this.BeatId = beatId;
     }
 }
 
@@ -184,4 +199,6 @@ export class UpdateBeatType {
 }
 
 export const NnaCharacterTagName: string = 'nna-character';
+export const NnaCHaracterInterpolatorPrefix: string = 'nna[';
+export const NnaCHaracterInterpolatorPostfix: string = 'nna]';
 

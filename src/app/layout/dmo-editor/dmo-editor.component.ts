@@ -126,6 +126,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
+		// todo: !IMPORTANT clear editor and reload dmo.
+		// todo: test: create beats when offline
 		await this.loadDmoWithBeats();
 		this.cdRef.detectChanges();
 		
@@ -139,7 +141,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			await this.editorHub.addBeat($event.metaData);
 		} else if ($event.source == 'remove') {
 			await this.editorHub.removeBeat($event.metaData);
-		} else if ($event.source == 'beat_data_holder_focus_out' || $event.source == 'time_picker_focus_out' || $event.source == 'change_beat_type') {
+		} else if (
+			$event.source == 'beat_data_holder_focus_out' || 
+			$event.source == 'time_picker_focus_out' || 
+			$event.source == 'change_beat_type' || 
+			$event.source == 'attach_character_to_beat' ||
+			$event.source == 'detach_character_from_beat') {
 			await this.editorHub.updateBeat(this.selectSingleBeat($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
@@ -375,12 +382,14 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async syncCharactersInDmoFromBeats($event: any): Promise<void> {
 		if ($event.operation == 'attach') {
-			await this.editorHub.attachCharacterToBeat(this.dmoId, $event.data.beatId, $event.data.characterId);
-			console.log('sent');
-			
-			
-			
+			await this.editorHub.attachCharacterToBeat($event.data.id, this.dmoId, $event.data.beatId, $event.data.characterId);
+		} else if ($event.operation == 'detach') {
+			await this.editorHub.detachCharacterFromBeat($event.data.id, this.dmoId, $event.data.beatId);
+		} else {
+			return;
 		}
+
+		console.log(`Characters in beats sync: id: ${$event.data.id}. Operation: ${$event.operation}`);
 	}
 
 	async openCharactersPopup(): Promise<void> {
@@ -659,7 +668,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		let characters: NnaMovieCharacterInBeatDto[] = [];
 		(beatElement as HTMLElement).childNodes?.forEach(childNode => {
 			if (childNode.nodeName == NnaCharacterTagName) {
-				characters.push({id: (childNode as HTMLElement).dataset.characterId, name: childNode.nodeValue } as NnaMovieCharacterInBeatDto )
+				const childElement = childNode as HTMLElement;
+				characters.push({id: childElement.dataset.id, characterId: childElement.dataset.characterId, name: childNode.nodeValue } as NnaMovieCharacterInBeatDto )
 			}
 		});
 		return characters;

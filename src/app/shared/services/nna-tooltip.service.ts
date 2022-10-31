@@ -141,6 +141,15 @@ export class NnaTooltipService {
 		return tooltip.options.tooltipMetadata;
 	}
 
+	getHostingElementFromTooltip(name: string): any{
+		const tooltip = this.tooltips.find(t => t.name == name);
+		if (tooltip == undefined) {
+			return null;
+		}
+
+		return tooltip.hostingElement;
+	}
+
 	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
 		Object.assign(tooltipNativeElement.style, {
 			position: strategy,

@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { BeatGeneratorService } from '../../helpers/beat-generator';
 import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterTagName, NnaMovieCharacterDto } from '../../models/dmo-dtos';
 
 @Component({
@@ -26,6 +27,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
+	shadowBeats: NnaBeatDto[];
 	filtredCharacters: NnaMovieCharacterDto[];
 
 	private beatsIds: string[] = [];
@@ -57,7 +59,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	
 	@ViewChild('characterFilterInput') characterFilterInputElement: ElementRef;
 
-	constructor(private cdRef: ChangeDetectorRef, private nnaTooltipService: NnaTooltipService) {}
+	constructor(
+		private cdRef: ChangeDetectorRef,
+		private nnaTooltipService: NnaTooltipService,
+		private beatGeneratorService: BeatGeneratorService) {}
 
 
 	ngAfterViewInit(): void {
@@ -103,8 +108,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 					? this.focusBeat(element.dataset.order)
 					: this.focusTimePickerByIndex(element.dataset.order);
 			}, 200);
-
-
 		});
 	}
 
@@ -388,7 +391,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	prepareTimePicker($event: any): void {
 		this.nnaTooltipService.hideAllTooltips();
-		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(true, false);
 		if ($event.target.value == this.defaultTimePickerValue) {
 			$event.target.value = this.defaultEmptyTimePickerValue;
@@ -400,7 +402,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	prepareBeatDataHolder() {
 		this.nnaTooltipService.hideAllTooltips();
-		this.hideCharactersTooltip();
 		this.setEditableElementsFocusMetaData(false, true);
 	}
 
@@ -688,6 +689,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
 		});
+
+		document.querySelectorAll(NnaCharacterTagName)?.forEach(characterTag => {
+			this.addEventListenerForCharacterTag(characterTag);
+		})
 	}
 
 	private selectBeatIdFromBeatDataHolder(beatHolder: any): string {
@@ -1066,11 +1071,26 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	pickCharacter(character: NnaMovieCharacterDto): void {
 		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.charactersTooltipName).beatId;
-		this.syncCharactersInDmo.emit({operation: 'attach', data: { beatId: beatId, characterId: character.id }} );
-		this.createAndInsertCharacterTag(character);
-		this.hideCharactersTooltip();
+		const beatDataHolder = this.nnaTooltipService.getHostingElementFromTooltip(this.nnaTooltipService.charactersTooltipName);
+		const characterTag = this.createCharacterTag(character);
+		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
+		this.insertCharacterTagIntoPlaceholder(characterTag);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
+		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: this.beatsIds.indexOf(beatId) });
+		// todo: set caret just after the newly created character tag 
+		this.focusBeatByElement(beatDataHolder.parentElement);
 	}
 
+	removeCharacter(characterTag: HTMLElement): void {
+		const beatId = this.selectBeatIdFromBeatDataHolder(characterTag.parentElement);
+		this.syncCharactersInDmo.emit({operation: 'detach', data: { id: characterTag.dataset.id, beatId: beatId }} );
+		characterTag.remove();
+		const beatIndex = this.beatsIds.indexOf(beatId);
+		this.beatsMetaData[beatIndex].isDirty = true;
+		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
+		this.beatsMetaData[beatIndex].isDirty = false;
+		// todo: handle focus here as well
+	}
 
 	showCharactersTooltip(hostingElement: any): void {
 		let clearHostingElementInnerText: boolean = false;
@@ -1101,6 +1121,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			characterPlaceHolderElement
 		);
 
+		this.resetCharacterFilter();
 		this.nnaTooltipService.showTooltip(this.nnaTooltipService.charactersTooltipName);
 		
 		setTimeout(() => {
@@ -1126,34 +1147,38 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}	
 	}
 
-	hideCharactersTooltip(): void {
-		this.resetCharacterFilter();
-	}
-
 	onOpenCharactersPopup() {
 		this.openCharactersPopup.emit();
 	}
 
+	hideCharactersTooltipByMouseLeave() {
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
+	}
 
-	private createAndInsertCharacterTag(character: NnaMovieCharacterDto): void {
+	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
+		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
+		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
+		characterPlaceHolderElement.remove();
+	}
+
+	private createCharacterTag(character: NnaMovieCharacterDto): HTMLElement {
 		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
-		characterElem.style.padding= '2px';
+		characterElem.style.padding= '1px';
 		characterElem.style.backgroundColor = '#d3d3d3';
 		characterElem.dataset.characterId = character.id;
+		characterElem.dataset.id = this.beatGeneratorService.generateTempId();
 		characterElem.setAttribute('contenteditable', "false");
 		characterElem.innerText = character.name;
 		this.addEventListenerForCharacterTag(characterElem);
-
-		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
-		characterPlaceHolderElement.parentNode.insertBefore(characterElem, characterPlaceHolderElement);
-		characterPlaceHolderElement.remove();
+		return characterElem;
 	}
 
 	private addEventListenerForCharacterTag(characterTag: any): void {
 		characterTag.addEventListener('click', ($event) => { 
-			const beatDataHolder = ($event.target as HTMLElement).parentNode.parentNode;
-			($event.target as HTMLElement).remove();
+			const tagElement = ($event.target as HTMLElement);
+			const beatDataHolder = tagElement.parentNode.parentNode;
+			this.removeCharacter($event.target);
 			this.focusBeatByElement(beatDataHolder);
 		});
 	}

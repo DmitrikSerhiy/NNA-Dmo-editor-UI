@@ -26,7 +26,7 @@ export class BeatGeneratorService {
 		return defaultBeatDetails;
 	}
 
-	public generateTempBeatId(): string {
+	public generateTempId(): string {
 		return `tempId_${this.userManager.getCurrentUser()}_${Math.floor(Math.random() * Math.floor(9999999))}`;
 	}
 
