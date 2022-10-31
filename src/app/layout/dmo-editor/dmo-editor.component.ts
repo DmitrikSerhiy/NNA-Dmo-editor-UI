@@ -5,7 +5,7 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit, ViewChild } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
+import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaCharacterTagName, NnaDmoDto, NnaMovieCharacterInBeatDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
@@ -371,7 +371,17 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   	// #endregion
 
 
-	// #region characters popup
+	// #region characters
+
+	async syncCharactersInDmoFromBeats($event: any): Promise<void> {
+		if ($event.operation == 'attach') {
+			await this.editorHub.attachCharacterToBeat(this.dmoId, $event.data.beatId, $event.data.characterId);
+			console.log('sent');
+			
+			
+			
+		}
+	}
 
 	async openCharactersPopup(): Promise<void> {
 		this.nnaTooltipService.hideAllTooltips();
@@ -624,7 +634,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 					order: i,
 					text: beatElement.nativeElement.innerHTML,
 					time: this.buildTimeDtoFromBeat(beatId),
-					type: beatElement.nativeElement.dataset.beatType
+					type: beatElement.nativeElement.dataset.beatType,
+					characters: this.selectCharactersFromBeatElement(beatElement)
 				}
 				return beat;
 		});
@@ -639,8 +650,19 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			order: index,
 			text: beatElement.innerHTML,
 			time: this.buildTimeDtoFromBeat(beatId),
-			type: beatElement.dataset.beatType
+			type: beatElement.dataset.beatType,
+			characters: this.selectCharactersFromBeatElement(beatElement)
 		} as NnaBeatDto
+	}
+
+	private selectCharactersFromBeatElement(beatElement: any): NnaMovieCharacterInBeatDto[] {
+		let characters: NnaMovieCharacterInBeatDto[] = [];
+		(beatElement as HTMLElement).childNodes?.forEach(childNode => {
+			if (childNode.nodeName == NnaCharacterTagName) {
+				characters.push({id: (childNode as HTMLElement).dataset.characterId, name: childNode.nodeValue } as NnaMovieCharacterInBeatDto )
+			}
+		});
+		return characters;
 	}
 
 	// private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {

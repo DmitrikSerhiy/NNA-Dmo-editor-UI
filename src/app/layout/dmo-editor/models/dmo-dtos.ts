@@ -43,12 +43,18 @@ export class NnaMovieCharacterToUpdateDto {
     aliases: string;
 }
 
+export class NnaMovieCharacterInBeatDto {
+    id: string;
+    name: string;
+}
+
 export class NnaBeatDto {
     beatId: string;
     text: string;
     order: number;
     time: NnaBeatTimeDto;
     type: number;
+    characters: NnaMovieCharacterInBeatDto[];
 }
 
 export class UpdateBeatDtoAPI {
@@ -64,6 +70,19 @@ export class UpdateBeatDtoAPI {
         this.Type = beatDto.type;
     }
 }
+
+export class AttachCharacterToBeatDtoAPI {
+    DmoId: string;
+    BeatId: string;
+    CharacterId: string;
+
+    constructor(dmoId: string, beatId: string, characterId: string) {
+        this.DmoId = dmoId;
+        this.BeatId = beatId;
+        this.CharacterId = characterId;
+    }
+}
+
 export class NnaBeatTimeDto {
     hours: number;
     minutes: number;
@@ -163,4 +182,6 @@ export class UpdateBeatType {
         this.newType = newType;
     }
 }
+
+export const NnaCharacterTagName: string = 'nna-character';
 

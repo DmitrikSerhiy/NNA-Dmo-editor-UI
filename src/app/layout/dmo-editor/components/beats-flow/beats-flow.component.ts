@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
-import { NnaBeatDto, NnaBeatTimeDto, NnaMovieCharacterDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterTagName, NnaMovieCharacterDto } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-beats-flow',
@@ -22,6 +22,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openCharactersPopup: EventEmitter<void> = new EventEmitter<void>();
+	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<void>(); 
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
@@ -46,7 +47,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	// q for beat type tooltip
 	// u for character tooltip
 
-	private characterPlaceHolderElementId: string = 'characterPlaceHolderElement';
+	private characterPlaceHolderClass: string = 'character-placeolder';
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
@@ -679,6 +680,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				return;
 			}
 
+			if (beat.characters?.length > 0) {
+				console.log(beat.characters);
+			}
 			beatDataHolder.nativeElement.innerHTML = beat.text;
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
 			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
@@ -1061,6 +1065,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	// #region characters management
 
 	pickCharacter(character: NnaMovieCharacterDto): void {
+		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.charactersTooltipName).beatId;
+		this.syncCharactersInDmo.emit({operation: 'attach', data: { beatId: beatId, characterId: character.id }} );
 		this.createAndInsertCharacterTag(character);
 		this.hideCharactersTooltip();
 	}
@@ -1078,7 +1084,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		const range = window.getSelection().getRangeAt(0);
 		range.collapse(false);
 		const characterPlaceHolderElement = document.createElement('span');
-		characterPlaceHolderElement.setAttribute('id', this.characterPlaceHolderElementId);
+		characterPlaceHolderElement.classList.add(this.characterPlaceHolderClass);
 		range.insertNode(characterPlaceHolderElement);
 
 		this.nnaTooltipService.addTooltip(
@@ -1088,7 +1094,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			{ 
 				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
 				placement: 'bottom',
-				clearHostingElementInnerTextAfter: clearHostingElementInnerText
+				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
+				tooltipMetadata: { beatId: this.selectBeatIdFromBeatDataHolder(hostingElement) },
+				callbackAfterHide: this.cleanUpCharactersPlaceholders
 			},
 			characterPlaceHolderElement
 		);
@@ -1120,35 +1128,40 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	hideCharactersTooltip(): void {
 		this.resetCharacterFilter();
-		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
-		const characterPlaceHolderElement = document.getElementById(this.characterPlaceHolderElementId);
-		characterPlaceHolderElement?.remove();
 	}
 
 	onOpenCharactersPopup() {
-		this.hideCharactersTooltip();
 		this.openCharactersPopup.emit();
 	}
 
 
 	private createAndInsertCharacterTag(character: NnaMovieCharacterDto): void {
-		let characterElem = document.createElement('nna-character');
+		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
 		characterElem.style.padding= '2px';
 		characterElem.style.backgroundColor = '#d3d3d3';
 		characterElem.dataset.characterId = character.id;
 		characterElem.setAttribute('contenteditable', "false");
 		characterElem.innerText = character.name;
-		characterElem.addEventListener('click', ($event) => { 
+		this.addEventListenerForCharacterTag(characterElem);
+
+		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
+		characterPlaceHolderElement.parentNode.insertBefore(characterElem, characterPlaceHolderElement);
+		characterPlaceHolderElement.remove();
+	}
+
+	private addEventListenerForCharacterTag(characterTag: any): void {
+		characterTag.addEventListener('click', ($event) => { 
 			const beatDataHolder = ($event.target as HTMLElement).parentNode.parentNode;
 			($event.target as HTMLElement).remove();
 			this.focusBeatByElement(beatDataHolder);
 		});
-
-		const characterPlaceHolderElement = document.getElementById(this.characterPlaceHolderElementId);
-		characterPlaceHolderElement.parentNode.insertBefore(characterElem, characterPlaceHolderElement);
-		characterPlaceHolderElement.remove();
 	}
+
+	private cleanUpCharactersPlaceholders = function() {
+		const characterPlaceHolderElement = document.querySelectorAll(`.${this.characterPlaceHolderClass}`);
+		characterPlaceHolderElement?.forEach(chaPlaceholder => chaPlaceholder.remove());
+	}.bind(this);
 
 	// #endregion
 }

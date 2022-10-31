@@ -13,6 +13,9 @@ export interface NnaTooltipOptions {
 	clearHostingElementInnerTextAfter?: boolean;
 	shift?: number;
 	offset?: TooltipOffsetOptions;
+	tooltipMetadata?: any;
+	callbackAfterHide?: any;
+	callbakcAfterShow?: any;
 }
 
 @Injectable({
@@ -86,7 +89,15 @@ export class NnaTooltipService {
 					}
 				});
 
+		if (tooltipObj.tooltipElement.style.display == 'block') {
+			return;
+		}
+
 		tooltipObj.tooltipElement.style.display = 'block';
+
+		if (tooltipObj.options.callbakcAfterShow) {
+			tooltipObj.options.callbakcAfterShow();
+		}
 	}
 
 	hideTooltip(name: string): void {
@@ -95,7 +106,15 @@ export class NnaTooltipService {
 			return;
 		}	
 
+		if (!tooltipObj.tooltipElement.style.display || tooltipObj.tooltipElement.style.display == 'none') {
+			return;
+		}
+
 		tooltipObj.tooltipElement.style.display = 'none';
+
+		if (tooltipObj.options.callbackAfterHide) {
+			tooltipObj.options.callbackAfterHide();
+		}
 	}
 
 	hideAllTooltips(): void {
@@ -111,6 +130,15 @@ export class NnaTooltipService {
 			}
 			this.hideTooltip(tooltip.name);
 		});
+	}
+
+	getTooltipMetadata(name: string): any {
+		const tooltip = this.tooltips.find(t => t.name == name);
+		if (tooltip == undefined) {
+			return null;
+		}
+
+		return tooltip.options.tooltipMetadata;
 	}
 
 	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
