@@ -53,6 +53,14 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	ngOnInit(): void {
 		this.dialogRef.backdropClick().subscribe(() => this.onClose());
+		this.dialogRef.disableClose = true;
+		this.dialogRef.keydownEvents().subscribe($event => {
+			const key = $event.which || $event.keyCode || $event.charCode;
+			if (key == 27) { // esc
+				this.onClose();
+			}
+		})
+
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({
 			'characterNameInput': new FormControl('', [Validators.required]),

@@ -592,8 +592,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
+		if([ ...$event.target.childNodes ].some(node => node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase())) {
+			return;
+		}
+
 		if ($event.target.childNodes.length == 1) {
-			if ($event.target.lastChild.nodeType == 3) {
+			if ($event.target.lastChild.nodeType == 3 ) {
 				const pureText = $event.target.innerText.replace(/ +/g, '');
 				if (pureText == '') {
 					$event.target.innerText = '';
@@ -681,17 +685,15 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				return;
 			}
 
-			if (beat.characters?.length > 0) {
-				console.log(beat.characters);
-			}
-			beatDataHolder.nativeElement.innerHTML = beat.text;
+			beatDataHolder.nativeElement.innerHTML = decodeURIComponent(beat.text);
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
 			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
 		});
 
-		document.querySelectorAll(NnaCharacterTagName)?.forEach(characterTag => {
+		document.querySelectorAll<HTMLElement>(NnaCharacterTagName)?.forEach(characterTag => {
 			this.addEventListenerForCharacterTag(characterTag);
+			this.observeCharacterTag(characterTag);
 		})
 	}
 
@@ -1072,7 +1074,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	pickCharacter(character: NnaMovieCharacterDto): void {
 		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.charactersTooltipName).beatId;
 		const beatDataHolder = this.nnaTooltipService.getHostingElementFromTooltip(this.nnaTooltipService.charactersTooltipName);
-		const characterTag = this.createCharacterTag(character);
+		const characterTag = this.createCharacterTag(character, beatId);
 		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
 		this.insertCharacterTagIntoPlaceholder(characterTag);
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
@@ -1082,10 +1084,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	removeCharacter(characterTag: HTMLElement): void {
-		const beatId = this.selectBeatIdFromBeatDataHolder(characterTag.parentElement);
-		this.syncCharactersInDmo.emit({operation: 'detach', data: { id: characterTag.dataset.id, beatId: beatId }} );
+		this.syncCharactersInDmo.emit({operation: 'detach', data: { id: characterTag.dataset.id, beatId: characterTag.dataset.beatId }} );
 		characterTag.remove();
-		const beatIndex = this.beatsIds.indexOf(beatId);
+		console.log(characterTag.dataset.beatId);
+		const beatIndex = this.beatsIds.indexOf(characterTag.dataset.beatId);
+		console.log(beatIndex)
+		console.log(this.beatsIds)
+
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
 		this.beatsMetaData[beatIndex].isDirty = false;
@@ -1158,16 +1163,18 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
 		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
+		this.observeCharacterTag(characterTag);
 		characterPlaceHolderElement.remove();
 	}
 
-	private createCharacterTag(character: NnaMovieCharacterDto): HTMLElement {
+	private createCharacterTag(character: NnaMovieCharacterDto, beatId: string): HTMLElement {
 		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
 		characterElem.style.padding= '1px';
 		characterElem.style.backgroundColor = '#d3d3d3';
 		characterElem.dataset.characterId = character.id;
 		characterElem.dataset.id = this.beatGeneratorService.generateTempId();
+		characterElem.dataset.beatId = beatId;
 		characterElem.setAttribute('contenteditable', "false");
 		characterElem.innerText = character.name;
 		this.addEventListenerForCharacterTag(characterElem);
@@ -1178,10 +1185,25 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		characterTag.addEventListener('click', ($event) => { 
 			const tagElement = ($event.target as HTMLElement);
 			const beatDataHolder = tagElement.parentNode.parentNode;
-			this.removeCharacter($event.target);
+			tagElement.remove();
 			this.focusBeatByElement(beatDataHolder);
 		});
 	}
+
+	private observeCharacterTag(characterTag: HTMLElement) {
+		this.onCharacterTagRemoved(characterTag, () => {
+			this.removeCharacter(characterTag);
+		});
+	}
+
+	private onCharacterTagRemoved = function(element, callback) {
+		new MutationObserver(function(mutations) {
+		  	if(!document.body.contains(element)) {
+				callback();
+				this.disconnect();
+		  	}
+		}).observe(element.parentElement as Node, {childList: true});
+	}.bind(this);
 
 	private cleanUpCharactersPlaceholders = function() {
 		const characterPlaceHolderElement = document.querySelectorAll(`.${this.characterPlaceHolderClass}`);

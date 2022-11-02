@@ -91,28 +91,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.loadDmo()
 		this.subscribeToClipboard();
 		this.cdRef.detectChanges();
-
-		this.nnaTooltipService.addTooltip(
-			this.nnaTooltipService.connectionStateTooltipName, 
-			this.connectionStateElement.nativeElement,
-			this.connectionStateTooltipElement.nativeElement,
-			{ 
-				arrowNativeElenemt: this.connectionStateTooltipArrowElement.nativeElement,
-				placement: 'bottom',
-				shift: 5
-			}
-		);
-
-		this.nnaTooltipService.addTooltip(
-			this.nnaTooltipService.connectionStateIconTooltipName, 
-			this.connectionStateIconElmElement.nativeElement,
-			this.connectionStateIconTooltipElement.nativeElement,
-			{ 
-				arrowNativeElenemt: this.connectionStateIconTooltipArrowElement.nativeElement,
-				placement: 'bottom',
-				shift: 5
-			}
-		);
+		this.isDmoInfoSet = true;
+		this.cdRef.detectChanges();
 	}
 
 	async prepareEditor(): Promise<void> {
@@ -275,8 +255,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.initialDmoDto.dmoId = this.dmoId;
 		this.initialDmoDto.beats = [];
 		this.initialDmoDto.characters = [];
-
-		this.isDmoInfoSet = true;
 	}
 
 	private async loadDmoWithBeats() {
@@ -332,7 +310,39 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.connectionStateTitle = this.connectionDisconnectedTitle;
 			this.autosaveTitle = this.autoSavingIsNotWorking;
 		}
+
 		this.cdRef.detectChanges();
+
+		const intervalId = setInterval(() => {
+			if (this.isDmoInfoSet == false) {
+				return;
+			}
+			
+			this.nnaTooltipService.addTooltip(
+				this.nnaTooltipService.connectionStateTooltipName, 
+				this.connectionStateElement.nativeElement,
+				this.connectionStateTooltipElement.nativeElement,
+				{ 
+					arrowNativeElenemt: this.connectionStateTooltipArrowElement.nativeElement,
+					placement: 'bottom',
+					shift: 5
+				}
+			);
+
+			this.nnaTooltipService.addTooltip(
+				this.nnaTooltipService.connectionStateIconTooltipName, 
+				this.connectionStateIconElmElement.nativeElement,
+				this.connectionStateIconTooltipElement.nativeElement,
+				{ 
+					arrowNativeElenemt: this.connectionStateIconTooltipArrowElement.nativeElement,
+					placement: 'bottom',
+					shift: 5
+				}
+			);
+			this.cdRef.detectChanges();
+			clearInterval(intervalId);
+		}, 1000);
+
 	}
 
 	showConnectionStateTooltip(): void {
@@ -641,7 +651,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				const beat: NnaBeatDto = {
 					beatId: beatId,
 					order: i,
-					text: beatElement.nativeElement.innerHTML,
+					text: encodeURIComponent(beatElement.nativeElement.innerHTML),
 					time: this.buildTimeDtoFromBeat(beatId),
 					type: beatElement.nativeElement.dataset.beatType,
 					characters: this.selectCharactersFromBeatElement(beatElement)
@@ -657,7 +667,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		return {
 			beatId: beatId,
 			order: index,
-			text: beatElement.innerHTML,
+			text: encodeURIComponent(beatElement.innerHTML),
 			time: this.buildTimeDtoFromBeat(beatId),
 			type: beatElement.dataset.beatType,
 			characters: this.selectCharactersFromBeatElement(beatElement)

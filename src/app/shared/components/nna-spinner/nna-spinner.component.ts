@@ -1,25 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { NnaHelpersService } from '../../services/nna-helpers.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
 	selector: 'app-nna-spinner',
 	templateUrl: './nna-spinner.component.html',
 	styleUrls: ['./nna-spinner.component.scss']
 })
-export class NnaSpinnerComponent implements OnInit {
+export class NnaSpinnerComponent implements OnInit, OnDestroy {
 	visible: boolean = true;
 	isInitial: boolean = true;
+	intervalId: any;
 
- 	constructor(private nnaHelpersService: NnaHelpersService) { }
+ 	constructor(private cdRef: ChangeDetectorRef) { }
 
-	async ngOnInit() {
-		do {
-			await this.nnaHelpersService.sleep(800);
+	ngOnInit() {
+		this.intervalId = setInterval( () => {
 			this.toggle();
-		} while(true)
+		}, 800)
+	}
+
+	ngOnDestroy(): void {
+		clearInterval(this.intervalId);
 	}
 
 	private toggle(): void {
 		this.visible = !this.visible;
+		this.cdRef.detectChanges();
 	}
 }
