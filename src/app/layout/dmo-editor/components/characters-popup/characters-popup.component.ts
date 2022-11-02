@@ -136,8 +136,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.createCharacter({
-				name: this.nameInput.value, 
-				aliases: this.aliasesInput.value, 
+				name: this.nameInput.value.trim(), 
+				aliases: this.fixAliasesValue(this.aliasesInput.value), 
 				dmoId: this.dmoId } as NnaMovieCharacterToCreateDto)
 			.pipe(take(1))
 			.subscribe(() => { 
@@ -212,8 +212,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.updateCharacter({
-				name: this.nameInput.value, 
-				aliases: this.aliasesInput.value, 
+				name: this.nameInput.value.trim(), 
+				aliases: this.fixAliasesValue(this.aliasesInput.value), 
 				id: this.selectedCharacter.id,
 				dmoId: this.dmoId } as NnaMovieCharacterToUpdateDto)
 			.pipe(take(1))
@@ -254,6 +254,23 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		}
 
 		this.selectedCharacter = row;
+	}
+
+	private fixAliasesValue(aliases: string): string {
+		let fixedAliases: string = '';
+		console.log(aliases);
+
+		fixedAliases = aliases.split(',').reduce((p, n) => {
+			if (p.trim() == '') {
+				return n.trim();
+			}
+			if (n.trim() == '') {
+				return p.trim();
+			}
+			return p.trim() + ', ' + n.trim();
+		});
+
+		return fixedAliases;
 	}
 
 	private loadCharacters() {

@@ -1086,11 +1086,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	removeCharacter(characterTag: HTMLElement): void {
 		this.syncCharactersInDmo.emit({operation: 'detach', data: { id: characterTag.dataset.id, beatId: characterTag.dataset.beatId }} );
 		characterTag.remove();
-		console.log(characterTag.dataset.beatId);
 		const beatIndex = this.beatsIds.indexOf(characterTag.dataset.beatId);
-		console.log(beatIndex)
-		console.log(this.beatsIds)
-
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
 		this.beatsMetaData[beatIndex].isDirty = false;
