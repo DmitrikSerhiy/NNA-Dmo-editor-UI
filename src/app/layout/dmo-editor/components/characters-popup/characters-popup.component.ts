@@ -257,10 +257,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	private fixAliasesValue(aliases: string): string {
-		let fixedAliases: string = '';
-		console.log(aliases);
-
-		fixedAliases = aliases.split(',').reduce((p, n) => {
+		return aliases?.split(',').reduce((p, n) => {
 			if (p.trim() == '') {
 				return n.trim();
 			}
@@ -268,9 +265,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				return p.trim();
 			}
 			return p.trim() + ', ' + n.trim();
-		});
-
-		return fixedAliases;
+		}) ?? '';
 	}
 
 	private loadCharacters() {

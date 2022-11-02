@@ -55,7 +55,7 @@ export class NnaBeatDto {
     order: number;
     time: NnaBeatTimeDto;
     type: number;
-    characters: NnaMovieCharacterInBeatDto[];
+    charactersInBeat: NnaMovieCharacterInBeatDto[]
 }
 
 export class UpdateBeatDtoAPI {
@@ -135,6 +135,7 @@ export class CreateBeatDto {
     order: number;
     dmoId: string;
     type: number;
+    charactersInBeat: NnaMovieCharacterInBeatDto[]
 }
 
 export class CreateBeatDtoAPI {
@@ -199,6 +200,6 @@ export class UpdateBeatType {
 }
 
 export const NnaCharacterTagName: string = 'nna-character';
-export const NnaCHaracterInterpolatorPrefix: string = 'nna[';
-export const NnaCHaracterInterpolatorPostfix: string = 'nna]';
+export const NnaCharacterInterpolatorPrefix: string = '{{nna-character-';
+export const NnaCharacterInterpolatorPostfix: string = '-nna-character}}';
 

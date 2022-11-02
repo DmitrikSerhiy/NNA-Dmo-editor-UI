@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { BeatGeneratorService } from '../../helpers/beat-generator';
-import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterTagName, NnaMovieCharacterDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInBeatDto } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-beats-flow',
@@ -15,6 +15,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Input() initialCharacters: NnaMovieCharacterDto[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
+	@Input() updateCharactersEvent: EventEmitter<any>;
 	@Input() focusElement: EventEmitter<any>;
 	@Output() beatsSet: EventEmitter<any> = new EventEmitter<any>();
 	@Output() lineCountChanged: EventEmitter<any> = new EventEmitter<any>();
@@ -27,7 +28,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
-	shadowBeats: NnaBeatDto[];
+	characters: NnaMovieCharacterDto[];
 	filtredCharacters: NnaMovieCharacterDto[];
 
 	private beatsIds: string[] = [];
@@ -67,6 +68,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	ngAfterViewInit(): void {
 		this.beats = this.initialBeats;
+		this.characters = this.initialCharacters;
 		this.isDataLoaded = true;
 
 		this.setupBeats(null, null, true);
@@ -100,6 +102,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			} else {
 				this.setupEditorCallback();
 			}
+		});
+
+		this.updateCharactersEvent.subscribe(newCharacters => {
+			this.characters = [...newCharacters];
 		});
 
 		this.focusElement.subscribe((element) => {
@@ -685,7 +691,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				return;
 			}
 
-			beatDataHolder.nativeElement.innerHTML = decodeURIComponent(beat.text);
+			let decodedBeatText = decodeURIComponent(beat.text);
+
+			if (beat.charactersInBeat?.length > 0) {
+				beatDataHolder.nativeElement.innerHTML = this.getBeatTextWithCharacterTags(beat.charactersInBeat, decodedBeatText, beat.beatId);
+			} else {
+				beatDataHolder.nativeElement.innerHTML = decodedBeatText;
+			}
+
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
 			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
@@ -1074,7 +1087,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	pickCharacter(character: NnaMovieCharacterDto): void {
 		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.charactersTooltipName).beatId;
 		const beatDataHolder = this.nnaTooltipService.getHostingElementFromTooltip(this.nnaTooltipService.charactersTooltipName);
-		const characterTag = this.createCharacterTag(character, beatId);
+		const characterTag = this.createCharacterTag(character.id, character.name, beatId);
 		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
 		this.insertCharacterTagIntoPlaceholder(characterTag);
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
@@ -1101,7 +1114,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			clearHostingElementInnerText = true;
 		}
 
-		this.filtredCharacters = this.initialCharacters;
+		this.filtredCharacters = this.characters;
 		const range = window.getSelection().getRangeAt(0);
 		range.collapse(false);
 		const characterPlaceHolderElement = document.createElement('span');
@@ -1142,7 +1155,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 	private resetCharacterFilter() {
-		this.filtredCharacters = this.initialCharacters;
+		this.filtredCharacters = this.characters;
 		if (this.characterFilterInputElement) {
 			this.characterFilterInputElement.nativeElement.value = '';
 		}	
@@ -1160,19 +1173,18 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
 		this.observeCharacterTag(characterTag);
-		characterPlaceHolderElement.remove();
 	}
 
-	private createCharacterTag(character: NnaMovieCharacterDto, beatId: string): HTMLElement {
+	private createCharacterTag(charterId: string, characterName, beatId: string): HTMLElement {
 		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
 		characterElem.style.padding= '1px';
 		characterElem.style.backgroundColor = '#d3d3d3';
-		characterElem.dataset.characterId = character.id;
+		characterElem.dataset.characterId = charterId;
 		characterElem.dataset.id = this.beatGeneratorService.generateTempId();
 		characterElem.dataset.beatId = beatId;
 		characterElem.setAttribute('contenteditable', "false");
-		characterElem.innerText = character.name;
+		characterElem.innerText = characterName;
 		this.addEventListenerForCharacterTag(characterElem);
 		return characterElem;
 	}
@@ -1205,6 +1217,23 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		const characterPlaceHolderElement = document.querySelectorAll(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement?.forEach(chaPlaceholder => chaPlaceholder.remove());
 	}.bind(this);
+
+
+	private getBeatTextWithCharacterTags(charactersInBeat: NnaMovieCharacterInBeatDto[], interpolatedBeatText: string, beatId: string) {
+		let textToModify: string = interpolatedBeatText; 
+		charactersInBeat.forEach(characterInBeat => {
+			if (!textToModify.includes(characterInBeat.id)) {
+				return;
+			}
+
+			let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, beatId);
+			textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML)
+		})
+
+		textToModify = textToModify.replace(NnaCharacterInterpolatorPrefix, '');
+		textToModify = textToModify.replace(NnaCharacterInterpolatorPostfix, '');
+		return textToModify;
+	}
 
 	// #endregion
 }
