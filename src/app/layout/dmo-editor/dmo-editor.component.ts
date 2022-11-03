@@ -29,8 +29,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private connectionReconnectionTitle: string = "Reconnecting";
 	private connectionDisconnectedTitle: string = "Connection lost";
 
-
-	
 	// initial fields
 	isDmoInfoSet: boolean = false;
 	beatsLoading: boolean = true;
@@ -38,6 +36,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	currentShortDmo: ShortDmoDto;
 	initialDmoDto: NnaDmoDto;
 	beatWasSet: boolean = false;
+	showControlPanel: boolean = false;
 	editorIsConnected: boolean;
 	editorIsReconnecting: boolean;
 	beatsUpdating: boolean = false;
@@ -91,10 +90,14 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngAfterViewInit(): Promise<void> {
-		await this.loadDmo()
+		await this.prepareEditor();
+		this.cdRef.detectChanges();
+		await this.loadDmoWithBeats();
+		this.cdRef.detectChanges();
 		this.subscribeToClipboard();
 		this.cdRef.detectChanges();
 		this.isDmoInfoSet = true;
+		this.showControlPanel = true;
 		this.cdRef.detectChanges();
 	}
 
@@ -148,6 +151,17 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.closeEditorAndClearData();
 	}
 
+	async reloadBeatsAndCharacters(): Promise<void> {
+		this.clearBeatsAndCharacters();
+		this.cdRef.detectChanges();
+		await this.editorHub.sanitizeTempIds(this.dmoId);
+
+		setTimeout(async () => {
+			await this.loadDmoWithData();
+			this.cdRef.detectChanges();
+		}, 800);
+
+	}
 
 	// #region general settings
 
@@ -159,12 +173,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		await this.editorHub.updateShortDmo(popupResult);
 		this.initDmo(popupResult);
-		this.cdRef.detectChanges();
-	}
-
-	async loadDmo() {
-		await this.prepareEditor();
-		await this.loadDmoWithBeats();
 		this.cdRef.detectChanges();
 	}
 
@@ -322,6 +330,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				return;
 			}
 			
+			if (this.editorHub.isDisconnected) {
+				clearInterval(intervalId);
+				return;
+			}
+
 			this.nnaTooltipService.addTooltip(
 				this.nnaTooltipService.connectionStateTooltipName, 
 				this.connectionStateElement.nativeElement,
@@ -343,6 +356,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 					shift: 5
 				}
 			);
+
 			this.cdRef.detectChanges();
 			clearInterval(intervalId);
 		}, 1000);
@@ -414,7 +428,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	
 	private async finalizeCharactersPopup(): Promise<void> {
 		const popupResult = await this.matModule
-			.open(CharactersPopupComponent, { data: {characters: this.initialDmoDto.characters, dmoId: this.dmoId }, width: '400px' })
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId }, width: '400px' })
 			.afterClosed()
 			.toPromise();
 
@@ -423,9 +437,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			return;
 		} 
 
-
 		if (popupResult.hasChanges === true) {
-			this.updateCharactersEvent.emit(popupResult.changes);
+			this.initialDmoDto.characters = popupResult.changes;
+			this.updateCharactersEvent.emit({characters: popupResult.changes, operations: popupResult.operations });
 			this.cdRef.detectChanges();
 		}
 
@@ -716,24 +730,32 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// 	return dmoWithJson;
 	// }
 
+	private clearBeatsAndCharacters() {
+		this.beatWasSet = false;
+		this.beatsLoading = true;
+		this.beatsUpdating = false;
+		this.initialDmoDto.beats = [];
+		this.initialDmoDto.characters = [];
+	}
+
 	private async closeEditorAndClearData(): Promise<void> {
 		await this.editorHub.abortConnection();
 		await this.editorHub.sanitizeTempIds(this.dmoId);
 		this.unsubscribeFromClipboard();
 		this.dmoId = '';
+		this.showControlPanel = false;
 		this.matModule.closeAll();
-
+		this.clearBeatsAndCharacters();
 		this.currentShortDmo = null;
-		this.isDmoInfoSet = false;
-		this.beatWasSet = false;
-		this.beatsLoading = true;
-		this.beatsUpdating = false;
-		this.initialDmoDto = null;
 		this.editorIsConnected = false;
 		this.editorIsReconnecting = false;
 
 		this.updateGraphEvent = null;
 		this.updateBeatsEvent = null;
+		this.updateCharactersEvent = null;
+		this.focusElementEvent = null;
+		this.openBeatTypeTooltipEvent = null;
+		this.focusElementInBeatsFlowEvent = null;
 
 		this.connectionState = null;
 		this.autosaveTitle = '';

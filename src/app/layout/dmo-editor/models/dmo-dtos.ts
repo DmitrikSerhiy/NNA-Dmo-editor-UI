@@ -3,7 +3,7 @@ import { DmoList } from "../helpers/dmo-list";
 export class NnaDmoDto {
     dmoId: string;
     beats: NnaBeatDto[];
-    characters: NnaMovieCharacterDto[];
+    characters: NnaMovieCharacterInDmoDto[];
    
     public getBeatsAsLinkedList() : DmoList<NnaBeatDto> {
         let list = new DmoList<NnaBeatDto>();
@@ -21,13 +21,20 @@ export class NnaDmoDto {
 
 export class DmoWithDataDto {
     beats: NnaBeatDto[];
-    characters: NnaMovieCharacterDto[];
+    characters: NnaMovieCharacterInDmoDto[];
 }
 
 export class NnaMovieCharacterDto {
     id: string;
     name: string;
     aliases: string;
+}
+
+export class NnaMovieCharacterInDmoDto {
+    id: string;
+    name: string;
+    aliases: string;
+    count: number;
 }
 
 export class NnaMovieCharacterToCreateDto {

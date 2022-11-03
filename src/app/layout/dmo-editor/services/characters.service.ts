@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { environment } from 'src/environments/environment';
-import { NnaMovieCharacterDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../models/dmo-dtos';
+import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../models/dmo-dtos';
 
 
 @Injectable({
@@ -18,10 +18,10 @@ export class CharactersService {
 		private http: HttpClient,
 		private errorHandler: CustomErrorHandler ) { }
 
-	getCharactersFordmo(dmoId: string): Observable<NnaMovieCharacterDto[]> {
+	getCharactersFordmo(dmoId: string): Observable<NnaMovieCharacterInDmoDto[]> {
 		return this.http
-			.get<NnaMovieCharacterDto[]>(this.serverUrl + `?dmoId=${dmoId}`)
-			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaMovieCharacterDto[]>(response, obs)));
+			.get<NnaMovieCharacterInDmoDto[]>(this.serverUrl + `?dmoId=${dmoId}`)
+			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaMovieCharacterInDmoDto[]>(response, obs)));
 	}
 
 	createCharacter(characterToCreate: NnaMovieCharacterToCreateDto): Observable<any> {

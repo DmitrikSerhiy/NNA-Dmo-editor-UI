@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { BeatGeneratorService } from '../../helpers/beat-generator';
-import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInBeatDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInBeatDto, NnaMovieCharacterInDmoDto } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-beats-flow',
@@ -12,7 +12,7 @@ import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharact
 export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	@Input() initialBeats: NnaBeatDto[];
-	@Input() initialCharacters: NnaMovieCharacterDto[];
+	@Input() initialCharacters: NnaMovieCharacterInDmoDto[];
 	@Input() isDmoFinished: boolean;
 	@Input() updateBeatsEvent: EventEmitter<any>;
 	@Input() updateCharactersEvent: EventEmitter<any>;
@@ -24,11 +24,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openCharactersPopup: EventEmitter<void> = new EventEmitter<void>();
-	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<void>(); 
+	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<any>();
+	@Output() reloadBeats: EventEmitter<any> = new EventEmitter<any>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
-	characters: NnaMovieCharacterDto[];
+	characters: NnaMovieCharacterInDmoDto[];
 	filtredCharacters: NnaMovieCharacterDto[];
 
 	private beatsIds: string[] = [];
@@ -104,8 +105,52 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 		});
 
-		this.updateCharactersEvent.subscribe(newCharacters => {
-			this.characters = [...newCharacters];
+		this.updateCharactersEvent.subscribe(update => {
+			const previousCharacters = [...this.characters]; 
+			this.characters = [...update.characters];
+			let shouldReloadBeats: boolean = false;
+			let shouldSanitizeDeletedCharactersInBeats: boolean = false;
+
+			if (update.operations?.length == 0) {
+				return;
+			}
+
+			if (update.operations.length == 1 && update.operations[0] == 'add') {
+				return;
+			}
+
+			if (update.operations.includes('edit')) {
+				shouldReloadBeats = true;
+			}
+
+			if (update.operations.includes('delete')) {
+				shouldSanitizeDeletedCharactersInBeats = true;
+			}
+
+			if (shouldSanitizeDeletedCharactersInBeats == true) {
+				const removedCharacters = previousCharacters.filter(character => this.characters.findIndex(cha => cha.id == character.id) == -1);
+				if (removedCharacters?.length > 0) {
+					console.log('sanitize removed and reload beats');
+					console.log(removedCharacters);
+					// todo: sanitize beats with removed characters
+					return;
+				}
+			}
+
+			if (shouldReloadBeats == true) {
+				let editedCharacters = previousCharacters.filter(character => 
+					(this.characters.findIndex(cha => cha.name == character.name) == -1) || 
+					(this.characters.findIndex(cha => cha.aliases == character.aliases) == -1));
+
+				editedCharacters = this.characters.filter(character => editedCharacters.findIndex(cha => cha.id == character.id) != -1);
+				if (editedCharacters?.length > 0) {
+					const usedEditedCharacters = editedCharacters.filter(character => character.count > 0);
+					if (usedEditedCharacters?.length > 0 ) {
+						this.reloadBeats.emit();
+						return;
+					}
+				}
+			}
 		});
 
 		this.focusElement.subscribe((element) => {

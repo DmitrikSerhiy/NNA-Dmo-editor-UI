@@ -1,6 +1,6 @@
 
-<div *ngIf='isDmoInfoSet' class="general-editor-wrapper">
-    <div class="controls-panel">
+<div class="general-editor-wrapper">
+    <div class="controls-panel" *ngIf='isDmoInfoSet && showControlPanel'>
         <p class="movie-title no-select">{{currentShortDmo.movieTitle}} </p>
 
         <button type="button" class='nna-icon-button nna-button-primary' (click)='editCurrentDmo()'>
@@ -53,7 +53,7 @@
         </button>
 
     </div>
-    <div *ngIf="!beatsLoading" class="editor-board-wrapper">
+    <div *ngIf="beatsLoading == false" class="editor-board-wrapper">
        <app-plot-points-flow *ngIf="beatWasSet"
             [initialPlotPoints]="plotPointsWithMetaData" 
             [isDmoFinished]="isDmoFinised"
@@ -66,7 +66,7 @@
             >
        </app-plot-points-flow>
        
-       <app-beats-flow
+       <app-beats-flow *ngIf='beatsLoading == false'
             [initialBeats]="this.initialDmoDto.beats"
             [initialCharacters]="this.initialDmoDto.characters" 
             [isDmoFinished]="isDmoFinised"
@@ -81,13 +81,14 @@
             (openBeatTypeTooltip)="openBeatTypeTooltip($event)"
             (openCharactersPopup)="openCharactersPopup()"
             (syncCharactersInDmo)="syncCharactersInDmoFromBeats($event)"
+            (reloadBeats)="reloadBeatsAndCharacters()"
             >
        </app-beats-flow>
 
     </div>
 </div>
 
-<div *ngIf="beatsLoading == true && isDmoInfoSet == false">
+<div *ngIf="beatsLoading == true">
     <app-nna-spinner></app-nna-spinner>
 </div>
 

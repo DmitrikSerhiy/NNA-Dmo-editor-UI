@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { take } from 'rxjs/internal/operators/take';
-import { NnaMovieCharacterDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
+import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
 import { CharactersService } from '../../services/characters.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { CharactersService } from '../../services/characters.service';
 export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	charactersTableColumn: string[];
-	characters: NnaMovieCharacterDto[];
+	characters: NnaMovieCharacterInDmoDto[] = [];
 	dmoId: string;
 	charactersCount: number;
 	charactersTable: MatTableDataSource<any>;
@@ -27,10 +27,11 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	get aliasesInput() { return this.charactersForm.get('characterAliasesInput'); }
 	serverValidation: string = null;
 
-	selectedCharacter: NnaMovieCharacterDto;
+	selectedCharacter: NnaMovieCharacterInDmoDto;
 	deleteAction: boolean = false;
 	addOrEditAction: boolean = false;
 	charactersAreDirty: boolean = false;
+	operations: string[] = [];
 
 	@ViewChild('charactersPaginator', { static: true }) charactersPaginator: MatPaginator;
 	@ViewChild(MatSort) charactersSorter: MatSort;
@@ -47,8 +48,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any
 	) { 
-		this.characters = data.characters;
-		this.dmoId = data.dmoId;
+		this.dmoId = data.dmoId;		
 	}
 
 	ngOnInit(): void {
@@ -66,6 +66,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			'characterNameInput': new FormControl('', [Validators.required]),
 			'characterAliasesInput': new FormControl('')
 		});
+
+		this.loadCharacters();
 	}
 
 	private keydownHandlerWrapper = function($event) {
@@ -142,6 +144,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(take(1))
 			.subscribe(() => { 
 				this.charactersAreDirty = true;
+				this.operations.push('add');
 				this.addOrEditAction = false;
 				this.resetForm();
 				this.loadCharacters();
@@ -177,6 +180,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(take(1))
 			.subscribe(() => {
 				this.charactersAreDirty = true;
+				this.operations.push('delete');
 				this.selectedCharacter = null;
 				this.deleteAction = false;
 				this.loadCharacters();
@@ -219,6 +223,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(take(1))
 			.subscribe(() => { 
 				this.charactersAreDirty = true;
+				this.operations.push('edit');
 				this.selectedCharacter = null;
 				this.addOrEditAction = false;
 				this.resetForm();
@@ -238,6 +243,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.dialogRef.close({
 			hasChanges: this.charactersAreDirty,
+			operations: Array.from(new Set(this.operations)),
 			changes: this.characters
 		});
 	}
@@ -247,7 +253,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	
-	onRowSelect(row: NnaMovieCharacterDto): void {
+	onRowSelect(row: NnaMovieCharacterInDmoDto): void {
 		if (this.selectedCharacter && this.selectedCharacter === row) {
 			this.selectedCharacter = null;
 			return;
@@ -283,6 +289,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.deleteAction = false;
 		this.addOrEditAction = false;
 		this.charactersAreDirty = false;
+		this.operations = [];
 		this.resetForm();
 		this.charactersForm = null;
 		this.resetSelected();
@@ -305,7 +312,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	private initializeCharactersTable() {
-		this.charactersTableColumn = ['name', 'aliases'];
+		this.charactersTableColumn = ['name', 'aliases', 'count'];
 		this.charactersTable = new MatTableDataSource(this.characters);
 		this.charactersTable.paginator = this.charactersPaginator;
 		this.charactersTable.sort = this.charactersSorter;
