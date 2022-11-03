@@ -208,7 +208,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private setupBeats(timePickerToFocus: string = null, beatIdToFocus: string = null, isInitial: boolean = false): void {
 		this.cdRef.detectChanges();
 		this.setupTimePickerValues();
-		this.setupBeatDataHolderValuesAndMetaData();
+		this.setupBeatDataHolderValuesAndMetaData(isInitial);
 		this.setupLastBeatMargin();
 		this.cdRef.detectChanges();
 
@@ -681,7 +681,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			: { lineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
 	}
 
-	private setupBeatDataHolderValuesAndMetaData(): void {
+	private setupBeatDataHolderValuesAndMetaData(intialLoad: boolean = false): void {
 		this.beatsMetaData = [];
 		this.beatsIds = [];
 
@@ -693,10 +693,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 			let decodedBeatText = decodeURIComponent(beat.text);
 
-			if (beat.charactersInBeat?.length > 0) {
+			if (beat.charactersInBeat?.length > 0 && intialLoad == true) {
 				beatDataHolder.nativeElement.innerHTML = this.getBeatTextWithCharacterTags(beat.charactersInBeat, decodedBeatText, beat.beatId);
 			} else {
-				beatDataHolder.nativeElement.innerHTML = decodedBeatText;
+				beatDataHolder.nativeElement.innerHTML = decodedBeatText;				
 			}
 
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
@@ -1175,13 +1175,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.observeCharacterTag(characterTag);
 	}
 
-	private createCharacterTag(charterId: string, characterName, beatId: string): HTMLElement {
+	private createCharacterTag(charterId: string, characterName, beatId: string, id: string = null): HTMLElement {
 		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
 		characterElem.style.padding= '1px';
 		characterElem.style.backgroundColor = '#d3d3d3';
 		characterElem.dataset.characterId = charterId;
-		characterElem.dataset.id = this.beatGeneratorService.generateTempId();
+		characterElem.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
 		characterElem.dataset.beatId = beatId;
 		characterElem.setAttribute('contenteditable', "false");
 		characterElem.innerText = characterName;
@@ -1226,12 +1226,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				return;
 			}
 
-			let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, beatId);
-			textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML)
+			let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, beatId, characterInBeat.id);
+			textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML);
 		})
 
-		textToModify = textToModify.replace(NnaCharacterInterpolatorPrefix, '');
-		textToModify = textToModify.replace(NnaCharacterInterpolatorPostfix, '');
+		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPrefix, 'g'), '');
+		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPostfix, 'g'), '');
 		return textToModify;
 	}
 

@@ -177,10 +177,6 @@ export class EditorHub {
         return await this.invokeSocketMethodWithoutResponseData('DetachCharacterFromBeat', new DetachCharacterFromBeatDtoAPI(id, dmoId, beatId));
     }
 
-    async sanitizeTempIds(dmoId: string) {
-        return await this.invokeSocketMethodWithoutResponseData('SanitizeTempIds', { dmoId: dmoId } );
-    }
-
     // ----- editor websocket methods ------
 
 
@@ -193,6 +189,12 @@ export class EditorHub {
             .toPromise();
     }
 
+    sanitizeTempIds(dmoId: string): Promise<void> {
+        return this.http
+            .delete<void>(this.serverUrl + 'dmos/' + dmoId + '/tempIds')
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
+            .toPromise();
+    }
 
     
     // ----- editor http methods --------

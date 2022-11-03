@@ -86,6 +86,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.dmoId = params['dmoId'];
 			this.cdRef.detectChanges();
 		});
+
+		window.onbeforeunload = () => this.closeEditorAndClearData(); //todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
 	}
 
 	async ngAfterViewInit(): Promise<void> {
@@ -698,7 +700,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		beatCopy.childNodes?.forEach((childNode: HTMLElement) => {
 			if (childNode.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
 				const characterInBeatId = childNode.dataset.id;
-				childNode.outerHTML = NnaCharacterInterpolatorPrefix + characterInBeatId + NnaCharacterInterpolatorPostfix;
+				const interpolatedCharacterTag = document.createTextNode(NnaCharacterInterpolatorPrefix + characterInBeatId + NnaCharacterInterpolatorPostfix);
+				childNode.parentElement.insertBefore(interpolatedCharacterTag, childNode);
+				childNode.remove();
 			}
 		});
 
@@ -713,8 +717,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// }
 
 	private async closeEditorAndClearData(): Promise<void> {
-		await this.editorHub.sanitizeTempIds(this.dmoId);
 		await this.editorHub.abortConnection();
+		await this.editorHub.sanitizeTempIds(this.dmoId);
 		this.unsubscribeFromClipboard();
 		this.dmoId = '';
 		this.matModule.closeAll();
