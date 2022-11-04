@@ -184,7 +184,7 @@ export class EditorHub {
 
     initialDmoLoadWithData(dmoId: string): Promise<DmoWithDataDto> {
         return this.http
-            .get<DmoWithDataDto>(this.serverUrl + 'dmos/withdata?Id=' + dmoId)
+            .get<DmoWithDataDto>(this.serverUrl + 'dmos/' + dmoId + '/withBeats')
             .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoWithDataDto>(response, obs)))
             .toPromise();
     }
@@ -192,6 +192,14 @@ export class EditorHub {
     sanitizeTempIds(dmoId: string): Promise<void> {
         return this.http
             .delete<void>(this.serverUrl + 'dmos/' + dmoId + '/tempIds')
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
+            .toPromise();
+    }
+
+    
+    sanitizeTempIdsAndInterpolatedCharacters(dmoId: string, characterIds: string[]): Promise<void> {
+        return this.http
+            .delete<void>(this.serverUrl + 'dmos/' + dmoId + '/characters/interpolated', {body: {characterIds: characterIds} })
             .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
             .toPromise();
     }

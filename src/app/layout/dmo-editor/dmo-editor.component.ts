@@ -22,9 +22,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	autosaveTitle: string;
 	connectionStateTitle: string;
 
-	private savingIsDoneTitle: string = "Your progress was auto-saved";
-	private savingInProgressTitle: string = "Your progress is saving";
-	private autoSavingIsNotWorking: string = "Your progress won't be auto-saved";
+	private savingIsDoneTitle: string = "Your progress is auto-saved";
+	private savingInProgressTitle: string = "Auto-saving";
+	private autoSaveIsPending: string = "Auto-save is pending";
+	private autoSavingIsNotWorking: string = "Your progress will not be auto-saved";
+
 	private connectionEstablishedTitle: string = "Connection established";
 	private connectionReconnectionTitle: string = "Reconnecting";
 	private connectionDisconnectedTitle: string = "Connection lost";
@@ -86,6 +88,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.cdRef.detectChanges();
 		});
 
+		await this.editorHub.sanitizeTempIds(this.dmoId);
 		window.onbeforeunload = () => this.closeEditorAndClearData(); //todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
 	}
 
@@ -112,8 +115,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-		// todo: !IMPORTANT clear editor and reload dmo.
-		// todo: test: create beats when offline
+		await this.reloadBeatsAndCharacters({operation: 'sanitizeTempIds'});
 		await this.loadDmoWithBeats();
 		this.cdRef.detectChanges();
 		
@@ -151,16 +153,20 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.closeEditorAndClearData();
 	}
 
-	async reloadBeatsAndCharacters(): Promise<void> {
+	async reloadBeatsAndCharacters($event: any): Promise<void> {
+		this.autosaveTitle = this.savingInProgressTitle;
 		this.clearBeatsAndCharacters();
 		this.cdRef.detectChanges();
-		await this.editorHub.sanitizeTempIds(this.dmoId);
+
+		if ($event?.operation == 'sanitizeTempIds') {
+			await this.editorHub.sanitizeTempIds(this.dmoId);
+		}
 
 		setTimeout(async () => {
 			await this.loadDmoWithData();
+			this.autosaveTitle = this.savingIsDoneTitle;
 			this.cdRef.detectChanges();
 		}, 800);
-
 	}
 
 	// #region general settings
@@ -314,7 +320,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.editorIsReconnecting = true;
 			this.connectionState = "connecting";
 			this.connectionStateTitle = this.connectionReconnectionTitle;
-			this.autosaveTitle = this.autoSavingIsNotWorking;
+			this.autosaveTitle = this.autoSaveIsPending;
 		} else {
 			this.editorIsConnected = false;
 			this.editorIsReconnecting = false;
@@ -740,7 +746,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private async closeEditorAndClearData(): Promise<void> {
 		await this.editorHub.abortConnection();
-		await this.editorHub.sanitizeTempIds(this.dmoId);
 		this.unsubscribeFromClipboard();
 		this.dmoId = '';
 		this.showControlPanel = false;
