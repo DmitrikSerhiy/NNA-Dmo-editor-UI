@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { SidebarManagerService } from './sidebar-manager.service';
 
 @Injectable()
 export class UserManager {
 
-    constructor() { }
+    constructor(private sidebarManagerService: SidebarManagerService) { }
         
     isAuthorized(): boolean {
         return localStorage.getItem('user access token') !== null;
@@ -43,7 +44,9 @@ export class UserManager {
         localStorage.removeItem('user access token');
         localStorage.removeItem('user email');
         localStorage.removeItem('user name');
-        localStorage.removeItem('user refresh token');        
+        localStorage.removeItem('user refresh token');     
+        
+        this.sidebarManagerService.clearSidebarState();
     }
 
     private setLocalStorage(accessToken: string, email: string, userName: string, refreshToken: string): void {

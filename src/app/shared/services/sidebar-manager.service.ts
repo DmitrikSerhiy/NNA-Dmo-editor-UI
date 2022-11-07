@@ -39,6 +39,10 @@ export class SidebarManagerService {
 		this.sidebar.next(false);
 	}
 
+	clearSidebarState() {
+		localStorage.removeItem(this.storageSidebarKey);
+	}
+
 	private setSidebarState(value: boolean) {
 		localStorage.setItem(this.storageSidebarKey, `${value}`)
 	}
