@@ -60,6 +60,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@ViewChild('charactersTooltipArrow') charactersTooltipArrow: ElementRef;
 	
 	@ViewChild('characterFilterInput') characterFilterInputElement: ElementRef;
+	@ViewChildren('charactersOptions') charactersOptionsElements: QueryList<ElementRef>;
 
 	constructor(
 		private cdRef: ChangeDetectorRef,
@@ -1146,7 +1147,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
 		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: this.beatsIds.indexOf(beatId) });
-		// todo: set caret just after the newly created character tag 
 		this.focusBeatByElement(beatDataHolder.parentElement);
 	}
 
@@ -1165,7 +1165,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
 		this.beatsMetaData[beatIndex].isDirty = false;
-		// todo: handle focus here as well
 	}
 
 	showCharactersTooltip(hostingElement: any): void {
@@ -1192,7 +1191,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				placement: 'bottom',
 				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
 				tooltipMetadata: { beatId: this.selectBeatIdFromBeatDataHolder(hostingElement) },
-				callbackAfterHide: this.cleanUpCharactersPlaceholders
+				callbackAfterHide: this.charactersTooltipHideCallback
 			},
 			characterPlaceHolderElement
 		);
@@ -1203,6 +1202,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		setTimeout(() => {
 			this.characterFilterInputElement?.nativeElement?.focus();
 		}, 200);
+
+		document.addEventListener('keydown', this.addCharactersTooltipEventHandlersWrapper);
 	}
 
 	filterCharacters(filterValue: string): void {
@@ -1286,11 +1287,78 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}).observe(element.parentElement as Node, {childList: true});
 	}.bind(this);
 
-	private cleanUpCharactersPlaceholders = function() {
+	private charactersTooltipHideCallback = function() {
 		const characterPlaceHolderElement = document.querySelectorAll(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement?.forEach(chaPlaceholder => chaPlaceholder.remove());
+		document.removeEventListener('keydown', this.addCharactersTooltipEventHandlersWrapper);
 	}.bind(this);
 
+	private addCharactersTooltipEventHandlersWrapper = function($event) {
+		this.addCharactersTooltipEventHandlers($event);
+	}.bind(this);
+
+	private addCharactersTooltipEventHandlers($event): void {
+		console.log('global on characters tooltip');
+		const key = $event.which || $event.keyCode || $event.charCode;
+		let characters = this.charactersOptionsElements.toArray();
+		if (characters?.length == 0) {
+			return;
+		}
+
+		const selectedCharacter = document.querySelector<HTMLElement>('.selected-character-option');
+		const selectedCharacterIndex: number = selectedCharacter?.dataset?.order 
+			? +selectedCharacter.dataset.order 
+			: -1;
+
+		if (key == 38 || key == 40) {
+			characters.forEach(character => {
+				character.nativeElement.classList.remove('selected-character-option');
+			});
+
+			if (selectedCharacter) {
+				this.characterFilterInputElement?.nativeElement.blur();
+			}
+
+			if (key == 38) { // up
+				if (selectedCharacterIndex == -1) {
+					return;
+				}
+				if (selectedCharacterIndex == 0) {
+					this.characterFilterInputElement.nativeElement.focus();
+					return;
+				}
+
+				characters[selectedCharacterIndex-1].nativeElement.classList.add('selected-character-option');
+				return;
+	
+			} else if (key == 40) { // down
+				if (!selectedCharacter) {
+					characters[0].nativeElement.classList.add('selected-character-option');
+					return;
+				}
+
+				if (selectedCharacterIndex == characters.length - 1) {
+					characters[characters.length - 1].nativeElement.classList.add('selected-character-option');
+					return;
+				}
+
+				characters[selectedCharacterIndex+1].nativeElement.classList.add('selected-character-option');
+				return;
+			}
+		} if (key == 13) {
+			$event.preventDefault();
+			characters.forEach(character => {
+				character.nativeElement.classList.remove('selected-character-option');
+			});
+			selectedCharacter?.click();
+			return;
+		} if (key == 27) {
+			characters.forEach(character => {
+				character.nativeElement.classList.remove('selected-character-option');
+			});
+			this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
+		}
+	}
 
 	private getBeatTextWithCharacterTags(charactersInBeat: NnaMovieCharacterInBeatDto[], interpolatedBeatText: string, beatId: string) {
 		let textToModify: string = interpolatedBeatText; 

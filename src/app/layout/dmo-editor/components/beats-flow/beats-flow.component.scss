@@ -57,21 +57,21 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                             text-overflow: ellipsis;
                             white-space: nowrap;
 
-                            &:hover {
+                            &:hover, &:active {
                                 background: $input-underline-gradient, $input-underline-gradient;
                                 background-repeat: no-repeat;
                                 background-size: 100% 1px;
                                 background-position: bottom, top;
                                 cursor: pointer;
                             }
+                        }
 
-                            &:active {
-                                background: $input-underline-gradient, $input-underline-gradient;
-                                background-repeat: no-repeat;
-                                background-size: 100% 1px;
-                                background-position: bottom, top;
-                                cursor: pointer;
-                            }
+                        .selected-character-option {
+                            background: $input-underline-gradient, $input-underline-gradient;
+                            background-repeat: no-repeat;
+                            background-size: 100% 1px;
+                            background-position: bottom, top;
+                            cursor: pointer;
                         }
                     }
 

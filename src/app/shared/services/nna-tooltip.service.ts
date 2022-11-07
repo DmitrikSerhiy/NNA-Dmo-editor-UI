@@ -150,6 +150,15 @@ export class NnaTooltipService {
 		return tooltip.hostingElement;
 	}
 
+	isTooltipOpened(name: string): boolean {
+		const tooltip = this.tooltips.find(t => t.name == name);
+		if (tooltip == undefined) {
+			return false;
+		}
+
+		return tooltip.tooltipElement.style.display == 'block';
+	}
+
 	private applyTooltopStylesStyles(x = 0, y = 0, strategy = 'absolute', middlewareData: any = {}, tooltipNativeElement: any, tooltipOptions: NnaTooltipOptions) {
 		Object.assign(tooltipNativeElement.style, {
 			position: strategy,
