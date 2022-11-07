@@ -34,10 +34,17 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 padding: 10px 5px;
 
                 .character-tooltip-search-block {
+                    .nna-input {
+                        min-width: 180px;
+                    }
                     ul {
                         padding: 0;
                         margin: 0;
                         padding-top: 10px;
+
+                        display: flex;
+                        flex-direction: column;
+                        margin: auto;
                     
                         li {
                             padding: 5px 0;
@@ -46,18 +53,23 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                         }
     
                         .character-option {
-                            max-width: 180px;
                             overflow-x: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
 
                             &:hover {
-                                background-color: $active-primary-background-color;
+                                background: $input-underline-gradient, $input-underline-gradient;
+                                background-repeat: no-repeat;
+                                background-size: 100% 1px;
+                                background-position: bottom, top;
                                 cursor: pointer;
                             }
 
                             &:active {
-                                background-color: $active-primary-background-color;
+                                background: $input-underline-gradient, $input-underline-gradient;
+                                background-repeat: no-repeat;
+                                background-size: 100% 1px;
+                                background-position: bottom, top;
                                 cursor: pointer;
                             }
                         }

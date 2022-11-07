@@ -426,15 +426,15 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		console.log(`Characters in beats sync: id: ${$event.data.id}. Operation: ${$event.operation}`);
 	}
 
-	async openCharactersPopup(): Promise<void> {
+	async openCharactersPopup($event: any = null): Promise<void> {
 		this.nnaTooltipService.hideAllTooltips();
-		await this.finalizeCharactersPopup();
+		await this.finalizeCharactersPopup($event);
 	}
 
 	
-	private async finalizeCharactersPopup(): Promise<void> {
+	private async finalizeCharactersPopup(openOnAction: any): Promise<void> {
 		const popupResult = await this.matModule
-			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId }, width: '400px' })
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, openOnAction: openOnAction }, width: '400px' })
 			.afterClosed()
 			.toPromise();
 

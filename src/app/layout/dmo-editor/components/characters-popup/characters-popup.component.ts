@@ -21,6 +21,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	dmoId: string;
 	charactersCount: number;
 	charactersTable: MatTableDataSource<any>;
+	private initialAction: string = '';
 
 	charactersForm: FormGroup;
 	get nameInput() { return this.charactersForm.get('characterNameInput'); }
@@ -48,7 +49,10 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any
 	) { 
-		this.dmoId = data.dmoId;		
+		this.dmoId = data.dmoId;	
+		if (data.openOnAction) {
+			this.initialAction = data.openOnAction.action; 
+		}	
 	}
 
 	ngOnInit(): void {
@@ -66,8 +70,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			'characterNameInput': new FormControl('', [Validators.required]),
 			'characterAliasesInput': new FormControl('')
 		});
-
-		this.loadCharacters();
 	}
 
 	private keydownHandlerWrapper = function($event) {
@@ -93,7 +95,17 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}.bind(this);
 
 	ngAfterViewInit(): void {
-		this.initializeCharactersTable();
+		if (this.initialAction) {
+			if (this.initialAction == 'add_first_character') {
+				this.onCharacterToAdd();
+				this.cd.detectChanges();
+			} else if (this.initialAction == 'add_character') {
+				this.loadCharacters(this.onCharacterToAddWeapper);
+			}
+			this.initialAction = '';
+			return;
+		}
+		this.loadCharacters();
 	}
 
 	ngOnDestroy(): void {
@@ -114,6 +126,10 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			this.characterNameInputElement.nativeElement.focus();
 		}, 150);
 	}
+
+	private onCharacterToAddWeapper = function() {
+		this.onCharacterToAdd();
+	}.bind(this);
 
 	preventValidationToBlink(): void {
 		if (this.addOrEditAction == true) {
@@ -274,18 +290,22 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		}) ?? '';
 	}
 
-	private loadCharacters() {
+	private loadCharacters(callback: any = null) {
 		this.charactersService
 			.getCharactersFordmo(this.dmoId)
 			.pipe(take(1))
 			.subscribe((characters) => {
 				this.characters = characters;
 				this.initializeCharactersTable();
+				if (callback) {
+					callback();
+				}
 			});
 	}
 
 
 	private resetPopup() {
+		this.initialAction = '';
 		this.deleteAction = false;
 		this.addOrEditAction = false;
 		this.charactersAreDirty = false;

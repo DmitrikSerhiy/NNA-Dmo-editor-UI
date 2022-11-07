@@ -7,7 +7,7 @@
             <i class="fa fa-pencil-alt" aria-hidden="true"></i>
         </button>
 
-        <button type="button" class='nna-icon-button nna-button-primary no-select' (click)="openCharactersPopup()">
+        <button type="button" class='nna-icon-button nna-button-primary no-select' (click)="openCharactersPopup($event)">
             <span *ngIf="this.initialDmoDto.characters.length == 0" class="material-icons"> group_add </span>
             <span *ngIf="this.initialDmoDto.characters.length > 0" class="material-icons"> groups </span>
         </button>
@@ -79,7 +79,7 @@
             (removeBeat)="removeBeat($event)"
             (lineCountChanged)="lineCountChanged($event)"
             (openBeatTypeTooltip)="openBeatTypeTooltip($event)"
-            (openCharactersPopup)="openCharactersPopup()"
+            (openCharactersPopup)="openCharactersPopup($event)"
             (syncCharactersInDmo)="syncCharactersInDmoFromBeats($event)"
             (reloadBeats)="reloadBeatsAndCharacters($event)"
             >

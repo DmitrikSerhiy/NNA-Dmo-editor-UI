@@ -23,7 +23,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() removeBeat: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
-	@Output() openCharactersPopup: EventEmitter<void> = new EventEmitter<void>();
+	@Output() openCharactersPopup: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reloadBeats: EventEmitter<any> = new EventEmitter<any>();
 
@@ -1138,12 +1138,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.insertCharacterTagIntoPlaceholder(characterTag);
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
 		
-		this.characters.forEach(characterInDmo => {
+		this.characters = this.characters.map(characterInDmo => {
 			if (characterInDmo.id == character.id) {
 				characterInDmo.count++;
-				return;
 			}
-		});
+			return characterInDmo;
+		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
 		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: this.beatsIds.indexOf(beatId) });
 		// todo: set caret just after the newly created character tag 
@@ -1155,13 +1155,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		characterTag.remove();
 		const beatIndex = this.beatsIds.indexOf(characterTag.dataset.beatId);
 
-		this.characters.forEach(characterInDmo => {
+		this.characters = this.characters.map(characterInDmo => {
 			if (characterInDmo.id == characterTag.dataset.characterId) {
 				characterInDmo.count--;
-				return;
 			}
-		});
-		
+			return characterInDmo;
+		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
@@ -1218,14 +1217,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 	private resetCharacterFilter() {
-		this.filtredCharacters = this.characters;
+		this.filtredCharacters = this.characters.sort(cha => cha.count);
 		if (this.characterFilterInputElement) {
 			this.characterFilterInputElement.nativeElement.value = '';
-		}	
+		}
 	}
 
-	onOpenCharactersPopup() {
-		this.openCharactersPopup.emit();
+	onOpenCharactersPopup($event: any) {
+		this.openCharactersPopup.emit({action: $event});
 	}
 
 	hideCharactersTooltipByMouseLeave() {
