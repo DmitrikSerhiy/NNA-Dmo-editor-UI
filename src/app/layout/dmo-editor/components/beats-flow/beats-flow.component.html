@@ -6,7 +6,7 @@
                 <div class="character-tooltip-search-block" *ngIf="characters?.length > 0">
                     <input #characterFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Character name or alias" (input)="filterCharacters($event.target.value)">
                     <ul>
-                        <li #charactersOptions [attr.data-order]="i" class="character-option" *ngFor="let character of filtredCharacters; let i = index" (click)="pickCharacter(character)">
+                        <li #charactersOptions [attr.data-order]="i" class="character-option" *ngFor="let character of filtredCharacters; let i = index" style="color: {{character.color}}"  (click)="pickCharacter(character)">
                             {{character.name}} <span *ngIf="character.aliases">[</span> {{character.aliases}} <span *ngIf="character.aliases">]</span> 
                         </li>
                     </ul>

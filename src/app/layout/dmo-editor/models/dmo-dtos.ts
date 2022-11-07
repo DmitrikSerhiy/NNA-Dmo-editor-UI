@@ -28,6 +28,7 @@ export class NnaMovieCharacterDto {
     id: string;
     name: string;
     aliases: string;
+    color: string;
 }
 
 export class NnaMovieCharacterInDmoDto {
@@ -35,6 +36,7 @@ export class NnaMovieCharacterInDmoDto {
     name: string;
     aliases: string;
     count: number;
+    color: string;
 }
 
 export class NnaMovieCharacterToCreateDto {
@@ -54,6 +56,7 @@ export class NnaMovieCharacterInBeatDto {
     id: string;
     characterId: string;
     name: string;
+    color: string;
 }
 
 export class NnaBeatDto {

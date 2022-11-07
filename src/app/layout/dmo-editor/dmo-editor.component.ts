@@ -709,7 +709,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		let characters: NnaMovieCharacterInBeatDto[] = [];
 		(beatElement as HTMLElement).childNodes?.forEach((childNode: HTMLElement) => {
 			if (childNode.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
-				characters.push({id: childNode.dataset.id, characterId: childNode.dataset.characterId, name: childNode.nodeValue } as NnaMovieCharacterInBeatDto )
+				characters.push({
+					id: childNode.dataset.id, 
+					characterId: childNode.dataset.characterId, 
+					name: childNode.nodeValue, 
+					color: childNode.style.borderBottomColor 
+				} as NnaMovieCharacterInBeatDto )
 			}
 		});
 		return characters;

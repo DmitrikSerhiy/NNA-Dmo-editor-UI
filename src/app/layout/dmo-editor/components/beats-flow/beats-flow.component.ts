@@ -1134,7 +1134,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	pickCharacter(character: NnaMovieCharacterDto): void {
 		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.charactersTooltipName).beatId;
 		const beatDataHolder = this.nnaTooltipService.getHostingElementFromTooltip(this.nnaTooltipService.charactersTooltipName);
-		const characterTag = this.createCharacterTag(character.id, character.name, beatId);
+		const characterTag = this.createCharacterTag(character.id, character.name, character.color, beatId);
 		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
 		this.insertCharacterTagIntoPlaceholder(characterTag);
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
@@ -1238,14 +1238,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.observeCharacterTag(characterTag);
 	}
 
-	private createCharacterTag(charterId: string, characterName, beatId: string, id: string = null): HTMLElement {
+	private createCharacterTag(charterId: string, characterName: string, color: string, beatId: string, id: string = null): HTMLElement {
 		let characterElem = document.createElement(NnaCharacterTagName);
 		characterElem.style.cursor = 'pointer';
-		characterElem.style.paddingLeft= '1px';
-		characterElem.style.paddingRight= '1px';
-		characterElem.style.borderBottomColor= 'black';
+		characterElem.style.paddingLeft = '1px';
+		characterElem.style.paddingRight = '1px';
+		characterElem.style.borderBottomColor = color;
 		characterElem.style.borderBottomWidth = '1px';
-		characterElem.style.borderBottomStyle= 'solid';
+		characterElem.style.borderBottomStyle = 'solid';
 		characterElem.dataset.characterId = charterId;
 		characterElem.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
 		characterElem.dataset.beatId = beatId;
@@ -1364,7 +1364,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		let textToModify: string = interpolatedBeatText; 
 		charactersInBeat.forEach(characterInBeat => {
 			if (textToModify.includes(characterInBeat.id)) {
-				let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, beatId, characterInBeat.id);
+				let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, characterInBeat.color, beatId, characterInBeat.id);
 				textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML);
 			}
 		})

@@ -185,6 +185,7 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 						this.loginSubscription = this.authService
 							.authenticate(this.email, this.password.value)
 							.subscribe((response) => {
+								this.userManager.clearUserData();
 								this.userManager.saveUserData(response.accessToken, response.email, response.userName, response.refreshToken);
 								this.isProcessing = false;
 								this.router.navigateByUrl('/app');

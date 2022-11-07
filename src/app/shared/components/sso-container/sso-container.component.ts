@@ -57,6 +57,7 @@ export class SsoContainerComponent implements OnInit {
 
 		try {
 			let apiAuthResponse = await this.authService.googleAuth(authGoogleDto);
+			this.userManager.clearUserData();
 			this.userManager.saveUserData(apiAuthResponse.accessToken, apiAuthResponse.email, apiAuthResponse.userName, apiAuthResponse.refreshToken);
 			this.isSsoButtonClicked = false;
 			this.router.navigateByUrl('/app');

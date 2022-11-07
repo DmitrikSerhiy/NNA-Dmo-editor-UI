@@ -9,18 +9,18 @@
         <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element no-select" (click)="resetSelected()"> Name </th>
-                <td mat-cell class=" " *matCellDef="let row"> {{row.name}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="aliases">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="aliases" class="hoverable-element no-select" (click)="resetSelected()"> Aliases </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.aliases}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.aliases}} </td>
             </ng-container>
 
             
             <ng-container matColumnDef="count">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="count" class="hoverable-element no-select" (click)="resetSelected()"> # </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row"> {{row.count == 0 ? '' : row.count}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.count == 0 ? '' : row.count}} </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="charactersTableColumn"></tr>
