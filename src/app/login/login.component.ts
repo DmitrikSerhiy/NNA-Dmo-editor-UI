@@ -164,7 +164,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 				this.emailInvalid = false;
 			}
 			// user has no password but has auth provider previously saved
-			let ssoResponse = await this.authService.checkSsoAndPassword(this.email.value);
+			let ssoResponse = await this.authService.checkSsoAndPassword(encodeURIComponent(this.email.value));
 			if (ssoResponse) {
 				this.emailInvalid = true;
 				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;

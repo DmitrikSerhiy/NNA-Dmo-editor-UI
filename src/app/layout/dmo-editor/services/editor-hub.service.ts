@@ -195,15 +195,6 @@ export class EditorHub {
             .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
             .toPromise();
     }
-
-    
-    sanitizeTempIdsAndInterpolatedCharacters(dmoId: string, characterIds: string[]): Promise<void> {
-        return this.http
-            .delete<void>(this.serverUrl + 'dmos/' + dmoId + '/characters/interpolated', {body: {characterIds: characterIds} })
-            .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
-            .toPromise();
-    }
-
     
     // ----- editor http methods --------
 
