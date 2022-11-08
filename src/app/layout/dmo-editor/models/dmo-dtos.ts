@@ -43,6 +43,7 @@ export class NnaMovieCharacterToCreateDto {
     dmoId: string;
     name: string;
     aliases: string;
+    color: string;
 }
 
 export class NnaMovieCharacterToUpdateDto {
@@ -50,6 +51,7 @@ export class NnaMovieCharacterToUpdateDto {
     id: string;
     name: string;
     aliases: string;
+    color: string;
 }
 
 export class NnaMovieCharacterInBeatDto {

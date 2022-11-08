@@ -34,7 +34,7 @@ const routes: Routes = [
 		MatRadioModule,
 		MatTableModule,
 		MatPaginatorModule,
-		MatSortModule,
+		MatSortModule
 	]
 })
 export class DmoEditorModule { }

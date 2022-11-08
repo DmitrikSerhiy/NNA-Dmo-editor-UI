@@ -9,18 +9,18 @@
         <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element no-select" (click)="resetSelected()"> Name </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.name}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="aliases">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="aliases" class="hoverable-element no-select" (click)="resetSelected()"> Aliases </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.aliases}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}"> {{row.aliases}} </td>
             </ng-container>
 
             
             <ng-container matColumnDef="count">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="count" class="hoverable-element no-select" (click)="resetSelected()"> # </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row" style="color: {{row.color}}"> {{row.count == 0 ? '' : row.count}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}"> {{row.count == 0 ? '' : row.count}} </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="charactersTableColumn"></tr>
@@ -51,6 +51,12 @@
                 <input #characterAliasesInput autocomplete="off" type="text" name="characterAliasesInput" id="characterAliasesInput" formControlName="characterAliasesInput" 
                     class="form-control nna-input" placeholder="Aliases [separated by comas]" />
                 <label for="characterAliasesInput" class="nna-input-label">Aliases [separated by ,]</label>
+            </div>
+
+            <div class="nna-input-group">
+                <input #colorInput autocomplete="off" type="color" name="colorInput" id="colorInput" formControlName="colorInput" 
+                    class="form-control nna-color-input" placeholder="Color" />
+                <label for="colorInput" class="nna-color-input-label">Color</label>
             </div>
 
             <div class="validation-wrapper validation-wrapper-popup nna-input-group-validation">

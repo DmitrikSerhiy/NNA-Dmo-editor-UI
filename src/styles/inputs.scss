@@ -56,6 +56,22 @@
     padding: 0;
 }
 
+.nna-color-input {
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100px !important;
+    vertical-align: bottom;
+    box-sizing: content-box;
+    box-shadow: none !important;
+    cursor: pointer;
+    margin-left: -2px !important;
+
+    @include font-secondary-info();
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus textarea:-webkit-autofill,
@@ -121,5 +137,14 @@ select:-webkit-autofill:focus {
             color: black;
             user-select: none;
         }
+    }
+
+    .nna-color-input-label {
+        position: absolute;
+        top: -5px;
+        display: block; 
+        @include font-primary-info();
+        user-select: none; 
+        color: gray;
     }
 }

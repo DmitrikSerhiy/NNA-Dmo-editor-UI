@@ -26,6 +26,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	charactersForm: FormGroup;
 	get nameInput() { return this.charactersForm.get('characterNameInput'); }
 	get aliasesInput() { return this.charactersForm.get('characterAliasesInput'); }
+	get colorInput() { return this.charactersForm.get('colorInput'); }
 	serverValidation: string = null;
 
 	selectedCharacter: NnaMovieCharacterInDmoDto;
@@ -40,6 +41,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	@ViewChild('characterNameInput') characterNameInputElement: ElementRef;
 	@ViewChild('characterAliasesInput') characterAliasesInputElement: ElementRef;
+	@ViewChild('colorInput') colorInputElement: ElementRef;
 
 	// todo: add validations
 
@@ -68,7 +70,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({
 			'characterNameInput': new FormControl('', [Validators.required]),
-			'characterAliasesInput': new FormControl('')
+			'characterAliasesInput': new FormControl(''),
+			'colorInput': new FormControl('')
 		});
 	}
 
@@ -156,7 +159,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			.createCharacter({
 				name: this.nameInput.value.trim(), 
 				aliases: this.fixAliasesValue(this.aliasesInput.value), 
-				dmoId: this.dmoId } as NnaMovieCharacterToCreateDto)
+				dmoId: this.dmoId,
+				color: this.colorInput.value ?? "#000000"				
+			} as NnaMovieCharacterToCreateDto)
 			.pipe(take(1))
 			.subscribe(() => { 
 				this.charactersAreDirty = true;
@@ -219,6 +224,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.resetCharactersTable();
 		this.nameInput.setValue(this.selectedCharacter.name);
 		this.aliasesInput.setValue(this.selectedCharacter.aliases);
+		this.colorInput.setValue(this.selectedCharacter.color);
 
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
@@ -234,6 +240,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			.updateCharacter({
 				name: this.nameInput.value.trim(), 
 				aliases: this.fixAliasesValue(this.aliasesInput.value), 
+				color: this.colorInput.value ?? "#000000",
 				id: this.selectedCharacter.id,
 				dmoId: this.dmoId } as NnaMovieCharacterToUpdateDto)
 			.pipe(take(1))
@@ -319,6 +326,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	private resetForm() {
 		this.nameInput.setValue('');
 		this.aliasesInput.setValue('');
+		this.colorInput.setValue('#000000');
 		this.serverValidation = null;
 		this.charactersForm.clearValidators();
 		this.charactersForm.markAsPristine();

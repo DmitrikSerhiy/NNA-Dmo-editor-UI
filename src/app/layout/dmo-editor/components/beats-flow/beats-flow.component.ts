@@ -142,7 +142,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			if (shouldReloadBeats == true) {
 				let editedCharacters = previousCharacters.filter(character => 
 					(this.characters.findIndex(cha => cha.name == character.name) == -1) || 
-					(this.characters.findIndex(cha => cha.aliases == character.aliases) == -1));
+					(this.characters.findIndex(cha => cha.aliases == character.aliases) == -1) ||
+					(this.characters.findIndex(cha => cha.color == character.color) == -1));
 
 				editedCharacters = this.characters.filter(character => editedCharacters.findIndex(cha => cha.id == character.id) != -1);
 				if (editedCharacters?.length > 0) {
