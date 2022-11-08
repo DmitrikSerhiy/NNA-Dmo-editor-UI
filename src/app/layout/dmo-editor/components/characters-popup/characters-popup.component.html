@@ -53,10 +53,14 @@
                 <label for="characterAliasesInput" class="nna-input-label">Aliases [separated by ,]</label>
             </div>
 
-            <div class="nna-input-group">
+            <div class="nna-input-group character-color-input-group">
                 <input #colorInput autocomplete="off" type="color" name="colorInput" id="colorInput" formControlName="colorInput" 
                     class="form-control nna-color-input" placeholder="Color" />
                 <label for="colorInput" class="nna-color-input-label">Color</label>
+
+                <button type="button" class='nna-icon-button nna-button-primary' title="Select other predefined color" (click)='onSetNextRandomColor()'>
+                    <i class="fa fa-random" aria-hidden="true"></i>
+                </button>
             </div>
 
             <div class="validation-wrapper validation-wrapper-popup nna-input-group-validation">

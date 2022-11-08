@@ -100,7 +100,7 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        .withAutomaticReconnect()
+        .withAutomaticReconnect() // todo: add more attemts with equal interval. for example 10-15 times every 5sec 
         .withHubProtocol(new MessagePackHubProtocol())
         .build();
 

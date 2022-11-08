@@ -9,6 +9,14 @@
             .nna-input-group, .nna-input-group-validation {
                 margin-top: 1rem;
             }
+
+            .character-color-input-group {
+                display: flex;
+                align-items: center;
+                .nna-icon-button {
+                    margin-left: 8px;
+                }
+            }
         }
     }
 

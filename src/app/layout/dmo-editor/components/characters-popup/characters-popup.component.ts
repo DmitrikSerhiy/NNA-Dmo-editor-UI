@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { take } from 'rxjs/internal/operators/take';
 import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
+import { CharactersColorPaleteService } from '../../services/characters-color-palete.service';
 import { CharactersService } from '../../services/characters.service';
 
 @Component({
@@ -47,6 +48,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	constructor(
 		private charactersService: CharactersService,
+		private charactersColorPaleteService: CharactersColorPaleteService,
 		private cd: ChangeDetectorRef,
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any
@@ -125,6 +127,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.addOrEditAction = true;
 		this.resetForm();
 		this.resetCharactersTable();
+		this.colorInput.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)))
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
 		}, 150);
@@ -283,6 +286,10 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		}
 
 		this.selectedCharacter = row;
+	}
+
+	onSetNextRandomColor() {
+		this.colorInput.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
 	}
 
 	private fixAliasesValue(aliases: string): string {
