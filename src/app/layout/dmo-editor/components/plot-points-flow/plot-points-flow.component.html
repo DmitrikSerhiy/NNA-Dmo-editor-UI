@@ -1,5 +1,5 @@
 <div #beatTypeTooltip class="nna-tooltip-base nna-tooltip-arrow-to-left beat-type-tooltip" (mouseleave)="hideBeatTypeTooltip()">  
-
+    <div class="nna-tooltip-animatad-overflow-for-left"></div>
     <mat-radio-group [(ngModel)]="selectedBeatType" (change)="onBeatTypeChanged()" [disabled]="!allowBeatTypeToChange" class="beat-type-options">
         <mat-radio-button class="beat-type-option" [value]="1">Beat</mat-radio-button>
         <mat-radio-button class="beat-type-option" [value]="2">Exposition beat</mat-radio-button>

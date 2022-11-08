@@ -11,8 +11,31 @@
     border-width: 1px;
     border-image: $button-border-gradient;
     box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
-}
 
+    .nna-tooltip-animatad-overflow-for-top {
+        position: absolute;
+        z-index: 400;
+        bottom: -6px;
+        left: -4px;
+        background-color: white;
+        width: 104%;
+        height: 110%;
+        animation: tooltip-overflow-shrink-h 150ms linear 0s 1 normal forwards;
+    }
+
+    .nna-tooltip-animatad-overflow-for-left {
+        position: absolute;
+        z-index: 400;
+        bottom: -4px;
+        right: -6px;
+        background-color: white;
+        width: 110%;
+        height: 104%;
+        animation: tooltip-overflow-shrink-v 150ms linear 0s 1 normal forwards;
+    }
+
+
+}
 
 .nna-tooltip-arrow-base {
     position: absolute;
@@ -31,14 +54,6 @@
 }
 
 
-.nna-tooltip-arrow-to-top {
-    border-left: solid;
-    border-left-width: 1px;
-    border-top: solid;
-    border-top-width: 1px;
-    border-image: $button-border-gradient;
-}
-
 .nna-tooltip-arrow-to-left {
     border-left: solid;
     border-left-width: 1px;
@@ -46,4 +61,16 @@
     border-bottom-width: 1px;
     border-image: $button-border-gradient;
 }
+
+
+@keyframes tooltip-overflow-shrink-h {
+    from { height: 110%; }
+    to { height: 0% }
+}
+
+@keyframes tooltip-overflow-shrink-v {
+    from { width: 110%; }
+    to { width: 0% }
+}
+
 

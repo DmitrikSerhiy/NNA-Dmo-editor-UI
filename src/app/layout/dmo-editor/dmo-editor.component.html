@@ -19,6 +19,7 @@
             <button *ngIf="!editorIsConnected && !editorIsReconnecting" type="button" class="nna-button-secondary" (click)="tryReconnect()">Try to reconnect</button>
 
             <div #connectionStateTooltip class="nna-tooltip-base socket-status-tooltip no-select" (mouseleave)="hideConnectionStateTooltop()" (mouseenter)="showConnectionStateTooltip()">
+                <div class="nna-tooltip-animatad-overflow-for-top"></div>
                 {{connectionStateTitle}}
                 <div #connectionStateTooltipArrow class="nna-tooltip-arrow-base socket-status-tooltip-arrow"></div> 
             </div>
@@ -36,6 +37,7 @@
             </div>
 
             <div #connectionStateIconTooltip class="nna-tooltip-base socket-status-tooltip no-select" (mouseenter)="showConnectionStateIconTooltip()" (mouseleave)="hideConnectionStateIconTooltop()">
+                <div class="nna-tooltip-animatad-overflow-for-top"></div>
                 {{autosaveTitle}}
                 <div #connectionStateIconTooltipArrow class="nna-tooltip-arrow-base socket-status-tooltip-arrow"></div> 
             </div>

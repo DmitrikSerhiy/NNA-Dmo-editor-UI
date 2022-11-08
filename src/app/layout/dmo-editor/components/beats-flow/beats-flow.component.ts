@@ -1217,6 +1217,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.characterFilterInputElement?.nativeElement?.focus();
 		}, 200);
 
+		setTimeout(() => {
+			this.charactersTooltip.nativeElement.addEventListener('mouseleave', () => {this.hideCharactersTooltipByMouseLeave() }, { once: true } );
+		}, 1000);
+
 		document.addEventListener('keydown', this.addCharactersTooltipEventHandlersWrapper);
 	}
 
