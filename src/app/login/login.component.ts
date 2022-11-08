@@ -152,7 +152,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 			return;
 		} 
 		
-		// todo: merge checkUserEmail and checkSsoAndPassword into one end-point
 		let response = await this.authService.checkUserEmail(this.email.value);
 		if (response == false) {
 			this.emailInvalid = true;

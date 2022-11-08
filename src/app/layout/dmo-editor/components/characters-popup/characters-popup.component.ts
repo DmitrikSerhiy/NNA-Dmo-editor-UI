@@ -44,8 +44,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	@ViewChild('characterAliasesInput') characterAliasesInputElement: ElementRef;
 	@ViewChild('colorInput') colorInputElement: ElementRef;
 
-	// todo: add validations
-
 	constructor(
 		private charactersService: CharactersService,
 		private charactersColorPaleteService: CharactersColorPaleteService,
@@ -71,8 +69,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({
-			'characterNameInput': new FormControl('', [Validators.required]),
-			'characterAliasesInput': new FormControl(''),
+			'characterNameInput': new FormControl('', [Validators.required, Validators.maxLength(60)]),
+			'characterAliasesInput': new FormControl('', [Validators.maxLength(100)]),
 			'colorInput': new FormControl('')
 		});
 	}

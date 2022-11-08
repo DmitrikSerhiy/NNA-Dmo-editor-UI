@@ -100,7 +100,7 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        .withAutomaticReconnect() // todo: add more attemts with equal interval. for example 10-15 times every 5sec 
+        .withAutomaticReconnect([0, 2000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000])
         .withHubProtocol(new MessagePackHubProtocol())
         .build();
 
@@ -182,9 +182,9 @@ export class EditorHub {
 
     // ----- editor http methods --------
 
-    initialDmoLoadWithData(dmoId: string): Promise<DmoWithDataDto> {
+    initialDmoLoadWithData(dmoId: string, sanitizeBeforeLoad: boolean): Promise<DmoWithDataDto> {
         return this.http
-            .get<DmoWithDataDto>(this.serverUrl + 'dmos/' + dmoId + '/withBeats')
+            .get<DmoWithDataDto>(this.serverUrl + 'dmos/' + dmoId + '/withData?sanitizeBeforeLoad=' + sanitizeBeforeLoad)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoWithDataDto>(response, obs)))
             .toPromise();
     }

@@ -25,7 +25,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openCharactersPopup: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<any>();
-	@Output() reloadBeats: EventEmitter<any> = new EventEmitter<any>();
+	@Output() reloadBeats: EventEmitter<void> = new EventEmitter<void>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
@@ -773,24 +773,37 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		const dataHolder = dataHolderContainer.lastChild as HTMLElement;
+		const lastChild = dataHolder.lastChild as HTMLElement;
 
-		if (!dataHolder.lastChild) {
+		if (!lastChild) {
 			dataHolder.focus();
 			this.scrollToElement(dataHolder);
 			return;
 		} else {
-			if (dataHolder.lastChild.nodeType == 3) { // TEXT_NODE
-				const range = document.createRange();
-				range.setStart(dataHolder.lastChild, dataHolder.lastChild.textContent.length);
-				range.collapse(true);
-				const selection = window.getSelection();
-				selection.removeAllRanges();
-				selection.addRange(range);
+			if (lastChild.nodeType == 3) { // TEXT_NODE
+				this.setBeatSelection(lastChild);
+				this.scrollToElement(dataHolder);
 			} else { // any other element
-				(dataHolder.lastChild as HTMLElement).focus();
-				this.scrollToElement(dataHolder.lastChild);
+				if (lastChild.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
+					const emptyElement = document.createTextNode(' ') as Node;
+					lastChild.after(emptyElement);
+					this.setBeatSelection(emptyElement);
+					this.scrollToElement(dataHolder);
+					return 
+				}
+				lastChild.focus();
+				this.scrollToElement(lastChild);
 			}
 		}
+	}
+
+	private setBeatSelection(lastChildElement: HTMLElement | Node): void {
+		const range = document.createRange();
+		range.setStart(lastChildElement, lastChildElement.textContent.length);
+		range.collapse(true);
+		const selection = window.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
 	}
 
     // #endregion
@@ -1236,6 +1249,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
 		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
+		characterTag.after(document.createTextNode(' '));
 		this.observeCharacterTag(characterTag);
 	}
 

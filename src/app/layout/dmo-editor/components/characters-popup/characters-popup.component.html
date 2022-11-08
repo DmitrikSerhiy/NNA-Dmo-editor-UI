@@ -68,6 +68,14 @@
                     <div *ngIf="nameInput.errors.required">
                         <p class="validation-text">Character's name is missing</p> 
                     </div>
+                    <div *ngIf="nameInput.errors.maxlength">
+                        <p class="validation-text">Maximum character's name length exceeded</p> 
+                    </div>
+                </div>
+                <div *ngIf="aliasesInput.invalid && (aliasesInput.dirty || aliasesInput.touched) && !serverValidation" class="validation-container">
+                    <div *ngIf="aliasesInput.errors.maxlength">
+                        <p class="validation-text">Maximum character's aliases length exceeded</p> 
+                    </div>
                 </div>
                 <div *ngIf="serverValidation != null" class="validation-container">
                     <div>

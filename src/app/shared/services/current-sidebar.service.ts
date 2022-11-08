@@ -63,6 +63,9 @@ export class CurrentSidebarService {
 			return;
 		}
 		
+		if(sideBarTab.toString() == 'app') {
+			return;
+		}
 		const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
 		this.renderer.addClass(selectedTab, 'router-link-active');
 	}

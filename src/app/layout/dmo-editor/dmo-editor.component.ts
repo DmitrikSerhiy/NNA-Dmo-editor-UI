@@ -88,14 +88,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.cdRef.detectChanges();
 		});
 
-		await this.editorHub.sanitizeTempIds(this.dmoId);
-		window.onbeforeunload = () => this.closeEditorAndClearData(); //todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
+		window.onbeforeunload = () => this.closeEditorAndClearData(); // todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
 	}
 
 	async ngAfterViewInit(): Promise<void> {
 		await this.prepareEditor();
 		this.cdRef.detectChanges();
-		await this.loadDmoWithBeats();
+		await this.loadDmo();
 		this.cdRef.detectChanges();
 		this.subscribeToClipboard();
 		this.cdRef.detectChanges();
@@ -107,19 +106,19 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	async prepareEditor(): Promise<void> {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
-		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
+		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView(true));
 	}
-
 
 	async tryReconnect(): Promise<void> {
 		await this.editorHub.startConnection();
-		this.setConnectionView();
-		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView());
-		await this.reloadBeatsAndCharacters({operation: 'sanitizeTempIds'});
-		await this.loadDmoWithBeats();
+		this.setConnectionView(true);
+		await this.reloadDmo();
 		this.cdRef.detectChanges();
-		
-		// todo: what if user have some unsaved work here??? offer to swith to offline mode here.
+		this.isDmoInfoSet = true;
+		this.showControlPanel = true;
+		this.cdRef.detectChanges();
+		console.clear()
+		// todo: what if user have some unsaved work here??? offer to swith to offline mode here or mark not saved changes.
 	}
 
 	async syncBeats($event: any): Promise<void> {
@@ -153,17 +152,28 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.closeEditorAndClearData();
 	}
 
-	async reloadBeatsAndCharacters($event: any): Promise<void> {
+	async reloadDmo(): Promise<void> {
 		this.autosaveTitle = this.savingInProgressTitle;
-		this.clearBeatsAndCharacters();
 		this.cdRef.detectChanges();
-
-		if ($event?.operation == 'sanitizeTempIds') {
-			await this.editorHub.sanitizeTempIds(this.dmoId);
-		}
+		this.clearBeatsAndCharacters();
+		this.clearDmo();
 
 		setTimeout(async () => {
-			await this.loadDmoWithData();
+			await this.loadDmo();
+			this.autosaveTitle = this.savingIsDoneTitle;
+			this.cdRef.detectChanges();
+		}, 800);
+	}
+
+	async reloadBeatsAndCharacters(): Promise<void> {
+		this.autosaveTitle = this.savingInProgressTitle;
+		this.cdRef.detectChanges();
+		this.clearBeatsAndCharacters();
+		await this.editorHub.sanitizeTempIds(this.dmoId);
+
+		setTimeout(async () => {
+			await this.loadDmoBeatsAndCharacters(false);
+			this.cdRef.detectChanges();
 			this.autosaveTitle = this.savingIsDoneTitle;
 			this.cdRef.detectChanges();
 		}, 800);
@@ -172,6 +182,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// #region general settings
 
 	async editCurrentDmo(): Promise<void> {
+		if (!this.editorHub.isConnected) {
+			return;
+		}
 		this.nnaTooltipService.hideAllTooltips();
 		const popupResult = await this.finalizeInitialPopup();
 		if (!popupResult) {
@@ -274,7 +287,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.initialDmoDto.characters = [];
 	}
 
-	private async loadDmoWithBeats() {
+	private async loadDmo() {
 		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
 		if (!shortDmo) {
 			return;
@@ -282,12 +295,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.initDmo(shortDmo);
 		this.cdRef.detectChanges();
-		await this.loadDmoWithData();
+		await this.loadDmoBeatsAndCharacters(true);
 		this.cdRef.detectChanges();
 	}
 
-	private async loadDmoWithData(): Promise<void> {
-		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId);
+	private async loadDmoBeatsAndCharacters(sanitizeBeforeLoad: boolean): Promise<void> {
+		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId, sanitizeBeforeLoad);
 		if (dmoWithData?.beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
 			
@@ -308,7 +321,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.beatsLoading = false;
 	}
 
-	private setConnectionView(): void {
+	private setConnectionView(skipTooltipSetup: boolean = false): void {
 		if (this.editorHub.isConnected) {
 			this.editorIsConnected = true;
 			this.editorIsReconnecting = false;
@@ -330,6 +343,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 
 		this.cdRef.detectChanges();
+		if (skipTooltipSetup == true) {
+			return;
+		}
 
 		const intervalId = setInterval(() => {
 			if (this.isDmoInfoSet == false) {
@@ -427,6 +443,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async openCharactersPopup($event: any = null): Promise<void> {
+		if (!this.editorHub.isConnected) {
+			return;
+		}
 		this.nnaTooltipService.hideAllTooltips();
 		await this.finalizeCharactersPopup($event);
 	}
@@ -741,12 +760,20 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// 	return dmoWithJson;
 	// }
 
-	private clearBeatsAndCharacters() {
+	private clearBeatsAndCharacters(): void {
 		this.beatWasSet = false;
 		this.beatsLoading = true;
 		this.beatsUpdating = false;
 		this.initialDmoDto.beats = [];
 		this.initialDmoDto.characters = [];
+		this.cdRef.detectChanges();
+	}
+
+	private clearDmo() : void {
+		this.matModule.closeAll();
+		this.isDmoInfoSet = false;
+		this.showControlPanel = false;
+		this.cdRef.detectChanges();
 	}
 
 	private async closeEditorAndClearData(): Promise<void> {
@@ -754,9 +781,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.unsubscribeFromClipboard();
 		this.dmoId = '';
 		this.showControlPanel = false;
-		this.matModule.closeAll();
-		this.clearBeatsAndCharacters();
 		this.currentShortDmo = null;
+		
+		this.clearBeatsAndCharacters();
+		this.clearDmo();
 		this.editorIsConnected = false;
 		this.editorIsReconnecting = false;
 
