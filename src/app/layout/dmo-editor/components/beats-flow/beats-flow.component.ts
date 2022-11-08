@@ -1261,10 +1261,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		characterElem.style.borderBottomColor = color;
 		characterElem.style.borderBottomWidth = '1px';
 		characterElem.style.borderBottomStyle = 'solid';
+		characterElem.style.userSelect = 'auto';
 		characterElem.dataset.characterId = charterId;
 		characterElem.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
 		characterElem.dataset.beatId = beatId;
 		characterElem.setAttribute('contenteditable', "false");
+		characterElem.setAttribute('draggable', "false");
 		characterElem.innerText = characterName;
 		this.addEventListenerForCharacterTag(characterElem);
 		return characterElem;
@@ -1284,6 +1286,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		characterTag.addEventListener('mouseout', ($event) => { 
 			const tagElement = ($event.target as HTMLElement);
 			tagElement.style.borderBottomWidth = '1px'
+		});
+		characterTag.addEventListener('dragover', ($event) => { 
+			this.preventDrag($event);
 		});
 	}
 
