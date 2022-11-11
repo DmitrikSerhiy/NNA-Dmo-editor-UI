@@ -40,7 +40,7 @@ export class AuthService {
 
     checkSsoAndPassword(email: string): Promise<string[]> {
         return this.http
-            .get<string[]>(this.serverUrl + `/authproviders?email=${email}` )
+            .get<string[]>(this.serverUrl + `/authproviders?email=${encodeURIComponent(email)}` )
             .pipe(catchError((response, obs) => this.errorHandler.handle<string[]>(response, obs)))
             .toPromise();
     }

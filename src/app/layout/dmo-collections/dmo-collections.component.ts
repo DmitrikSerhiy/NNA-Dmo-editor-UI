@@ -14,6 +14,7 @@ import { throwError } from 'rxjs/internal/observable/throwError';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subject } from 'rxjs/internal/Subject';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-dmo-collections',
@@ -53,6 +54,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private dmoCollectionsService: DmoCollectionsService,
+		private nnaHelpersService: NnaHelpersService,
 		private router: Router,
 		public matModule: MatDialog,
 		private collectionManager: CollectionsManagerService) { }
@@ -68,7 +70,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 		})
 
 		this.addCollectionForm = new FormGroup({
-			'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
+			'collectionName': new FormControl('', [Validators.required, Validators.maxLength(60)])
 		});
 
 		this.collectionSubsctiption = this.collectionManager.currentCollectionObserver
@@ -122,7 +124,7 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 
 	onAddCollection() {
 		if (this.addCollectionForm.valid) {
-			const collectionName = this.addCollectionForm.get('collectionName').value;
+			const collectionName = this.nnaHelpersService.sanitizeSpaces(this.addCollectionForm.get('collectionName').value);
 			this.showLoader();
 
 			const add$ = this.dmoCollectionsService.addCollection(collectionName);

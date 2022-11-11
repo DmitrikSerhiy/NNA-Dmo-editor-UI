@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { take } from 'rxjs/internal/operators/take';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
 import { CharactersColorPaleteService } from '../../services/characters-color-palete.service';
 import { CharactersService } from '../../services/characters.service';
@@ -46,6 +47,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	constructor(
 		private charactersService: CharactersService,
+		private nnaHelpersService: NnaHelpersService,
 		private charactersColorPaleteService: CharactersColorPaleteService,
 		private cd: ChangeDetectorRef,
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
@@ -158,7 +160,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.createCharacter({
-				name: this.nameInput.value.trim(), 
+				name: this.nnaHelpersService.sanitizeSpaces(this.nameInput.value), 
 				aliases: this.fixAliasesValue(this.aliasesInput.value), 
 				dmoId: this.dmoId,
 				color: this.colorInput.value ?? "#000000"				
@@ -171,7 +173,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				this.resetForm();
 				this.loadCharacters();
 			}, (errorMessage) => {
-				this.serverValidation = errorMessage;
+				if (!errorMessage.isHandled) {
+					this.serverValidation = errorMessage;
+				}
 			});
 	}
 
@@ -239,7 +243,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.updateCharacter({
-				name: this.nameInput.value.trim(), 
+				name: this.nnaHelpersService.sanitizeSpaces(this.nameInput.value), 
 				aliases: this.fixAliasesValue(this.aliasesInput.value), 
 				color: this.colorInput.value ?? "#000000",
 				id: this.selectedCharacter.id,
@@ -253,7 +257,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				this.resetForm();
 				this.loadCharacters();
 			}, (errorMessage) => {
-				this.serverValidation = errorMessage;
+				if (!errorMessage.isHandled) {
+					this.serverValidation = errorMessage;
+				}
 			});
 	}
 
@@ -314,7 +320,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				}
 			});
 	}
-
 
 	private resetPopup() {
 		this.initialAction = '';

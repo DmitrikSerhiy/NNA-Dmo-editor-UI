@@ -1,6 +1,7 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'dmo-editor-popup',
@@ -35,6 +36,7 @@ export class DmoEditorPopupComponent implements OnInit {
 
   	constructor(
     	private dialogRef: MatDialogRef<DmoEditorPopupComponent>,
+		private nnaHelpersService: NnaHelpersService,
     	@Inject(MAT_DIALOG_DATA) public data: any) {
 			if (data) {
 				this.initialData = data;
@@ -56,9 +58,9 @@ export class DmoEditorPopupComponent implements OnInit {
 		});
 
 		if (this.data) {
-			this.dmoNameInput.setValue(this.data.name);
-			this.movieTitleInput.setValue(this.data.movieTitle);
-			this.shortComment.setValue(this.data.shortComment);
+			this.dmoNameInput.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.name));
+			this.movieTitleInput.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.movieTitle));
+			this.shortComment.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.shortComment));
 			this.dmoStatus.setValue(this.data.dmoStatus)
 		}
 	}

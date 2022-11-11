@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { takeUntil } from 'rxjs/operators';
 import { PersonalInfoDto } from 'src/app/shared/models/authDto';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { UserManager } from 'src/app/shared/services/user-manager';
 
 @Component({
@@ -64,6 +65,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
   
 	constructor(		
 		private userManager: UserManager,
+		private nnaHelpersService: NnaHelpersService, 
 		private authService: AuthService,
 		private router: Router) { 
 			this.showPasswordTitle = "Show password";
@@ -175,7 +177,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 		this.isFormProcessingAfterEdit = true;
 		this.authService
-			.updateUserName(this.userManager.getCurrentUserEmail(), this.userName.value)
+			.updateUserName(this.userManager.getCurrentUserEmail(), this.nnaHelpersService.sanitizeSpaces(this.userName.value))
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(() => {
 				this.initialUserName = newName;

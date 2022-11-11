@@ -133,7 +133,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			$event.source == 'time_picker_focus_out' || 
 			$event.source == 'change_beat_type' || 
 			$event.source == 'attach_character_to_beat' ||
-			$event.source == 'detach_character_from_beat') {
+			$event.source == 'detach_character_from_beat' ||
+			$event.source == 'paste_text') {
 			await this.editorHub.updateBeat(this.selectSingleBeatForServer($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
@@ -200,26 +201,35 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	private subscribeToClipboard() {
-		document.addEventListener('paste', this.pasteSanitizer);
+		document.addEventListener('paste', this.pasteSanitizerWrapper);
 	}
 
-	private pasteSanitizer($event: any): void {
+	private async pasteSanitizer($event: any): Promise<void> {
 		if ($event.target.nodeName != "DIV" || !$event.target.className.includes("beat-data-holder")) {
 			return;
 		}
 		$event.preventDefault();
 		const paste = $event.clipboardData.getData('text');
+		if (paste?.length == 0) {
+			return;
+		}
 		const selection = window.getSelection();
 		if (!selection.rangeCount) {
 			return;
 		}
-		selection.deleteFromDocument();
+		
 		selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+		selection.collapseToEnd();
+		await this.syncBeats({source: 'paste_text', metaData: $event.target.dataset.order});
 	}
 
 	private unsubscribeFromClipboard() {
-		document.removeEventListener('paste', this.pasteSanitizer);
+		document.removeEventListener('paste', this.pasteSanitizerWrapper);
 	}
+
+	private pasteSanitizerWrapper = async function($event) {
+		await this.pasteSanitizer($event);
+	}.bind(this);
 
 	private async finalizeInitialPopup(): Promise<ShortDmoDto> {
 		let popupData = null;

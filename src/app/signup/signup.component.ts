@@ -61,7 +61,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.takenEmailValidaiton = "Email is already taken";
 		this.emtpyNameValidation = "Nickname is missing";
 		this.takenNameValidaiton = "Nickname is already taken";
-		this.tooLongNameValidation = "Maximum nickname length is 50";
+		this.tooLongNameValidation = "Maximum dmo nickname's length exceeded";
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must be at least 10 characters long";
 		this.failureMessage = "Failed to create user";
@@ -167,7 +167,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkUserEmail(this.email.value);
+		let response = await this.authService.checkUserEmail(this.nnaHelpersService.sanitizeSpaces(this.email.value));
 	  	if (response == true) {
 			this.emailInvalid = true;
 			this.emailValidationToShow = this.takenEmailValidaiton;
@@ -203,7 +203,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkName(this.name.value)
+		let response = await this.authService.checkName(this.nnaHelpersService.sanitizeSpaces(this.name.value))
 		if (response == true) {
 			this.nameInvalid = true;
 			this.nameValidationToShow = this.takenNameValidaiton;
@@ -249,7 +249,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		if (this.registerForm.valid) {
 			this.isProcessing = true;
 			this.registerSubscriptions = this.authService
-				.register(this.name.value, this.email.value, this.password.value)
+				.register(this.nnaHelpersService.sanitizeSpaces(this.name.value), this.nnaHelpersService.sanitizeSpaces(this.email.value), this.password.value)
 				.subscribe(
 					(response) => {
 						this.isProcessing = false;

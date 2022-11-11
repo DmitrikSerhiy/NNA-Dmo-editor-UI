@@ -62,9 +62,9 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	dmosTableToggle() {
-		this.isAllDmoSelected() ?
-			this.selectedDmo.clear() :
-			this.dmosTable.data.forEach(row => this.selectedDmo.select(row));
+		this.isAllDmoSelected() 
+			? this.selectedDmo.clear() 
+			: this.dmosTable.data.forEach(row => this.selectedDmo.select(row));
 	}
 
 	applyDmosFilter(event: Event) {

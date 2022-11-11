@@ -100,7 +100,7 @@ export class EditorHub {
             transport: signalR.HttpTransportType.WebSockets,
             logMessageContent: true,
             skipNegotiation: true })
-        .withAutomaticReconnect([0, 2000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000])
+        .withAutomaticReconnect([0, 2000, 2000, 2000, 2000, 2000])
         .withHubProtocol(new MessagePackHubProtocol())
         .build();
 
@@ -117,9 +117,9 @@ export class EditorHub {
         this.hubConnection.onclose((error) => {
             this.connectionStateEmit$.next();
             if (error != null) {
-                console.log('Closed after error.');
                 if (error.message.includes("AuthenticationException: User already have active connection")) {
                     this.showNotConnectedError();
+                    return;
                 }
             }
         });

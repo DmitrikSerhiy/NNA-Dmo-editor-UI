@@ -14,7 +14,7 @@
             <div class="validation-wrapper validation-wrapper-popup">
                 <div *ngIf="movieTitleInput.invalid && (movieTitleInput.dirty || movieTitleInput.touched)" class="validation-container">
                     <div *ngIf="movieTitleInput.errors.maxlength">
-                        <p class="validation-text">Maximum movie name length is {{maxEntityNameLength}}</p>
+                        <p class="validation-text">Maximum movie name's length exceeded</p>
                     </div> 
                 </div>
             </div>
@@ -28,10 +28,10 @@
             <div class="validation-wrapper validation-wrapper-popup">
                 <div *ngIf="(dmoNameInput.invalid && (dmoNameInput.dirty || dmoNameInput.touched)) || shouldShowCustomDmoNameValidation" class="validation-container">
                     <div *ngIf="shouldShowDmoNameValidation && !dmoNameInput.errors">
-                        <p class="validation-text">Maximum dmo name length is {{maxEntityNameLength}}</p>
+                        <p class="validation-text">Dmo name is missing</p>
                     </div> 
                     <div *ngIf="!shouldShowDmoNameValidation && dmoNameInput.errors && dmoNameInput.errors.maxlength">
-                        <p class="validation-text">Maximum dmo name length is {{maxEntityNameLength}}</p>
+                        <p class="validation-text">Maximum dmo name's length exceeded</p>
                     </div> 
 
                 </div>
@@ -55,7 +55,7 @@
             <div class="validation-wrapper validation-wrapper-popup">
                 <div *ngIf="shortComment.invalid && (shortComment.dirty || shortComment.touched)" class="validation-container">
                     <div *ngIf="shortComment.errors.maxlength">
-                        <p class="validation-text">Maximum comment length is {{maxShortCommentLength}}</p> 
+                        <p class="validation-text">Maximum dmo comment's length exceeded</p> 
                     </div>
                 </div>
             </div>

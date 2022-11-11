@@ -152,7 +152,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 			return;
 		} 
 		
-		let response = await this.authService.checkUserEmail(this.email.value);
+		let response = await this.authService.checkUserEmail(this.nnaHelpersService.sanitizeSpaces(this.email.value));
 		if (response == false) {
 			this.emailInvalid = true;
 			this.additionalValidationForSsoEmail = '';
@@ -163,7 +163,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 				this.emailInvalid = false;
 			}
 			// user has no password but has auth provider previously saved
-			let ssoResponse = await this.authService.checkSsoAndPassword(encodeURIComponent(this.email.value));
+			let ssoResponse = await this.authService.checkSsoAndPassword(this.nnaHelpersService.sanitizeSpaces(this.email.value));
 			if (ssoResponse) {
 				this.emailInvalid = true;
 				this.emailValidationToShow = this.ssoEmailValidationHeaderToShow;
@@ -224,7 +224,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 		if (this.loginForm.valid) {
 			this.isProcessing = true;
 			this.loginSubscription = this.authService
-				.authenticate(this.email.value, this.password.value)
+				.authenticate(this.nnaHelpersService.sanitizeSpaces(this.email.value), this.password.value)
 				.subscribe(
 					(response) => {
 						this.isProcessing = false;

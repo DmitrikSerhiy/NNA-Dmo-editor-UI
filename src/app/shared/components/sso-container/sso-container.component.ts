@@ -4,6 +4,7 @@ import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { AuthGoogleDto } from '../../models/authDto';
 import { ToastrErrorMessage } from '../../models/serverResponse';
 import { AuthService } from '../../services/auth.service';
+import { NnaHelpersService } from '../../services/nna-helpers.service';
 import { Toastr } from '../../services/toastr.service';
 import { UserManager } from '../../services/user-manager';
 
@@ -21,6 +22,7 @@ export class SsoContainerComponent implements OnInit {
 
   	constructor(
 		private sosialAuthService: SocialAuthService,
+		private nnaHelpersService: NnaHelpersService,
 		public router: Router,
 		private authService: AuthService,
 		private toast: Toastr,
@@ -48,6 +50,11 @@ export class SsoContainerComponent implements OnInit {
 			this.isSsoButtonClicked = false;
 			return;
 	  	}
+
+		let name = this.nnaHelpersService.sanitizeSpaces(authResult.name);
+		if (!name) {
+			name =  authResult.email.split("@gmail.com")[0];
+		}
 
 		let authGoogleDto: AuthGoogleDto = {
 			name: authResult.name,

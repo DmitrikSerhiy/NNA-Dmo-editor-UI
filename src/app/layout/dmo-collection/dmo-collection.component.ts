@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RightMenuGrabberService } from 'src/app/shared/services/right-menu-grabber.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'app-dmo-collection',
@@ -58,6 +59,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private dmoCollectionService: DmoCollectionsService,
+		private nnaHelpersService: NnaHelpersService,
 		public matModule: MatDialog,
 		private router: Router,
 		private route: ActivatedRoute,
@@ -67,7 +69,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
 	ngOnInit() {
 		this.editCollectionNameForm = new FormGroup({
-			'collectionName': new FormControl('', [Validators.required, Validators.maxLength(20)])
+			'collectionName': new FormControl('', [Validators.required, Validators.maxLength(60)])
 		});
 
 		let collectionId = this.collectionManager.getCurrentCollectionId();
@@ -149,7 +151,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 
 	onEditCollectionName() {
 		if (this.editCollectionNameForm.valid) {
-			const newCollectionName = this.editCollectionNameForm.get('collectionName').value;
+			const newCollectionName = this.nnaHelpersService.sanitizeSpaces(this.editCollectionNameForm.get('collectionName').value);
 			if (this.currentDmoCollection.collectionName === newCollectionName) {
 				this.hideEditCollectionNameForm();
 				return;

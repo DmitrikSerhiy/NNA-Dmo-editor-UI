@@ -33,10 +33,10 @@
                         <div *ngIf="collectionName.invalid && (collectionName.dirty)"
                             class="validation-container">
                             <div *ngIf="collectionName.errors.required">
-                                <p class="validation-text">name is missing </p>
+                                <p class="validation-text">Collection name is missing </p>
                             </div>
                             <div *ngIf="collectionName.errors.maxlength">
-                                <p class="validation-text">Maximum name length is 20</p>
+                                <p class="validation-text">Maximum collection's name length exceeded</p>
                             </div>
                         </div>
                     </div>
