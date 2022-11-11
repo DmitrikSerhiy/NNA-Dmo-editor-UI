@@ -452,11 +452,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		} else {
 			$event.target.setSelectionRange(8, 8);
 		}
+		this.scrollToElement($event.target);
 	}
 
-	prepareBeatDataHolder() {
+	prepareBeatDataHolder($event: any) {
 		this.nnaTooltipService.hideAllTooltips();
 		this.setEditableElementsFocusMetaData(false, true);
+		this.scrollToElement($event.target);
 	}
 
 	beatContainerClick($event: any): void {
