@@ -190,10 +190,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 			this.additionalValidationForSsoEmail = '';
 			this.emailValidationToShow = '';
 			this.emailInvalid = false;
-			await this.nnaHelpersService.sleep(200);
+			await this.nnaHelpersService.setTimeoutAsync(200);
 			location.href = "login#password-input";
 			this.firstStep = false;
-			await this.nnaHelpersService.sleep(600);
+			await this.nnaHelpersService.setTimeoutAsync(600);
 			this.passwordInput.nativeElement.focus();
 		}
     }

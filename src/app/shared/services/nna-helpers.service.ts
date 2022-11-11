@@ -25,7 +25,7 @@ export class NnaHelpersService {
 		return contains;
     } 
 
-	sleep(ms: number): Promise<void> {
+	async setTimeoutAsync(ms: number): Promise<void> {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
@@ -40,4 +40,12 @@ export class NnaHelpersService {
 			return p.trim() + ' ' + n.trim();
 		}) ?? '';
 	}
+
+	groupBy(array, lambda): any {
+		return array.reduce((out, val) => {
+			let by = typeof lambda === 'function' ? '' + lambda(val) : val[lambda];
+			(out[by] = out[by] || []).push(val);
+			return out;
+		}, {});
+	};
 }

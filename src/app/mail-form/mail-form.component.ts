@@ -147,7 +147,7 @@ export class MailFormComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.email.setValue(this.userManager.getCurrentUserEmail());
 		}
 
-		await this.nnaHelpersService.sleep(200);
+		await this.nnaHelpersService.setTimeoutAsync(200);
 		this.emailInpup.nativeElement.focus();
 	}
 

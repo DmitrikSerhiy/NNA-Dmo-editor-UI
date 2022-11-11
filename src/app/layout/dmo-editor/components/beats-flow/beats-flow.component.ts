@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { BeatGeneratorService } from '../../helpers/beat-generator';
 import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInBeatDto, NnaMovieCharacterInDmoDto } from '../../models/dmo-dtos';
@@ -65,7 +66,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	constructor(
 		private cdRef: ChangeDetectorRef,
 		private nnaTooltipService: NnaTooltipService,
-		private beatGeneratorService: BeatGeneratorService) {}
+		private beatGeneratorService: BeatGeneratorService,
+		private nnaHelpersService: NnaHelpersService) {}
 
 
 	ngAfterViewInit(): void {
@@ -452,13 +454,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		} else {
 			$event.target.setSelectionRange(8, 8);
 		}
-		this.scrollToElement($event.target);
+		// this.scrollToElement($event.target); // looks really anoying // creates bug when user click on character tag to remove it.
 	}
 
 	prepareBeatDataHolder($event: any) {
 		this.nnaTooltipService.hideAllTooltips();
 		this.setEditableElementsFocusMetaData(false, true);
-		this.scrollToElement($event.target);
+		// this.scrollToElement($event.target); // looks really anoying // creates bug when user click on character tag to remove it.
 	}
 
 	beatContainerClick($event: any): void {
@@ -754,10 +756,17 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.beatsIds.push(beat.beatId);
 		});
 
-		document.querySelectorAll<HTMLElement>(NnaCharacterTagName)?.forEach(characterTag => {
+
+		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
+		if (characterTags?.length == 0) {
+			return;
+		}
+
+		this.setCharactersClaims();
+		characterTags.forEach(characterTag => {
 			this.addEventListenerForCharacterTag(characterTag);
 			this.observeCharacterTag(characterTag);
-		})
+		});
 	}
 
 	private selectBeatIdFromBeatDataHolder(beatHolder: any): string {
@@ -769,7 +778,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		return id.substring(beatSufix.length);
 	}
 
-	private shiftCursorToTheEndOfChildren(dataHolderContainer: any): void {
+	private shiftCursorToTheEndOfChildren(dataHolderContainer: any, scrollToElement: boolean = true): void {
 		if (!dataHolderContainer.children) {
 			return;
 		}
@@ -779,22 +788,30 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 		if (!lastChild) {
 			dataHolder.focus();
-			this.scrollToElement(dataHolder);
+			if (scrollToElement == true) {
+				this.scrollToElement(dataHolder);
+			}
 			return;
 		} else {
 			if (lastChild.nodeType == 3) { // TEXT_NODE
 				this.setBeatSelection(lastChild);
-				this.scrollToElement(dataHolder);
+				if (scrollToElement == true) {
+					this.scrollToElement(dataHolder);
+				}
 			} else { // any other element
 				if (lastChild.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
 					const emptyElement = document.createTextNode(' ') as Node;
 					lastChild.after(emptyElement);
 					this.setBeatSelection(emptyElement);
-					this.scrollToElement(dataHolder);
+					if (scrollToElement == true) { 
+						this.scrollToElement(dataHolder);
+					}
 					return 
 				}
 				lastChild.focus();
-				this.scrollToElement(lastChild);
+				if (scrollToElement == true) {
+					this.scrollToElement(lastChild);
+				}
 			}
 		}
 	}
@@ -1087,8 +1104,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index].nativeElement.parentElement);
 	}
 
-	private focusBeatByElement(nativeEnement: any): void {
-		this.shiftCursorToTheEndOfChildren(nativeEnement);
+	private focusBeatByElement(nativeEnement: any, scrollToBeat: boolean = false): void {
+		this.shiftCursorToTheEndOfChildren(nativeEnement, scrollToBeat);
 	}
 
 	private focusPreviousNextTimePicker(key: number, index: number): void {
@@ -1162,7 +1179,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return characterInDmo;
 		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
-		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: this.beatsIds.indexOf(beatId) });
+		this.setCharactersClaims();
+		const beatIndex = this.beatsIds.indexOf(beatId);
+		this.beatsMetaData[beatIndex].isDirty = true;
+		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: beatIndex });
+		this.beatsMetaData[beatIndex].isDirty = false;
 		this.focusBeatByElement(beatDataHolder.parentElement);
 	}
 
@@ -1178,6 +1199,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return characterInDmo;
 		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
+		this.setCharactersClaims();
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
 		this.beatsMetaData[beatIndex].isDirty = false;
@@ -1283,7 +1305,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			const tagElement = ($event.target as HTMLElement);
 			const beatDataHolder = tagElement.parentNode.parentNode;
 			tagElement.remove();
-			this.focusBeatByElement(beatDataHolder);
+			this.focusBeatByElement(beatDataHolder, false);
 		});
 		characterTag.addEventListener('mouseover', ($event) => { 
 			const tagElement = ($event.target as HTMLElement);
@@ -1398,6 +1420,37 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPrefix, 'g'), '');
 		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPostfix, 'g'), '');
 		return textToModify;
+	}
+
+	
+	private setCharactersClaims(): void {
+		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
+		if (characterTags?.length == 0) {
+			return;
+		}
+
+		if (characterTags?.length == 0) {
+			return;
+		}
+
+		let grouppedCharacterTags = this.nnaHelpersService.groupBy(Array.from(characterTags), this.selectCharacterIdFromTag);
+		if (!grouppedCharacterTags) {
+			return;
+		}
+
+		for (const group in grouppedCharacterTags) {
+			grouppedCharacterTags[group].forEach((characterTag, i) => {
+				if (i == 0) {
+					characterTag.innerHTML = characterTag.innerHTML.toUpperCase();
+				} else {
+					characterTag.innerHTML = characterTag.innerHTML.toLowerCase();
+				}
+			});
+		}
+	}
+
+	private selectCharacterIdFromTag(characterElement: HTMLElement): string {
+		return characterElement.dataset.characterId;
 	}
 
 	// #endregion

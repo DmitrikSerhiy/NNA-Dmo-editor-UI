@@ -149,7 +149,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.thirdStep = false;
 			this.secondStep = true;
 			this.emailInvalid = false;
-			await this.nnaHelpersService.sleep(600);
+			await this.nnaHelpersService.setTimeoutAsync(600);
 			this.nameInput.nativeElement.focus();
 			return;
 		}
@@ -176,7 +176,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			if (this.emailInvalid == true) {
 				this.emailInvalid = false;
 				this.thirdStep = false;
-				await this.nnaHelpersService.sleep(200);
+				await this.nnaHelpersService.setTimeoutAsync(200);
 			}
 
 			location.href = "signup#name-input";
@@ -184,7 +184,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.thirdStep = false;
 			this.secondStep = true;
 			this.emailInvalid = false;
-			await this.nnaHelpersService.sleep(600);
+			await this.nnaHelpersService.setTimeoutAsync(600);
 			this.nameInput.nativeElement.focus();
 	  	}
   	}
@@ -211,7 +211,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		} else {
 			if (this.nameInvalid == true) {
 				this.nameInvalid = false;
-				await this.nnaHelpersService.sleep(200);
+				await this.nnaHelpersService.setTimeoutAsync(200);
 			}
 
 			location.href = "signup#password-input";
@@ -219,7 +219,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.secondStep = false;
 			this.thirdStep = true;
 			this.emailInvalid = false;
-			await this.nnaHelpersService.sleep(600);
+			await this.nnaHelpersService.setTimeoutAsync(600);
 			this.passwordInput.nativeElement.focus();
 		}
   	}

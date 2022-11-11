@@ -52,7 +52,7 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (shoudBeShown === false) {
                     this.isGrabberShouldBeShown = shoudBeShown;
                 } else {
-                    await this.nnaHelpersService.sleep(1000);
+                    await this.nnaHelpersService.setTimeoutAsync(1000);
                     this.isGrabberShouldBeShown = shoudBeShown;
                 }
             }  
