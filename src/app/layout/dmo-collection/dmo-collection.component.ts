@@ -286,15 +286,19 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 			return comment;
 		}
 
-		if (window.innerWidth < 800 && comment.length > 50) {
+		if (window.innerWidth > 1200) {
+			return comment;
+		}
+
+		if (window.innerWidth < 860 && comment.length > 50) {
 			return comment.substring(0, 10) + '...';
 		}
 
-		if (window.innerWidth < 800 && comment.length > 40) {
+		if (window.innerWidth < 860 && comment.length > 40) {
 			return comment.substring(0, 20) + '...';
 		}
 
-		if (window.innerWidth > 800 && comment.length > 50) {
+		if (window.innerWidth > 860 && comment.length > 50) {
 			return comment.substring(0, 40) + '...';
 		}
 

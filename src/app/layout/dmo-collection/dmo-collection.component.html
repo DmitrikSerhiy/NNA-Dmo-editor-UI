@@ -58,11 +58,9 @@
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.id}} </td>
             </ng-container>
 
-
-
             <ng-container matColumnDef="movieTitle" >
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Movie </th>
+                    class="hoverable-element column-header movie-header no-select"> Movie </th>
                 <td mat-cell class="table-cell movie-cell" *matCellDef="let row"> 
                     <div class="expand-row-header">
                         <span #dmoActionButtons id="{{row.id}}" class="action-wrapper"></span>
@@ -89,16 +87,15 @@
 
             <ng-container matColumnDef="shortComment">
                 <th mat-header-cell *matHeaderCellDef (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Comments </th>
+                    class="hoverable-element column-header comment-header no-select"> Comments </th>
                 <td mat-cell class="table-cell comment-cell" *matCellDef="let row">  
-                    <span class="comment-content">
-                        {{ selectedDmoInCollection?.id == row.id ? row.shortComment : trimComment(row.shortComment)}}
-                    </span> 
+                    {{ selectedDmoInCollection?.id == row.id ? row.shortComment : trimComment(row.shortComment)}}
+
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="collectionTableColumn"></tr>
-            <tr mat-row class="hoverable-element" *matRowDef="let row; columns: collectionTableColumn;"
+            <tr mat-row class="hoverable-element hoverable-collapsed-element" *matRowDef="let row; columns: collectionTableColumn;"
                 [class.expand-row]="selectedDmoInCollection?.id == row.id" (click)="onRowSelect(row.id)">
             </tr>
         </table>
