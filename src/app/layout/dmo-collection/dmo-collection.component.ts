@@ -272,6 +272,14 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	clearFilter() {
+		this.collectionTable.filter = '';
+		this.showFilterMark = false;
+		if (this.collectionTable.paginator) {
+			this.collectionTable.paginator.firstPage();
+		}
+	}
+
 	resetSelected() {
 		this.selectedDmoInCollection = null;
 	}

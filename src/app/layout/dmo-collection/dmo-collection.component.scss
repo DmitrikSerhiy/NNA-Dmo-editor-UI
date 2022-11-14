@@ -11,6 +11,18 @@
 			align-self: center;
 			height: 52px;
 
+			position: sticky;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 100;
+			background-color: white;
+			box-shadow: 0 0 1em rgba(0, 0, 0, .1);
+			margin-left: -16px;
+			margin-right: -16px;
+			padding-left: 16px;
+			padding-left: 16px;
+
 			.collection-name-container {
 				display: flex;
 				align-items: center;
@@ -93,6 +105,7 @@
 				align-self: center;
 				justify-content: flex-end;
 				cursor: pointer;
+				margin-right: 16px;
 
 				.fa-search {
 					margin-right: -1rem;
