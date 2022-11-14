@@ -103,24 +103,24 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.resetSelected();
 	}
 
-	onRowSelect(row: ShortDmoDto) {
+	onRowSelect(rowId: string) {
 		if (this.showEditForm) {
 			return;
 		}
 
 		this.dmoActionButtons.toArray().forEach(dabtns => dabtns.nativeElement.classList.remove("action-wrapper-visibility"));
-		let htmlRow = this.dmoActionButtons.toArray().find(dabtns => dabtns.nativeElement.id == row.id)?.nativeElement;
+		let htmlRow = this.dmoActionButtons.toArray().find(dabtns => dabtns.nativeElement.id == rowId)?.nativeElement;
 		if (!htmlRow) {
 			return;
 		}
-
-		if (this.selectedDmoInCollection && this.selectedDmoInCollection === row) {
+		
+		if (this.selectedDmoInCollection?.id == rowId) {
 			this.selectedDmoInCollection = null;
 			htmlRow.classList.remove("action-wrapper-visibility");
 			return;
 		}
 		htmlRow.classList.add("action-wrapper-visibility");
-		this.selectedDmoInCollection = row;
+		this.selectedDmoInCollection = this.currentDmoCollection.dmos.find(d => d.id == rowId);
 	}
 
 	redirectToDmo() {
@@ -281,6 +281,30 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.showSearchContainer = !this.showSearchContainer;
 	}
 
+	trimComment(comment: string): string {
+		if (!comment || comment?.length == 0) {
+			return comment;
+		}
+
+		if (window.innerWidth < 800 && comment.length > 50) {
+			return comment.substring(0, 10) + '...';
+		}
+
+		if (window.innerWidth < 800 && comment.length > 40) {
+			return comment.substring(0, 20) + '...';
+		}
+
+		if (window.innerWidth > 800 && comment.length > 50) {
+			return comment.substring(0, 40) + '...';
+		}
+
+		if (comment.length < 50) {
+			return comment;
+		}
+
+		return comment.substring(0, 47) + '...';
+	}
+
 	private redirectAfterRemove() {
 		this.currentSidebarService.setMenu(null);
 		this.router.navigateByUrl('/app');
@@ -309,7 +333,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	}
 
 	private initializeCollectionTable(dataSource: ShortDmoDto[]) {
-		this.collectionTableColumn = ['name', 'movieTitle', 'dmoStatus', 'shortComment', 'actions']; //'mark'
+		this.collectionTableColumn = ['movieTitle', 'shortComment'];
 		this.collectionTable = new MatTableDataSource(dataSource);
 		this.collectionTable.paginator = this.collectionPaginator;
 		this.collectionTable.sort = this.collectionSorter;

@@ -45,6 +45,29 @@
 		}
   	}
 
+	.expand-row {
+		height: 120px;
+
+		background: $input-underline-gradient, $input-underline-gradient;
+		background-repeat: no-repeat;
+		background-size: 100% 1px;
+		background-position: bottom, top;
+		
+		.table-cell {
+			vertical-align: top;
+			padding-top: 14px;
+			border-right-color: transparent !important;
+		}
+	}
+
+	.expand-row-header, .expand-row-body, .expand-row-footer {
+		display: flex;
+	}
+
+	.expand-row-footer {
+		margin-top: 8px;
+	}
+
 	tr {
 		.dmo-cell {
 			max-width: 200px;

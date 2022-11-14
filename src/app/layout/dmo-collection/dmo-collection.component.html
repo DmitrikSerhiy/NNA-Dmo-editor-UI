@@ -3,7 +3,7 @@
         <div class="table-details">
             <div class="collection-name-container">
                 <div class="collection-name-header">
-                    <p class="collection-header no-select" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </p>
+                    <h1 class="collection-header no-select" *ngIf="currentDmoCollection" [hidden]="showEditForm">{{currentDmoCollection.collectionName}} </h1>
                     <button type="button" [hidden]="showEditForm" class='nna-icon-button nna-button-primary' (click)='showEditCollectionNameForm()'>
                         <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                     </button>
@@ -17,9 +17,7 @@
                 </div>
                 <form [hidden]="!showEditForm" [formGroup]="editCollectionNameForm" (ngSubmit)="onEditCollectionName()" autocomplete="off">
                     <div class="edit-collection-name">
-                        <input #editCollectionNameField type="text" name="collectionName" formControlName="collectionName"
-                            class="nna-input search-input" placeholder="collection name" 
-                            autocomplete="off">
+                        <input #editCollectionNameField type="text" name="collectionName" formControlName="collectionName" class="nna-input search-input" placeholder="collection name" autocomplete="off">
 
                         <button type="submit" [disabled]="!editCollectionNameForm.valid" class='nna-icon-button nna-button-primary'
                             [ngClass]="{'nna-diabled-button': !editCollectionNameForm.valid}">
@@ -44,14 +42,6 @@
 
             </div>
 
-            <!-- 
-            <div [hidden]="showEditForm" class="dmo-details-container" [ngClass]="{'show-flex': selectedDmoInCollection}">
-                <button class="nna-button nna-button-primary" (click)="redirectToDmo()"> Open in editor</button>
-                <button class="nna-button nna-button-secondary" (click)="removeFromCollection()"> Remove from collection </button>
-            </div> 
-            -->
-            <!-- <div> number of acts, bits, episodes etc. </div> -->
-
             <div class="search-container">
                 <i [hidden]="!showFilterMark" class="fa fa-filter " aria-hidden="true" title="Table is filtred"></i>
                 <i class="fa fa-search text-muted"></i>
@@ -61,65 +51,55 @@
 
         </div>
 
-        <table mat-table class="nna-table" [dataSource]="collectionTable" #collectionSort="matSort" matSort>
+        <table mat-table class="nna-table dmo-collection-table" [dataSource]="collectionTable" #collectionSort="matSort" matSort>
 
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef class="hoverable-element"> </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.id}} </td>
             </ng-container>
 
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> DMO name </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
-            </ng-container>
 
-            <ng-container matColumnDef="movieTitle">
+
+            <ng-container matColumnDef="movieTitle" >
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Movie title </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
-            </ng-container>
+                    class="hoverable-element column-header no-select"> Movie </th>
+                <td mat-cell class="table-cell movie-cell" *matCellDef="let row"> 
+                    <div class="expand-row-header">
+                        <span #dmoActionButtons id="{{row.id}}" class="action-wrapper"></span>
+                        <span class="movie-title-name"> {{row.movieTitle}} </span> 
 
-            <ng-container matColumnDef="dmoStatus">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="dmoStatus" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Status </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.dmoStatus}} </td>
+                        <span *ngIf="row.dmoStatusId === 0 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">autorenew</span>
+                        <span *ngIf="row.dmoStatusId === 1 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">done</span>
+                        <span *ngIf="row.dmoStatusId === 2 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">block</span>
+                    </div>
+
+                    <div *ngIf="selectedDmoInCollection?.id == row.id && row.name" class="expand-row-body">
+                        Dmo name: {{row.name}} 
+                        <br />
+                        Status: {{row.dmoStatus}}
+                        <!-- some characters, number or beats maybe rythm and personal mark -->
+                    </div>
+
+                    <div *ngIf="selectedDmoInCollection?.id == row.id" class="expand-row-footer" >
+                        <button class="nna-button nna-button-primary first-nna-button" (click)="redirectToDmo()">Open in editor</button>
+                        <button class="nna-button nna-button-secondary" (click)="removeFromCollection()">Remove from collection</button>
+                    </div>
+                </td>
             </ng-container>
 
             <ng-container matColumnDef="shortComment">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="shortComment" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Comment </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> <p class="short-comment"> {{row.shortComment}} </p> </td>
-            </ng-container>
-            
-            <!-- 
-            <ng-container matColumnDef="mark">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="mark" (click)="resetSelected()"
-                    class="hoverable-element column-header">
-                     </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.mark}} </td>
-            </ng-container> -->
-
-            
-            <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef (click)="resetSelected()"
-                    class="hoverable-element column-header">
-                     </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> 
-                    <div #dmoActionButtons id="{{row.id}}" class="action-wrapper" >
-                        <button class='nna-icon-button' (click)="redirectToDmo()" title="Open in editor">                
-                            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
-                        </button>
-                        <button class='nna-icon-button' (click)="removeFromCollection()" title="Remove Dmo from collection">                
-                            <i class="fas fa-minus" aria-hidden="true"></i>
-                        </button>
-                    </div>
+                    class="hoverable-element column-header no-select"> Comments </th>
+                <td mat-cell class="table-cell comment-cell" *matCellDef="let row">  
+                    <span class="comment-content">
+                        {{ selectedDmoInCollection?.id == row.id ? row.shortComment : trimComment(row.shortComment)}}
+                    </span> 
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="collectionTableColumn"></tr>
             <tr mat-row class="hoverable-element" *matRowDef="let row; columns: collectionTableColumn;"
-                [class.clicked-row]="selectedDmoInCollection == row" (click)="onRowSelect(row)">
+                [class.expand-row]="selectedDmoInCollection?.id == row.id" (click)="onRowSelect(row.id)">
             </tr>
         </table>
 

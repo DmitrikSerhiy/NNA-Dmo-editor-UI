@@ -1,24 +1,26 @@
 .base-modal {
-  .dmos-table-wrapper {
-    .dmos-table-container {
+	.dmos-table-wrapper {
+		.dmos-table-container {
 
-      .search-container {
-        flex: 0 1 100%;
-        display: flex;
-        margin-left: auto;
-        align-self: flex-end;
-        i {
-          position: absolute;
-          padding-left: 24px;
-        }
-  
-        .search-input {
-          padding-left: 50px;
-          &:focus {
-            background-color: unset;
-          }
-        }
-      }
-    }
-  }
+			.search-container {
+				flex: 0 1 100%;
+				display: flex;
+				margin-left: auto;
+				align-self: flex-end;
+
+				i {
+					position: absolute;
+					padding-left: 24px;
+				}
+
+				.search-input {
+					padding-left: 50px;
+
+					&:focus {
+						background-color: unset;
+					}
+				}
+			}
+		}
+	}
 }

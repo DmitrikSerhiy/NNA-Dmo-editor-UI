@@ -11,27 +11,27 @@ import { GoogleButtonComponent } from './components/google-button/google-button.
 import { ToastrWrapperComponent } from './components/toastr-wrapper/toastr-wrapper.component';
 
 @NgModule({
-  declarations: [
-    RemoveCollectionPopupComponent, 
-    RightMenuGrabberComponent, 
-    RemoveDmoPopupComponent, 
-    NnaSpinnerComponent, 
-    SsoContainerComponent, 
-    GoogleButtonComponent, 
-    ToastrWrapperComponent
-  ],
-  imports: [
-    CommonModule,
-    MatDialogModule
-  ],
-  exports: [
-    RemoveCollectionPopupComponent, 
-    RightMenuGrabberComponent, 
-    NnaSpinnerComponent, 
-    SsoContainerComponent,
-    GoogleButtonComponent,
-    ToastrWrapperComponent
-  ],
-  providers: [CustomErrorHandler]
+	declarations: [
+		RemoveCollectionPopupComponent,
+		RightMenuGrabberComponent,
+		RemoveDmoPopupComponent,
+		NnaSpinnerComponent,
+		SsoContainerComponent,
+		GoogleButtonComponent,
+		ToastrWrapperComponent
+	],
+	imports: [
+		CommonModule,
+		MatDialogModule
+	],
+	exports: [
+		RemoveCollectionPopupComponent,
+		RightMenuGrabberComponent,
+		NnaSpinnerComponent,
+		SsoContainerComponent,
+		GoogleButtonComponent,
+		ToastrWrapperComponent
+	],
+	providers: [CustomErrorHandler]
 })
 export class SharedModule { }
