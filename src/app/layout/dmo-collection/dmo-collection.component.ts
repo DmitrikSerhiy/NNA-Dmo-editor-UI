@@ -31,6 +31,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	showPopupOverview = false;
 	showSearchContainer = false;
 	showFilterMark: boolean = false;
+	showCollectionName: boolean = true;
 	collectionTable: MatTableDataSource<ShortDmoDto>;
 	collectionTableColumn: string[];
 	collectionLength = 0;
@@ -48,9 +49,9 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	@ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
 	@ViewChild('removeFullCollectionModal', { static: true }) removeCollectionModal: NgbActiveModal;
 	@ViewChild('addDmoToCollectionModal', { static: true }) addToCollectionModal: NgbActiveModal;
-	@ViewChild('editCollectionNameField', {static: true}) collectionNameField: ElementRef;
+	@ViewChild('editCollectionNameField') editCollectionNameField: ElementRef;
 	@ViewChildren('dmoActionButtons') dmoActionButtons: QueryList<ElementRef>;
-	
+	@ViewChild('filterInput') filterInputElement: ElementRef
 
 	editCollectionNameForm: FormGroup;
 	get collectionName() { return this.editCollectionNameForm.get('collectionName'); }
@@ -104,9 +105,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	}
 
 	onRowSelect(rowId: string) {
-		if (this.showEditForm) {
-			return;
-		}
+		this.showEditForm = false;
 
 		this.dmoActionButtons.toArray().forEach(dabtns => dabtns.nativeElement.classList.remove("action-wrapper-visibility"));
 		let htmlRow = this.dmoActionButtons.toArray().find(dabtns => dabtns.nativeElement.id == rowId)?.nativeElement;
@@ -254,7 +253,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.selectedDmoInCollection = null;
 		
 		setTimeout(() => {
-			this.collectionNameField.nativeElement.focus();
+			this.editCollectionNameField.nativeElement.focus();
 		}, 100);
 	}
 
@@ -275,9 +274,20 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	clearFilter() {
 		this.collectionTable.filter = '';
 		this.showFilterMark = false;
+		this.filterInputElement.nativeElement.value = '';
 		if (this.collectionTable.paginator) {
 			this.collectionTable.paginator.firstPage();
 		}
+	}
+
+	focusFilterInput() {
+		if (window.innerWidth < 890) {
+			this.showCollectionName = false;
+		}
+	}
+
+	blurFilterInput() {
+		this.showCollectionName = true;
 	}
 
 	resetSelected() {

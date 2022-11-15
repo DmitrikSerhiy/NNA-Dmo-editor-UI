@@ -6,47 +6,39 @@
         You have no DMO. Try to create one.
     </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class="dmos-table-details">
-        <div *ngIf="selectedDmo" class="dmo-info">
+        <div class="dmo-info">
             <!-- <div>
                 number of acts, bits, episodes etc.
             </div> -->
-            <button class="nna-button nna-button-primary first-nna-button" (click)="redirectToDmo()">Open in editor</button>
-            <button class="nna-button nna-button-secondary" (click)="onDmoRemove()">Delete DMO completely</button>
+            <h1 *ngIf="showDmosHeader" class="dmos-header no-select">Decomposed movie objects</h1>
+            <button *ngIf="selectedDmo && showDmosButtons" class="nna-button nna-button-primary first-nna-button" (click)="redirectToDmo()">Open in editor</button>
+            <button *ngIf="selectedDmo && showDmosButtons" class="nna-button nna-button-secondary" (click)="onDmoRemove()">Delete DMO completely</button>
         </div>
 
         <div class="search-container">
-            <i [hidden]="!showFilterMark" class="fa fa-filter " aria-hidden="true" title="Table is filtred"></i>
+            <i [hidden]="!showFilterMark" class="fa fa-filter " aria-hidden="true" title="Table is filtred" (click)="clearFilter()"></i>
             <i class="fa fa-search text-muted"></i>
-            <input type="text" class="nna-input search-input" (focus)="resetSelected()"
+            <input #filterInput type="text" class="nna-input search-input" (focus)="resetSelected()" (focusin)="focusFilterInput()" (focusout)="blurFilterInput()"
                 placeholder="dmo, movie, rating etc." (keyup)="applyDmosFilter($event)" autocomplete="off">
         </div>
     </div>
     <div [hidden]="!shouldShowDmosTable || dmosCount == 0" class='dmos-table-wrapper'>
-
-        <table mat-table class="nna-table" [dataSource]="dmosTable" #dmosSorter="matSort" matSort>
-
+        <table mat-table class="nna-table dmos-table" [dataSource]="dmosTable" #dmosSorter="matSort" matSort>
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef class="hoverable-element"> </th>
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.id}} </td>
             </ng-container>
 
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="name" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select">
-                    DMO name </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.name}} </td>
-            </ng-container>
-
             <ng-container matColumnDef="movieTitle">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select"> Movie title </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}} </td>
+                    class="hoverable-element column-header no-select"> Movie </th>
+                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.movieTitle}}</td>
             </ng-container>
 
             <ng-container matColumnDef="dmoStatus">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="dmoStatus" (click)="resetSelected()"
                     class="hoverable-element column-header no-select"> Status </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.dmoStatus}} </td>
+                <td mat-cell class="table-cell " *matCellDef="let row"> {{row.dmoStatus}} </td>
             </ng-container>
 
             <ng-container matColumnDef="shortComment">
@@ -55,15 +47,8 @@
                 <td mat-cell class="table-cell" *matCellDef="let row"> {{row.shortComment}} </td>
             </ng-container>
 
-            <ng-container matColumnDef="mark">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="mark" (click)="resetSelected()"
-                    class="hoverable-element column-header no-select">
-                    Rating </th>
-                <td mat-cell class="table-cell" *matCellDef="let row"> {{row.mark}} </td>
-            </ng-container>
-
             <tr mat-header-row *matHeaderRowDef="dmosTableColumns"></tr>
-            <tr mat-row class="hoverable-element" *matRowDef="let row; columns: dmosTableColumns;"
+            <tr mat-row class="hoverable-element hoverable-dmo-element" *matRowDef="let row; columns: dmosTableColumns;"
                 [class.clicked-row]="selectedDmo == row" (click)="onRowSelect(row)">
             </tr>
         </table>

@@ -7,31 +7,33 @@
             <div class="search-container">
                 <i class="fa fa-search text-muted"></i>
                 <input type="text" class="nna-input search-input"
-                    placeholder="dmo name or movie title" (keyup)="applyDmosFilter($event)" autocomplete="off">
+                    placeholder="movie or dmo name" (keyup)="applyDmosFilter($event)" autocomplete="off">
             </div>
             <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="dmosTable" #dmosSort="matSort" matSort>
                 <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)="$event ? dmosTableToggle() : null"
+                        <span>{{selectedCount === 0 ? '' : selectedCount }}</span>
+                        <!-- <mat-checkbox (change)="$event ? dmosTableToggle() : null"
                             [checked]="selectedDmo.hasValue() && isAllDmoSelected()"
                             [indeterminate]="selectedDmo.hasValue() && !isAllDmoSelected()">
-                        </mat-checkbox>
+                        </mat-checkbox> -->
                     </th>
                     <td mat-cell *matCellDef="let row" style="cursor: unset;" class="dmo-cell">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectedDmo.toggle(row) : null"
+                        <mat-checkbox (click)="$event.stopPropagation()" (change)="check($event, row)"
                             [checked]="selectedDmo.isSelected(row)">
                         </mat-checkbox>
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="movieTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="hoverable-element dmo-cell-header no-select"> Movie </th>
+                    <td mat-cell class="dmo-cell" style="cursor: unset;" *matCellDef="let row"> {{row.movieTitle}} </td>
+                </ng-container>
+
+
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element dmo-cell-header no-select"> DMO name </th>
                     <td mat-cell class="dmo-cell" style="cursor: unset;" *matCellDef="let row"> {{row.name}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="movieTitle">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header="movieTitle" class="hoverable-element dmo-cell-header no-select"> Movie title </th>
-                    <td mat-cell class="dmo-cell" style="cursor: unset;" *matCellDef="let row"> {{row.movieTitle}} </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="dmosTableColumn"></tr>

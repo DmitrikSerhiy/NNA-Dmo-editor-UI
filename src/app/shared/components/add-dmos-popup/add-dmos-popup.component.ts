@@ -18,6 +18,7 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 	collectionName: string;
 	dmosTableColumn: string[];
 	dmosCount = 0;
+	selectedCount: number = 0;
 	@ViewChild('dmosPaginator', { static: true }) dmosPaginator: MatPaginator;
 	@ViewChild('dmosSort', { static: true }) dmosSorter: MatSort;
 	@ViewChild('addDmoToCollectionModal', { static: true }) addToCollectionModal: NgbActiveModal;
@@ -52,10 +53,14 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 			return;
 		}
 		const result = this.selectedDmo.selected;
+		if (result?.length == 0) {
+			this.dialogRef.close();
+			return;
+		}
 		this.dialogRef.close(result);
 	}
 
-	isAllDmoSelected() {
+	isAllDmoSelected() {	
 		const numSelected = this.selectedDmo.selected.length;
 		const numRows = this.dmosTable.data.length;
 		return numSelected === numRows;
@@ -76,6 +81,17 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 
+	check($event: any, row: any): void {
+		if ($event) {
+			this.selectedDmo.toggle(row);
+		}
+		if ($event?.checked == true) {
+			this.selectedCount++;
+		} else {
+			this.selectedCount--;
+		}
+	}
+
 	private resetDmosTable() {
 		this.dmosTableColumn = null;
 		this.dmosTable = null;
@@ -84,7 +100,7 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	private initializeDmosTable() {
-		this.dmosTableColumn = ['select', 'name', 'movieTitle'];
+		this.dmosTableColumn = ['select', 'movieTitle', 'name'];
 		this.dmosTable = new MatTableDataSource(this.dmos);
 		this.dmosTable.paginator = this.dmosPaginator;
 		this.dmosTable.sort = this.dmosSorter;

@@ -18,10 +18,9 @@
 			z-index: 100;
 			background-color: white;
 			box-shadow: 0 0 1em rgba(0, 0, 0, .1);
-			margin-left: -16px;
-			margin-right: -16px;
-			padding-left: 16px;
-			padding-left: 16px;
+			margin-left: -14px;
+			margin-right: -14px;
+			padding-left: 14px;
 
 			.collection-name-container {
 				display: flex;
@@ -135,12 +134,9 @@
 
 			.movie-cell {
 				width: 350px;
-				margin: 0 !important;
 				min-width: 220px;	
 				border-right: 1px solid rgba(0,0,0,.12);
 				min-height: 48px;
-				height: inherit;
-				height: 120%;
 				background: unset;
 				vertical-align: top;
 				padding-top: 14px;
@@ -150,9 +146,6 @@
 
 				.movie-title-name {
 					min-width: 200px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
 				}
 
 				.movie-progress-icon {

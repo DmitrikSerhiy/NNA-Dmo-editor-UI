@@ -2,60 +2,89 @@
 @import "src/styles/fonts-mixins.scss";
 
 .dmos-page {
-  height: 100%;
+	height: 100%;
 
-  .info-message {
-    height: 100%;
-    margin: auto;
-  }
-  
-  .dmos-table-details {
-    display: flex;
-    width: 100%;
-    height: 52px;
+	.info-message {
+		height: 100%;
+		margin: auto;
+	}
 
-    .dmo-info {
-      display: flex;
-      align-self: center;
+	.dmos-table-details {
+		display: flex;
+		width: 100%;
+		height: 52px;
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		background-color: white;
+		padding-left: 14px;
+		padding-right: 14px;
+		outline: white solid 14px; // shity fix
 
-      button {
-        margin-left: 1rem;
-      }
-    }
+		.dmo-info {
+			display: flex;
+			align-self: center;
+			height: 26px;
 
-    .search-container {
-      flex: 1 1 100%;
-      display: flex;
-      align-self: center;
-      justify-content: flex-end;
-      cursor: pointer;
+			.dmos-header {
+				@include font-primary-heading();
+				margin: 0;
+				width: 280px;
+				margin-right: 8px;
+			}
 
-      .fa-search { 
-        margin-right: -1rem;
-        cursor: pointer;
-      }
+			.nna-button-secondary  {
+				margin-left: 8px;
+			}
+		}
 
-      .fa-filter {
-        margin-right: .5rem;
-      }
+		.search-container {
+			flex: 1 1 100%;
+			display: flex;
+			align-self: center;
+			justify-content: flex-end;
+			cursor: pointer;
 
-      .search-input {
-        width: 0px;
-        padding-left: 2rem;
-        transition: width .5s !important;
-        cursor: pointer;
-        
-        &:focus {
-          width: 240px;
-          background-color: unset;
-        }
-      }
-    }
-  }
+			.fa-search {
+				margin-right: -1rem;
+				cursor: pointer;
+			}
 
-  .dmos-table-wrapper {
-    .dmos-table-paginator {
-      background-color: white;
-    }
-  }
+			.fa-filter {
+				margin-right: .5rem;
+			}
+
+			.search-input {
+				width: 0px;
+				padding-left: 2rem;
+				transition: width .5s !important;
+				cursor: pointer;
+
+				&:focus {
+					width: 240px;
+					background-color: unset;
+				}
+			}
+		}
+	}
+
+	.dmos-table-wrapper {
+		
+
+		.dmos-table {
+			.hoverable-dmo-element {
+				&:hover {
+					background: $input-underline-gradient, $input-underline-gradient;
+					background-repeat: no-repeat;
+					background-size: 100% 1px;
+					background-position: bottom, top;
+				}
+			}
+		}
+
+
+		.dmos-table-paginator {
+			background-color: white;
+		}
+	}
 }
