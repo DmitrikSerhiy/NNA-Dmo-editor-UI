@@ -147,135 +147,200 @@
         }
 
         .second-plot-point {
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
 
-            .home-header {
-                padding-top: 22px;
-                flex: 0 0 100%;
+            @media screen and (min-width: 600px) {
+
+                display: flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+
+                .home-header {
+                    padding-top: 22px;
+                    flex: 0 0 100%;
+                }
+
+                .first-info-block {
+                    flex: 0 0 50%;
+                    margin: auto;
+                    padding-top: 22px;
+                }
+
+                .second-info-block {
+                    flex: 0 0 35%;
+                    margin: auto;
+                    margin-top: 80px;
+                }
+
+                .third-info-block {
+                    flex: 0 0 35%;
+                    margin: auto;
+                    margin-top: 80px;
+                }
+
+                .fourth-info-block {
+                    flex: 0 0 50%;
+                    margin: auto;
+                    padding-top: 64px;
+                }
+
+                .fifth-info-block {
+                    flex: 0 0 50%;
+                    margin: auto;
+                    padding-top: 22px;
+                }
             }
 
-            .first-info-block {
-                flex: 0 0 50%;
-                margin: auto;
-                padding-top: 22px;
-            }
+            @media screen and (max-width: 600px) {
 
-            .second-info-block {
-                flex: 0 0 35%;
-                margin: auto;
-                margin-top: 80px;
-            }
+                display: block;
 
-            .third-info-block {
-                flex: 0 0 35%;
-                margin: auto;
-                margin-top: 80px;
-            }
+                .home-header {
+                    padding-top: 22px;
+                }
 
-            .fourth-info-block {
-                flex: 0 0 50%;
-                margin: auto;
-                padding-top: 64px;
-            }
+                .first-info-block, .second-info-block, .third-info-block, .fourth-info-block, .fifth-info-block {
+                    width: 50%;
+                    margin: auto;
+                    margin-top: 22px;
+                }
 
-            .fifth-info-block {
-                flex: 0 0 50%;
-                margin: auto;
-                padding-top: 22px;
             }
         }
 
         .third-plot-point {
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
 
-            .home-header {
-                margin: auto;
+            @media screen and (min-width: 600px) {
+
+                display: flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+
+                .home-header {
+                    margin: auto;
+                }
+
+                .second-header-mobile {
+                    display: none;
+                }
+
+                .second-header {
+                    margin: auto;
+                    padding-top: 90px;
+                }
+
+                .first-info-block {
+                    margin: auto;
+                    padding-top: 90px;
+                }
+
+                .second-info-block {
+                    flex: 0 0 200px;
+                    margin: auto;
+                    margin-top: 90px;
+                }
+
+                .third-info-block {
+                    flex: 0 0 200px;
+                    margin: auto;
+                    margin-top: 90px;
+                    padding-left: 20px;
+                }
+
+                .fourth-info-block {
+                    flex: 0 0 200px;
+                    margin: auto;
+                    margin-top: 70px;
+                }
+
+                .fifth-info-block {
+                    flex: 0 0 200px;
+                    margin: auto;
+                    margin-top: 70px;
+                    padding-left: 20px;
+                }
+
+                .sixth-info-block {
+                    margin: auto;
+                    padding-top: 90px;
+                }
             }
 
-            .second-header {
-                margin: auto;
-                padding-top: 90px;
-            }
+            @media screen and (max-width: 600px) {
 
-            .first-info-block {
-                margin: auto;
-                padding-top: 90px;
-            }
+                .home-header {
+                    padding-top: 180px;
+                }
 
-            .second-info-block {
-                flex: 0 0 200px;
-                margin: auto;
-                margin-top: 90px;
-            }
+                .second-header {
+                    display: none;
+                }
 
-            .third-info-block {
-                flex: 0 0 200px;
-                margin: auto;
-                margin-top: 90px;
-                padding-left: 20px;
-            }
-
-            .fourth-info-block {
-                flex: 0 0 200px;
-                margin: auto;
-                margin-top: 70px;
-            }
-
-            .fifth-info-block {
-                flex: 0 0 200px;
-                margin: auto;
-                margin-top: 70px;
-                padding-left: 20px;
-            }
-
-            .sixth-info-block {
-                margin: auto;
-                padding-top: 90px;
+                .first-info-block, .second-info-block, .third-info-block, .fourth-info-block, .fifth-info-block, .sixth-info-block {
+                    width: 180px;
+                    margin: auto;
+                    margin-top: 22px;
+                }
             }
         }
 
         .fourth-plot-point {
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
 
-            .home-header {
-                padding-top: 22px;
-                flex: 0 0 100%;
+            @media screen and (min-width: 600px) {
+
+                display: flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+
+                .home-header {
+                    padding-top: 22px;
+                    flex: 0 0 100%;
+                }
+
+                .first-info-block {
+                    flex: 0 0 55%;
+                    margin: auto;
+                    padding-top: 22px;
+                }
+
+                .second-info-block {
+                    flex: 0 0 35%;
+                    margin: auto;
+                    margin-top: 60px;
+                }
+
+                .third-info-block {
+                    flex: 0 0 35%;
+                    margin: auto;
+                    margin-top: 60px;
+                }
+
+                .fourth-info-block {
+                    flex: 0 0 55%;
+                    margin: auto;
+                    padding-top: 30px;
+                }
+
+                .fifth-info-block {
+                    flex: 0 0 55%;
+                    margin: auto;
+                    padding-top: 22px;
+                }
             }
 
-            .first-info-block {
-                flex: 0 0 55%;
-                margin: auto;
-                padding-top: 22px;
-            }
+            @media screen and (max-width: 600px) {
 
-            .second-info-block {
-                flex: 0 0 35%;
-                margin: auto;
-                margin-top: 60px;
-            }
+                display: block;
+                
+                .home-header {
+                    padding-top: 22px;
+                }
 
-            .third-info-block {
-                flex: 0 0 35%;
-                margin: auto;
-                margin-top: 60px;
-            }
+                .first-info-block, .second-info-block, .third-info-block, .fourth-info-block, .fifth-info-block {
+                    width: 50%;
+                    margin: auto;
+                    margin-top: 22px;
+                }
 
-            .fourth-info-block {
-                flex: 0 0 55%;
-                margin: auto;
-                padding-top: 30px;
-            }
-
-            .fifth-info-block {
-                flex: 0 0 55%;
-                margin: auto;
-                padding-top: 22px;
             }
         }
 
@@ -284,12 +349,19 @@
             background: $primary-color;
 
             .home-plot-frame-info {
-                width: calc(650px + calc(650px * 0.1));
-                margin: auto;
 
                 color: $for-background-contrast-color;
-                display: flex;
-                justify-content: space-around;
+                
+                @media screen and (min-width: 750px) {
+                    display: flex;
+                    justify-content: space-around;
+                    width: calc(650px + calc(650px * 0.1));
+                    margin: auto;
+                }
+                                
+                @media screen and (max-width: 750px) {
+                    display: block;
+                }
 
                 .home-frame-block-info {
                     display: flex;
@@ -303,6 +375,11 @@
                     }
 
                     .home-frame-block-info-content {
+                        @media screen and (max-width: 750px) {
+                            margin-left: auto;
+                            margin-right: auto;
+                        }
+
                         ul, ol {
                             @include font-secondary-info();
                             padding-left: 22px;
