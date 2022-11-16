@@ -2,7 +2,7 @@
 
     <div class="home-plot-points">
 
-        <div class="home-plot-point first-plot-point">
+        <div class="home-plot-point first-plot-point" (click)="scrollToPlotPoint($event.target)">
             <h1 class="home-header"> DMO editor </h1>
             <div class="home-subheader home-info-block"> 
                 <span class="brand-color">D</span>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="home-line"></div>
-        <div class="home-plot-point second-plot-point">
+        <div class="home-plot-point second-plot-point" (click)="scrollToPlotPoint($event.target)">
             <div class="home-header"> What? </div>
             <div class="home-info-block first-info-block"><span class="brand-color">DMO</span> it's an analytical structured report which describes the movie screenplay in the most possible detailed way.</div>
             <div class="home-info-block block-splitter"></div>
@@ -42,7 +42,7 @@
             <div class="home-info-block fifth-info-block">DMO is meant to change it.</div>
         </div>
         <div class="home-line"></div>
-        <div class="home-plot-point bright-plot-point third-plot-point">
+        <div class="home-plot-point bright-plot-point third-plot-point" (click)="scrollToPlotPoint($event.target)">
             <div class="home-header dark-header second-header-mobile"> For who? </div>
             <div class="home-info-block bright-info-block first-info-block">Screenplay students<i class="fa fa-graduation-cap icon-shift" aria-hidden="true"></i></div>
             <div class="home-info-block block-splitter"></div>
@@ -57,7 +57,7 @@
             <div class="home-info-block bright-info-block sixth-info-block">Directos<i class="fa fa-video icon-shift" aria-hidden="true"></i> </div> 
         </div>
         <div class="home-line"></div>
-        <div class="home-plot-point fourth-plot-point">  
+        <div class="home-plot-point fourth-plot-point" (click)="scrollToPlotPoint($event.target)">  
             <div class="home-header"> Why? </div>
             <!-- <i class="fa fa-search icon-shift brand-color" aria-hidden="true"></i> -->
             <div class="home-info-block first-info-block">Screenplay it’s not just some text which was laid into the directors’ hands. It’s numerous variations of decisions which resulted into compelling story. Isn't it interesting?</div>
@@ -70,7 +70,7 @@
             <div class="home-info-block fifth-info-block">If you really <i class="fa fa-heart icon-shift brand-color" aria-hidden="true"></i> cinema you already know why :)</div>
         </div>
         <div class="home-line"></div>
-        <div class="home-plot-frame-container">
+        <div class="home-plot-frame-container" (click)="scrollToPlotPoint($event.target)">
             <div class="home-plot-frame-info">
                 <div class="home-frame-block-info">
                     <h2 class="home-frame-block-info-header">Features</h2>
@@ -174,7 +174,7 @@
             </div>
         </div>
         <div class="home-line"></div>
-        <div class="home-plot-point last-plot-point">
+        <div class="home-plot-point last-plot-point" (click)="scrollToPlotPoint($event.target)">
             <div class="home-header"> DMO editor </div>
             <div class="home-subheader home-info-block"> 
                 <span class="brand-color">D</span>

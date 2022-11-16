@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { take } from 'rxjs/operators';
@@ -51,6 +51,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 					}
 				}); 		
 	};
+
+	scrollToPlotPoint(plotPointElement: HTMLElement): void {
+		plotPointElement.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+	}
 
 	toRegistration() {
 		this.router.navigate(["/signup"]);
