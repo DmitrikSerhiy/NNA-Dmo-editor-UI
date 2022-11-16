@@ -1,11 +1,17 @@
 @import "src/styles/colors.scss";
 
-
 .nna-link {
-    text-transform: lowercase;
-    text-decoration: none !important;
-    background: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 20%, $secondary-color 100%);
-    font-weight: 600;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+	text-transform: lowercase;
+	text-decoration: none !important;
+	background: linear-gradient(to right bottom, $primary-color 0%, $intermidiate-color 10%, $secondary-color 100%);
+	font-weight: 600;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+
+	&:hover {
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-image: $link-hover-gradient;
+	}
+
 }
