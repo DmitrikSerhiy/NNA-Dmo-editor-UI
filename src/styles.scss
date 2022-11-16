@@ -42,11 +42,11 @@ html, body {
 }
 
 .validation-wrapper {
-  margin-top: 0.2rem;
+  margin-top: 4px;
   height: 1.4rem !important;
 
   .validation-container {
-    height: 0.8rem;
+    height: 11px;
     p {
       margin: 0;
       @include font-primary-info();
@@ -71,8 +71,8 @@ html, body {
   @include font-primary-info();
 
   button {
-    margin-left: .5rem;
-    margin-right: .5rem;
+    margin-left: .8px;
+    margin-right: 8px;
   }
 }
 
@@ -168,7 +168,7 @@ html, body {
     justify-content: flex-end;
     
     button {
-      margin-left: 0.5rem;  
+      margin-left: 8px;  
     }
   }
 }

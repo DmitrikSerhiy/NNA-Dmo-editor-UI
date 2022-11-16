@@ -43,13 +43,13 @@
 
 					button {
 						display: flex;
-						margin-left: .5rem;
+						margin-left: 8px;
 					}
 				}
 
 				form {
 					display: flex;
-					height: 2rem;
+					height: 28px;
 
 					.edit-collection-name {
 						display: flex;
@@ -60,37 +60,9 @@
 						}
 
 						button {
-							margin-left: .5rem;
+							margin-left: 8px;
 						}
 					}
-
-					.validation-wrapper {
-						margin-top: 0;
-						margin-bottom: 0;
-						height: 1rem;
-						align-self: center;
-						margin-left: .5rem;
-						display: flex;
-						margin-top: auto;
-					}
-				}
-			}
-
-			.dmo-details-container {
-				display: none;
-				justify-content: center;
-				align-self: center;
-				margin-right: auto;
-				height: 2rem;
-
-				button {
-					align-self: center;
-					margin-left: 1rem;
-				}
-
-				div {
-					margin: auto;
-					margin-left: 1rem;
 				}
 			}
 
@@ -107,17 +79,17 @@
 				margin-right: 16px;
 
 				.fa-search {
-					margin-right: -1rem;
+					margin-right: -16px;
 					cursor: pointer;
 				}
 
 				.fa-filter {
-					margin-right: .5rem;
+					margin-right: 8px;
 				}
 
 				.search-input {
 					width: 0px;
-					padding-left: 2rem;
+					padding-left: 22px;
 					transition: width .5s !important;
 					cursor: pointer;
 

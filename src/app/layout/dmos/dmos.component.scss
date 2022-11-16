@@ -29,7 +29,7 @@
 			.dmos-header {
 				@include font-primary-heading();
 				margin: 0;
-				width: 280px;
+				width: 320px;
 				margin-right: 8px;
 			}
 
@@ -46,17 +46,17 @@
 			cursor: pointer;
 
 			.fa-search {
-				margin-right: -1rem;
+				margin-right: -14px;
 				cursor: pointer;
 			}
 
 			.fa-filter {
-				margin-right: .5rem;
+				margin-right: 8px;
 			}
 
 			.search-input {
 				width: 0px;
-				padding-left: 2rem;
+				padding-left: 28px;
 				transition: width .5s !important;
 				cursor: pointer;
 

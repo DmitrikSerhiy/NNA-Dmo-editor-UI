@@ -3,8 +3,8 @@
 
 .general-editor-wrapper {
     height: 100%;
-    margin: -1rem;
-    padding: 1rem;
+    margin: -14px;
+    padding: 14px;
 
     .controls-panel {
         position: sticky;
@@ -16,10 +16,10 @@
         justify-content: flex-start;
         align-items: center;
         background: white;
-        margin-left: -1rem;
+        margin-left: -14px;
         margin-right: calc(-1rem - 1px);
         padding-right: calc(1rem + 1px);
-        padding-left: 1rem;
+        padding-left: 14px;
         box-shadow: 0 0 1em rgba(0, 0, 0, .1);
         height: 43px;
 
@@ -30,7 +30,7 @@
         }
 
         .nna-button, .nna-icon-button {
-            margin-left: 0.5rem;
+            margin-left: 8px;
         }
 
         .nna-icon-button {
@@ -90,7 +90,7 @@
         display: flex;
         flex-flow: row nowrap;
         height: 100%;
-        margin-top: 1rem;
+        margin-top: 14px;
 
         @media (min-width: 1100px) {
             justify-content: center;
@@ -98,7 +98,7 @@
 
         
         app-plot-points-flow {
-            flex: 0 0 2rem;
+            flex: 0 0 34px;
         }
 
         app-beats-flow {

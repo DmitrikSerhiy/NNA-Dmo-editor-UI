@@ -78,7 +78,7 @@
                             position: absolute;
                             right: 0;
                             color: $validation-color;
-                            font-size: 1.2rem;
+                            font-size: 16px;
 
                             &:hover {
                                 cursor: pointer;
@@ -87,7 +87,7 @@
 
                         .pass-icon {
                             color: gray;
-                            margin-left: .4rem;
+                            margin-left: 6px;
                             &:hover {
                                 cursor: pointer;
                             }
@@ -107,10 +107,10 @@
 
                 .link-container {
                     width: 100%;
-                    margin-top: 1rem;
+                    margin-top: 14px;
                     @include font-secondary-info();
                     span {
-                        margin-right: .5rem;
+                        margin-right: 8px;
                         &:hover {
                             cursor: default;
                         }
@@ -124,7 +124,7 @@
                 .sso-additional-validation-container {
                     display: flex;
                     flex-wrap: wrap;
-                    margin-top: 1rem;
+                    margin-top: 14px;
                     @include font-secondary-info();
 
                     :first-child {
@@ -147,7 +147,7 @@
                     }
 
                     a, button {
-                        margin-left: .5rem;
+                        margin-left: 8px;
                     }
                 }
             }

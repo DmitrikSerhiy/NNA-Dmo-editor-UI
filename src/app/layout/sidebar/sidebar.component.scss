@@ -4,7 +4,7 @@
 .sidebar {
     @include font-primary-info();
     position: fixed;
-    line-height: 1.5rem;
+    line-height: 21px;
     z-index: 200;
     left: 235px;
     width: 235px;
@@ -41,10 +41,9 @@
 
         img {
             user-select: none;
-            margin: 0.7rem 0;
-            height: 1.7rem;
+            height: 42px;
             transition: margin-left .4s;
-            margin-left: 1rem;
+            margin-left: 12px;
         }
 
         .logo:hover {
@@ -52,6 +51,8 @@
         }
 
         .logo-mini {
+            height: 24px !important;
+            margin-top: 10px !important;
             animation:  logo-mini-shift  .4s forwards;
         }
 
@@ -137,76 +138,6 @@
             white-space: nowrap;
         }
     }
-
-    .sidebar-dropdown {
-        *:focus {
-            border-radius: none;
-            border: none;
-        }
-        .panel-title {
-            font-size: 1rem;
-            height: 50px;
-            margin-bottom: 0;
-            a {
-                text-decoration: none;
-                font-weight: 400;
-                background: $sidebar-background-color;
-                span {
-                    position: relative;
-                    display: block;
-                    padding: 0.75rem 1.5rem;
-                    padding-top: 1rem;
-                }
-            }
-            a:hover, a:focus {
-                outline: none;
-                outline-offset: -2px;
-            }
-        }
-        .panel-title:hover {
-            background: $primary-color;
-        }
-        .panel-collapse {
-            border-radius: 0;
-            border: none;
-            .panel-body {
-                .list-group-item {
-                    border-radius: 0;
-                    background-color: $sidebar-background-color;
-                    border: 0 solid transparent;
-                }
-                .list-group-item:hover {
-                    background: $primary-color;
-                }
-            }
-        }
-    }
-}
-
-.nested-menu {
-    .list-group-item {
-        cursor: pointer;
-    }
-    .nested {
-        list-style-type: none;
-    }
-    ul.submenu {
-        display: none;
-        height: 0;
-    }
-    & .expand {
-        ul.submenu {
-            display: block;
-            list-style-type: none;
-            height: auto;
-            li {
-                a {
-                    padding: 10px;
-                    display: block;
-                }
-            }
-        }
-    }
 }
 
 .bottom-blocks {
@@ -221,7 +152,7 @@
 
 .top-auth-buttons {
     bottom: unset;
-    top: 44px;
+    top: 42px;
     padding: 0;
     margin: auto;
 }
@@ -250,7 +181,7 @@
         .nav-link {
             align-self: center;
             color: black;
-            padding: .75rem 1.15rem;
+            padding: 11px 16px;
             text-decoration: none;
         }
         &:hover {
@@ -326,13 +257,13 @@
     }
 
     @keyframes logo-mini-shift {
-        from { margin-left: 1rem; }
+        from { margin-left: 14px; }
         to { margin-left: 0; }
     }
 
     @keyframes logo-extend-shift {
         from { margin-left: 0; }
-        to { margin-left: 1rem; }
+        to { margin-left: 14px; }
     }
 }
 

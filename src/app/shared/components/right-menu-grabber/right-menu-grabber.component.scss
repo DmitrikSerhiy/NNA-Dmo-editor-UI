@@ -7,7 +7,7 @@
     .right-menu-grabber-container {
         position: absolute;
         right: -18px;
-        top: 14rem;
+        top: 118px;
         z-index: 800;
         display: flex;
         transition: right 0.4s;
@@ -17,7 +17,7 @@
         
         &:hover {
             cursor: pointer;
-            right: 0rem;
+            right: 0;
         }
 
         .right-menu-grabber {

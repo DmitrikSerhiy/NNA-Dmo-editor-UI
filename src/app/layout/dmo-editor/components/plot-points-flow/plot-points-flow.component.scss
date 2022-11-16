@@ -1,14 +1,14 @@
 @import "src/styles/colors.scss";
 
 .beat-type-tooltip {
-    width: 150px;
+    width: 160px;
     height: fit-content;
 
     .beat-type-options {
         .beat-type-option {
-            padding-left: .5rem;
+            padding-left: 8px;;
             &:first-child {
-                margin-top: .5rem;
+                margin-top: 8px;
             }
         }
     }

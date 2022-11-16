@@ -8,10 +8,10 @@
     vertical-align: baseline;
     align-items: center;
     text-decoration: none;
-    min-height: 1.75rem;
-    height: 1.75rem;
+    min-height: 26px;
+    height: 26px;
     text-transform: lowercase;
-    padding: .5rem .75rem;
+    padding: 8px 11px;
     white-space: nowrap;
 
     border-radius: unset;
@@ -73,11 +73,12 @@
 
 .nna-icon-button {
     @include nna-button();
-        font-size: .7rem;
-        min-width: 1.75rem;
-        width: 1.75rem;
+        font-size: 14px !important;
+        min-width: 26px;
+        width: 26px;
         padding: 0;
         justify-content: center;
+        animation-name: none !important;
         
         i, span {
             display: flex;

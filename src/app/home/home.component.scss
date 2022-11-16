@@ -24,7 +24,7 @@
             .home-header {
                 @include font-primary-heading();
                 color: $primary-color;
-                font-size: 2.375rem !important;
+                font-size: 32px !important;
                 display: flex;
                 justify-content: center;
             }
@@ -83,8 +83,8 @@
             .home-info-block {
                 display: flex;
                 justify-content: center;
-                padding-top: 1rem;
-                margin-left: 17rem;
+                padding-top: 16px;
+                margin-left: 236px;
                 margin-right: auto;
             }
         }
@@ -96,8 +96,8 @@
             align-items: flex-start;
 
             .home-header {
-                padding-top: 1rem;
-                margin-left: 16.8rem;
+                padding-top: 16px;
+                margin-left: 236px;
                 margin-right: auto;
             }
 
@@ -105,7 +105,7 @@
                 display: flex;
                 justify-content: center;
                 padding-top: 0 !important;
-                margin-left: 17rem;
+                margin-left: 240px;
                 margin-right: auto;
             }
 
@@ -114,15 +114,15 @@
                 justify-content: center;
                 margin-left: auto;
                 margin-right: auto;
-                padding-top: 6rem;
+                padding-top: 64px;
 
                 button {
                     display: flex;
                     justify-content: center;
-                    margin-left: .5rem;
+                    margin-left: 8px;
                     text-transform: capitalize !important;
-                    width: 6rem;
-                    height: 2.4rem;
+                    width: 84px;
+                    height: 34px;
                 }
 
                 .logged-in-container {
@@ -133,11 +133,11 @@
                     button {
                         text-transform: capitalize !important;
                         width: fit-content !important;
-                        height: 2.4rem;
+                        height: 34px;
                     }
 
                     .user-name-span {
-                        margin-top: 0.5rem;
+                        margin-top: 20px;
                         .login-font {
                             color: $secondary-color;
                         }
@@ -152,38 +152,38 @@
             align-content: flex-start;
 
             .home-header {
-                padding-top: 2rem;
+                padding-top: 22px;
                 flex: 0 0 100%;
             }
 
             .first-info-block {
                 flex: 0 0 50%;
                 margin: auto;
-                padding-top: 2rem;
+                padding-top: 22px;
             }
 
             .second-info-block {
                 flex: 0 0 35%;
                 margin: auto;
-                margin-top: 8rem;
+                margin-top: 80px;
             }
 
             .third-info-block {
                 flex: 0 0 35%;
                 margin: auto;
-                margin-top: 8rem;
+                margin-top: 80px;
             }
 
             .fourth-info-block {
                 flex: 0 0 50%;
                 margin: auto;
-                padding-top: 6rem;
+                padding-top: 64px;
             }
 
             .fifth-info-block {
                 flex: 0 0 50%;
                 margin: auto;
-                padding-top: 1rem;
+                padding-top: 22px;
             }
         }
 
@@ -198,43 +198,43 @@
 
             .second-header {
                 margin: auto;
-                padding-top: 3rem;
+                padding-top: 90px;
             }
 
             .first-info-block {
                 margin: auto;
-                padding-top: 8rem;
+                padding-top: 90px;
             }
 
             .second-info-block {
                 flex: 0 0 200px;
                 margin: auto;
-                margin-top: 8rem;
+                margin-top: 90px;
             }
 
             .third-info-block {
                 flex: 0 0 200px;
                 margin: auto;
-                margin-top: 8rem;
-                padding-left: 3rem;
+                margin-top: 90px;
+                padding-left: 20px;
             }
 
             .fourth-info-block {
                 flex: 0 0 200px;
                 margin: auto;
-                margin-top: 3rem;
+                margin-top: 70px;
             }
 
             .fifth-info-block {
                 flex: 0 0 200px;
                 margin: auto;
-                margin-top: 3rem;
-                padding-left: 3rem;
+                margin-top: 70px;
+                padding-left: 20px;
             }
 
             .sixth-info-block {
                 margin: auto;
-                padding-top: 8rem;
+                padding-top: 90px;
             }
         }
 
@@ -244,38 +244,38 @@
             align-content: flex-start;
 
             .home-header {
-                padding-top: 2rem;
+                padding-top: 22px;
                 flex: 0 0 100%;
             }
 
             .first-info-block {
                 flex: 0 0 55%;
                 margin: auto;
-                padding-top: 2rem;
+                padding-top: 22px;
             }
 
             .second-info-block {
                 flex: 0 0 35%;
                 margin: auto;
-                margin-top: 7rem;
+                margin-top: 60px;
             }
 
             .third-info-block {
                 flex: 0 0 35%;
                 margin: auto;
-                margin-top: 7rem;
+                margin-top: 60px;
             }
 
             .fourth-info-block {
                 flex: 0 0 55%;
                 margin: auto;
-                padding-top: 7rem;
+                padding-top: 30px;
             }
 
             .fifth-info-block {
                 flex: 0 0 55%;
                 margin: auto;
-                padding-top: 2rem;
+                padding-top: 22px;
             }
         }
 
@@ -297,7 +297,7 @@
                     min-width: 160px;
 
                     .home-frame-block-info-header {
-                        margin: 1rem;
+                        margin: 16px;
                         align-self: center;
                         @include font-primary-heading();
                     }
@@ -305,7 +305,7 @@
                     .home-frame-block-info-content {
                         ul, ol {
                             @include font-secondary-info();
-                            padding-left: 2rem;
+                            padding-left: 22px;
                             margin-top: 0;
                             li {
                                 .icon-shift {
@@ -316,10 +316,10 @@
                                 svg {
                                     width: fit-content;
                                 }
-                                padding-top: 0.5rem;
+                                padding-top: 8px;
                                 ul, ol {
                                     list-style-type: initial;
-                                    padding-left: 1rem;
+                                    padding-left: 16px;
                                 }
 
                                 .answer {
@@ -328,7 +328,7 @@
                                     padding-left: 0 !important;
 
                                     &::before {
-                                        padding-top: 0.5rem;
+                                        padding-top: 8px;
                                         content: "\2014\00A0";
                                     }
                                 }
@@ -347,26 +347,26 @@
             border-bottom-right-radius: 0px;
 
             .home-header {
-                margin-top: 2rem;
+                margin-top: 22px;
             }
 
             .home-subheader {
                 display: flex;
-                margin-left: 16.1rem;
+                margin-left: 230px;
             }
 
             .home-auth-block {
                 display: flex;
-                margin-left: 16.1rem;
-                padding-top: 8rem;
+                margin-left: 230px;
+                padding-top: 80px;
 
                 button {
                     display: flex;
                     justify-content: center;
                     text-transform: capitalize !important;
-                    margin-left: .5rem;
-                    width: 6rem;
-                    height: 2.4rem;
+                    margin-left: 8px;
+                    width: 84px;
+                    height: 34px;
                 }
             }
 
@@ -377,40 +377,45 @@
                     display: flex;
                     justify-content: center;
                     text-transform: capitalize !important;
-                    width: 6rem;
-                    height: 2.4rem;
+                    width: 84px;
+                    height: 34px;
                 }
 
                 .user-name-span {
                     display: flex;
                     justify-content: center;
-                    margin-top: .6rem;
+                    margin-top: 22px;
+
                     .login-font {
-                        margin-left: .5rem;
+                        margin-left: 8px;
                         color: $secondary-color;
                     }
                 }
             }
 
-            .button-for-authorized-user{
+            .button-for-authorized-user {
                 display: flex;
                 justify-content: center;
                 text-transform: capitalize !important;
-                width: 6rem;
-                height: 2.4rem;
+                width: 84px;
+                height: 34px;
                 margin: auto;
-                margin-top: 6rem;
+                margin-top: 80px;
+            }
+
+            .username-placeholder-container {
+                height: 38px;
             }
 
             .home-footer {
                 display: flex;
                 @include font-secondary-info();
-                margin-bottom: .5rem;
-                margin-left: 16.1rem;
+                margin-bottom: 8px;
+                margin-left: 230px;
 
                 .links {
-                    margin-right: 2rem;
-                    padding-top: 3rem;
+                    margin-right: 34px;
+                    padding-top: 28px;
                     a {
                         color: $background-color;
                         text-decoration: none;
@@ -418,7 +423,7 @@
                 }
 
                 .copyright {
-                    padding-top: 3rem;
+                    padding-top: 28px;
                 }
             }
         }

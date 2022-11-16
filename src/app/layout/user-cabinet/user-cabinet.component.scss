@@ -14,7 +14,7 @@
 		height: 41px;
 		display: flex;
 		align-items: center;
-		padding: 0 .75rem;
+		padding: 0 11px;
 	}
 
 	.personal-info-container {
@@ -23,15 +23,15 @@
 		height: 100%;
 
 		.personal-info-block {
-			margin: 1rem 0.75rem 0 0.75rem;
+			margin: 14px 11px 0 11px;
 			width: unset;
 			display: flex;
 
 			.linked-accounts-container {
 				flex-direction: column;
 				p {
-					font-size: 0.75rem;
-					margin-bottom: .4rem;
+					font-size: 11px;
+					margin-bottom: 6px;
 				}
 			}
 		}
@@ -43,7 +43,7 @@
 		.last-block {
 			margin-top: auto;
 			margin-left: auto;
-			margin-bottom: 0.75rem;
+			margin-bottom: 11px;
 
 		}
 
@@ -64,14 +64,14 @@
 				}
 
 				button {
-					margin-left: 0.4rem;
+					margin-left: 8px;
 					align-self: flex-end;
 				}
 
 				.single-icon {
 					align-self: flex-end;
-					margin-bottom: 0.3rem;
-					margin-right: 0.5rem;
+					margin-bottom: 4px;
+					margin-right: 8px;
 				}
 			}
 		}
@@ -95,16 +95,15 @@
 				}
 
 				button {
-					margin-left: 0.4rem;
+					margin-left: 8px;
 					align-self: flex-end;
 				}
 			}
 
 			.validation-wrapper {
-				height: 1.75rem;
 				display: flex;
 				justify-content: center;
-				margin-top: .4rem;
+				margin-top: 6px;
 			}
 		}
 
@@ -120,7 +119,7 @@
 				}
 
 				.change-password-buttons-wrapper {
-					margin-top: 0.75rem;
+					margin-top: 11px;
 					display: flex;
 
 					.nna-icon-button {
@@ -134,17 +133,17 @@
 						margin-left: auto;
 						
 						.nna-icon-button {
-							margin-left: 0.4rem;
+							margin-left: 8px;
 						}
 					}
 				}
 			}
 
 			.change-password-validations {
-				margin-top: 0.75rem;
+				margin-top: 11px;
 
 				p {
-					margin-bottom: 0.75rem;
+					margin-bottom: 11px;
 				}
 			}
 		}
@@ -158,7 +157,7 @@
 
 			p {
 				width: 100%;
-				font-size: 0.75rem;
+				font-size: 11px;
 			}
 		}
 	}
