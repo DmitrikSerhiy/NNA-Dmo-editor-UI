@@ -106,7 +106,23 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	async prepareEditor(): Promise<void> {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
-		this.editorHub.onConnectionChanged.subscribe(() => this.setConnectionView(true));
+		this.editorHub.onConnectionChanged.subscribe(async (shouldReloadEditor: boolean) => {
+			if (shouldReloadEditor == true) {
+				this.isDmoInfoSet = false;
+				this.showControlPanel = false;
+				this.cdRef.detectChanges();
+				await this.reloadDmo();
+				this.cdRef.detectChanges();
+				this.isDmoInfoSet = true;
+				this.showControlPanel = true;
+				this.setConnectionView();
+				this.cdRef.detectChanges();
+				console.clear()
+				return;
+			}		
+			
+			this.setConnectionView(true);
+		});
 	}
 
 	async tryReconnect(): Promise<void> {

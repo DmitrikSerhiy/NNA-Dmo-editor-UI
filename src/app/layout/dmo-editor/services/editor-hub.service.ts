@@ -24,7 +24,7 @@ import { Observable } from 'rxjs/internal/Observable';
 export class EditorHub {
     serverUrl = environment.server_user
 
-    private readonly connectionStateEmit$: Subject<void> = new Subject<void>();
+    private readonly connectionStateEmit$: Subject<boolean> = new Subject<boolean>();
 
     public get failedResponseObject(): any {
         return { failed: true };
@@ -48,7 +48,7 @@ export class EditorHub {
         return this.hubConnection && (this.hubConnection.state == signalR.HubConnectionState.Disconnected || this.hubConnection.state == signalR.HubConnectionState.Disconnecting);
     }
 
-    get onConnectionChanged(): Observable<void>  {
+    get onConnectionChanged(): Observable<boolean>  {
         return this.connectionStateEmit$.asObservable().pipe(share());
     }
 
@@ -107,17 +107,18 @@ export class EditorHub {
         
 
         this.hubConnection.onreconnecting((error) => {
-            this.connectionStateEmit$.next();
+            this.connectionStateEmit$.next(false);
             console.log('Reconnecting...');
         });
         this.hubConnection.onreconnected(() => {
-            this.connectionStateEmit$.next();
+            this.connectionStateEmit$.next(true);
             console.log('Reconnected.');
         });
         this.hubConnection.onclose((error) => {
-            this.connectionStateEmit$.next();
+            this.connectionStateEmit$.next(false);
             if (error != null) {
-                if (error.message.includes("AuthenticationException: User already have active connection")) {
+                if (!error.message.includes("AuthenticationException: User already have active connection")) {
+                    console.error(error.message);
                     this.showNotConnectedError();
                     return;
                 }
@@ -200,7 +201,12 @@ export class EditorHub {
 
 
     private async invokeSocketMethod<TResponse>(methodName: string, params: any): Promise<TResponse> {
-        if (!this.isConnected) {
+        if (this.isReconnecting) {
+            this.showConnectionReconnectionStatusMessage();
+            return;
+        }
+
+        if (this.isDisconnected) {
             this.showNotConnectedError();
             return;
         }
@@ -221,7 +227,12 @@ export class EditorHub {
     }
 
     private async invokeSocketMethodWithoutResponseData(methodName: string, params: any): Promise<void> {
-        if (!this.isConnected) {
+        if (this.isReconnecting) {
+            this.showConnectionReconnectionStatusMessage();
+            return;
+        }
+
+        if (this.isDisconnected) {
             this.showNotConnectedError();
             return;
         }
@@ -237,24 +248,21 @@ export class EditorHub {
     }
 
     private showErrorsOrValidations(entry: EditorResponseDto) {
-        let toastShowed: boolean = false;
 		if (entry.errors != null && entry.errors.length != 0) {
 			entry.errors.forEach(error => {
                 this.toastr.showError(new ToastrErrorMessage(error.errorMessage, `${entry.message} ${entry.httpCode}`));
             });
-            toastShowed = true;
+            return;
 		}
 
 		if (entry.warnings != null && entry.warnings.length != 0) {
             let validations = [];
             entry.warnings.forEach(warning => {validations.push({ fieldName: warning.fieldName, validationMessage: warning.validationMessage} ) });
             this.toastr.showValidationMessageForEditor(validations, entry.message);
-            toastShowed = true;
+            return;
 		}
 
-        if (toastShowed == false) {
-            this.showUnverifiedSoketError();
-        }
+        this.showUnverifiedSoketError();
 	}
 
     private isResponseSuccessful(entry: EditorResponseDto) : boolean {
@@ -265,12 +273,16 @@ export class EditorHub {
 		return entry.isSuccessful 
     }
 
+    private showConnectionReconnectionStatusMessage() {
+        this.toastr.warning(new ToastrErrorMessage('Connection was lost. Your progress is not saved.', 'Reconnecting...'));
+    }
+
     private showNotConnectedError() {
-        this.toastr.showError(new ToastrErrorMessage('Try to reconnect or to relogin', 'Editor was disconnected'));
+        this.toastr.showError(new ToastrErrorMessage('Your progress is not saved. Try to reconnect manually.', 'Connection is not established'));
     }
 
     private showUnverifiedSoketError() {
-        this.toastr.showError(new ToastrErrorMessage('Administrator has been notified', 'Unverified socket error'));
+        this.toastr.showError(new ToastrErrorMessage('Administrator has been notified.', 'Unverified socket error'));
     }
 
 }

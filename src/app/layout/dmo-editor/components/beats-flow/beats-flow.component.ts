@@ -42,15 +42,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private onDownLines: any = {};
 	private onUpLines: any = {};
 	private valueBeforeRemove: string;
-	private shiftIsPressed: boolean = false;
-	private controlIsPressed: boolean = false;
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
 	
-	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 85 }; 
-	// q for beat type tooltip
-	// u for character tooltip
+	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 90, openCharacterTooltipKeyCode: 88 }; 
+	// z for beat type tooltip
+	// x for character tooltip
 
 	private characterPlaceHolderClass: string = 'character-placeolder';
 
@@ -184,12 +182,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		if (!this.controlIsPressed) {
+		if (!$event.ctrlKey || !$event.shiftKey) {
 			return;
 		}
 
-		this.controlIsPressed = false;
- 
 		console.log('global handler keydown from BEATS FLOW');
 		const key = $event.which || $event.keyCode || $event.charCode;
 		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
@@ -322,14 +318,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		if (key == 17) {
-			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
-			return;
-		}
-
-		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
-			this.subscribeToSpecialHotKeysListeners();
-			return;
+		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
+			if ($event.ctrlKey && $event.shiftKey) {
+				this.subscribeToSpecialHotKeysListeners();
+				return;
+			}
 		}
 
 		if (key == 13) { // enter
@@ -392,11 +385,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	setTimePickerValue($event: any, index: number): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
-
-		if (key == 17) { // control
-			this.controlIsPressed = false;
-			return;
-		}
 
 		if (key == 9) { // tab
 			this.tabIsPressed = false;
@@ -473,24 +461,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	setBeatKeyMetaData($event: any, index: number): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
 
-		if (key == 17) { // control
-			this.controlIsPressed = navigator.platform.match("Mac") ? $event.metaKey : $event.ctrlKey;
+
+		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode || key == this.specialHotKeys.openCharacterTooltipKeyCode) {
+			if ($event.ctrlKey && $event.shiftKey) {
+				this.subscribeToSpecialHotKeysListeners();
+				return;
+			}
 		}
-
-		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode && this.controlIsPressed) {
-			this.subscribeToSpecialHotKeysListeners();
-			return;
-		}
-
-		if (key == this.specialHotKeys.openCharacterTooltipKeyCode && this.controlIsPressed) {
-			this.subscribeToSpecialHotKeysListeners();
-			return;
-		}
-
-
-		if (key == 16) { // shift
-			this.shiftIsPressed = true;
-		} 
 
 		if (key == 9) { // tab
 			this.tabIsPressed = true;
@@ -503,7 +480,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 13) { // enter
-			if (this.shiftIsPressed == false) {
+			if (!$event.shiftKey) {
 				$event.preventDefault();
 
 				if (this.focusNextDefaultTimePicker($event) == true) {
@@ -530,14 +507,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	setBeatValue($event: any): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
 
-		if (key == 17) { // control
-			this.controlIsPressed = false;
-		}
-
-		if (key == 16) { // shift
-			this.shiftIsPressed = false;
-		}
-
 		if (key == 9) { // tab
 			this.tabIsPressed = false;
 			$event.preventDefault();
@@ -548,7 +517,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 13) { // enter
-			if (!this.shiftIsPressed) {
+			if (!$event.shiftKey) {
 				$event.preventDefault();
 				return;
 			}
