@@ -22,25 +22,11 @@
     outline: 1px solid transparent;
     outline-offset: -1px;
     user-select: none;
-
-
-    background: $button-hover-gradient;
-    background-repeat: no-repeat;
-    background-size: 0% 2px;
-    background-position: bottom 0px left 0px;
-
-    animation-direction: normal;
-    animation-duration: 150ms;
-    animation-fill-mode: forwards;
-    animation-timing-function: linear;
-
-    transition: background-position 1ms 150ms !important;
-    animation-delay: 150ms;
+    background-color: transparent;
     
     &:active {
-        animation-delay: 0ms;
-        animation-name: buttonOut;
         background-color: $secondary-color;
+        filter: brightness(1.2);
     }
 
     &:focus {
@@ -52,7 +38,7 @@
     }
 
     &:hover {
-        animation-name: buttonIn;
+        background-color: $secondary-color;
     }
 }
 
@@ -78,7 +64,6 @@
         width: 26px;
         padding: 0;
         justify-content: center;
-        animation-name: none !important;
         
         i, span {
             display: flex;

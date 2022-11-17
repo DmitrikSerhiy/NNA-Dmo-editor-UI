@@ -18,6 +18,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
 	@Output() focusElementInBeatsFlow: EventEmitter<any> = new EventEmitter<any>();
+	@Output() addBeatByButton: EventEmitter<void> = new EventEmitter<void>();
 
 	isDataLoaded: boolean = false;
 	plotPoints: any[];
@@ -34,6 +35,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	startCoord: string;
 	endCoord: string;
 	baseCoord: string;
+	plusButtonShift: string;
 
 	private beatToMove: BeatToMoveDto = null;
 	private beatToReplace: BeatToMoveDto = null;
@@ -318,6 +320,10 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 	}
 
+	onAddBeatByButton() {
+		this.addBeatByButton.emit();
+	}
+
 	private renderGraph(): void {
 		this.cdRef.detectChanges();
 		this.setupPlotPointsMargin();
@@ -345,6 +351,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.startCoord = `0,${this.plotPointContainerSize/2} ${this.plotFlowWidth},${this.plotPointContainerSize/2}`;
 		this.endCoord = `0,${this.graphHeigth} ${this.plotFlowWidth},${this.graphHeigth}`;
 		this.baseCoord = `${this.plotPointContainerSize/2},${this.plotPointContainerSize/2} ${this.plotPointContainerSize/2},${this.graphHeigth}`;
+		this.plusButtonShift = `top: ${+this.graphHeigth + this.plotPointContainerSize - this.plotPointRadius + 2}px`;
 	}
 
 	private calculateGraphHeigth(plotPoints: any[]): string {

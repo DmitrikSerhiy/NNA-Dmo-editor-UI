@@ -84,4 +84,7 @@
         <polyline *ngIf="isDmoFinished" [attr.points]="endCoord" class="start-end-coord" />
     </svg>
 
+    <div class="plot-points-plus-button" *ngIf="!isDmoFinished" [attr.style]="plusButtonShift" (click)="onAddBeatByButton()">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+    </div>
 </div>

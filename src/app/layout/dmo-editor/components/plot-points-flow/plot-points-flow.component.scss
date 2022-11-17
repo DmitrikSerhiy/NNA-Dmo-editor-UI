@@ -40,6 +40,10 @@
                 .beat-icon {
                     outline: none !important;
                     cursor: pointer;
+
+                    &:hover {
+                        color: $secondary-color;
+                    }
                 }
             }
 
@@ -75,6 +79,16 @@
             fill: none;
             stroke:black;
             stroke-width: 2;
+        }
+    }
+
+    .plot-points-plus-button {
+        position: absolute;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover {
+            color: $secondary-color;
         }
     }
 }

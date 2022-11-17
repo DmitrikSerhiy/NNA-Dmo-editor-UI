@@ -566,6 +566,16 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updatePlotPoints();
 	}
 
+	addBeatByButton() {
+		let beats = this.selectBeatDtos();
+		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
+		beats.push(newBeat);
+		beats = this.orderBeats(beats);
+		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
+		this.updatePlotPoints();
+	}
+
 	// #endregion
 
 

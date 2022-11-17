@@ -14,4 +14,8 @@
 		border-image: $link-hover-gradient;
 	}
 
+	&:active {
+		filter: brightness(1.2);
+	}
+
 }
