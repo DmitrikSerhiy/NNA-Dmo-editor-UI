@@ -1259,6 +1259,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		characterElem.style.borderBottomWidth = '1px';
 		characterElem.style.borderBottomStyle = 'solid';
 		characterElem.style.userSelect = 'auto';
+		characterElem.style.textTransform = 'capitalize';
 		characterElem.dataset.characterId = charterId;
 		characterElem.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
 		characterElem.dataset.beatId = beatId;
