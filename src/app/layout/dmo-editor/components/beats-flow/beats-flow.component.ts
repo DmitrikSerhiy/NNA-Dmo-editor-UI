@@ -46,9 +46,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
 	
-	private specialHotKeys: any = { openBeatTypeTooltipKeyCode: 90, openCharacterTooltipKeyCode: 88 }; 
-	// z for beat type tooltip
-	// x for character tooltip
+	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82 }; 
+	// q for beat type tooltip
+	// r for character tooltip
 
 	private characterPlaceHolderClass: string = 'character-placeolder';
 
@@ -76,6 +76,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.setupBeats(null, null, true);
 		this.setupEditorCallback();
 		this.setupSubscription();
+
+		
+		document.body.addEventListener('keydown', $event => {
+			const key = $event.which || $event.keyCode || $event.charCode;
+			if ($event.ctrlKey && key == this.editorHotKeys.openCharacterTooltipKeyCode) { // prevent browser tab from reload
+				$event.preventDefault()
+			}
+		});
 	}
 
 	ngOnDestroy(): void {
@@ -182,14 +190,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		if (!$event.ctrlKey || !$event.shiftKey) {
+		if (!$event.ctrlKey) {
 			return;
 		}
 
-		console.log('global handler keydown from BEATS FLOW');
 		const key = $event.which || $event.keyCode || $event.charCode;
-		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
+		if (key == this.editorHotKeys.openBeatTypeTooltipKeyCode) {
 			$event.preventDefault();
+			console.log('global handler keydown from BEATS FLOW');
 			const currentElement = document.activeElement as HTMLElement;
 			const beatId = this.isDiv(currentElement)
 				? this.selectBeatIdFromBeatDataHolder(currentElement)
@@ -200,8 +208,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				return;
 		}
 
-		if (key == this.specialHotKeys.openCharacterTooltipKeyCode) {
+		if (key == this.editorHotKeys.openCharacterTooltipKeyCode) {
 			$event.preventDefault();
+			console.log('global handler keydown from BEATS FLOW');
 			const currentElement = document.activeElement as HTMLElement;
 			this.showCharactersTooltip(currentElement);
 			currentElement.blur();
@@ -312,14 +321,14 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			key != 32 &&                // space
 			key != 17 &&				// control
 			key != 9 &&                 // tab
-			key != this.specialHotKeys.openBeatTypeTooltipKeyCode &&
+			key != this.editorHotKeys.openBeatTypeTooltipKeyCode &&
 			!(key == 37 || key == 38 || key == 39 || key == 40)) { // arrow keys
 			$event.preventDefault();
 			return;
 		}
 
-		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode) {
-			if ($event.ctrlKey && $event.shiftKey) {
+		if (key == this.editorHotKeys.openBeatTypeTooltipKeyCode) {
+			if ($event.ctrlKey) {
 				this.subscribeToSpecialHotKeysListeners();
 				return;
 			}
@@ -344,7 +353,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 39) { // right arrow
-			if ($event.target.selectionStart == 7 || this.tabIsPressed == true) {
+			if (this.tabIsPressed == true /*|| $event.target.selectionStart == 7 */ ) {
 				this.focusBeat(index);
 				$event.preventDefault();
 				return;
@@ -353,7 +362,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 37) { // left arrow
-			if ($event.target.selectionStart == 0 || this.tabIsPressed == true) {
+			if (this.tabIsPressed == true /*|| $event.target.selectionStart == 0 */ ) {
 				this.focusPreviousTimePicker(index);
 				$event.preventDefault();
 				return;
@@ -459,11 +468,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	setBeatKeyMetaData($event: any, index: number): void {
-		let key = $event.which || $event.keyCode || $event.charCode;
+		const key = $event.which || $event.keyCode || $event.charCode;
 
-
-		if (key == this.specialHotKeys.openBeatTypeTooltipKeyCode || key == this.specialHotKeys.openCharacterTooltipKeyCode) {
-			if ($event.ctrlKey && $event.shiftKey) {
+		if (key == this.editorHotKeys.openBeatTypeTooltipKeyCode || key == this.editorHotKeys.openCharacterTooltipKeyCode) {
+			if ($event.ctrlKey) {
 				this.subscribeToSpecialHotKeysListeners();
 				return;
 			}
@@ -1204,15 +1212,18 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		);
 
 		this.resetCharacterFilter();
+
+		const previouslySelectedCharacters = document.querySelectorAll<HTMLElement>('.selected-character-option');
+		previouslySelectedCharacters?.forEach(characterOpiton => {
+			characterOpiton.classList.remove('selected-character-option');
+		});
+		
+
 		this.nnaTooltipService.showTooltip(this.nnaTooltipService.charactersTooltipName);
 		
 		setTimeout(() => {
 			this.characterFilterInputElement?.nativeElement?.focus();
 		}, 200);
-
-		setTimeout(() => {
-			this.charactersTooltip.nativeElement.addEventListener('mouseleave', () => {this.hideCharactersTooltipByMouseLeave() }, { once: true } );
-		}, 1000);
 
 		document.addEventListener('keydown', this.addCharactersTooltipEventHandlersWrapper);
 	}
@@ -1237,10 +1248,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	onOpenCharactersPopup($event: any) {
 		this.openCharactersPopup.emit({action: $event});
-	}
-
-	hideCharactersTooltipByMouseLeave() {
-		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
 	}
 
 	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
@@ -1318,6 +1325,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private addCharactersTooltipEventHandlers($event): void {
 		console.log('global on characters tooltip');
 		const key = $event.which || $event.keyCode || $event.charCode;
+		this.cdRef.detectChanges();
 		let characters = this.charactersOptionsElements.toArray();
 		if (characters?.length == 0) {
 			return;
@@ -1328,11 +1336,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			? +selectedCharacter.dataset.order 
 			: -1;
 
-		if (key == 38 || key == 40) {
-			characters.forEach(character => {
-				character.nativeElement.classList.remove('selected-character-option');
-			});
+		characters?.forEach(characterOpiton => {
+			characterOpiton.nativeElement.classList.remove('selected-character-option');
+		});
 
+		if (key == 38 || key == 40) {
 			if (selectedCharacter) {
 				this.characterFilterInputElement?.nativeElement.blur();
 			}
@@ -1365,17 +1373,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 		} if (key == 13) {
 			$event.preventDefault();
-			characters.forEach(character => {
-				character.nativeElement.classList.remove('selected-character-option');
-			});
 			selectedCharacter?.click();
 			return;
-		} if (key == 27) {
-			characters.forEach(character => {
-				character.nativeElement.classList.remove('selected-character-option');
-			});
-			this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
-		}
+		} 
 	}
 
 	private getBeatTextWithCharacterTags(charactersInBeat: NnaMovieCharacterInBeatDto[], interpolatedBeatText: string, beatId: string) {

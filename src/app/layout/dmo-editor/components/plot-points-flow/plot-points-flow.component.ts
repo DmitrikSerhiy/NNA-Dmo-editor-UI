@@ -208,8 +208,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			}
 			this.changeBeatType();
 			this.setBeatTypeTooltipClossingDelay();
-		} else if (key == 27) { // esc
-			this.hideBeatTypeTooltip();
 		}
 	}
 

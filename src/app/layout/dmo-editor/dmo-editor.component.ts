@@ -42,8 +42,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	editorIsConnected: boolean;
 	editorIsReconnecting: boolean;
 	beatsUpdating: boolean = false;
-	connectionStateTooltipIsShown: boolean = false
-	connectionStateIconTooltipIsShown: boolean = false
 
 	// events
 	updateGraphEvent: EventEmitter<any> = new EventEmitter<any>();
@@ -89,6 +87,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		});
 
 		window.onbeforeunload = () => this.closeEditorAndClearData(); // todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
+
+		document.addEventListener('keydown', ($event) => {
+			const key = $event.which || $event.keyCode || $event.charCode;
+			if (key == 27) { // escape
+				this.nnaTooltipService.hideAllTooltips();
+			}	
+		});
 	}
 
 	async ngAfterViewInit(): Promise<void> {
@@ -412,43 +417,19 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	showConnectionStateTooltip(): void {
-		if (this.connectionStateTooltipIsShown == true) {
-			return;
-		}
 		this.nnaTooltipService.showTooltip(this.nnaTooltipService.connectionStateTooltipName);
-		this.connectionStateTooltipIsShown = true;
 	}
 
 	hideConnectionStateTooltop(): void {
-		if (this.connectionStateIconTooltipIsShown == true) {
-			this.hideConnectionStateIconTooltop();
-		}
-		this.connectionStateTooltipIsShown = false;
-		setTimeout(() => {
-			if (this.connectionStateTooltipIsShown == false) {
-				this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateTooltipName);
-			}
-		}, 500);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateTooltipName);
 	}
 
 	showConnectionStateIconTooltip(): void {
-		if (this.connectionStateIconTooltipIsShown == true) {
-			return;
-		}
 		this.nnaTooltipService.showTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
-		this.connectionStateIconTooltipIsShown = true;
 	}
 
 	hideConnectionStateIconTooltop(): void {
-		if (this.connectionStateTooltipIsShown == true) {
-			this.hideConnectionStateTooltop();
-		}
-		this.connectionStateIconTooltipIsShown = false;
-		setTimeout(() => {
-			if (this.connectionStateIconTooltipIsShown == false) {
-				this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
-			}
-		}, 500);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
 	}
 	
   	// #endregion
