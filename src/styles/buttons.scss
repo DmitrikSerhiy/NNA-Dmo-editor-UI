@@ -23,6 +23,7 @@
     outline-offset: -1px;
     user-select: none;
     background-color: transparent;
+    transition: background-color .3s;
     
     &:active {
         background-color: $secondary-color;
