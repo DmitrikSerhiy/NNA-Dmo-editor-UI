@@ -5,7 +5,7 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit, ViewChild } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaDmoDto, NnaMovieCharacterInBeatDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
+import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaDmoDto, NnaMovieCharacterInBeatDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
@@ -159,6 +159,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			await this.editorHub.updateBeat(this.selectSingleBeatForServer($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
+		} else if ($event.source == 'move') {
+			console.log($event.metaData);
+			await this.editorHub.moveBeats($event.metaData);
 		}
 		this.autosaveTitle = this.savingIsDoneTitle;
 		this.beatsUpdating = false;
@@ -500,23 +503,48 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 
-	async reorderBeats(beatsToSwap: BeatsToSwapDto): Promise<void>  {
-		let beats = this.selectBeatDtos();
-		beats.forEach(beat => {
-			if (beat.beatId == beatsToSwap.beatToMove.id) {
-				beat.order = beatsToSwap.beatToReplace.order;
+	async reorderBeats($event: any): Promise<void> {
+		if ($event.operation == 'swap') {
+			let beats = this.selectBeatDtos();
+			const beatsToSwap = $event.data as BeatsToSwapDto;
+			beats.forEach(beat => {
+				if (beat.beatId == 	beatsToSwap.beatToMove.id) {
+					beat.order = beatsToSwap.beatToReplace.order;
+				}
+
+				if (beat.beatId == beatsToSwap.beatToReplace.id) {
+					beat.order = beatsToSwap.beatToMove.order;
+				}
+			});
+
+			const sortedBeats = beats.sort((a, b) => Number(a.order) - Number(b.order));
+			beatsToSwap.dmoId = this.dmoId;
+			this.updateBeatsEvent.emit({ beats: sortedBeats, isFinished: this.isDmoFinised, actionName: 'swap', actionMetaData: beatsToSwap });
+			this.updatePlotPoints();
+
+		} else if ($event.operation == 'move') {
+			let beats = this.selectBeatDtos();
+			const beatToMove =  $event.data as BeatToMoveDto;
+			if (beatToMove.order == beatToMove.previousOrder) {
+				return;
 			}
+			beats.forEach(beat => {
+				if (beat.beatId == beatToMove.id) {
+					beat.order = beatToMove.order;
+				} else {
+					if (beat.order > beatToMove.previousOrder && beat.order <= beatToMove.order) {
+						beat.order = beat.order - 1;
+					} else if (beat.order < beatToMove.previousOrder &&  beat.order >= beatToMove.order) {
+						beat.order = beat.order + 1;
+					}
+				}
+			});
 
-			if (beat.beatId == beatsToSwap.beatToReplace.id) {
-				beat.order = beatsToSwap.beatToMove.order;
-			} 
-		});
-
-		const sortedBeats = beats.sort((a, b) => Number(a.order) - Number(b.order));
-		beatsToSwap.dmoId = this.dmoId;
-
-		this.updateBeatsEvent.emit({ beats: sortedBeats, isFinished: this.isDmoFinised, actionName: 'swap', actionMetaData: beatsToSwap });
-		this.updatePlotPoints();
+			const sortedBeats = beats.sort((a, b) => Number(a.order) - Number(b.order));
+			beatToMove.dmoId = this.dmoId;
+			this.updateBeatsEvent.emit({ beats: sortedBeats, isFinished: this.isDmoFinised, actionName: 'move', actionMetaData: beatToMove });
+			this.updatePlotPoints();
+		}
 	}
 
 	plotPointsSet(callbackResult: any): void {

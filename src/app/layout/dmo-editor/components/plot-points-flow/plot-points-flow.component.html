@@ -16,12 +16,12 @@
             [attr.data-id]="plotPoint.beatId"
             [attr.data-order]="plotPoint.order"
             draggable="true" 
-            (dragstart)="onBeginBeatReorder($event)" 
-            (drop)="onBeatDrop($event)"
-            (dragover)="onBeatMove($event)"
+            (dragstart)="onBeatDragBeggin($event)"  
+            (dragover)="onBeatDragOver($event)"
             (dragenter)="onBeatDragHoverBeggin($event)"
             (dragleave)="onBeatDragHoverEnd($event)"
-            (dragend)="onReoderBeats($event)" >
+            (drop)="onBeatDrop($event)"
+            (dragend)="onDrugAndDropEnd($event)" >
 
             <svg 
                 #plotPointsSvgs class="plot-point" 

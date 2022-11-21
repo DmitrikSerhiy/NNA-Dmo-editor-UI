@@ -52,16 +52,38 @@
             }
         }
 
-        .droppable {
+        .droppable-swap {
             background-color: $droppable-background-color;
             border-top: 1px $secondary-color dashed !important;
             border-bottom: 1px $secondary-color dashed !important;
         }
 
-        .dragabble {
+        .dragabble-swap {
             border-top: 1px $primary-color dashed !important;
             border-bottom: 1px $primary-color dashed !important;
             background-color: $dragabble-background-color;
+        }
+
+        .droppable-move {
+            border-top: 1px $secondary-color dashed !important;
+            border-bottom: 1px $secondary-color dashed !important;
+            .plot-point {
+                .beat-icon {
+                    fill: $secondary-color;
+                    filter: brightness(.9);
+                }
+            }
+        }
+
+        .dragabble-move {
+            border-top: 1px $primary-color dashed !important;
+            border-bottom: 1px $primary-color dashed !important;
+            .plot-point {
+                .beat-icon {
+                    fill: $primary-color;
+                    filter: brightness(.9);
+                }
+            }
         }
     }
 
@@ -93,7 +115,7 @@
     }
 }
 
-.dragging {
+.dragging-swap, .dragging-move {
     border-left-color: $secondary-color;
     border-left-width: 1px;
     border-left-style: dashed;

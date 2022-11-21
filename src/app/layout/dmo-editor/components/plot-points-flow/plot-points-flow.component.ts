@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { BeatsToSwapDto, BeatToMoveDto, UpdateBeatType } from '../../models/dmo-dtos';
+import { BeatToMoveDto, BeatsToSwapDto, BeatToSwapDto, UpdateBeatType } from '../../models/dmo-dtos';
 import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Input() updateGraph: EventEmitter<any>;
 	@Input() openBeatTypeTooltip: EventEmitter<any>;
 	@Output() plotPointsSet: EventEmitter<any> = new EventEmitter<any>();
-	@Output() reorderBeats: EventEmitter<BeatsToSwapDto> = new EventEmitter<BeatsToSwapDto>();
+	@Output() reorderBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
 	@Output() focusElementInBeatsFlow: EventEmitter<any> = new EventEmitter<any>();
 	@Output() addBeatByButton: EventEmitter<void> = new EventEmitter<void>();
@@ -37,8 +37,10 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	baseCoord: string;
 	plusButtonShift: string;
 
-	private beatToMove: BeatToMoveDto = null;
-	private beatToReplace: BeatToMoveDto = null;
+	private beatToSwapBase: BeatToSwapDto = null;
+	private beatToSwapTarget: BeatToSwapDto = null;
+	private beatsToMoveDto: BeatToMoveDto = null;
+	private swapBeatsInsteadOfMove: boolean = false;
 
 	private resizeObserver: ResizeObserver 
 
@@ -174,10 +176,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.cdRef.detectChanges();
 	}
 	
-
-	// #endregion
-
-
 	private handleBeatTypeChangeByKeyboard($event: any): void {
 		$event.preventDefault();
 		const key = $event.which || $event.keyCode || $event.charCode;
@@ -224,21 +222,32 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	}
 
 
+	// #endregion
+
+
 	//#region beatsReordering
 	  
-	onBeginBeatReorder($event: any): void {
-		this.plotPointsContainerElement.nativeElement.classList.add('dragging');
-		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
+	onBeatDragBeggin($event: any): void {
 		$event.dataTransfer.clearData();
-		this.beatToMove = new BeatToMoveDto($event.target.dataset.id, +$event.target.dataset.order);
-		this.beatToReplace = null;
+		this.beatToSwapBase = new BeatToSwapDto($event.target.dataset.id, +$event.target.dataset.order);
+		this.beatToSwapTarget = null;
+		this.plotPointsSvgElements.forEach(pp => pp.nativeElement.classList.add('ignore-events'));
 		$event.dataTransfer.dropEffect = "move";
-		$event.dataTransfer.setData("application/beat-id-to-move", $event.target.dataset.id);
-		$event.dataTransfer.setData("application/beat-order-to-move", $event.target.dataset.order);
+
+		if ($event.ctrlKey) {
+			this.swapBeatsInsteadOfMove = true;
+			this.plotPointsContainerElement.nativeElement.classList.add('dragging-swap');
+			$event.dataTransfer.setData("application/beat-id-to-swap", $event.target.dataset.id);
+			$event.dataTransfer.setData("application/beat-order-to-swap", $event.target.dataset.order);
+		} else {
+			this.swapBeatsInsteadOfMove = false;
+			this.plotPointsContainerElement.nativeElement.classList.add('dragging-move');
+			$event.dataTransfer.setData("application/beat-id-to-move", $event.target.dataset.id);
+			$event.dataTransfer.setData("application/beat-order-to-move", $event.target.dataset.order);
+		}
 	}
 
-
-	onBeatMove($event: any): void {
+	onBeatDragOver($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
 	}
@@ -246,51 +255,87 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	onBeatDragHoverBeggin($event: any): void {
 		$event.preventDefault();
 		$event.dataTransfer.dropEffect = "move";
-		if (this.beatToMove.id != $event.target.dataset.id) {
-			$event.target.classList.add("droppable");
+		if ($event.ctrlKey) {
+			this.swapBeatsInsteadOfMove = true;
+			if (this.beatToSwapBase.id != $event.target.dataset.id) {
+				$event.target.classList.add("droppable-swap");
+			} else {
+				$event.target.classList.add("dragabble-swap");
+			}
 		} else {
-			$event.target.classList.add("dragabble");
-
+			this.swapBeatsInsteadOfMove = false;
+			if (this.beatToSwapBase.id != $event.target.dataset.id) {
+				$event.target.classList.add("droppable-move");
+			} else {
+				$event.target.classList.add("dragabble-move");
+			}
+			
 		}
 	}
 
 	onBeatDragHoverEnd($event: any): void {
-		$event.target.classList.remove("droppable");
+		if ($event.ctrlKey) {
+			this.swapBeatsInsteadOfMove = true;
+			$event.target.classList.remove("droppable-swap");
+		} else {
+			this.swapBeatsInsteadOfMove = false;
+			$event.target.classList.remove("droppable-move");
+		}
 	}
 
 	onBeatDrop($event: any): void {
 		$event.preventDefault();
-		if ($event.dataTransfer.getData("application/beat-id-to-move") == $event.target.dataset.id) {
-			return;
-		}
-
-		this.beatToMove = new BeatToMoveDto($event.dataTransfer.getData("application/beat-id-to-move"), +$event.dataTransfer.getData("application/beat-order-to-move"));
-		this.beatToReplace = new BeatToMoveDto($event.target.dataset.id, +$event.target.dataset.order);
-	}
-
-	onReoderBeats($event: any): void {
-		this.plotPointsSvgElements.forEach(plotPointSvgElement => plotPointSvgElement.nativeElement.classList.remove("ignore-events"));
-		this.plotPointsElements.forEach(plotPointElement => {
-			plotPointElement.nativeElement.classList.remove("droppable");
-			plotPointElement.nativeElement.classList.remove("dragabble");
-		});
-		this.plotPointsContainerElement.nativeElement.classList.remove("dragging");
-		
-		if ($event.dataTransfer.dropEffect == "move") {
-			if (this.beatToMove == null || this.beatToReplace == null) {
-				this.beatToMove = null;
-				this.beatToReplace = null;
+		if ($event.ctrlKey) {
+			if ($event.dataTransfer.getData("application/beat-id-to-swap") == $event.target.dataset.id) {
 				return;
 			}
+			this.swapBeatsInsteadOfMove = true;
+			this.beatToSwapBase = new BeatToSwapDto($event.dataTransfer.getData("application/beat-id-to-swap"), +$event.dataTransfer.getData("application/beat-order-to-swap"));
+			this.beatToSwapTarget = new BeatToSwapDto($event.target.dataset.id, +$event.target.dataset.order);
+		} else {
+			this.swapBeatsInsteadOfMove = false;
+			this.beatsToMoveDto = new BeatToMoveDto($event.dataTransfer.getData("application/beat-id-to-move"), +$event.target.dataset.order, +$event.dataTransfer.getData("application/beat-order-to-move"));
+		}
+	}
 
-			this.reorderBeats.emit(new BeatsToSwapDto(this.beatToMove, this.beatToReplace));
-		} 
+	onDrugAndDropEnd($event: any): void {
+		this.plotPointsSvgElements.forEach(plotPointSvgElement => plotPointSvgElement.nativeElement.classList.remove("ignore-events"));
+		this.plotPointsElements.forEach(plotPointElement => {
+			plotPointElement.nativeElement.classList.remove("droppable-swap");
+			plotPointElement.nativeElement.classList.remove("dragabble-swap");
+			plotPointElement.nativeElement.classList.remove("droppable-move");
+			plotPointElement.nativeElement.classList.remove("dragabble-move");
+		});
+		this.plotPointsContainerElement.nativeElement.classList.remove("dragging-swap");
+		this.plotPointsContainerElement.nativeElement.classList.remove("dragging-move");
+		
+		if ($event.dataTransfer.dropEffect == "move") {
+			if (this.swapBeatsInsteadOfMove == true) {
+				if (this.beatToSwapBase == null || this.beatToSwapTarget == null) {
+					this.beatToSwapBase = null;
+					this.beatToSwapTarget = null;
+					this.swapBeatsInsteadOfMove = false;
+					return;
+				}
+				this.reorderBeats.emit({operation: 'swap', data: new BeatsToSwapDto(this.beatToSwapBase, this.beatToSwapTarget)});
+				} else {
+					if (this.beatsToMoveDto == null) {
+						this.swapBeatsInsteadOfMove = false;
+						return;
+					}
+					this.swapBeatsInsteadOfMove = false;
+					this.reorderBeats.emit({operation: 'move', data: this.beatsToMoveDto });
+				}
+		}
 
-		this.beatToMove = null;
-		this.beatToReplace = null;
+		this.swapBeatsInsteadOfMove = false;
+		this.beatToSwapBase = null;
+		this.beatToSwapTarget = null;
+		this.beatsToMoveDto = null;
 	}
 	
 	// #endregion
+
 
 	// #region  general settings
 
