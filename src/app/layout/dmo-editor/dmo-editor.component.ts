@@ -1,4 +1,4 @@
-import { ShortDmoDto } from './../models';
+import { DmoDetailsDto } from './../models';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
@@ -6,7 +6,6 @@ import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef,
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
 import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaDmoDto, NnaMovieCharacterInBeatDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
-import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 
@@ -35,12 +34,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	isDmoInfoSet: boolean = false;
 	beatsLoading: boolean = true;
 	dmoId: string;
-	currentShortDmo: ShortDmoDto;
+	currentShortDmo: DmoDetailsDto;
 	initialDmoDto: NnaDmoDto;
 	beatWasSet: boolean = false;
 	showControlPanel: boolean = false;
-	editorIsConnected: boolean;
-	editorIsReconnecting: boolean;
+	editorIsConnected: boolean = false;
+	editorIsReconnecting: boolean = false;
 	beatsUpdating: boolean = false;
 
 	// events
@@ -86,7 +85,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.cdRef.detectChanges();
 		});
 
-		window.onbeforeunload = () => this.closeEditorAndClearData(); // todo: look at every compenent onDestroy method. add this when there's must have logic in onDestroy method
+		window.onbeforeunload = () => this.sanitizeEditor(); // todo: look at every component onDestroy method. add this when there's must have logic in onDestroy method
 
 		document.addEventListener('keydown', ($event) => {
 			const key = $event.which || $event.keyCode || $event.charCode;
@@ -97,49 +96,56 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngAfterViewInit(): Promise<void> {
-		await this.prepareEditor();
-		this.cdRef.detectChanges();
-		await this.loadDmo();
-		this.cdRef.detectChanges();
+		await this.loadData();
 		this.subscribeToClipboard();
+	}
+
+	// #region general settings
+
+	async tryReconnect(): Promise<void> {
+		this.clearConnectionState();
+		this.clearData();
+		await this.loadData();
+		console.clear()
+		// todo: what if user have some unsaved work here??? offer to swith to offline mode here or mark not saved changes.
+	}
+
+	async loadData(): Promise<void> {
+		await this.loadDmoDetails();
+		await this.prepareEditor();
+		await this.loadDmoBeatsAndCharacters(true);
+	}
+
+	async reloadData(): Promise<void> {
+		await this.loadDmoDetails();
+		await this.loadDmoBeatsAndCharacters(true);
+	}
+
+	async reloadBeatsAndCharacters(): Promise<void> {
+		this.autosaveTitle = this.savingInProgressTitle;
 		this.cdRef.detectChanges();
-		this.isDmoInfoSet = true;
-		this.showControlPanel = true;
-		this.cdRef.detectChanges();
+		this.clearBeatsAndCharacters();
+
+		setTimeout(async () => {
+			await this.loadDmoBeatsAndCharacters(true);
+			this.autosaveTitle = this.savingIsDoneTitle;
+			this.cdRef.detectChanges();
+		}, 800);
 	}
 
 	async prepareEditor(): Promise<void> {
 		await this.editorHub.startConnection();
 		this.setConnectionView();
 		this.editorHub.onConnectionChanged.subscribe(async (shouldReloadEditor: boolean) => {
-			if (shouldReloadEditor == true) {
-				this.isDmoInfoSet = false;
-				this.showControlPanel = false;
-				this.cdRef.detectChanges();
-				await this.reloadDmo();
-				this.cdRef.detectChanges();
-				this.isDmoInfoSet = true;
-				this.showControlPanel = true;
-				this.setConnectionView();
-				this.cdRef.detectChanges();
-				console.clear()
-				return;
-			}		
-			
+			if (!shouldReloadEditor) {
+				this.setConnectionView(true);
+				return
+			}
+			this.clearData();
+			this.reloadData();
 			this.setConnectionView(true);
+			console.clear()
 		});
-	}
-
-	async tryReconnect(): Promise<void> {
-		await this.editorHub.startConnection();
-		this.setConnectionView(true);
-		await this.reloadDmo();
-		this.cdRef.detectChanges();
-		this.isDmoInfoSet = true;
-		this.showControlPanel = true;
-		this.cdRef.detectChanges();
-		console.clear()
-		// todo: what if user have some unsaved work here??? offer to swith to offline mode here or mark not saved changes.
 	}
 
 	async syncBeats($event: any): Promise<void> {
@@ -174,50 +180,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngOnDestroy(): Promise<void> {
-		await this.closeEditorAndClearData();
-	}
-
-	async reloadDmo(): Promise<void> {
-		this.autosaveTitle = this.savingInProgressTitle;
-		this.cdRef.detectChanges();
-		this.clearBeatsAndCharacters();
-		this.clearDmo();
-
-		setTimeout(async () => {
-			await this.loadDmo();
-			this.autosaveTitle = this.savingIsDoneTitle;
-			this.cdRef.detectChanges();
-		}, 800);
-	}
-
-	async reloadBeatsAndCharacters(): Promise<void> {
-		this.autosaveTitle = this.savingInProgressTitle;
-		this.cdRef.detectChanges();
-		this.clearBeatsAndCharacters();
-		await this.editorHub.sanitizeTempIds(this.dmoId);
-
-		setTimeout(async () => {
-			await this.loadDmoBeatsAndCharacters(false);
-			this.cdRef.detectChanges();
-			this.autosaveTitle = this.savingIsDoneTitle;
-			this.cdRef.detectChanges();
-		}, 800);
-	}
-
-	// #region general settings
-
-	async editCurrentDmo(): Promise<void> {
-		if (!this.editorHub.isConnected) {
-			return;
-		}
-		this.nnaTooltipService.hideAllTooltips();
-		const popupResult = await this.finalizeInitialPopup();
-		if (!popupResult) {
-			return;
-		}
-		await this.editorHub.updateShortDmo(popupResult);
-		this.initDmo(popupResult);
-		this.cdRef.detectChanges();
+		await this.sanitizeEditor();
 	}
 
 	async closeEditor(): Promise<void> {
@@ -226,6 +189,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private subscribeToClipboard() {
 		document.addEventListener('paste', this.pasteSanitizerWrapper);
+		this.cdRef.detectChanges();
 	}
 
 	private async pasteSanitizer($event: any): Promise<void> {
@@ -255,86 +219,18 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.pasteSanitizer($event);
 	}.bind(this);
 
-	private async finalizeInitialPopup(): Promise<ShortDmoDto> {
-		let popupData = null;
-		if (this.currentShortDmo) {
-			popupData = this.currentShortDmo;
-		}
-	 
-		const popupResult = await this.matModule
-			.open(DmoEditorPopupComponent, { data: popupData, width: '400px' })
-			.afterClosed()
-			.toPromise();
 
-		if (!popupResult || popupResult.cancelled) {
-			this.matModule.ngOnDestroy();
-			return null;
-		} 
-
-		let newDmoDetails = { name: popupResult.name, movieTitle: popupResult.movieTitle } as ShortDmoDto;
-		newDmoDetails.shortComment = popupResult.shortComment;
-		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
-		if (this.currentShortDmo && this.currentShortDmo.id) {
-			newDmoDetails.id = this.currentShortDmo.id;
-		}
-
-		this.matModule.ngOnDestroy();
-		return newDmoDetails;
-	}
-
-
-	private initDmo(result: ShortDmoDto): void {
-		if (!result) {
-			return;
-		}
-		if (!this.currentShortDmo) {
-			this.currentShortDmo = { name: result.name, movieTitle: result.movieTitle } as ShortDmoDto;
-		} else {
-			this.currentShortDmo.movieTitle = result.movieTitle;
-			this.currentShortDmo.name = result.name;
-		}
-
-		if (result.id) {
-			this.currentShortDmo.id = result.id;
-			this.dmoId = result.id;
-		}
-		this.currentShortDmo.shortComment = result.shortComment;
-		if (result.hasBeats !== undefined && result.hasBeats !== null) {
-			this.currentShortDmo.hasBeats = result.hasBeats;
-		}
-
-		if (result.dmoStatus !== undefined && result.dmoStatus !== null) {
-			this.isDmoFinised = result.dmoStatus === 1;
-
-			if (this.currentShortDmo.dmoStatus !== undefined) {
-				if (this.currentShortDmo.dmoStatus != result.dmoStatus) {
-					this.updateGraphEvent.emit({isFinished: this.isDmoFinised});
-				}
-			}
-
-			this.currentShortDmo.dmoStatus = result.dmoStatus;
-		}
-
-		this.initialDmoDto = new NnaDmoDto();
-		this.initialDmoDto.dmoId = this.dmoId;
-		this.initialDmoDto.beats = [];
-		this.initialDmoDto.characters = [];
-	}
-
-	private async loadDmo() {
-		const shortDmo = await this.editorHub.loadShortDmo(this.dmoId);
-		if (!shortDmo) {
-			return;
-		}
-
-		this.initDmo(shortDmo);
-		this.cdRef.detectChanges();
-		await this.loadDmoBeatsAndCharacters(true);
+	private async loadDmoDetails(): Promise<void> {
+		this.currentShortDmo = await this.editorHub.getDmoDetails(this.dmoId);
+		this.isDmoFinised = this.currentShortDmo.dmoStatusId === 1;
+		this.isDmoInfoSet = true
+		this.showControlPanel = true;
 		this.cdRef.detectChanges();
 	}
 
 	private async loadDmoBeatsAndCharacters(sanitizeBeforeLoad: boolean): Promise<void> {
 		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId, sanitizeBeforeLoad);
+		this.initialDmoDto = new NnaDmoDto(this.dmoId);
 		if (dmoWithData?.beats?.length == 0) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
 			
@@ -353,6 +249,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.initialDmoDto.characters = dmoWithData.characters;
 		this.beatsLoading = false;
+		this.cdRef.detectChanges();
 	}
 
 	private setConnectionView(skipTooltipSetup: boolean = false): void {
@@ -391,6 +288,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				return;
 			}
 
+			if (!this.editorHub.isConnected) {
+				return;
+			}
+
 			this.nnaTooltipService.addTooltip(
 				this.nnaTooltipService.connectionStateTooltipName, 
 				this.connectionStateElement.nativeElement,
@@ -413,8 +314,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				}
 			);
 
-			this.cdRef.detectChanges();
 			clearInterval(intervalId);
+			this.cdRef.detectChanges();
 		}, 1000);
 
 	}
@@ -434,7 +335,12 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	hideConnectionStateIconTooltop(): void {
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.connectionStateIconTooltipName);
 	}
-	
+
+	editDmoDetails() {
+		console.log('edit');
+	}
+
+
   	// #endregion
 
 
@@ -483,7 +389,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 	// #endregion
-
 
 	  
     // #region callbacks from children
@@ -575,26 +480,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updatePlotPoints();
 	}
 
-	addBeatByButton() {
-		let beats = this.selectBeatDtos();
-		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
-		beats.push(newBeat);
-		beats = this.orderBeats(beats);
-		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
-		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
-		this.updatePlotPoints();
-	}
-
-	// #endregion
-
-
-	// #region CRUD
-  
-	finishDmo(): void {
-		this.isDmoFinised = !this.isDmoFinised;
-		this.updatePlotPoints();
-	}
-
 	lineCountChanged(change: any): void {
 		this.beatsIds.forEach((beatId, i) => {
 			if (beatId == change.beatId) {
@@ -603,6 +488,22 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			}
 		});
 
+		this.updatePlotPoints();
+	}
+  
+	finishDmo(): void {
+		this.isDmoFinised = !this.isDmoFinised;
+		this.updatePlotPoints();
+	}
+
+
+	addBeatByButton() {
+		let beats = this.selectBeatDtos();
+		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
+		beats.push(newBeat);
+		beats = this.orderBeats(beats);
+		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
+		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
 		this.updatePlotPoints();
 	}
 
@@ -805,33 +706,43 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	// 	return dmoWithJson;
 	// }
 
+	private clearData(): void {
+		this.clearBeatsAndCharacters();
+		this.clearDmoDetails();
+	}
+
 	private clearBeatsAndCharacters(): void {
 		this.beatWasSet = false;
 		this.beatsLoading = true;
 		this.beatsUpdating = false;
-		this.initialDmoDto.beats = [];
-		this.initialDmoDto.characters = [];
+		this.initialDmoDto = null;
+		this.nnaTooltipService.hideAllTooltips();
 		this.cdRef.detectChanges();
 	}
 
-	private clearDmo() : void {
-		this.matModule.closeAll();
+	private clearDmoDetails(): void {
+		this.showControlPanel = false;
 		this.isDmoInfoSet = false;
-		this.showControlPanel = false;
+		this.currentShortDmo = null;
+		this.matModule.closeAll();
 		this.cdRef.detectChanges();
 	}
 
-	private async closeEditorAndClearData(): Promise<void> {
+	private async clearConnectionState(): Promise<void> {
 		await this.editorHub.abortConnection();
-		this.unsubscribeFromClipboard();
-		this.dmoId = '';
-		this.showControlPanel = false;
-		this.currentShortDmo = null;
-		
-		this.clearBeatsAndCharacters();
-		this.clearDmo();
 		this.editorIsConnected = false;
 		this.editorIsReconnecting = false;
+		this.connectionState = "offline";
+		this.connectionStateTitle = this.connectionDisconnectedTitle;
+		this.autosaveTitle = this.autoSavingIsNotWorking;
+		this.cdRef.detectChanges();
+	}
+
+	private async sanitizeEditor(): Promise<void> {
+		await this.clearConnectionState();
+		this.clearData();
+		this.unsubscribeFromClipboard();
+		this.dmoId = '';
 
 		this.updateGraphEvent = null;
 		this.updateBeatsEvent = null;
@@ -839,10 +750,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.focusElementEvent = null;
 		this.openBeatTypeTooltipEvent = null;
 		this.focusElementInBeatsFlowEvent = null;
-
-		this.connectionState = null;
-		this.autosaveTitle = '';
-		this.connectionStateTitle = '';
 
 		this.cdRef.detectChanges();
 	}

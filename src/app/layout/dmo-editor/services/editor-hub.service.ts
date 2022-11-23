@@ -1,4 +1,4 @@
-import { ShortDmoDto, ShortDmoDtoAPI } from '../../models';
+import { DmoDetailsDto, PatchDmoDetailsDto } from '../../models';
 
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -86,10 +86,6 @@ export class EditorHub {
     }
 
     async abortConnection() {
-        if (!this.isConnected) {
-            return;
-        }
-
         await this.hubConnection.stop();
     }
 
@@ -133,18 +129,6 @@ export class EditorHub {
     }
     
     // ----- editor websocket methods ------
-
-    async loadShortDmo(dmoId: string) : Promise<ShortDmoDto> {
-        return await this.invokeSocketMethod<ShortDmoDto>('LoadShortDmo', { Id: dmoId });
-    }
-
-    async createDmo(dmo: ShortDmoDto) : Promise<ShortDmoDto> {
-        return await this.invokeSocketMethod<ShortDmoDto>('CreateDmo', new ShortDmoDtoAPI(dmo));
-    }
-
-    async updateShortDmo(dmo: ShortDmoDto): Promise<void> {
-        return await this.invokeSocketMethodWithoutResponseData('UpdateShortDmo', new ShortDmoDtoAPI(dmo));
-    }
 
     async updateDmosJson(dmo: NnaDmoWithBeatsAsJson): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('UpdateDmosJson', new NnaDmoWithBeatsAsJsonAPI(dmo));
@@ -191,6 +175,20 @@ export class EditorHub {
         return this.http
             .get<DmoWithDataDto>(this.serverUrl + 'dmos/' + dmoId + '/withData?sanitizeBeforeLoad=' + sanitizeBeforeLoad)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoWithDataDto>(response, obs)))
+            .toPromise();
+    }
+
+    getDmoDetails(id: string): Promise<DmoDetailsDto> {
+        return this.http
+            .get<DmoDetailsDto>(this.serverUrl + 'dmos/' + id)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoDetailsDto>(response, obs)))
+            .toPromise();
+    }
+
+    updateDmoDetails(patch: PatchDmoDetailsDto): Promise<any> {
+        return this.http
+            .patch<any>(this.serverUrl + 'dmos/', patch)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }
 

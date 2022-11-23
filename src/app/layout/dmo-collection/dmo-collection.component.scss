@@ -117,12 +117,20 @@
 				flex-direction: column;
 
 				.movie-title-name {
+					overflow-x: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 					min-width: 200px;
+					max-width: 200px;
 				}
 
 				.movie-progress-icon {
 					margin-left: auto;
 					margin-right: 8px;
+				}
+
+				.moview-details-expand-cell {
+					display: block;
 				}
 			}
 

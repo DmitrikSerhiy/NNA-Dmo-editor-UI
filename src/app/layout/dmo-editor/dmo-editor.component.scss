@@ -26,6 +26,12 @@
 
         .movie-title {
             @include font-primary-heading();
+            margin: 0;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+
             margin-bottom: unset;
         }
 

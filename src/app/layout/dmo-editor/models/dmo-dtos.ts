@@ -4,6 +4,12 @@ export class NnaDmoDto {
     dmoId: string;
     beats: NnaBeatDto[];
     characters: NnaMovieCharacterInDmoDto[];
+
+    constructor(dmoId: string) {
+        this.dmoId = dmoId;
+        this.beats = [];
+        this.characters = [];
+    }
    
     public getBeatsAsLinkedList() : DmoList<NnaBeatDto> {
         let list = new DmoList<NnaBeatDto>();

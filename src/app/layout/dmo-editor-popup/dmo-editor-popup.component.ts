@@ -1,7 +1,6 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, OnInit, Inject, HostListener } from '@angular/core';
-import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 @Component({
 	selector: 'dmo-editor-popup',
@@ -10,13 +9,10 @@ import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 })
 export class DmoEditorPopupComponent implements OnInit {
 
-  	maxEntityNameLength = 50;
-	maxShortCommentLength = 100;
+  	maxEntityNameLength = 100;
+	maxShortCommentLength = 500;
 	shouldShowCustomDmoNameValidation = false;
 
-	private initialData: any;
-	allowAutoDmoName: boolean;
-	isEdit: boolean;
 	dmoForm: FormGroup;
 	defaultDmoPlaceholder = 'dmo';
 	generatedDmoName: string;
@@ -24,7 +20,6 @@ export class DmoEditorPopupComponent implements OnInit {
 	get dmoNameInput() { return this.dmoForm.get('dmoNameInput'); }
 	get movieTitleInput() { return this.dmoForm.get('movieTitleInput'); }
 	get shortComment() { return this.dmoForm.get('shortComment'); }
-	get dmoStatus() { return this.dmoForm.get('dmoStatus'); }
 
 	@HostListener('window:keydown', ['$event'])
 	handleKeyDown(event: KeyboardEvent) {
@@ -33,42 +28,20 @@ export class DmoEditorPopupComponent implements OnInit {
 		}
 	}
 
-
-  	constructor(
-    	private dialogRef: MatDialogRef<DmoEditorPopupComponent>,
-		private nnaHelpersService: NnaHelpersService,
-    	@Inject(MAT_DIALOG_DATA) public data: any) {
-			if (data) {
-				this.initialData = data;
-				this.isEdit = true;
-				this.allowAutoDmoName = false;
-			} else {
-				this.initialData = { cancelled: false };
-				this.allowAutoDmoName = true;
-			}
-    }
+  	constructor(private dialogRef: MatDialogRef<DmoEditorPopupComponent>) { }
 
 	ngOnInit() {
 		this.dialogRef.backdropClick().subscribe(() => this.onClose(true));
 		this.dmoForm = new FormGroup({
-			'dmoNameInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)] ),
+			'dmoNameInput': new FormControl('', [Validators.maxLength(this.maxEntityNameLength)] ),
 			'movieTitleInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)]),
-			'shortComment': new FormControl('',  [Validators.maxLength(this.maxShortCommentLength)] ),
-			'dmoStatus': new FormControl('')
+			'shortComment': new FormControl('',  [Validators.maxLength(this.maxShortCommentLength)] )
 		});
-
-		if (this.data) {
-			this.dmoNameInput.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.name));
-			this.movieTitleInput.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.movieTitle));
-			this.shortComment.setValue(this.nnaHelpersService.sanitizeSpaces(this.data.shortComment));
-			this.dmoStatus.setValue(this.data.dmoStatus)
-		}
 	}
 
 	onClose(cancelled: boolean) {
 		if (cancelled) {
-			this.initialData.cancelled = cancelled;
-			this.dialogRef.close(this.initialData);
+			this.dialogRef.close({cancelled: true});
 			return;
 		}
 
@@ -80,28 +53,27 @@ export class DmoEditorPopupComponent implements OnInit {
 			name: this.dmoNameInput.value,
 			movieTitle: this.movieTitleInput.value,
 			shortComment: this.shortComment.value,
-			dmoStatus: this.isEdit ? this.dmoStatus.value : 0,
 			cancelled: false 
 		});
 	}
 
-	dmoNameAutofill(movieInput): void {
-		if(!movieInput) {
-			this.dmoNameInput.setValue('');
-			return;
-		}
+	// dmoNameAutofill(movieInput): void {
+	// 	if(!movieInput) {
+	// 		this.dmoNameInput.setValue('');
+	// 		return;
+	// 	}
 
-		this.dmoNameInput.setValue(`${movieInput} ${this.defaultDmoPlaceholder}`);
+	// 	this.dmoNameInput.setValue(`${movieInput} ${this.defaultDmoPlaceholder}`);
 
-		if (this.movieTitleInput.value > this.maxEntityNameLength) {
-			this.shouldShowCustomDmoNameValidation = false;
-			return;
-		}
+	// 	if (this.movieTitleInput.value > this.maxEntityNameLength) {
+	// 		this.shouldShowCustomDmoNameValidation = false;
+	// 		return;
+	// 	}
 
-		if (this.dmoNameInput.value.length > this.maxEntityNameLength) {
-			this.shouldShowCustomDmoNameValidation = true;
-		} else {
-			this.shouldShowCustomDmoNameValidation = false;
-		}
-	}
+	// 	if (this.dmoNameInput.value.length > this.maxEntityNameLength) {
+	// 		this.shouldShowCustomDmoNameValidation = true;
+	// 	} else {
+	// 		this.shouldShowCustomDmoNameValidation = false;
+	// 	}
+	// }
 }

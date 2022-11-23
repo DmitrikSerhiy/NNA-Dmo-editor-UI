@@ -48,23 +48,6 @@ export class CretedDmoDtoAPI {
     }
 }
 
-export class ShortDmoDtoAPI {
-    Id: string;
-    Name: string;
-    MovieTitle: string;
-    ShortComment: string;
-    HasBeats: boolean;
-    DmoStatus: number;
-
-    constructor(dto: ShortDmoDto) {
-        this.Id = dto.id;
-        this.Name = dto.name;
-        this.DmoStatus = dto.dmoStatus;
-        this.HasBeats = dto.hasBeats;
-        this.MovieTitle = dto.movieTitle;
-        this.ShortComment = dto.shortComment;
-    }
-}
 export class ShortDmoDto {
     id: string;
     name: string;
@@ -72,15 +55,6 @@ export class ShortDmoDto {
     shortComment: string;
     hasBeats: boolean;
     dmoStatus: number;
-
-    constructor(dto: ShortDmoDtoAPI) {
-        this.id = dto.Id;
-        this.name = dto.Name;
-        this.dmoStatus = dto.DmoStatus;
-        this.hasBeats = dto.HasBeats;
-        this.movieTitle = dto.MovieTitle;
-        this.shortComment = dto.ShortComment;
-    }
 }
 
 export class ShortDmoCollectionDto {
@@ -108,5 +82,21 @@ export class AddDmosToCollectionDto {
 
 export interface UpdateDmoDetailsDto {
     id: string;
+}
+
+export interface PatchDmoDetailsDto {
+    id: string;
+    movieTitle: string;
+    name?: string;
+    shortComment?: string;
+}
+
+export interface DmoDetailsDto {
+    id: string;
+    movieTitle: string;
+    dmoStatus: string;
+    dmoStatusId: number;
+    name?: string;
+    shortComment?: string;
 }
 

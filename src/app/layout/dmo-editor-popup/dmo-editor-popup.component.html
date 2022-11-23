@@ -7,7 +7,8 @@
             
             <div class="nna-input-group">
                 <input #movieInput autocomplete="off" type="text" name="movieTitleInput" id="movieTitleInput" formControlName="movieTitleInput" 
-                    class="form-control nna-input" placeholder="Movie title*" (keyup)="dmoNameAutofill(movieInput.value)" />
+                    class="form-control nna-input" placeholder="Movie title*" />
+                    <!-- (keyup)="dmoNameAutofill(movieInput.value)"  -->
                 <label for="movieTitleInput" class="nna-input-label">Movie title*</label>
             </div>
 
@@ -21,32 +22,20 @@
 
             <div class="nna-input-group">
                 <input autocomplete="off" type="text" name="dmoNameInput" id="dmoNameInput" formControlName="dmoNameInput" 
-                    class="form-control nna-input" placeholder="DMO name*" />
-                <label for="dmoNameInput" class="nna-input-label">DMO name*</label>
+                    class="form-control nna-input" placeholder="DMO name" />
+                <label for="dmoNameInput" class="nna-input-label">DMO name</label>
             </div>
 
             <div class="validation-wrapper validation-wrapper-popup">
                 <div *ngIf="(dmoNameInput.invalid && (dmoNameInput.dirty || dmoNameInput.touched)) || shouldShowCustomDmoNameValidation" class="validation-container">
-                    <div *ngIf="shouldShowDmoNameValidation && !dmoNameInput.errors">
-                        <p class="validation-text">Dmo name is missing</p>
-                    </div> 
                     <div *ngIf="!shouldShowDmoNameValidation && dmoNameInput.errors && dmoNameInput.errors.maxlength">
                         <p class="validation-text">Maximum dmo name's length exceeded</p>
                     </div> 
 
                 </div>
             </div>
-            
-            <div [hidden]="!isEdit" class="nna-input-group">
-                <select name="pets" id="dmoStatus" name="dmoStatus" formControlName="dmoStatus" class="form-control nna-input" >
-                    <option value="0">In progress</option>
-                    <option value="1">Completed</option>
-                    <option value="2">Not finished</option>
-                </select>
-                <label for="dmoStatus" class="nna-input-label">Status</label>
-            </div>
 
-            <div class="nna-input-group" [ngClass]="{'group-with-textarea': isEdit}">
+            <div class="nna-input-group">
                 <textarea autocomplete="off" name="shortComment" id="shortComment" formControlName="shortComment" 
                     class="form-control nna-input" rows="3" placeholder="Short comment"></textarea>
                 <label for="shortComment" class="nna-input-label">Short comment</label>
@@ -65,6 +54,6 @@
     <div class="base-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onClose(true)">Cancel</button>
         <button type="button" class="nna-button-primary" [ngClass]="{'nna-diabled-button': !dmoForm.valid}" 
-            [disabled]="!dmoForm.valid" (click)="onClose(false)">{{isEdit ? 'Save' : 'Start decomposition' }}</button>
+            [disabled]="!dmoForm.valid" (click)="onClose(false)">Start decomposition</button>
     </div>
 </div>

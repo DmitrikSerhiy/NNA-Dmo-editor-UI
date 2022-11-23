@@ -104,7 +104,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
 		let newDmoDetails = { name: popupResult.name, movieTitle: popupResult.movieTitle } as ShortDmoDto;
 		newDmoDetails.shortComment = popupResult.shortComment;
-		newDmoDetails.dmoStatus = +popupResult.dmoStatus;
 
 		this.createDmoSubscription = this.dmosService.createDmo(newDmoDetails)
 			.subscribe((newDmoResult) => {
@@ -112,7 +111,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 				this.matModule.ngOnDestroy();
 				this.innerEvent$.emit(newDmoResult);
 			});
-		
 	}
 
 	ngOnDestroy(): void {

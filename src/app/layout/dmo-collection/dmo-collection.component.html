@@ -59,10 +59,10 @@
                         <span *ngIf="row.dmoStatusId === 2 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">block</span>
                     </div>
 
-                    <div *ngIf="selectedDmoInCollection?.id == row.id && row.name" class="expand-row-body">
-                        Dmo name: {{row.name}} 
-                        <br />
-                        Status: {{row.dmoStatus}}
+                    <div *ngIf="selectedDmoInCollection?.id == row.id" class="expand-row-body moview-details-expand-cell">
+                        <span *ngIf="row.name">Dmo name: {{row.name}} </span>
+                        <br *ngIf="row.name" />
+                        Status: {{ row.dmoStatus }}
                         <!-- some characters, number or beats maybe rythm and personal mark -->
                     </div>
 
