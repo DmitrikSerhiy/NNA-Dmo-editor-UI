@@ -15,6 +15,7 @@ import { CharactersPopupComponent } from './components/characters-popup/characte
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
 
 const routes: Routes = [
 	{ path: '', component: DmoEditor, data: { shouldReuse: false } }
@@ -22,7 +23,7 @@ const routes: Routes = [
 
 @NgModule({
   	entryComponents: [DmoEditorPopupComponent, NnaSpinnerComponent],
-  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, CharactersPopupComponent],
+  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, CharactersPopupComponent, DmoDetailsPopupComponent],
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,

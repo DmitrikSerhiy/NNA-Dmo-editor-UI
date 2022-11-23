@@ -1,0 +1,20 @@
+<div class="base-modal">
+    <div class="base-modal-header">
+        <h2 class="modal-title">Decomposed Movie Object details</h2>
+    </div>
+    <div class="base-modal-body">
+        <form role="form" [formGroup]="dmoDetailsForm">
+            
+
+
+
+
+
+        </form>
+    </div>
+    <div class="base-modal-footer">
+        <button type="button" class="nna-button-secondary" (click)="onClose(true)">Cancel</button>
+        <button type="button" class="nna-button-primary" [ngClass]="{'nna-diabled-button': !dmoDetailsForm.valid}" 
+            [disabled]="!dmoDetailsForm.valid" (click)="onClose(false)">Save</button>
+    </div>
+</div>
