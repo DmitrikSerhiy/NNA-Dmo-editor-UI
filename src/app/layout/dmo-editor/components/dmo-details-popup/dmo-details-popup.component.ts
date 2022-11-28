@@ -34,10 +34,13 @@ export class DmoDetailsPopupComponent implements OnInit {
 	private movieTitleMissingValidationMessage: string;
 	dmoDetailsValidations: string[] = [];
 
+
+	updatedTab: string[] = [];
+
 	@HostListener('window:keydown', ['$event'])
 	handleKeyDown(event: KeyboardEvent) {
 		if (event.key === "Enter" && !event.shiftKey) {
-			this.onClose(false);
+			this.onClose();
 		}
 	}
 
@@ -55,7 +58,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		this.dmoDetails = await this.editorHub.getDmoDetails(this.dmoId);
 		this.dmoIsLoaded = true;
-		this.dialogRef.backdropClick().subscribe(() => this.onClose(true));
+		this.dialogRef.backdropClick().subscribe(() => this.onClose());
 		this.dmoDetailsForm = new FormGroup({
 			'dmoNameInput': new FormControl('', [Validators.maxLength(this.maxEntityNameLength)]),
 			'movieTitleInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)]),
@@ -105,6 +108,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 			const patch = compare(this.dmoDetails, update);
 			await this.editorHub.updateDmoDetails(this.dmoId, patch);
 
+			this.updatedTab.push('details');
 			this.updateDmoDetailsInitialValues();
 			this.resetDmoDetailsForm();
 			this.setDmoDetailsValues();
@@ -113,16 +117,14 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	}
 
-	onClose(cancelled: boolean) {
-		if (cancelled) {
-			this.dialogRef.close({cancelled: true});
-			return;
-		}
-
+	onClose() {
 		this.resetDmoDetailsForm();
+
 		this.dialogRef.close({
-			cancelled: false 
+			cancelled: false,
+			tabs: this.updatedTab
 		});
+		this.updatedTab = [];
 	}
 
 	swipeTab($event: number): void {

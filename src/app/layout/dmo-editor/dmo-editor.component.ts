@@ -342,9 +342,15 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		const popupResult = await dmoDetailsPopup.afterClosed().toPromise();
 
 		if (!popupResult || popupResult.cancelled) {
-			console.log('cancelled');
 			return;
 		} 
+
+		if (popupResult.tabs.includes('details')) {
+			this.currentShortDmo = await this.editorHub.getDmoDetailsShort(this.dmoId);
+			this.isDmoFinised = this.currentShortDmo.dmoStatusId === 1;
+			this.cdRef.detectChanges();
+		}
+
 		console.log('finished');
 	}
 

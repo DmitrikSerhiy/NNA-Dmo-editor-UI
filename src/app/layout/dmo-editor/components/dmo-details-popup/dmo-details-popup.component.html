@@ -44,7 +44,7 @@
         </mat-tab-group>
     </div>
     <div *ngIf="dmoIsLoaded" class="base-modal-footer">
-        <button *ngIf="!this.dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose(true)">Close</button>
+        <button *ngIf="!this.dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
 
         <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
         <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
