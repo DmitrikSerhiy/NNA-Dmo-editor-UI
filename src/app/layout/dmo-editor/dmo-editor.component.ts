@@ -1,4 +1,4 @@
-import { DmoDetailsDto } from './../models';
+import { DmoDetailsShortDto } from './../models';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditorHub } from './services/editor-hub.service';
@@ -35,7 +35,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	isDmoInfoSet: boolean = false;
 	beatsLoading: boolean = true;
 	dmoId: string;
-	currentShortDmo: DmoDetailsDto;
+	currentShortDmo: DmoDetailsShortDto;
 	initialDmoDto: NnaDmoDto;
 	beatWasSet: boolean = false;
 	showControlPanel: boolean = false;
@@ -108,7 +108,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.clearData();
 		await this.loadData();
 		console.clear()
-		// todo: what if user have some unsaved work here??? offer to swith to offline mode here or mark not saved changes.
+		// todo: what if user have some unsaved work here??? offer to swith to offline mode here or mark not saved changes. OR disable all editor fields
 	}
 
 	async loadData(): Promise<void> {
@@ -222,7 +222,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 	private async loadDmoDetails(): Promise<void> {
-		this.currentShortDmo = await this.editorHub.getDmoDetails(this.dmoId);
+		this.currentShortDmo = await this.editorHub.getDmoDetailsShort(this.dmoId);
 		this.isDmoFinised = this.currentShortDmo.dmoStatusId === 1;
 		this.isDmoInfoSet = true
 		this.showControlPanel = true;
@@ -338,14 +338,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async editDmoDetails() {
-		const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: this.currentShortDmo, width: '600px' });
+		const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: this.dmoId, width: '600px' });
 		const popupResult = await dmoDetailsPopup.afterClosed().toPromise();
 
 		if (!popupResult || popupResult.cancelled) {
 			console.log('cancelled');
 			return;
 		} 
-
 		console.log('finished');
 	}
 

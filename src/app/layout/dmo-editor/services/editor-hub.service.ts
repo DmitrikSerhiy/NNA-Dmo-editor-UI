@@ -1,4 +1,4 @@
-import { DmoDetailsDto, PatchDmoDetailsDto } from '../../models';
+import { DmoDetailsDto, DmoDetailsShortDto } from '../../models';
 
 import { UserManager } from '../../../shared/services/user-manager';
 import { Injectable } from '@angular/core';
@@ -17,6 +17,7 @@ import { Toastr } from 'src/app/shared/services/toastr.service';
 import { ToastrErrorMessage } from 'src/app/shared/models/serverResponse';
 import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs/internal/Observable';
+import { Operation } from 'fast-json-patch';
 
 @Injectable({
   providedIn: 'root'
@@ -178,6 +179,13 @@ export class EditorHub {
             .toPromise();
     }
 
+    getDmoDetailsShort(id: string): Promise<DmoDetailsShortDto> {
+        return this.http
+            .get<DmoDetailsShortDto>(this.serverUrl + 'dmos/short/' + id)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<DmoDetailsShortDto>(response, obs)))
+            .toPromise();
+    }
+
     getDmoDetails(id: string): Promise<DmoDetailsDto> {
         return this.http
             .get<DmoDetailsDto>(this.serverUrl + 'dmos/' + id)
@@ -185,9 +193,9 @@ export class EditorHub {
             .toPromise();
     }
 
-    updateDmoDetails(patch: PatchDmoDetailsDto): Promise<any> {
+    updateDmoDetails(id: string, update: Operation[]): Promise<any> {
         return this.http
-            .patch<any>(this.serverUrl + 'dmos/', patch)
+            .patch<any>(this.serverUrl + 'dmos/' + id, update)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }

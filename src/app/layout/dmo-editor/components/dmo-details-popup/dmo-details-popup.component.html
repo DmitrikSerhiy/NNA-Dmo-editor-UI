@@ -1,20 +1,52 @@
 <div class="base-modal">
     <div class="base-modal-header">
-        <h2 class="modal-title">Decomposed Movie Object details</h2>
+        <h2 class="modal-title">Decomposistion details</h2>
     </div>
     <div class="base-modal-body">
-        <form role="form" [formGroup]="dmoDetailsForm">
-            
+        <mat-tab-group *ngIf="dmoIsLoaded" class="decomposition-details-container" [dynamicHeight]="true" (selectedIndexChange)="swipeTab($event)">
+            <mat-tab label="Info">         
+                <form role="form" [formGroup]="dmoDetailsForm" class="">
+                    
+                    <div class="nna-input-group">
+                        <input autocomplete="off" id="movieTitleInput" type="text" name="movieTitleInput" formControlName="movieTitleInput" 
+                            class="form-control nna-input" placeholder="Movie title*" />
+                        <label for="movieTitleInput" class="nna-input-label">Movie title*</label>
+                    </div>
 
+                    <div class="nna-input-group">
+                        <input autocomplete="off"  id="dmoNameInput" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
+                            class="form-control nna-input" placeholder="DMO name" />
+                        <label for="dmoNameInput" class="nna-input-label">DMO name</label>
+                    </div>
 
+                    <div class="nna-input-group">
+                        <select autocomplete="off" id="dmoStatusInput" name="dmoStatusInput" formControlName="dmoStatusInput" class="form-control nna-input" >
+                            <option value="0">In progress</option>
+                            <option value="1">Completed</option>
+                            <option value="2">Not finished</option>
+                        </select>
+                        <label for="dmoStatusInput" class="nna-input-label">Status</label>
+                    </div>
 
+                    <div class="nna-input-group">
+                        <textarea autocomplete="off" id="shortCommentInput" name="shortCommentInput" formControlName="shortCommentInput" 
+                            class="form-control nna-input" rows="3" placeholder="Short comment"></textarea>
+                        <label for="shortCommentInput" class="nna-input-label">Short comment</label>
+                    </div>
+                    <div class="validation-container" *ngIf="dmoDetailsValidations?.length > 0">
+                        <p class="validation-text" *ngFor="let dmoDetailsValidation of dmoDetailsValidations">{{dmoDetailsValidation}}</p>
+                    </div>
 
-
-        </form>
+                </form> 
+            </mat-tab>
+            <mat-tab label="Plot"> Plot </mat-tab>
+            <mat-tab label="Conflict"> Conflict </mat-tab>
+        </mat-tab-group>
     </div>
-    <div class="base-modal-footer">
-        <button type="button" class="nna-button-secondary" (click)="onClose(true)">Cancel</button>
-        <button type="button" class="nna-button-primary" [ngClass]="{'nna-diabled-button': !dmoDetailsForm.valid}" 
-            [disabled]="!dmoDetailsForm.valid" (click)="onClose(false)">Save</button>
+    <div *ngIf="dmoIsLoaded" class="base-modal-footer">
+        <button *ngIf="!this.dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose(true)">Close</button>
+
+        <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
+        <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
     </div>
 </div>

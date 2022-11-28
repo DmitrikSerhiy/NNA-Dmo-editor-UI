@@ -5,193 +5,220 @@
 @import "styles/table.scss";
 @import "styles/link.scss";
 @import "styles/tooltip.scss";
+@import "styles/colors.scss";
 
 * {
-  box-sizing: border-box; 
+	box-sizing: border-box;
 }
 
 [hidden] {
-  display: none !important;
+	display: none !important;
 }
 
-html, body {
-  @include font-primary-info();
-  height: 100%;
-  margin: 0;
-  font-size: 16px;
-  scrollbar-color: $for-background-contrast-color $background-color !important;
-  scrollbar-width: thin !important;
+html,
+body {
+	@include font-primary-info();
+	height: 100%;
+	margin: 0;
+	font-size: 16px;
+	scrollbar-color: $for-background-contrast-color $background-color !important;
+	scrollbar-width: thin !important;
 }
 
 ::selection {
-  color: $secondary-color;
-  background-color: $global-selection-background-color;
+	color: $secondary-color;
+	background-color: $global-selection-background-color;
 }
 
 ::-webkit-scrollbar-track {
-  background-color:  $background-color;
+	background-color: $background-color;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  background-color: $background-color;
+	width: 8px;
+	background-color: $background-color;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: $for-background-contrast-color;
+	background-color: $for-background-contrast-color;
 }
 
 .validation-wrapper {
-  margin-top: 4px;
-  height: 1.4rem !important;
+	margin-top: 4px;
+	height: 1.4rem !important;
 
-  .validation-container {
-    height: 11px;
-    p {
-      margin: 0;
-      @include font-primary-info();
-    }
-  }
+	.validation-container {
+		height: 11px;
+
+		p {
+			margin: 0;
+			@include font-primary-info();
+		}
+	}
 }
 
 .validation-text {
-  color: $validation-color;
+	color: $validation-color;
 }
 
 .no-select {
-  user-select: none;
+	user-select: none;
 }
 
 .info-message {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-  @include font-primary-info();
+	@include font-primary-info();
 
-  button {
-    margin-left: .8px;
-    margin-right: 8px;
-  }
+	button {
+		margin-left: .8px;
+		margin-right: 8px;
+	}
 }
 
 .spinner-container {
-  z-index: 1000;
+	z-index: 1000;
 }
 
-.dmo-collections-spinner .spinner-container, .personal-info-spinner .spinner-container {
-  height: 100% !important;
-  width: 235px !important;
-  left: unset !important;
+.dmo-collections-spinner .spinner-container,
+.personal-info-spinner .spinner-container {
+	height: 100% !important;
+	width: 235px !important;
+	left: unset !important;
 
-  .spinner-wrapper {
-    height: 100% !important;
+	.spinner-wrapper {
+		height: 100% !important;
 
-    .spinner {
-      top: calc(50% - calc(110px / 2));
-    }
-  }
+		.spinner {
+			top: calc(50% - calc(110px / 2));
+		}
+	}
 }
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-  background-color: $primary-color !important;
+	background-color: $primary-color !important;
 }
 
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: $primary-color;
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+	background-color: $primary-color;
 }
 
 .mat-checkbox .mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-ripple .mat-ripple-element {
-  background-color: transparent !important;
+	background-color: transparent !important;
 }
 
 .mat-radio-button {
-  font-family: $primary-font !important;
+	font-family: $primary-font !important;
 }
 
 .mat-radio-outer-circle {
-  border-color: black;
-  border-width: 1px !important;
+	border-color: black;
+	border-width: 1px !important;
 }
 
-.cdk-program-focused .cdk-focused{
-  pointer-events: none !important;
+.cdk-program-focused .cdk-focused {
+	pointer-events: none !important;
 }
 
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-  background-color: transparent !important;
+	background-color: transparent !important;
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle {
-  background-color: $primary-color !important;
-  &:active {
-    background-color: $secondary-color !important;
-  }
+	background-color: $primary-color !important;
+
+	&:active {
+		background-color: $secondary-color !important;
+	}
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-  border-color: $primary-color !important;
+	border-color: $primary-color !important;
 }
 
 
 .mat-dialog-container {
-  border-radius: 0 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-image: $button-border-gradient !important;
-  box-shadow: none !important;
+	border-radius: 0 !important;
+	border-style: solid !important;
+	border-width: 1px !important;
+	border-image: $button-border-gradient !important;
+	box-shadow: none !important;
 }
 
 .mat-paginator-range-label {
-  margin: 4px 6px 0 24px !important;
-  user-select: none;
+	margin: 4px 6px 0 24px !important;
+	user-select: none;
 }
 
 .base-modal {
-  .base-modal-header p {
-    margin: 0;
-    @include font-primary-heading();
-  }
+	.base-modal-header p {
+		margin: 0;
+		@include font-primary-heading();
+	}
 
-  .base-modal-body p {
-    margin: 0;
-    @include font-secondary-info();
-  }
+	.base-modal-body p {
+		margin: 0;
+		@include font-secondary-info();
+	}
 
-  .base-modal-header, .base-modal-body {
-    margin-bottom: 24px;
-  }
+	.base-modal-header,
+	.base-modal-body {
+		margin-bottom: 24px;
+	}
 
-  .base-modal-footer {
-    display: flex; 
-    justify-content: flex-end;
-    
-    button {
-      margin-left: 8px;  
-    }
-  }
+	.base-modal-footer {
+		display: flex;
+		justify-content: flex-end;
+
+		button {
+			margin-left: 8px;
+		}
+	}
 }
 
 .mat-drawer-container {
-  background-color: white;
+	background-color: white;
 
-  .mat-drawer  {
-    width: 235px;
-  }
+	.mat-drawer {
+		width: 235px;
+	}
 }
 
 .mat-drawer {
-  ::-webkit-scrollbar-track {
-    background-color: white !important;
-  }
-  
-  ::-webkit-scrollbar {
-    background-color: white !important;
-  }
+	::-webkit-scrollbar-track {
+		background-color: white !important;
+	}
 
-  scrollbar-color: white white !important;
-  scrollbar-width: thin !important;
+	::-webkit-scrollbar {
+		background-color: white !important;
+	}
+
+	scrollbar-color: white white !important;
+	scrollbar-width: thin !important;
+}
+
+.mat-tab-label-active {
+	opacity: unset !important;
+	border-bottom-style: none !important;
+}
+
+.mat-focus-indicator {
+	background: none !important;
+}
+
+.mat-tab-label {
+	opacity: unset !important;
+	border-bottom-style: none !important;
+	flex-grow: 1;
+}
+
+.mat-ink-bar {
+	background-image: $active-gradient;
+	background-color: transparent !important;
 }
 
 

@@ -81,22 +81,22 @@ export class AddDmosToCollectionDto {
 }
 
 export interface UpdateDmoDetailsDto {
-    id: string;
-}
-
-export interface PatchDmoDetailsDto {
-    id: string;
     movieTitle: string;
     name?: string;
+    dmoStatusId: number;
     shortComment?: string;
 }
 
-export interface DmoDetailsDto {
+export interface DmoDetailsShortDto {
     id: string;
     movieTitle: string;
-    dmoStatus: string;
     dmoStatusId: number;
+}
+
+export interface DmoDetailsDto {
+    movieTitle: string;
     name?: string;
+    dmoStatusId: number;
     shortComment?: string;
 }
 

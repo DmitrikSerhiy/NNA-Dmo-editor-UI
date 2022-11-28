@@ -61,7 +61,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		this.takenEmailValidaiton = "Email is already taken";
 		this.emtpyNameValidation = "Nickname is missing";
 		this.takenNameValidaiton = "Nickname is already taken";
-		this.tooLongNameValidation = "Maximum dmo nickname's length exceeded";
+		this.tooLongNameValidation = "Maximum dmo nickname length exceeded";
 		this.emtpyPasswordValidation = "Password is missing";
 		this.invalidPasswordValidation = "Password must be at least 10 characters long";
 		this.failureMessage = "Failed to create user";
