@@ -106,6 +106,12 @@ export class DmoDetailsPopupComponent implements OnInit {
 			} as UpdateDmoDetailsDto;
 
 			const patch = compare(this.dmoDetails, update);
+			if (patch?.length == 0) {
+				this.resetDmoDetailsForm();
+				this.setDmoDetailsValues();
+				return;
+			}
+
 			await this.editorHub.updateDmoDetails(this.dmoId, patch);
 
 			this.updatedTab.push('details');

@@ -348,6 +348,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (popupResult.tabs.includes('details')) {
 			this.currentShortDmo = await this.editorHub.getDmoDetailsShort(this.dmoId);
 			this.isDmoFinised = this.currentShortDmo.dmoStatusId === 1;
+			this.updatePlotPoints();
 			this.cdRef.detectChanges();
 		}
 
