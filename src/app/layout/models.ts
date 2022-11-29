@@ -87,6 +87,14 @@ export interface UpdateDmoDetailsDto {
     shortComment?: string;
 }
 
+export interface UpdateDmoPlotDetailsDto {
+    premise?: string;
+    controllingIdea?: string;
+    didacticismDescription?: string;
+    controllingIdeaId?: number 
+    didacticism?: boolean;
+}
+
 export interface DmoDetailsShortDto {
     id: string;
     movieTitle: string;
@@ -98,5 +106,11 @@ export interface DmoDetailsDto {
     name?: string;
     dmoStatusId: number;
     shortComment?: string;
+
+    premise?: string;
+    controllingIdea?: string;
+    didacticismDescription?: string;
+    controllingIdeaId?: number 
+    didacticism?: boolean;
 }
 

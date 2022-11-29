@@ -1,11 +1,19 @@
 <div class="base-modal">
     <div class="base-modal-header">
         <h2 class="modal-title">Decomposistion details</h2>
+
+        <button *ngIf="!helpWindow && currentTabIndex !== 0" type="button" class="nna-button nna-icon-button" (click)="toggleHelp(true)">
+            <i class="fa fa-info" aria-hidden="true"></i>
+        </button>
+        <button *ngIf="helpWindow && currentTabIndex !== 0" type="button" class="nna-button nna-icon-button" (click)="toggleHelp(false)">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
     </div>
     <div class="base-modal-body">
         <mat-tab-group *ngIf="dmoIsLoaded" class="decomposition-details-container" [dynamicHeight]="true" (selectedIndexChange)="swipeTab($event)">
-            <mat-tab label="Info">         
-                <form role="form" [formGroup]="dmoDetailsForm" class="">
+            
+            <mat-tab class="nna-tab info-tab" label="Info">         
+                <form role="form" [formGroup]="dmoDetailsForm" class="nna-form info-form">
                     
                     <div class="nna-input-group">
                         <input autocomplete="off" id="movieTitleInput" type="text" name="movieTitleInput" formControlName="movieTitleInput" 
@@ -38,15 +46,93 @@
                     </div>
 
                 </form> 
+
             </mat-tab>
-            <mat-tab label="Plot"> Plot </mat-tab>
-            <mat-tab label="Conflict"> Conflict </mat-tab>
+            <mat-tab class="nna-tab plot-tab" label="Plot"> 
+                <form *ngIf="!helpWindow" role="form" [formGroup]="dmoPlotDetailsForm" class="nna-form plot-form">
+
+                    <div class="nna-input-group">
+                        <input autocomplete="off" id="premiseInput" type="text" name="premiseInput" formControlName="premiseInput" 
+                            class="form-control nna-input premise-input" placeholder="Premise" (focus)="showPremiseQuestionMark = !showPremiseQuestionMark" (blur)="showPremiseQuestionMark = !showPremiseQuestionMark" />
+                            <span *ngIf="showPremiseQuestionMark || premise.value" class="premise-question-mark">?</span>
+                        <label for="premiseInput" class="nna-input-label">Premise</label>
+                        <p [ngClass]="{'hidden-field-description': premise.value}" class="field-description"> What would happen if... </p>
+                    </div>
+
+                    <div class="nna-input-group">
+                        <input autocomplete="off" id="controllingIdeaInput" type="text" name="controllingIdeaInput" formControlName="controllingIdeaInput" 
+                            class="form-control nna-input" placeholder="Controlling idea" (blur)="setControllingIdeaType()"/>
+                        <label for="controllingIdeaInput" class="nna-input-label">Controlling idea</label>
+                        <p [ngClass]="{'hidden-field-description': controllingIdea.value}" class="field-description"> What this movie about? </p>
+                    </div>
+
+                    <mat-radio-group [hidden]="!controllingIdea.value" id="controllingIdeaTypeRadio" name="controllingIdeaTypeRadio" formControlName="controllingIdeaTypeRadio" class="controlling-idea-type-options">
+                        <mat-radio-button class="controlling-idea-type-option" [value]="1">Idealistic</mat-radio-button>
+                        <mat-radio-button class="controlling-idea-type-option" [value]="2">Pessimistic</mat-radio-button>
+                        <mat-radio-button class="controlling-idea-type-option" [value]="3">Ironic</mat-radio-button>
+                    </mat-radio-group>
+
+                    <mat-checkbox (change)="setDidacticismDescription()" id="didacticismCheckbox" name="didacticismCheckbox" formControlName="didacticismCheckbox" class="didacticism-checkbox">
+                        Moralizing? Didacticism? Propaganda?
+                    </mat-checkbox>
+
+                    <div class="nna-input-group" *ngIf="didacticism.value">
+                        <input autocomplete="off" id="didacticismInput" type="text" name="didacticismInput" formControlName="didacticismInput" 
+                            class="form-control nna-input" placeholder="Didacticism description">
+                        <label for="didacticismInput" class="nna-input-label">Didacticism description</label>
+                    </div>
+
+                    <div class="validation-container" *ngIf="dmoPlotDetailsValidations?.length > 0">
+                        <p class="validation-text" *ngFor="let dmoPlotDetailsValidation of dmoPlotDetailsValidations">{{dmoPlotDetailsValidation}}</p>
+                    </div>
+
+                </form>
+
+                <div *ngIf="helpWindow && currentTabIndex === 1" class="help-window">
+                    <p><strong>Premise</strong> (also known as “<em>Magical if</em>”). If you were a screnwriter there would be single open question which you must ask yourself to describe the idea of the whole movie. </p>
+                    <p>For example: “What if one crazy scientist go back in time and change the past so bad that it would break future of his friends? “<em>Back to the future</em>”.</p>
+                    
+                    
+                    <p>
+                        <strong>Controlling idea</strong> is one coherrent sentence that describes the movie’s ultimate meaning. What authors were trying to say? Controlling idea answers exactly that question. Do not hesitate to be philosophical here.
+                        Controlling idea is built out of two components: <strong>value</strong> and <strong>reason</strong>. Value is the primary value that comes into the world or life of main character as a result of the final action of the movie. Reason refers 
+                        to the primary cause that the life or world of the main character has turned to it’s value. <strong>Value + Reason = Controlling idea</strong>.
+                    </p>
+                    <p>For example: Happiness fills our lives (value) + when we learn to love unconditionally (reason).“<em>Groundhog day</em>”.</p>
+
+                    <p>
+                        <strong>Idealistic</strong> or <strong>pessimistic</strong> controlling idea describes whether main character achieved his goals. <strong>Positive</strong> values express optimism, hopes and dreams of mankind and life as we wish it to be. 
+                        In contrast <strong>negative</strong> values express our cynicism, our sens of loss and misfortune, hymanity’s dark dimensions and life as we dread it to be but know it so often is. Such controlling ideas are basically whether movie has a happy end or not. 
+                    </p>
+                    <p>Pessimistic: “<em>Don’t look up</em>”, “<em>American beaty</em>”, “<em>Dead Poets Society</em>”.</p>
+                    <p>Idealistic: “<em>Die Hard</em>”, “<em>The Shawshank Redemption</em>”, “<em>Forrest Gump</em>”.</p>
+                    
+                    
+                    <p>
+                        <strong>Ironic</strong> controlling idea combines both idealistic and pessimistic ideas. It expresses our sense of the complex, dual nature of existence, a simultaneously positive and negative vision. 
+                        A life at its most complete and realistic view.
+                    </p>
+                    <p>Ironic: “<em>Schindler's List</em>”, “<em>The Godfather</em>”, “<em>Parasite</em>”.</p>
+
+                    <p>
+                        Controlling idea should never be expressed directly in the movie. Otherwise the movie might seem <strong>moralizing</strong>. Sometimes movies are used to “<em>teach</em>”, “<em>instruct</em>” or “<em>advise</em>” how to leave and what to beliave. 
+                        Sometimes poor screnwriting directly say what is good and what is bad. These are examples of <strong>didacticism</strong> and should be taken into account during decomposition. 
+                    </p>
+                </div>
+                
+            </mat-tab>
+            <mat-tab label="Conflict" class="nna-tab"> Conflict </mat-tab>
         </mat-tab-group>
     </div>
-    <div *ngIf="dmoIsLoaded" class="base-modal-footer">
-        <button *ngIf="!this.dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+    <div *ngIf="dmoIsLoaded && !helpWindow" class="base-modal-footer">
+            <button *ngIf="currentTabIndex === 0 && !dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
 
-        <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
-        <button *ngIf="this.dmoDetailsForm.dirty && currentTabIndex === 0" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
+
+            <button *ngIf="currentTabIndex === 1 && !dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="savePlotChanges(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
+        
     </div>
 </div>

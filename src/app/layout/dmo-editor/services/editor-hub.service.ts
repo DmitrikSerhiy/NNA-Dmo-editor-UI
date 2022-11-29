@@ -195,7 +195,14 @@ export class EditorHub {
 
     updateDmoDetails(id: string, update: Operation[]): Promise<any> {
         return this.http
-            .patch<any>(this.serverUrl + 'dmos/' + id, update)
+            .patch<any>(this.serverUrl + 'dmos/details/' + id, update)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
+
+    updateDmoPlotDetails(id: string, update: Operation[]): Promise<any> {
+        return this.http
+            .patch<any>(this.serverUrl + 'dmos/plot/' + id, update)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }

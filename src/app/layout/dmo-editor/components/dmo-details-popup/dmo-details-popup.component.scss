@@ -1,10 +1,57 @@
 .base-modal {
+    .base-modal-header {
+        user-select: none;
+        display: flex;
+        .nna-button {
+            margin-left: auto;
+        }
+    }
     .base-modal-body {
         .decomposition-details-container {
+            min-height: 350px;
+
             .nna-input-group, .validation-container {
                 margin-top: 14px;
+
+                .field-description {
+                    opacity: .5;
+                    user-select: none;
+                }
+
+                .hidden-field-description {
+                    opacity: 0;
+                }
+
+                .premise-question-mark {
+                    position: absolute;
+                    top: 12px;
+                    right: 0;
+                }
+
+                .premise-input {
+                    width: 98%;
+                    padding-right: 14px;
+                }
             }
-            
+
+            .controlling-idea-type-options {
+                display: flex;
+                justify-content: space-evenly;
+            }
+
+            .didacticism-checkbox {
+                margin-top: 14px;
+            }
+
+            .help-window {
+                max-height: 400px;
+                overflow-y: scroll;
+
+                p {
+                    margin-top: 14px;
+                }
+            }
+
         }
     }
 }
