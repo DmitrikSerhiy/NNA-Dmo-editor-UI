@@ -43,13 +43,33 @@ export class NnaMovieCharacterInDmoDto {
     aliases: string;
     count: number;
     color: string;
+
+    goal?: string;
+    unconsciousGoal?: string;
+    character?: string[];
+    characterization?: string;
+    characterContradictsCharacterization: boolean;
+    characterContradictsCharacterizationDescription?: string;
+    emphathetic?: boolean;
+    emphatheticDescription?: string;
+    sympathetic?: boolean;
+    sympatheticDescription?: string;
 }
 
 export class NnaMovieCharacterToCreateDto {
     dmoId: string;
     name: string;
-    aliases: string;
+    aliases?: string;
     color: string;
+    goal?: string;
+    unconsciousGoal?: string;
+    characterization?: string;
+    characterContradictsCharacterization: boolean;
+    characterContradictsCharacterizationDescription?: string;
+    emphathetic: boolean;
+    emphatheticDescription?: string;
+    sympathetic: boolean;
+    sympatheticDescription?: string;
 }
 
 export class NnaMovieCharacterToUpdateDto {
@@ -58,6 +78,15 @@ export class NnaMovieCharacterToUpdateDto {
     name: string;
     aliases: string;
     color: string;
+    goal?: string;
+    unconsciousGoal?: string;
+    characterization?: string;
+    characterContradictsCharacterization: boolean;
+    characterContradictsCharacterizationDescription?: string;
+    emphathetic: boolean;
+    emphatheticDescription?: string;
+    sympathetic: boolean;
+    sympatheticDescription?: string;
 }
 
 export class NnaMovieCharacterInBeatDto {

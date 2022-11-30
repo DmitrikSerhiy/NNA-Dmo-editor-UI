@@ -384,7 +384,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	
 	private async finalizeCharactersPopup(openOnAction: any): Promise<void> {
 		const popupResult = await this.matModule
-			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, openOnAction: openOnAction }, width: '400px' })
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, openOnAction: openOnAction }, width: '600px' })
 			.afterClosed()
 			.toPromise();
 

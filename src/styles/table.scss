@@ -111,14 +111,15 @@
 
 .mat-paginator .mat-paginator-outer-container .mat-paginator-container .mat-paginator-range-actions button {
 	@include nna-button();
-	width: 26px;
-	height: 26px;
+	width: 26px !important;
+	height: 26px !important;
 	display: flex;
 	justify-content: center;
 	margin-left: 8px;
-
+	min-width: 26px !important;
+	
 	svg {
-		width: 20px;;
+		width: 20px;
 	}
 
 	&:focus {

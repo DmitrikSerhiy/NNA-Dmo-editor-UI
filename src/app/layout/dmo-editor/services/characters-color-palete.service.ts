@@ -27,6 +27,8 @@ export class CharactersColorPaleteService {
 		'#009B77'  // emerlad
 	];
 
+	private previousColor: string = '';
+
 	constructor() { }
 
 	getNotUsedColor(usedColors: string[]): string {
@@ -45,9 +47,28 @@ export class CharactersColorPaleteService {
 			return "#000000";
 		}
 
-		return remainingColors[Math.floor(Math.random() * remainingColors.length)];
+		if (this.previousColor === '') {
+			this.previousColor = this.getRandom(remainingColors);
+			return this.previousColor;
+		}
+
+		let color = this.getRandom(remainingColors);
+		let counter = 0;
+		while (color == this.previousColor) {
+			color = this.getRandom(remainingColors);
+			if (counter == 3) {
+				break;
+			}
+			counter++;
+		}
+
+		this.previousColor = color;
+		return color;
 	}
 
+	private getRandom(remainingColors: string[]): string {
+		return remainingColors[Math.floor(Math.random() * remainingColors.length)];
+	}
 
 	private shuffleColors(colorsToShuffle: string[]) {
 		let paleteCopy = [...colorsToShuffle];

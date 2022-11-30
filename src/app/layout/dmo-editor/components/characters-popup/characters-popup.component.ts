@@ -25,10 +25,33 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	charactersTable: MatTableDataSource<any>;
 	private initialAction: string = '';
 
+	private maxEntityNameLength = 100;
+	private maxLongEntityLength = 500;
+
 	charactersForm: FormGroup;
-	get nameInput() { return this.charactersForm.get('characterNameInput'); }
-	get aliasesInput() { return this.charactersForm.get('characterAliasesInput'); }
-	get colorInput() { return this.charactersForm.get('colorInput'); }
+	get name() { return this.charactersForm.get('characterNameInput'); }
+	get aliases() { return this.charactersForm.get('characterAliasesInput'); }
+	get color() { return this.charactersForm.get('colorInput'); }
+
+	get goal() { return this.charactersForm.get('goalInput'); }
+	get unconsciousGoal() { return this.charactersForm.get('unconsciousGoalInput'); }
+	character: string[];
+	get characterization() { return this.charactersForm.get('characterizationInput'); }
+
+	get characterContrCharacterization() { return this.charactersForm.get('characterContrCharacterizationCheckbox'); }
+	get characterContrCharacterizationDescription() { return this.charactersForm.get('characterContrCharacterizationDescriptionInput'); }
+
+	get characterEmpathy() { return this.charactersForm.get('characterEmpathyCheckbox'); }
+	get characterEmpathyDescription() { return this.charactersForm.get('characterEmpathyDescriptionInput'); }
+
+	get characterSympathy() { return this.charactersForm.get('characterSympathyCheckbox'); }
+	get characterSympathyDescription() { return this.charactersForm.get('characterSympathyDescriptionInput'); }
+
+	
+	showCharacterContrCharacterizationDescriptionInput: boolean = false;
+	showCharacterEmpathyDescriptionInput: boolean = false;
+	showCharacterSympathyDescriptionInput: boolean = false;
+
 	serverValidation: string = null;
 
 	selectedCharacter: NnaMovieCharacterInDmoDto;
@@ -42,8 +65,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	@ViewChild('addDmoToCollectionModal', { static: true }) addToCollectionModal: NgbActiveModal;
 
 	@ViewChild('characterNameInput') characterNameInputElement: ElementRef;
-	@ViewChild('characterAliasesInput') characterAliasesInputElement: ElementRef;
-	@ViewChild('colorInput') colorInputElement: ElementRef;
 
 	constructor(
 		private charactersService: CharactersService,
@@ -72,8 +93,17 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({
 			'characterNameInput': new FormControl('', [Validators.required, Validators.maxLength(60)]),
-			'characterAliasesInput': new FormControl('', [Validators.maxLength(100)]),
-			'colorInput': new FormControl('')
+			'characterAliasesInput': new FormControl('', [Validators.maxLength(this.maxEntityNameLength)]),
+			'colorInput': new FormControl(''),
+			'goalInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
+			'unconsciousGoalInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
+			'characterizationInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
+			'characterContrCharacterizationCheckbox': new FormControl(''),
+			'characterContrCharacterizationDescriptionInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
+			'characterEmpathyCheckbox': new FormControl(''),
+			'characterEmpathyDescriptionInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
+			'characterSympathyCheckbox': new FormControl(''),
+			'characterSympathyDescriptionInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
 		});
 	}
 
@@ -122,12 +152,13 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.resetSelected();
 	}
 
+
 	onCharacterToAdd() {
 		this.selectedCharacter = null;
 		this.addOrEditAction = true;
 		this.resetForm();
 		this.resetCharactersTable();
-		this.colorInput.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)))
+		this.color.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
 		}, 150);
@@ -139,9 +170,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	preventValidationToBlink(): void {
 		if (this.addOrEditAction == true) {
-			if (this.nameInput.value == '') {
-				this.nameInput.markAsPristine();
-				this.nameInput.markAsUntouched();
+			if (this.name.value == '') {
+				this.name.markAsPristine();
+				this.name.markAsUntouched();
 			}
 		}
 	}
@@ -160,10 +191,19 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.createCharacter({
-				name: this.nnaHelpersService.sanitizeSpaces(this.nameInput.value), 
-				aliases: this.fixAliasesValue(this.aliasesInput.value), 
+				name: this.nnaHelpersService.sanitizeSpaces(this.name.value), 
+				aliases: this.fixAliasesValue(this.aliases.value), 
 				dmoId: this.dmoId,
-				color: this.colorInput.value ?? "#000000"				
+				color: this.color.value ?? "#000000",
+				goal: this.goal.value,
+				unconsciousGoal: this.unconsciousGoal.value,
+				characterization: this.characterization.value,
+				characterContradictsCharacterization: this.characterContrCharacterization.value,
+				characterContradictsCharacterizationDescription: this.characterContrCharacterizationDescription.value,
+				emphathetic: this.characterEmpathy.value,
+				emphatheticDescription: this.characterEmpathyDescription.value,
+				sympathetic: this.characterSympathy.value,
+				sympatheticDescription: this.characterSympathyDescription.value
 			} as NnaMovieCharacterToCreateDto)
 			.pipe(take(1))
 			.subscribe(() => { 
@@ -178,7 +218,6 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				}
 			});
 	}
-
 
 
 	onCharacterToDelete() {
@@ -220,6 +259,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.initializeCharactersTable();
 	}
 
+
+
 	onCharacterToEdit() {
 		if (this.selectedCharacter == null) {
 			return;
@@ -227,9 +268,21 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.addOrEditAction = true;
 		this.resetCharactersTable();
-		this.nameInput.setValue(this.selectedCharacter.name);
-		this.aliasesInput.setValue(this.selectedCharacter.aliases);
-		this.colorInput.setValue(this.selectedCharacter.color);
+		this.name.setValue(this.selectedCharacter.name);
+		this.aliases.setValue(this.selectedCharacter.aliases);
+		this.color.setValue(this.selectedCharacter.color);
+
+		this.goal.setValue(this.selectedCharacter.goal);
+		this.unconsciousGoal.setValue(this.selectedCharacter.unconsciousGoal);
+		this.character = this.selectedCharacter.character;
+		this.characterization.setValue(this.selectedCharacter.characterization);
+
+		this.characterContrCharacterization.setValue(this.selectedCharacter.characterContradictsCharacterization);
+		this.characterContrCharacterizationDescription.setValue(this.selectedCharacter.characterContradictsCharacterizationDescription);
+		this.characterEmpathy.setValue(this.selectedCharacter.emphathetic);
+		this.characterEmpathyDescription.setValue(this.selectedCharacter.emphatheticDescription);
+		this.characterSympathy.setValue(this.selectedCharacter.sympathetic);
+		this.characterSympathyDescription.setValue(this.selectedCharacter.sympatheticDescription);
 
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
@@ -243,11 +296,21 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.charactersService	
 			.updateCharacter({
-				name: this.nnaHelpersService.sanitizeSpaces(this.nameInput.value), 
-				aliases: this.fixAliasesValue(this.aliasesInput.value), 
-				color: this.colorInput.value ?? "#000000",
+				name: this.nnaHelpersService.sanitizeSpaces(this.name.value), 
+				aliases: this.fixAliasesValue(this.aliases.value), 
+				color: this.color.value ?? "#000000",
 				id: this.selectedCharacter.id,
-				dmoId: this.dmoId } as NnaMovieCharacterToUpdateDto)
+				dmoId: this.dmoId,
+				goal: this.goal.value,
+				unconsciousGoal: this.unconsciousGoal.value,
+				characterization: this.characterization.value,
+				characterContradictsCharacterization: this.characterContrCharacterization.value,
+				characterContradictsCharacterizationDescription: this.characterContrCharacterizationDescription.value,
+				emphathetic: this.characterEmpathy.value,
+				emphatheticDescription: this.characterEmpathyDescription.value,
+				sympathetic: this.characterSympathy.value,
+				sympatheticDescription: this.characterSympathyDescription.value
+			} as NnaMovieCharacterToUpdateDto)
 			.pipe(take(1))
 			.subscribe(() => { 
 				this.charactersAreDirty = true;
@@ -293,8 +356,21 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	onSetNextRandomColor() {
-		this.colorInput.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
+		this.color.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
 	}
+
+	setCharacterContrCharacterization() {
+		this.showCharacterContrCharacterizationDescriptionInput = !this.showCharacterContrCharacterizationDescriptionInput;
+	}
+
+	setCharacterEmpathy() {
+		this.showCharacterEmpathyDescriptionInput = !this.showCharacterEmpathyDescriptionInput;
+	}
+
+	setCharacterSympathy() {
+		this.showCharacterSympathyDescriptionInput = !this.showCharacterSympathyDescriptionInput;
+	}
+
 
 	private fixAliasesValue(aliases: string): string {
 		return aliases?.split(',').reduce((p, n) => {
@@ -334,9 +410,22 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	private resetForm() {
-		this.nameInput.setValue('');
-		this.aliasesInput.setValue('');
-		this.colorInput.setValue('#000000');
+		this.name.setValue('');
+		this.aliases.setValue('');
+		this.color.setValue('#000000');
+
+		this.goal.setValue('');
+		this.unconsciousGoal.setValue('');
+		this.character = null;
+		this.characterization.setValue('');
+
+		this.characterContrCharacterization.setValue(false);
+		this.characterContrCharacterizationDescription.setValue('');
+		this.characterEmpathy.setValue(false);
+		this.characterEmpathyDescription.setValue('');
+		this.characterSympathy.setValue(false);
+		this.characterSympathyDescription.setValue('');
+
 		this.serverValidation = null;
 		this.charactersForm.clearValidators();
 		this.charactersForm.markAsPristine();

@@ -75,6 +75,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.maxDidacticismDescriptionLengthExceededValidationMessage = "Maximum didacticism description length exceeded";
 		}
 
+		//todo: add sanitizeSpaces for each field
+
 	async ngOnInit(): Promise<void> {
 		this.dmoDetails = await this.editorHub.getDmoDetails(this.dmoId);
 		this.dmoIsLoaded = true;
