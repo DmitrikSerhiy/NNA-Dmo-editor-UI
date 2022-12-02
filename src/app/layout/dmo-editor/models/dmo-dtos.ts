@@ -74,7 +74,6 @@ export class NnaMovieCharacterToCreateDto {
 
 export class NnaMovieCharacterToUpdateDto {
     dmoId: string;
-    id: string;
     name: string;
     aliases: string;
     color: string;

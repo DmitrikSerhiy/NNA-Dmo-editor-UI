@@ -1,11 +1,22 @@
 .base-modal {
     z-index: 500;
     min-height: 300px;
+    max-height: 700px;
+    
     display: flex;
     flex-flow: column;
     flex-wrap: nowrap;
+
     .base-modal-body {
-        form {
+        // max-height: 600px;
+        // overflow-y: auto;
+
+        .character-form {
+            height: 500px;
+            max-height: 600px;
+            padding-right: 14px;
+            overflow-y: auto;
+
             .nna-input-group, .nna-input-group-validation {
                 margin-top: 14px;
             }
@@ -17,12 +28,10 @@
                     margin-left: 8px;
                 }
             }
+        }
 
-            .validation-wrapper {
-                .validation-container {
-                    margin-top: 5px;
-                }
-            }
+        .character-validations {
+            height: unset !important;
         }
     }
 

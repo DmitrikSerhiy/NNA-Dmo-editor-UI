@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
+import { compare } from 'fast-json-patch';
 import { take } from 'rxjs/internal/operators/take';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
@@ -52,13 +53,22 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	showCharacterEmpathyDescriptionInput: boolean = false;
 	showCharacterSympathyDescriptionInput: boolean = false;
 
-	serverValidation: string = null;
-
 	selectedCharacter: NnaMovieCharacterInDmoDto;
 	deleteAction: boolean = false;
 	addOrEditAction: boolean = false;
 	charactersAreDirty: boolean = false;
 	operations: string[] = [];
+
+	private nameIsMissingValidationMessage: string;
+	private aliasesNaxLengthExceededValidationMessage: string;
+	private nameNaxLengthExceededValidationMessage: string;
+	private goalMaxLengthExceededVaildationMessage: string;
+	private unconsciousGoalMaxLengthExceededVaildationMessage: string;
+	private characterizationMaxLengthExceededVaildationMessage: string;
+	private characterContradictsCharacterizationDescriptionMaxLengthExceededVaildationMessage: string; // not long enough :)
+	private emphatheticDescriptionMaxLengthExceededVaildationMessage: string;
+	private sympatheticDescriptionMaxLengthExceededVaildationMessage: string;
+	characterValidations: string[] = [];
 
 	@ViewChild('charactersPaginator', { static: true }) charactersPaginator: MatPaginator;
 	@ViewChild(MatSort) charactersSorter: MatSort;
@@ -74,7 +84,18 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any
 	) { 
-		this.dmoId = data.dmoId;	
+		this.dmoId = data.dmoId;
+		
+		this.nameIsMissingValidationMessage = 'Character name is missing';
+		this.aliasesNaxLengthExceededValidationMessage = 'Maximum character aliases length exceeded';
+		this.nameNaxLengthExceededValidationMessage = 'Maximum character name length exceeded';
+		this.goalMaxLengthExceededVaildationMessage = 'Maximum goal length exceeded';
+		this.unconsciousGoalMaxLengthExceededVaildationMessage = 'Maximum unconscious goal length exceeded';
+		this.characterizationMaxLengthExceededVaildationMessage = 'Maximum characterization length exceeded';
+		this.characterContradictsCharacterizationDescriptionMaxLengthExceededVaildationMessage = 'Maximum character contradicts characterization length exceeded';
+		this.emphatheticDescriptionMaxLengthExceededVaildationMessage = 'Maximum emphathetic description length exceeded';
+		this.sympatheticDescriptionMaxLengthExceededVaildationMessage = 'Maximum sympathetic description length exceeded';
+
 		if (data.openOnAction) {
 			this.initialAction = data.openOnAction.action; 
 		}	
@@ -93,7 +114,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({
 			'characterNameInput': new FormControl('', [Validators.required, Validators.maxLength(60)]),
-			'characterAliasesInput': new FormControl('', [Validators.maxLength(this.maxEntityNameLength)]),
+			'characterAliasesInput': new FormControl('', [Validators.maxLength(100)]),
 			'colorInput': new FormControl(''),
 			'goalInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
 			'unconsciousGoalInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
@@ -110,7 +131,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	private keydownHandlerWrapper = function($event) {
 		const key = $event.which || $event.keyCode || $event.charCode;
 
-		if (key === 13) {
+		if (key === 13 && !$event.shiftKey) {
 			$event.preventDefault();
 			if (this.deleteAction == true) {
 				this.onCharacterDelete();
@@ -148,12 +169,12 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		document.removeEventListener('keydown', this.keydownHandlerWrapper);
 	}
 
-	onPaginateChange() {
+	onPaginateChange(): void {
 		this.resetSelected();
 	}
 
 
-	onCharacterToAdd() {
+	onCharacterToAdd(): void {
 		this.selectedCharacter = null;
 		this.addOrEditAction = true;
 		this.resetForm();
@@ -177,15 +198,16 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		}
 	}
 
-	onCharacterCancelAdd() {
+	onCharacterCancelAdd(): void {
 		this.resetForm();
 		this.selectedCharacter = null;
 		this.addOrEditAction = false;
 		this.initializeCharactersTable();
 	}
 
-	onCharacterAdd() {
+	onCharacterAdd(): void {
 		if (!this.charactersForm.valid) {
+			this.toggleValidations();
 			return;
 		}
 
@@ -195,15 +217,15 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				aliases: this.fixAliasesValue(this.aliases.value), 
 				dmoId: this.dmoId,
 				color: this.color.value ?? "#000000",
-				goal: this.goal.value,
-				unconsciousGoal: this.unconsciousGoal.value,
-				characterization: this.characterization.value,
+				goal: this.nnaHelpersService.sanitizeSpaces(this.goal.value),
+				unconsciousGoal: this.nnaHelpersService.sanitizeSpaces(this.unconsciousGoal.value),
+				characterization: this.nnaHelpersService.sanitizeSpaces(this.characterization.value),
 				characterContradictsCharacterization: this.characterContrCharacterization.value,
-				characterContradictsCharacterizationDescription: this.characterContrCharacterizationDescription.value,
+				characterContradictsCharacterizationDescription: this.nnaHelpersService.sanitizeSpaces(this.characterContrCharacterizationDescription.value),
 				emphathetic: this.characterEmpathy.value,
-				emphatheticDescription: this.characterEmpathyDescription.value,
+				emphatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.characterEmpathyDescription.value),
 				sympathetic: this.characterSympathy.value,
-				sympatheticDescription: this.characterSympathyDescription.value
+				sympatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.characterSympathyDescription.value)
 			} as NnaMovieCharacterToCreateDto)
 			.pipe(take(1))
 			.subscribe(() => { 
@@ -212,15 +234,11 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				this.addOrEditAction = false;
 				this.resetForm();
 				this.loadCharacters();
-			}, (errorMessage) => {
-				if (!errorMessage.isHandled) {
-					this.serverValidation = errorMessage;
-				}
 			});
 	}
 
 
-	onCharacterToDelete() {
+	onCharacterToDelete(): void {
 		if (this.selectedCharacter == null) {
 			return;
 		}
@@ -229,12 +247,12 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.deleteAction = true;
 	}
 
-	onCharacterCancelDelete() {
+	onCharacterCancelDelete(): void {
 		this.deleteAction = false;
 		this.initializeCharactersTable();
 	}
 
-	onCharacterDelete() {
+	onCharacterDelete(): void {
 		if (this.selectedCharacter == null) {
 			this.deleteAction = false;
 			return;
@@ -253,7 +271,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 
-	onCharacterCancelEdit() {
+	onCharacterCancelEdit(): void {
 		this.addOrEditAction = false;
 		this.resetForm();
 		this.initializeCharactersTable();
@@ -261,56 +279,92 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 
 
-	onCharacterToEdit() {
+	onCharacterToEdit(): void {
 		if (this.selectedCharacter == null) {
 			return;
 		}
 
 		this.addOrEditAction = true;
 		this.resetCharactersTable();
-		this.name.setValue(this.selectedCharacter.name);
-		this.aliases.setValue(this.selectedCharacter.aliases);
+		this.name.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.name));
+		this.aliases.setValue(this.fixAliasesValue(this.selectedCharacter.aliases));
 		this.color.setValue(this.selectedCharacter.color);
 
-		this.goal.setValue(this.selectedCharacter.goal);
-		this.unconsciousGoal.setValue(this.selectedCharacter.unconsciousGoal);
+		this.goal.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.goal));
+		this.unconsciousGoal.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.unconsciousGoal));
 		this.character = this.selectedCharacter.character;
-		this.characterization.setValue(this.selectedCharacter.characterization);
+		this.characterization.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterization));
 
 		this.characterContrCharacterization.setValue(this.selectedCharacter.characterContradictsCharacterization);
-		this.characterContrCharacterizationDescription.setValue(this.selectedCharacter.characterContradictsCharacterizationDescription);
+		this.characterContrCharacterizationDescription.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterContradictsCharacterizationDescription));
 		this.characterEmpathy.setValue(this.selectedCharacter.emphathetic);
-		this.characterEmpathyDescription.setValue(this.selectedCharacter.emphatheticDescription);
+		this.characterEmpathyDescription.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.emphatheticDescription));
 		this.characterSympathy.setValue(this.selectedCharacter.sympathetic);
-		this.characterSympathyDescription.setValue(this.selectedCharacter.sympatheticDescription);
+		this.characterSympathyDescription.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.sympatheticDescription));
+
+		this.showCharacterContrCharacterizationDescriptionInput = this.characterContrCharacterization.value;
+		this.showCharacterEmpathyDescriptionInput = this.characterEmpathy.value;
+		this.showCharacterSympathyDescriptionInput = this.characterSympathy.value;
+
 
 		setTimeout(() => {
 			this.characterNameInputElement.nativeElement.focus();
 		}, 150);
 	}
 
-	onCharacterEdit() {
-		if (this.selectedCharacter == null || !this.charactersForm.valid) {
+	onCharacterEdit(): void {
+		if (this.selectedCharacter == null) {
+			return;
+		}
+
+		if (!this.charactersForm.valid) {
+			this.toggleValidations();
+			return;
+		}
+
+		const oldValue = {
+			name: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.name), 
+			aliases: this.fixAliasesValue(this.selectedCharacter.aliases), 
+			color: this.selectedCharacter.color ?? "#000000",
+			dmoId: this.dmoId,
+			goal: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.goal),
+			unconsciousGoal: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.unconsciousGoal),
+			characterization: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterization),
+			characterContradictsCharacterization: this.selectedCharacter.characterContradictsCharacterization,
+			characterContradictsCharacterizationDescription: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterContradictsCharacterizationDescription),
+			emphathetic: this.selectedCharacter.emphathetic,
+			emphatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.emphatheticDescription),
+			sympathetic: this.selectedCharacter.sympathetic,
+			sympatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.sympatheticDescription)
+		} as NnaMovieCharacterToUpdateDto;
+
+		const update = {
+			name: this.nnaHelpersService.sanitizeSpaces(this.name.value), 
+			aliases: this.fixAliasesValue(this.aliases.value), 
+			color: this.color.value ?? "#000000",
+			dmoId: this.dmoId,
+			goal: this.nnaHelpersService.sanitizeSpaces(this.goal.value),
+			unconsciousGoal: this.nnaHelpersService.sanitizeSpaces(this.unconsciousGoal.value),
+			characterization: this.nnaHelpersService.sanitizeSpaces(this.characterization.value),
+			characterContradictsCharacterization: this.characterContrCharacterization.value,
+			characterContradictsCharacterizationDescription: this.nnaHelpersService.sanitizeSpaces(this.characterContrCharacterizationDescription.value),
+			emphathetic: this.characterEmpathy.value,
+			emphatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.characterEmpathyDescription.value),
+			sympathetic: this.characterSympathy.value,
+			sympatheticDescription: this.nnaHelpersService.sanitizeSpaces(this.characterSympathyDescription.value)
+		} as NnaMovieCharacterToUpdateDto;
+
+		const patch = compare(oldValue, update);
+		if (patch?.length == 0) {
+			this.resetForm();
+			this.selectedCharacter = null;
+			this.addOrEditAction = false
+			this.initializeCharactersTable();
 			return;
 		}
 
 		this.charactersService	
-			.updateCharacter({
-				name: this.nnaHelpersService.sanitizeSpaces(this.name.value), 
-				aliases: this.fixAliasesValue(this.aliases.value), 
-				color: this.color.value ?? "#000000",
-				id: this.selectedCharacter.id,
-				dmoId: this.dmoId,
-				goal: this.goal.value,
-				unconsciousGoal: this.unconsciousGoal.value,
-				characterization: this.characterization.value,
-				characterContradictsCharacterization: this.characterContrCharacterization.value,
-				characterContradictsCharacterizationDescription: this.characterContrCharacterizationDescription.value,
-				emphathetic: this.characterEmpathy.value,
-				emphatheticDescription: this.characterEmpathyDescription.value,
-				sympathetic: this.characterSympathy.value,
-				sympatheticDescription: this.characterSympathyDescription.value
-			} as NnaMovieCharacterToUpdateDto)
+			.updateCharacter(this.selectedCharacter.id, patch)
 			.pipe(take(1))
 			.subscribe(() => { 
 				this.charactersAreDirty = true;
@@ -319,17 +373,10 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 				this.addOrEditAction = false;
 				this.resetForm();
 				this.loadCharacters();
-			}, (errorMessage) => {
-				if (!errorMessage.isHandled) {
-					this.serverValidation = errorMessage;
-				}
 			});
 	}
 
-
-
-
-	onClose() {
+	onClose(): void {
 		if (this.charactersAreDirty == false) {
 			this.dialogRef.close({hasChanges: this.charactersAreDirty});
 		}
@@ -355,22 +402,64 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.selectedCharacter = row;
 	}
 
-	onSetNextRandomColor() {
+	onSetNextRandomColor(): void {
 		this.color.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
 	}
 
-	setCharacterContrCharacterization() {
+	setCharacterContrCharacterization(): void {
 		this.showCharacterContrCharacterizationDescriptionInput = !this.showCharacterContrCharacterizationDescriptionInput;
+		this.characterContrCharacterizationDescription.setValue('');
 	}
 
-	setCharacterEmpathy() {
+	setCharacterEmpathy(): void {
 		this.showCharacterEmpathyDescriptionInput = !this.showCharacterEmpathyDescriptionInput;
+		this.characterEmpathyDescription.setValue('');
 	}
 
-	setCharacterSympathy() {
+	setCharacterSympathy(): void {
 		this.showCharacterSympathyDescriptionInput = !this.showCharacterSympathyDescriptionInput;
+		this.characterSympathyDescription.setValue('');
 	}
 
+	private toggleValidations(): void {
+		this.characterValidations = [];
+			
+		if (this.name.errors != null && this.name.errors.required) {
+			this.characterValidations.push(this.nameIsMissingValidationMessage);
+		}
+
+		if (this.name.errors != null && this.name.errors.maxlength) {
+			this.characterValidations.push(this.nameNaxLengthExceededValidationMessage);
+		}
+
+		if (this.aliases.errors != null && this.aliases.errors.maxlength) {
+			this.characterValidations.push(this.aliasesNaxLengthExceededValidationMessage);
+		}
+
+		if (this.goal.errors != null && this.goal.errors.maxlength) {
+			this.characterValidations.push(this.goalMaxLengthExceededVaildationMessage);
+		}
+
+		if (this.unconsciousGoal.errors != null && this.unconsciousGoal.errors.maxlength) {
+			this.characterValidations.push(this.unconsciousGoalMaxLengthExceededVaildationMessage);
+		}
+
+		if (this.characterization.errors != null && this.characterization.errors.maxlength) {
+			this.characterValidations.push(this.characterizationMaxLengthExceededVaildationMessage);
+		}
+
+		if (this.characterContrCharacterizationDescription.errors != null && this.characterContrCharacterizationDescription.errors.maxlength) {
+			this.characterValidations.push(this.characterContradictsCharacterizationDescriptionMaxLengthExceededVaildationMessage);
+		}
+
+		if (this.characterEmpathyDescription.errors != null && this.characterEmpathyDescription.errors.maxlength) {
+			this.characterValidations.push(this.emphatheticDescriptionMaxLengthExceededVaildationMessage);
+		}
+
+		if (this.characterSympathyDescription.errors != null && this.characterSympathyDescription.errors.maxlength) {
+			this.characterValidations.push(this.sympatheticDescriptionMaxLengthExceededVaildationMessage);
+		}
+	}
 
 	private fixAliasesValue(aliases: string): string {
 		return aliases?.split(',').reduce((p, n) => {
@@ -397,7 +486,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			});
 	}
 
-	private resetPopup() {
+	private resetPopup(): void {
 		this.initialAction = '';
 		this.deleteAction = false;
 		this.addOrEditAction = false;
@@ -409,45 +498,40 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.resetCharactersTable();
 	}
 
-	private resetForm() {
+	private resetForm(): void {
 		this.name.setValue('');
 		this.aliases.setValue('');
 		this.color.setValue('#000000');
-
 		this.goal.setValue('');
 		this.unconsciousGoal.setValue('');
 		this.character = null;
 		this.characterization.setValue('');
-
 		this.characterContrCharacterization.setValue(false);
 		this.characterContrCharacterizationDescription.setValue('');
 		this.characterEmpathy.setValue(false);
 		this.characterEmpathyDescription.setValue('');
 		this.characterSympathy.setValue(false);
 		this.characterSympathyDescription.setValue('');
-
-		this.serverValidation = null;
+		this.characterValidations = [];
 		this.charactersForm.clearValidators();
 		this.charactersForm.markAsPristine();
 		this.charactersForm.markAsUntouched();
 	}
 
-	private resetCharactersTable() {
+	private resetCharactersTable(): void {
 		this.charactersTableColumn = [];
 		this.charactersTable = null;
 		this.charactersCount = 0;
 	}
 
-	private initializeCharactersTable() {
+	private initializeCharactersTable(): void {
 		this.charactersTableColumn = ['name', 'aliases', 'count'];
 		this.charactersTable = new MatTableDataSource(this.characters);
 		this.charactersTable.paginator = this.charactersPaginator;
 		this.charactersTable.sort = this.charactersSorter;
 		this.charactersCount = this.characters.length;
-
 		this.deleteAction = false;
 		this.addOrEditAction = false;
-		
 		this.cd.detectChanges();
 	}
 }

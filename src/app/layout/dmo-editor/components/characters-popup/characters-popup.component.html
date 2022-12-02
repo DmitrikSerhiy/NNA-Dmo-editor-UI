@@ -40,7 +40,7 @@
     </div>
 
     <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-body">
-        <form role="form" [formGroup]="charactersForm">
+        <form role="form" [formGroup]="charactersForm" class="character-form">
             <div class="nna-input-group">
                 <input #characterNameInput autocomplete="off" type="text" name="characterNameInput" id="characterNameInput" formControlName="characterNameInput" 
                     class="form-control nna-input" placeholder="Name*" (focusout)="preventValidationToBlink()" />
@@ -98,8 +98,8 @@
             </mat-checkbox>
 
             <div class="nna-input-group" *ngIf="showCharacterContrCharacterizationDescriptionInput">
-                <input autocomplete="off" type="text" name="characterContrCharacterizationDescriptionInput" id="characterContrCharacterizationDescriptionInput" formControlName="characterContrCharacterizationDescriptionInput" 
-                    class="form-control nna-input" placeholder="How character contradicts characterization?" />
+                <textarea autocomplete="off" type="text" name="characterContrCharacterizationDescriptionInput" id="characterContrCharacterizationDescriptionInput" formControlName="characterContrCharacterizationDescriptionInput" 
+                    class="form-control nna-input" rows="2" placeholder="How character contradicts characterization?"></textarea>
                 <label for="characterContrCharacterizationDescriptionInput" class="nna-input-label">How character contradicts characterization?</label>
             </div>
 
@@ -126,36 +126,14 @@
                     class="form-control nna-input" rows="2" placeholder="How character make you sympathize?"></textarea>
                 <label for="characterSympathyDescriptionInput" class="nna-input-label">How character make you sympathize?</label>
             </div>
-
-
-
-            
-
-
-            <div class="validation-wrapper validation-wrapper-popup nna-input-group-validation">
-                <div *ngIf="name.invalid && (name.dirty || name.touched) && !serverValidation" class="validation-container">
-                    <div *ngIf="name.errors.required">
-                        <p class="validation-text">Character name is missing</p> 
-                    </div>
-                    <div *ngIf="name.errors.maxlength">
-                        <p class="validation-text">Maximum character name length exceeded</p> 
-                    </div>
-                </div>
-                <div *ngIf="aliases.invalid && (aliases.dirty || aliases.touched) && !serverValidation" class="validation-container">
-                    <div *ngIf="aliases.errors.maxlength">
-                        <p class="validation-text">Maximum character's aliases length exceeded</p> 
-                    </div>
-                </div>
-                <div *ngIf="serverValidation != null" class="validation-container">
-                    <div>
-                        <p class="validation-text">{{serverValidation}}</p> 
-                    </div>
-                </div>
-            </div>
-
         </form>
 
+        <div *ngIf="characterValidations?.length > 0" class="validation-wrapper validation-wrapper-popup nna-input-group-validation character-validations" >
+            <p class="validation-text" *ngFor="let characterValidation of characterValidations">{{characterValidation}}</p>
+        </div>
     </div>
+
+
 
     <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false"  class="base-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onCharacterToDelete()">Delete</button>
@@ -175,12 +153,10 @@
     <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-footer">
         
         <button *ngIf="selectedCharacter != null" type="button" class="nna-button-secondary" (click)="onCharacterCancelEdit()">Cancel</button>
-        <button *ngIf="selectedCharacter != null" type="button" class="nna-button-primary"(click)="onCharacterEdit()"
-            [disabled]="!charactersForm.valid" [ngClass]="{'nna-diabled-button': !charactersForm.valid }">Save</button>
+        <button *ngIf="selectedCharacter != null" type="button" class="nna-button-primary"(click)="onCharacterEdit()">Save</button>
         
         <button *ngIf="selectedCharacter == null" type="button" class="nna-button-secondary" (click)="onCharacterCancelAdd()">Cancel</button>
-        <button *ngIf="selectedCharacter == null" type="button" class="nna-button-primary" 
-            [disabled]="!charactersForm.valid"  [ngClass]="{'nna-diabled-button': !charactersForm.valid}" (click)="onCharacterAdd()">Create character</button>
+        <button *ngIf="selectedCharacter == null" type="button" class="nna-button-primary" (click)="onCharacterAdd()">Create character</button>
     
     </div>
 </div>

@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Operation } from 'fast-json-patch/module/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { environment } from 'src/environments/environment';
-import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../models/dmo-dtos';
+import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto } from '../models/dmo-dtos';
 
 
 @Injectable({
@@ -30,9 +31,9 @@ export class CharactersService {
 			.pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)));
 	}
 
-	updateCharacter(characterToUpdate: NnaMovieCharacterToUpdateDto): Observable<any> {
+	updateCharacter(id: string, update: Operation[]): Observable<any> {
 		return this.http
-			.put<any>(this.serverUrl, characterToUpdate)
+			.patch<any>(this.serverUrl + id, update)
 			.pipe(catchError((response, obs) => this.errorHandler.handle<any>(response, obs)));
 	}
 
