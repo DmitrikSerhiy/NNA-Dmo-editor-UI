@@ -1,4 +1,20 @@
+@import "src/styles/fonts-mixins.scss";
+
 .base-modal {
+
+    .base-modal-header {
+        display: flex;
+        margin-bottom: 14px;
+        
+        .modal-title {
+            @include font-primary-heading();
+        }
+
+        .nna-button {
+            margin-left: auto;
+        }
+    }
+
     z-index: 500;
     min-height: 300px;
     max-height: 700px;
@@ -8,17 +24,27 @@
     flex-wrap: nowrap;
 
     .base-modal-body {
-        // max-height: 600px;
-        // overflow-y: auto;
-
         .character-form {
-            height: 500px;
+            height: 520px;
             max-height: 600px;
             padding-right: 14px;
             overflow-y: auto;
 
             .nna-input-group, .nna-input-group-validation {
                 margin-top: 14px;
+
+                .true-character-list {
+                    .true-character-option {
+                        @include font-secondary-info();
+                        user-select: none;                        
+                    }
+                }
+
+
+                .true-character-placeholder {
+                    user-select: none;
+                    opacity: .5;
+                }
             }
 
             .character-color-input-group {
@@ -32,6 +58,17 @@
 
         .character-validations {
             height: unset !important;
+        }
+
+        .help-window {
+            height: 500px;
+            max-height: 600px;
+            padding-right: 14px;
+            overflow-y: auto;
+
+            p {
+                margin-top: 14px;
+            }
         }
     }
 

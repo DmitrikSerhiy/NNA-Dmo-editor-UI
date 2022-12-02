@@ -1,9 +1,15 @@
 <div class="base-modal">
     <div class="base-modal-header">
-        <p *ngIf="deleteAction == false && addOrEditAction == false" class="modal-title no-select">Characters</p>
-        <p *ngIf="deleteAction == true && addOrEditAction == false" class="modal-title no-select">Delete character</p>
-        <p *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter == null" class="modal-title no-select">Create character</p>
-        <p *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter != null" class="modal-title no-select">Edit character</p>
+        <h2 *ngIf="deleteAction == false && addOrEditAction == false" class="modal-title no-select">Characters</h2>
+        <h2 *ngIf="deleteAction == true && addOrEditAction == false" class="modal-title no-select">Delete character</h2>
+        <h2 *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter == null" class="modal-title no-select">Create character</h2>
+        <h2 *ngIf="deleteAction == false && addOrEditAction == true && selectedCharacter != null" class="modal-title no-select">Edit character</h2>
+        <button *ngIf="!helpWindow && addOrEditAction == true" type="button" class="nna-button nna-icon-button" (click)="toggleHelp(true)">
+            <i class="fa fa-info" aria-hidden="true"></i>
+        </button>
+        <button *ngIf="helpWindow && addOrEditAction == true" type="button" class="nna-button nna-icon-button" (click)="toggleHelp(false)">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
     </div>
     <div [hidden]="!charactersTable || charactersCount == 0" class="base-modal-body">
         <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
@@ -39,7 +45,7 @@
         <p>Are you sure you want to delete character '{{selectedCharacter.name}}'?</p>
     </div>
 
-    <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-body">
+    <div *ngIf="deleteAction == false && addOrEditAction == true && helpWindow == false" class="base-modal-body">
         <form role="form" [formGroup]="charactersForm" class="character-form">
             <div class="nna-input-group">
                 <input #characterNameInput autocomplete="off" type="text" name="characterNameInput" id="characterNameInput" formControlName="characterNameInput" 
@@ -79,12 +85,12 @@
 
             <br />
 
-            <div class="nna-input-group">
-                <label class="nna-input-label">Character</label>
-                <ul *ngIf="character">
-                    <li *ngFor="let characterDescription of character">{{characterDescription}}</li>
+            <div *ngIf="selectedCharacter != null && addOrEditAction == true" class="nna-input-group">
+                <label class="nna-input-label">True character</label>
+                <ul *ngIf="character?.length > 0" class="true-character-list">
+                    <li #beatsWithCurrentCharacter *ngFor="let characterDescription of character" [innerHTML]="domSanitizer.bypassSecurityTrustHtml(overrideCharacterCursorStyle(characterDescription))" class="true-character-option"></li>
                 </ul>
-                <p *ngIf="!character">No characters beats</p>
+                <p *ngIf="character?.length == 0" class="true-character-placeholder">Character beat is not detected</p>
             </div>
 
             <div class="nna-input-group">
@@ -133,24 +139,54 @@
         </div>
     </div>
 
+    <div *ngIf="helpWindow" class="base-modal-body"> 
+        <div class="help-window">
+            <p>Characters usually have consious <strong>goal</strong> or <strong>desire</strong>. Character know what he wants, and for many characters a simple, clear, conscious desire is sufficient.</p>
+            <p>
+                The most memorable, fascinating characters tend to have not only a conscious but an <strong>unconscious desire</strong>. Usually complex characters are unaware of their subconscious need. 
+                The conscious and unconscious desires of a multidimensional character contradict each other. What he believes he wants is the antithesis of what he actually but unwittingly wants.
+            </p>
+            <p>
+                <strong>True character</strong> is revealed in the choices a human being makes. Beneath the surface of characterization, regardless of appearances, who is this character? Is he loving or cruel? 
+                Generous or selfish? Strong or weak? Truthful or a liar? Courageous or cowardly? The only way to know the truth is to witness character make choices under pressure in the pursuit of his desire. 
+            </p>
+            <p>
+                <strong>Characterization</strong> is the qualities of a human being, everything knowable through observation: sex, age, appearances, style of speech, education, personality, occupation. All these make each character unique and memorable.
+            </p>
+            <p>
+                Characterization is how human looks like. Character is what human really is. The revelation of <strong>true character</strong> is fundamental to all fine storytelling.
+            </p>
+            <p>
+                When <strong>character contradicts characterization</strong> it makes first more deep (or in some cases more silly).
+            </p>
+            <p>
+                Character must be <strong>empathetic</strong>; he may or may not be <strong>sympathetic</strong>.
+            </p>
+            <p>
+                Sympathetic means likable or the one with an inmate likability that evoke sympathy. Empathetic means "like me". If you identify character with yourself it means you empathize him. Empathy is absolute, sympathy is optional.
+            </p>
+
+        </div>
+    </div>
 
 
-    <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false"  class="base-modal-footer">
+
+    <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false && helpWindow == false"  class="base-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onCharacterToDelete()">Delete</button>
         <button type="button" class="nna-button-primary"(click)="onCharacterToEdit()">Edit</button>
     </div>
 
-    <div *ngIf="selectedCharacter == null && deleteAction == false && addOrEditAction == false" class="base-modal-footer">
+    <div *ngIf="selectedCharacter == null && deleteAction == false && addOrEditAction == false && helpWindow == false" class="base-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onClose(true)">Close</button>
         <button type="button" class="nna-button-primary"(click)="onCharacterToAdd()">Add character</button>
     </div>
 
-    <div *ngIf="selectedCharacter && deleteAction == true && addOrEditAction == false" class="base-modal-footer">
+    <div *ngIf="selectedCharacter && deleteAction == true && addOrEditAction == false && helpWindow == false" class="base-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onCharacterCancelDelete()">Cancel</button>
         <button type="button" class="nna-button-primary"(click)="onCharacterDelete()">Delete</button>
     </div>
 
-    <div *ngIf="deleteAction == false && addOrEditAction == true" class="base-modal-footer">
+    <div *ngIf="deleteAction == false && addOrEditAction == true && helpWindow == false" class="base-modal-footer">
         
         <button *ngIf="selectedCharacter != null" type="button" class="nna-button-secondary" (click)="onCharacterCancelEdit()">Cancel</button>
         <button *ngIf="selectedCharacter != null" type="button" class="nna-button-primary"(click)="onCharacterEdit()">Save</button>

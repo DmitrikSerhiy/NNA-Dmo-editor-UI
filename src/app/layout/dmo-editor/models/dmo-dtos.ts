@@ -46,7 +46,7 @@ export class NnaMovieCharacterInDmoDto {
 
     goal?: string;
     unconsciousGoal?: string;
-    character?: string[];
+    characterBeatIds?: string[];
     characterization?: string;
     characterContradictsCharacterization: boolean;
     characterContradictsCharacterizationDescription?: string;

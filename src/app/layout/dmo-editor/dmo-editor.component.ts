@@ -9,6 +9,7 @@ import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDt
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
+import { EditorSharedService } from './helpers/editor-shared.service';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -77,7 +78,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		public matModule: MatDialog,
 		private cdRef: ChangeDetectorRef,
 		private dataGenerator: BeatGeneratorService,
-		private nnaTooltipService: NnaTooltipService
+		private nnaTooltipService: NnaTooltipService,
+		private editorSharedService: EditorSharedService
 		) { }
 
 	async ngOnInit(): Promise<void> {
@@ -351,8 +353,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.updatePlotPoints();
 			this.cdRef.detectChanges();
 		}
-
-		console.log('finished');
 	}
 
 
@@ -383,8 +383,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	
 	private async finalizeCharactersPopup(openOnAction: any): Promise<void> {
+		let characterBeats = this.selectBeatDtos();
+		characterBeats = characterBeats.filter(beat => beat.type == 3);
 		const popupResult = await this.matModule
-			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, openOnAction: openOnAction }, width: '600px' })
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, beats: characterBeats, openOnAction: openOnAction }, width: '600px' })
 			.afterClosed()
 			.toPromise();
 
@@ -598,55 +600,13 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private buildTimeDtoFromBeat(beatId: string): NnaBeatTimeDto {
 		let selectedTimePickerElement: any;
 		this.timePickerElements.forEach(timePicker => {
-			if (this.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
+			if (this.editorSharedService.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
 				selectedTimePickerElement = timePicker.nativeElement;
 				return;
 			}
 		});
 		
-		return this.convertTimeToDto(selectedTimePickerElement.value);
-	}
-
-	private selectBeatIdFromBeatDataHolder(nativeElement: any): string {
-		let beatSufix = 'beat_';
-		return nativeElement.getAttribute('id').substring(beatSufix.length);
-	}
-
-	private selectBeatIdFromTimePicker(nativeElement: any): string {
-		let beatSufix = 'time_picker_';
-		return nativeElement.getAttribute('id').substring(beatSufix.length);
-	}
-  
-	private convertTimeToDto(value: string): NnaBeatTimeDto {
-		let time = value.replace(/:+/g, '');
-		time = time.replace(/ +/g, '0');
-		
-		var timeDto = new NnaBeatTimeDto();
-		timeDto.hours = 0;
-		timeDto.minutes = 0;
-		timeDto.seconds = 0;
-
-		if (time.length == 1) {
-			timeDto.hours = +time[0];
-			return timeDto;
-		} else if (time.length > 1 && time.length <= 3) {
-			timeDto.hours = +time[0];
-		if (time.length == 2) {
-			timeDto.minutes = +time[1];
-		} else {
-			timeDto.minutes = +`${time[1]}${time[2]}`;
-		}
-			return timeDto;
-		}
-
-		timeDto.hours = +time[0];
-		timeDto.minutes = +`${time[1]}${time[2]}`;
-		if (time.length == 4) {
-			timeDto.seconds = +time[3];
-		} else {
-			timeDto.seconds = +`${time[3]}${time[4]}`;
-		}
-		return timeDto;
+		return this.editorSharedService.convertTimeToDto(selectedTimePickerElement.value);
 	}
 
 	private selectBeatDtos(): NnaBeatDto[] {
@@ -656,14 +616,14 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	private selectSingleBeatForClient(beatElement: HTMLElement, index): NnaBeatDto  {
-		const beatId = this.selectBeatIdFromBeatDataHolder(beatElement);
+		const beatId = this.editorSharedService.selectBeatIdFromBeatDataHolder(beatElement);
 		const beat: NnaBeatDto = {
 			beatId: beatId,
 			order: index,
 			text: encodeURIComponent(beatElement.innerHTML),
 			time: this.buildTimeDtoFromBeat(beatId),
 			type: +beatElement.dataset.beatType,
-			charactersInBeat: this.selectCharactersFromBeatElement(beatElement)
+			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement)
 		}
 
 		return beat;
@@ -672,46 +632,17 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private selectSingleBeatForServer(index: number): NnaBeatDto {
 		const beatElement = this.beatElements.toArray()[index].nativeElement;
-		const beatId = this.selectBeatIdFromBeatDataHolder(beatElement);
+		const beatId = this.editorSharedService.selectBeatIdFromBeatDataHolder(beatElement);
 		const beat : NnaBeatDto = {
 			beatId: beatId,
 			order: index,
-			text: encodeURIComponent(this.getBeatTextWithInterpolatedCharacterTags(beatElement)),
+			text: encodeURIComponent(this.editorSharedService.getBeatTextWithInterpolatedCharacterTags(beatElement)),
 			time: this.buildTimeDtoFromBeat(beatId),
 			type: beatElement.dataset.beatType,
-			charactersInBeat: this.selectCharactersFromBeatElement(beatElement)
+			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement)
 		}
 
 		return beat;
-	}
-
-	private selectCharactersFromBeatElement(beatElement: any): NnaMovieCharacterInBeatDto[] {
-		let characters: NnaMovieCharacterInBeatDto[] = [];
-		(beatElement as HTMLElement).childNodes?.forEach((childNode: HTMLElement) => {
-			if (childNode.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
-				characters.push({
-					id: childNode.dataset.id, 
-					characterId: childNode.dataset.characterId, 
-					name: childNode.nodeValue, 
-					color: childNode.style.borderBottomColor 
-				} as NnaMovieCharacterInBeatDto )
-			}
-		});
-		return characters;
-	}
-
-	private getBeatTextWithInterpolatedCharacterTags(beatElement: HTMLElement): string {
-		let beatCopy = beatElement.cloneNode(true) as HTMLElement;
-		beatCopy.childNodes?.forEach((childNode: HTMLElement) => {
-			if (childNode.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
-				const characterInBeatId = childNode.dataset.id;
-				const interpolatedCharacterTag = document.createTextNode(NnaCharacterInterpolatorPrefix + characterInBeatId + NnaCharacterInterpolatorPostfix);
-				childNode.parentElement.insertBefore(interpolatedCharacterTag, childNode);
-				childNode.remove();
-			}
-		});
-
-		return beatCopy.innerHTML;
 	}
 
 	// private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {

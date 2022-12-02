@@ -173,7 +173,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 			return;
 		}
 
-		console.log(this.dmoPlotDetailsForm.valid);
 		if (!this.dmoPlotDetailsForm.valid) {
 			this.dmoPlotDetailsValidations = [];
 			
@@ -231,7 +230,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 		} else {
 			this.helpWindow = false;
 		}
-	
 	}
 
 	onClose() {

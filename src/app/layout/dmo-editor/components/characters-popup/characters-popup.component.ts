@@ -1,14 +1,16 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { DomSanitizer } from '@angular/platform-browser';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { compare } from 'fast-json-patch';
 import { take } from 'rxjs/internal/operators/take';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
-import { NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
+import { EditorSharedService } from '../../helpers/editor-shared.service';
+import { NnaBeatDto, NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
 import { CharactersColorPaleteService } from '../../services/characters-color-palete.service';
 import { CharactersService } from '../../services/characters.service';
 
@@ -21,6 +23,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	charactersTableColumn: string[];
 	characters: NnaMovieCharacterInDmoDto[] = [];
+	characterBeats: NnaBeatDto[];
 	dmoId: string;
 	charactersCount: number;
 	charactersTable: MatTableDataSource<any>;
@@ -57,6 +60,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	deleteAction: boolean = false;
 	addOrEditAction: boolean = false;
 	charactersAreDirty: boolean = false;
+	helpWindow: boolean = false;
 	operations: string[] = [];
 
 	private nameIsMissingValidationMessage: string;
@@ -76,15 +80,20 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 	@ViewChild('characterNameInput') characterNameInputElement: ElementRef;
 
+	@ViewChildren('beatsWithCurrentCharacter') beatsWithCurrentCharacterElements: QueryList<ElementRef>;
+
 	constructor(
 		private charactersService: CharactersService,
 		private nnaHelpersService: NnaHelpersService,
 		private charactersColorPaleteService: CharactersColorPaleteService,
+		private editorSharedService: EditorSharedService,
+		public domSanitizer: DomSanitizer,
 		private cd: ChangeDetectorRef,
 		private dialogRef: MatDialogRef<CharactersPopupComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any
 	) { 
 		this.dmoId = data.dmoId;
+		this.characterBeats = data.beats;
 		
 		this.nameIsMissingValidationMessage = 'Character name is missing';
 		this.aliasesNaxLengthExceededValidationMessage = 'Maximum character aliases length exceeded';
@@ -292,9 +301,8 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.goal.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.goal));
 		this.unconsciousGoal.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.unconsciousGoal));
-		this.character = this.selectedCharacter.character;
+		this.character = this.selectTrueCharacterFromBeats();
 		this.characterization.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterization));
-
 		this.characterContrCharacterization.setValue(this.selectedCharacter.characterContradictsCharacterization);
 		this.characterContrCharacterizationDescription.setValue(this.nnaHelpersService.sanitizeSpaces(this.selectedCharacter.characterContradictsCharacterizationDescription));
 		this.characterEmpathy.setValue(this.selectedCharacter.emphathetic);
@@ -402,8 +410,22 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.selectedCharacter = row;
 	}
 
+	//todo: check for direct color pick
 	onSetNextRandomColor(): void {
-		this.color.setValue(this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color)));
+		const newColor = this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color));
+		this.color.setValue(newColor);
+		//const parser = new DOMParser();
+
+		// this.beatsWithCurrentCharacterElements.toArray().forEach(beatsWithCurrentCharacterElement => {
+		// 	let newTagString = this.editorSharedService.overrideCharacterTagStyles(beatsWithCurrentCharacterElement.nativeElement.innerHTML, [{name: 'borderBottomColor', value: newColor }]);
+		// 	let newdoc = parser.parseFromString(newTagString, 'text/html');
+		// 	// let newTag = newdoc.getElementsByTagName('li')[0];
+		// 	let newTagContent = (newdoc.body as HTMLElement).innerHTML;
+
+		// 	//beatsWithCurrentCharacterElement.nativeElement.set innerHTML = newInnerH.innerHTML;
+		// });
+
+		//this.cd.detectChanges();
 	}
 
 	setCharacterContrCharacterization(): void {
@@ -419,6 +441,32 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	setCharacterSympathy(): void {
 		this.showCharacterSympathyDescriptionInput = !this.showCharacterSympathyDescriptionInput;
 		this.characterSympathyDescription.setValue('');
+	}
+
+	toggleHelp(open: boolean) {
+		if (open == true) {
+			this.helpWindow = true;
+		} else {
+			this.helpWindow = false;
+		}
+	}
+
+	overrideCharacterCursorStyle(rowBeatText: string): string {
+		return this.editorSharedService.overrideCharacterTagStyles(rowBeatText, [{name: 'cursor', value: 'default' }]);
+	}
+
+	private selectTrueCharacterFromBeats(): string[] {
+		const trueCharacterBeats = this.characterBeats?.filter(beat => this.selectedCharacter.characterBeatIds?.some(beatId => beatId == beat.beatId)) ?? [];
+		if (trueCharacterBeats.length == 0) {
+			return [];
+		}
+
+		let trueCharacters: string[] = [];
+		trueCharacterBeats.forEach(trueCharacterBeat => {
+			trueCharacters.push(this.editorSharedService.getBeatTime(trueCharacterBeat.time, true) + ' ' + this.editorSharedService.getBeatText(trueCharacterBeat, false, false));
+		});
+		
+		return trueCharacters;
 	}
 
 	private toggleValidations(): void {
@@ -504,7 +552,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.color.setValue('#000000');
 		this.goal.setValue('');
 		this.unconsciousGoal.setValue('');
-		this.character = null;
+		this.character = [];
 		this.characterization.setValue('');
 		this.characterContrCharacterization.setValue(false);
 		this.characterContrCharacterizationDescription.setValue('');
