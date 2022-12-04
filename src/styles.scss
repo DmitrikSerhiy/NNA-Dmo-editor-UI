@@ -223,6 +223,21 @@ body {
 	background-color: transparent !important;
 }
 
+.nna-select-option {
+	mat-option {
+		&:hover {
+			background: $input-underline-gradient, $input-underline-gradient !important;
+			background-repeat: no-repeat !important;
+			background-size: 100% 1px !important;
+			background-position: bottom, top !important;
+		}
+	}
+
+	mat-option.mat-selected {
+		color: $secondary-color !important;
+	}
+}
+
 
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';

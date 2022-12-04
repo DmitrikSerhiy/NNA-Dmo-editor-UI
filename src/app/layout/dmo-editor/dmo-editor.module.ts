@@ -17,6 +17,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 const routes: Routes = [
 	{ path: '', component: DmoEditor, data: { shouldReuse: false } }
@@ -37,7 +38,8 @@ const routes: Routes = [
 		MatCheckboxModule,
 		MatTableModule,
 		MatPaginatorModule,
-		MatSortModule
+		MatSortModule,
+		MatSelectModule
 	]
 })
 export class DmoEditorModule { }

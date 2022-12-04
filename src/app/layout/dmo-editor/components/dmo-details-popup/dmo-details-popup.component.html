@@ -27,14 +27,14 @@
                         <label for="dmoNameInput" class="nna-input-label">DMO name</label>
                     </div>
 
-                    <div class="nna-input-group">
-                        <select autocomplete="off" id="dmoStatusInput" name="dmoStatusInput" formControlName="dmoStatusInput" class="form-control nna-input" >
-                            <option value="0">In progress</option>
-                            <option value="1">Completed</option>
-                            <option value="2">Not finished</option>
-                        </select>
-                        <label for="dmoStatusInput" class="nna-input-label">Status</label>
-                    </div>
+                    <mat-form-field appearance="none" class="nna-input-group">
+                        <label for="dmoNameInput" class="nna-input-label">Status</label>
+                        <mat-select autocomplete="off" id="dmoStatusInput" name="dmoStatusInput" formControlName="dmoStatusInput" class="form-control nna-input nna-select" panelClass="nna-select-option">
+                            <mat-option [value]="0">In progress</mat-option>
+                            <mat-option [value]="2">Not finished</mat-option>
+                            <mat-option [value]="1">Completed</mat-option>
+                        </mat-select>
+                    </mat-form-field>
 
                     <div class="nna-input-group">
                         <textarea autocomplete="off" id="shortCommentInput" name="shortCommentInput" formControlName="shortCommentInput" 
