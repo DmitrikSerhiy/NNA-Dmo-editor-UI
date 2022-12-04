@@ -61,7 +61,7 @@
 
             <div class="nna-input-group character-color-input-group">
                 <input autocomplete="off" type="color" name="colorInput" id="colorInput" formControlName="colorInput" 
-                    class="form-control nna-color-input" placeholder="Color" />
+                    class="form-control nna-color-input" placeholder="Color" (change)="setColorManually()" />
                 <label for="colorInput" class="nna-color-input-label" style="font-size: 10px !important;">Color</label>
 
                 <button type="button" class='nna-icon-button nna-button-primary' title="Select other predefined color" (click)='onSetNextRandomColor()'>

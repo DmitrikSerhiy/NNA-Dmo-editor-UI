@@ -410,22 +410,14 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.selectedCharacter = row;
 	}
 
-	//todo: check for direct color pick
 	onSetNextRandomColor(): void {
 		const newColor = this.charactersColorPaleteService.getNotUsedColor(this.characters.map(c => c.color));
 		this.color.setValue(newColor);
-		//const parser = new DOMParser();
+		this.refreshBeatsTagsWithNewColor(newColor);
+	}
 
-		// this.beatsWithCurrentCharacterElements.toArray().forEach(beatsWithCurrentCharacterElement => {
-		// 	let newTagString = this.editorSharedService.overrideCharacterTagStyles(beatsWithCurrentCharacterElement.nativeElement.innerHTML, [{name: 'borderBottomColor', value: newColor }]);
-		// 	let newdoc = parser.parseFromString(newTagString, 'text/html');
-		// 	// let newTag = newdoc.getElementsByTagName('li')[0];
-		// 	let newTagContent = (newdoc.body as HTMLElement).innerHTML;
-
-		// 	//beatsWithCurrentCharacterElement.nativeElement.set innerHTML = newInnerH.innerHTML;
-		// });
-
-		//this.cd.detectChanges();
+	setColorManually(): void {
+		this.refreshBeatsTagsWithNewColor(this.color.value);
 	}
 
 	setCharacterContrCharacterization(): void {
@@ -454,19 +446,46 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	overrideCharacterCursorStyle(rowBeatText: string): string {
 		return this.editorSharedService.overrideCharacterTagStyles(rowBeatText, [{name: 'cursor', value: 'default' }]);
 	}
+	
+
+	private refreshBeatsTagsWithNewColor(color: string): void {
+		const parser = new DOMParser();
+		Array.from(document.getElementsByClassName('temp-true-character-option'))?.forEach(tempTag => {
+			tempTag.remove();
+		});
+
+		this.beatsWithCurrentCharacterElements.toArray().forEach(beatsWithCurrentCharacterElement => {
+			let newTagString = this.editorSharedService.overrideCharacterTagStyles(beatsWithCurrentCharacterElement.nativeElement.innerHTML, [{name: 'borderBottomColor', value: color }]);
+			let elem = document.createElement('li');
+			elem.innerHTML = parser.parseFromString(newTagString, 'text/html').body.innerHTML;
+			elem.style.fontSize = "14px";
+			elem.style.fontFamily = '"Courier New", Courier, monospace';
+			elem.classList.add('temp-true-character-option');
+			beatsWithCurrentCharacterElement.nativeElement.parentNode.insertBefore(elem, beatsWithCurrentCharacterElement.nativeElement);
+			beatsWithCurrentCharacterElement.nativeElement.style.display = 'none';
+		 });
+	}
 
 	private selectTrueCharacterFromBeats(): string[] {
+		return this.getTrueCharactersView(this.getCurrentBeatsForSelectedCharacter());
+	}
+
+	private getTrueCharactersView(beats: NnaBeatDto[], incluedeInnerTags: boolean = false, setStyle: boolean = true) {
+		let trueCharacters: string[] = [];
+		beats.forEach(trueCharacterBeat => {
+			trueCharacters.push(this.editorSharedService.getBeatTime(trueCharacterBeat.time, true) + ' ' + decodeURIComponent(trueCharacterBeat.text))//+ this.editorSharedService.getBeatText(trueCharacterBeat, incluedeInnerTags, setStyle));
+		});
+		
+		return trueCharacters;
+	}
+
+	private getCurrentBeatsForSelectedCharacter(): NnaBeatDto[]  {
 		const trueCharacterBeats = this.characterBeats?.filter(beat => this.selectedCharacter.characterBeatIds?.some(beatId => beatId == beat.beatId)) ?? [];
 		if (trueCharacterBeats.length == 0) {
 			return [];
 		}
 
-		let trueCharacters: string[] = [];
-		trueCharacterBeats.forEach(trueCharacterBeat => {
-			trueCharacters.push(this.editorSharedService.getBeatTime(trueCharacterBeat.time, true) + ' ' + this.editorSharedService.getBeatText(trueCharacterBeat, false, false));
-		});
-		
-		return trueCharacters;
+		return trueCharacterBeats;
 	}
 
 	private toggleValidations(): void {
