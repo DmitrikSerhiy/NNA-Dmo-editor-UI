@@ -90,7 +90,7 @@
                 <ul *ngIf="character?.length > 0" class="true-character-list">
                     <li #beatsWithCurrentCharacter *ngFor="let characterDescription of character" [innerHTML]="domSanitizer.bypassSecurityTrustHtml(overrideCharacterCursorStyle(characterDescription))" class="true-character-option"></li>
                 </ul>
-                <p *ngIf="character?.length == 0" class="true-character-placeholder">Character beat is not detected</p>
+                <p *ngIf="character?.length == 0" class="true-character-placeholder">Character beats are not detected</p>
             </div>
 
             <div class="nna-input-group">

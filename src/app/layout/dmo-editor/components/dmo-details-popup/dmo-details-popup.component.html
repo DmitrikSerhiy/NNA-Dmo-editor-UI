@@ -28,7 +28,7 @@
                     </div>
 
                     <mat-form-field appearance="none" class="nna-input-group">
-                        <label for="dmoNameInput" class="nna-input-label">Status</label>
+                        <label for="dmoStatusInput" class="nna-input-label">Status</label>
                         <mat-select autocomplete="off" id="dmoStatusInput" name="dmoStatusInput" formControlName="dmoStatusInput" class="form-control nna-input nna-select" panelClass="nna-select-option">
                             <mat-option [value]="0">In progress</mat-option>
                             <mat-option [value]="2">Not finished</mat-option>
@@ -121,7 +121,58 @@
                 </div>
                 
             </mat-tab>
-            <mat-tab label="Conflict" class="nna-tab"> Conflict </mat-tab>
+            <mat-tab *ngIf="dmoDetails.charactersForConflict" label="Conflict" class="nna-tab"> 
+                <form *ngIf="!helpWindow" role="form" [formGroup]="conflictForm" class="nna-form conflict-form">
+
+                    <div class="conflict-sides-container">
+                        <div class="conflict-side">
+                            <h4>Protagonist</h4>
+                            <mat-form-field appearance="none" class="nna-input-group group-without-margin">
+                                <mat-label>Main hero</mat-label>
+                                <mat-select [(value)]="selectedPtotagonist" autocomplete="off" id="protagonistInput" name="protagonistInput" formControlName="protagonistInput" class="form-control nna-input nna-select" panelClass="nna-select-option" 
+                                    (selectionChange)="setCharacterInConflict($event, 'mat-select-value-3')">
+                                    <mat-option>Not selected</mat-option>
+                                    <mat-option *ngFor="let dmoCharacter of dmoDetails.charactersForConflict" attr.style="color: {{dmoCharacter.color}}" [value]="dmoCharacter.characterId">{{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> </mat-option>
+                                </mat-select>
+                                <p *ngIf="selectedPtotagonist" class="mat-select-value-3-dropdown-description dropdown-description"></p>
+                            </mat-form-field>
+               
+                            <mat-checkbox *ngIf="selectedPtotagonist" id="protagonistGoalCheckbox" name="protagonistGoalCheckbox" formControlName="protagonistGoalCheckbox">
+                                Goal achieved?
+                            </mat-checkbox>
+                        </div>
+
+                        <div class="conflict-side conflict-side-right">
+                            <h4>Antagonist</h4>
+                            <mat-form-field appearance="none" class="nna-input-group group-without-margin">
+                                <mat-label>Main anti-hero</mat-label>
+                                <mat-select [(value)]="selectedAntagonist" autocomplete="off" id="antagonistInput" name="antagonistInput" formControlName="antagonistInput" class="form-control nna-input nna-select" panelClass="nna-select-option" 
+                                    (selectionChange)="setCharacterInConflict($event, 'mat-select-value-5')">
+                                    <mat-option>Not selected</mat-option>
+                                    <mat-option *ngFor="let dmoCharacter of dmoDetails.charactersForConflict" attr.style="color: {{dmoCharacter.color}}" [value]="dmoCharacter.characterId">
+                                        {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
+                                    </mat-option>
+                                </mat-select>
+                                <p *ngIf="selectedAntagonist" class="mat-select-value-5-dropdown-description dropdown-description"></p>
+                            </mat-form-field>
+         
+                            <mat-checkbox *ngIf="selectedAntagonist" id="antagonistGoalCheckbox" name="antagonistGoalCheckbox" formControlName="antagonistGoalCheckbox">
+                                Goal achieved?
+                            </mat-checkbox>
+
+                        </div>
+
+                        <div class="conflict-versus">
+                            VS
+                        </div>
+                    </div>
+                </form>
+
+                <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window">
+                    help conflict
+                </div>
+
+            </mat-tab>
         </mat-tab-group>
     </div>
     <div *ngIf="dmoIsLoaded && !helpWindow" class="base-modal-footer">
@@ -133,6 +184,11 @@
             <button *ngIf="currentTabIndex === 1 && !dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
             <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="savePlotChanges(false)">Cancel</button>
             <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
+
+
+            <button *ngIf="currentTabIndex === 2 && !conflictForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+            <button *ngIf="currentTabIndex === 2 && conflictForm.dirty" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 2 && conflictForm.dirty" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button>
         
     </div>
 </div>

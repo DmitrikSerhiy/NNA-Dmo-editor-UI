@@ -112,5 +112,15 @@ export interface DmoDetailsDto {
     didacticismDescription?: string;
     controllingIdeaId?: number 
     didacticism?: boolean;
+
+    charactersForConflict: DmoCharactersForConflictDto[];
+}
+
+export interface DmoCharactersForConflictDto {
+    characterId: string;
+    name: string;
+    aliases?: string;
+    color: string;
+    goal?: string;
 }
 

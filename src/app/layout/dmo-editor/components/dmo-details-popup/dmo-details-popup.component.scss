@@ -1,7 +1,14 @@
+@import "src/styles/fonts-mixins.scss";
+
 .base-modal {
     .base-modal-header {
         user-select: none;
         display: flex;
+        
+        .modal-title {
+            @include font-primary-heading();
+        }
+
         .nna-button {
             margin-left: auto;
         }
@@ -13,7 +20,7 @@
             .nna-input-group, .validation-container {
                 margin-top: 14px;
 
-                .field-description {
+                .field-description, .dropdown-description {
                     opacity: .5;
                     user-select: none;
                 }
@@ -34,6 +41,11 @@
                 }
             }
 
+            .group-without-margin {
+                margin-top: 0px !important;
+                padding-bottom: 0px !important;
+            }
+
             .controlling-idea-type-options {
                 display: flex;
                 justify-content: space-evenly;
@@ -41,6 +53,41 @@
 
             .didacticism-checkbox {
                 margin-top: 14px;
+            }
+
+
+            .conflict-sides-container {
+                display: flex;
+                margin-top: 14px;
+
+                .conflict-side {
+                    
+                    flex: 0 1 40%;
+                    h4 {
+                        @include font-primary-heading();
+                        margin-bottom: 0px;
+                    }
+                }
+
+                .conflict-side-right {
+                    margin-left: auto;
+                }
+
+                .conflict-versus {
+                    @include font-primary-heading();
+                    position: absolute;
+                    left: 45%;
+                    top: 65px;
+                }
+
+                .dropdown-description {
+                    margin-top: 14px;
+                    min-height: 50px;
+
+                    overflow-x: hidden;
+					text-overflow: ellipsis;
+					white-space: pre-line;
+                }
             }
 
             .help-window {

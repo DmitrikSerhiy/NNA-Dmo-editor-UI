@@ -238,6 +238,26 @@ body {
 	}
 }
 
+.mat-form-field.mat-focused .mat-form-field-label, .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
+	color: $secondary-color !important;
+}
+
+.mat-form-field-type-mat-select .mat-form-field-label {
+	@include font-primary-info();
+}
+
+.mat-form-field-empty.mat-form-field-label, .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+	@include font-primary-info();
+}
+
+.mat-form-field-subscript-wrapper {
+	margin-top: 0px !important;
+}
+
+.mat-form-field-wrapper {
+	padding-bottom: 0px !important;
+}
+
 
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';

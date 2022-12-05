@@ -1,9 +1,11 @@
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DmoDetailsDto, UpdateDmoDetailsDto, UpdateDmoPlotDetailsDto  } from 'src/app/layout/models';
 import { EditorHub } from '../../services/editor-hub.service';
 import { compare } from 'fast-json-patch';
+import { MatSelectChange } from '@angular/material/select';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 
 @Component({
@@ -15,6 +17,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	dmoDetailsForm: FormGroup;
 	dmoPlotDetailsForm: FormGroup;
+	conflictForm: FormGroup;
 	currentTabIndex: number = 0;
 	helpWindow: boolean = false;
 	private maxEntityNameLength = 100;
@@ -37,6 +40,12 @@ export class DmoDetailsPopupComponent implements OnInit {
 	get didacticism() { return this.dmoPlotDetailsForm.get('didacticismCheckbox'); }
 	get didacticismDescription() { return this.dmoPlotDetailsForm.get('didacticismInput'); }
 
+	get protagonist() { return this.conflictForm.get('protagonistInput'); }
+	get antagonist() { return this.conflictForm.get('antagonistInput'); }
+	get antagonistGoalAchieved() { return this.conflictForm.get('antagonistGoalCheckbox'); }
+	get protagonistGoalAchieved() { return this.conflictForm.get('protagonistGoalCheckbox'); }
+
+
 	private maxNameLengthExceededValidationMessage: string;
 	private maxMovieTitleLengthExceededValidationMessage: string;
 	private maxShortCommentLengthExceededValidationMessage: string;
@@ -48,6 +57,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	dmoDetailsValidations: string[] = [];
 	dmoPlotDetailsValidations: string[] = [];
+	conflictFormValidations: string[] = [];
 
 
 	updatedTab: string[] = [];
@@ -79,6 +89,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	async ngOnInit(): Promise<void> {
 		this.dmoDetails = await this.editorHub.getDmoDetails(this.dmoId);
+		console.log(this.dmoDetails);
 		this.dmoIsLoaded = true;
 		this.dialogRef.backdropClick().subscribe(() => this.onClose());
 		this.dmoDetailsForm = new FormGroup({
@@ -96,8 +107,17 @@ export class DmoDetailsPopupComponent implements OnInit {
 			'didacticismInput': new FormControl('',  [Validators.maxLength(this.maxLongEntityLength)])	
 		});
 
+		this.conflictForm = new FormGroup({
+			'protagonistInput': new FormControl(''),
+			'antagonistInput': new FormControl(''),
+			'protagonistGoalCheckbox': new FormControl(''),
+			'antagonistGoalCheckbox': new FormControl('')
+			
+		});
+
 		this.setDmoDetailsValues();
 		this.setDmoPlotDetailsValues();
+		this.setConflictValues();
 	}
 
 	async saveDmoDetails(shouldSave: boolean): Promise<void> {
@@ -221,6 +241,20 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.updateDmoPlotDetailsInitialValues();
 		this.resetDmoPlotDetailsForm();
 		this.setDmoPlotDetailsValues();
+	}
+
+	saveConflictChanges(shouldSave: boolean): Promise<void> {
+		if (this.currentTabIndex !== 2) {
+			return;
+		}
+		
+		if (shouldSave === false) {
+			this.resetConflictForm();
+			// todo
+			return;
+		}
+
+		
 
 	}
 
@@ -234,6 +268,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	onClose() {
 		this.resetDmoDetailsForm();
+		this.resetDmoPlotDetailsForm();
+		this.resetConflictForm();
 
 		this.dialogRef.close({
 			cancelled: false,
@@ -251,6 +287,10 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.resetDmoPlotDetailsForm();
 			this.setDmoPlotDetailsValues();
 		}
+		if (this.currentTabIndex === 2) {
+			this.resetConflictForm();
+			// todo
+		}
 		this.helpWindow = false;
 		this.currentTabIndex = $event;
 	} 
@@ -265,6 +305,44 @@ export class DmoDetailsPopupComponent implements OnInit {
 		if (!this.didacticism.value) {
 			this.didacticismDescription.setValue('');
 		}
+	}
+
+
+	setCharacterInConflict($event: MatSelectChange, dropdownId: string): void {
+		if (!$event.value) {
+			if (dropdownId == 'mat-select-value-3') { // todo: fix that shit
+				this.protagonistGoalAchieved.setValue(false);
+			}
+			if (dropdownId == 'mat-select-value-5') {
+				this.antagonistGoalAchieved.setValue(false);
+			}
+			return;
+		}
+	
+		let dropdowns = Array.from(document.getElementsByClassName('mat-select-value')) as HTMLElement[];
+		const character = this.dmoDetails.charactersForConflict.find(character => character.characterId == $event.value)
+
+		if (!character) {
+			return;	
+		}
+
+		dropdowns.forEach(dropdown => {
+			if (dropdown.id == dropdownId) {
+				dropdown.style.color = character.color;
+			} 
+		});
+
+		setTimeout(() => {
+			let description = (Array.from(document.getElementsByClassName(dropdownId + '-dropdown-description')) as HTMLElement[])[0];
+			if (!character.goal) {
+				return;
+			}
+			if (character.goal.length >= 65) {
+				description.innerText = character.goal.substring(0, 62) + '...';
+				return;
+			}
+			description.innerText = character.goal;
+		}, 100);
 	}
 
 
@@ -288,6 +366,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.dmoDetails.shortComment = this.shortComment.value;
 	}
 
+
 	private setDmoPlotDetailsValues(): void {
 		this.premise.setValue(this.dmoDetails.premise);
 		this.controllingIdea.setValue(this.dmoDetails.controllingIdea);
@@ -310,4 +389,25 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.dmoDetails.controllingIdeaId = this.controllingIdeaType.value;
 	}
 
+	private resetConflictForm() {
+		let dropdowns = Array.from(document.getElementsByClassName('mat-select-value')) as HTMLElement[];
+		let descriptions = Array.from(document.getElementsByClassName('dropdown-description')) as HTMLElement[];
+
+		dropdowns.forEach(dropdown => {
+			dropdown.style.color = 'unset';
+		});
+
+		descriptions.forEach(description => {
+			description.innerText = '';
+		});
+
+		this.conflictForm.clearValidators();
+		this.conflictForm.reset();
+		this.conflictFormValidations = [];
+
+	}
+
+	private setConflictValues(): void {
+
+	}
 }
