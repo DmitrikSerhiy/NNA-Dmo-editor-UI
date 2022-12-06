@@ -1,11 +1,12 @@
-import { Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DmoDetailsDto, UpdateDmoDetailsDto, UpdateDmoPlotDetailsDto  } from 'src/app/layout/models';
+import { DmoConflictDto, DmoDetailsDto, UpdateDmoDetailsDto, UpdateDmoPlotDetailsDto  } from 'src/app/layout/models';
 import { EditorHub } from '../../services/editor-hub.service';
 import { compare } from 'fast-json-patch';
 import { MatSelectChange } from '@angular/material/select';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 	dmoIsLoaded: boolean = false;
 	showPremiseQuestionMark: boolean = false;
 	initialControllingIdeaType: number = 0;
+	conflictPairs: any[];
 
 	get dmoName() { return this.dmoDetailsForm.get('dmoNameInput'); }
 	get movieTitle() { return this.dmoDetailsForm.get('movieTitleInput'); }
@@ -44,6 +46,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 	get antagonist() { return this.conflictForm.get('antagonistInput'); }
 	get antagonistGoalAchieved() { return this.conflictForm.get('antagonistGoalCheckbox'); }
 	get protagonistGoalAchieved() { return this.conflictForm.get('protagonistGoalCheckbox'); }
+
+	@ViewChildren('conflictSelect') conflictSelectElements: QueryList<ElementRef>;
 
 
 	private maxNameLengthExceededValidationMessage: string;
@@ -71,6 +75,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	constructor(
 		private dialogRef: MatDialogRef<DmoDetailsPopupComponent>,
+		private nnaHelpersService: NnaHelpersService,
 		private editorHub: EditorHub,
 		@Inject(MAT_DIALOG_DATA) private data: string) {
 			this.dmoId = data;
@@ -89,7 +94,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	async ngOnInit(): Promise<void> {
 		this.dmoDetails = await this.editorHub.getDmoDetails(this.dmoId);
-		console.log(this.dmoDetails);
 		this.dmoIsLoaded = true;
 		this.dialogRef.backdropClick().subscribe(() => this.onClose());
 		this.dmoDetailsForm = new FormGroup({
@@ -108,10 +112,10 @@ export class DmoDetailsPopupComponent implements OnInit {
 		});
 
 		this.conflictForm = new FormGroup({
-			'protagonistInput': new FormControl(''),
-			'antagonistInput': new FormControl(''),
-			'protagonistGoalCheckbox': new FormControl(''),
-			'antagonistGoalCheckbox': new FormControl('')
+			// 'protagonistInput': new FormControl(''),
+			// 'antagonistInput': new FormControl(''),
+			// 'protagonistGoalCheckbox': new FormControl(''),
+			// 'antagonistGoalCheckbox': new FormControl('')
 			
 		});
 
@@ -308,9 +312,24 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 
-	setCharacterInConflict($event: MatSelectChange, dropdownId: string): void {
+	selectCharacter($event: MatSelectChange, selectId: string) {
 		if (!$event.value) {
-			if (dropdownId == 'mat-select-value-3') { // todo: fix that shit
+			console.log('reset');
+			return;
+		}
+
+		const character = this.dmoDetails.charactersForConflict.find(character => character.characterId == $event.value)
+		if (!character) {
+			return;	
+		}
+
+		let elemm = this.conflictSelectElements.toArray().find(elem => elem.nativeElement.id == selectId);
+	}
+
+
+	setCharacterInConflict($event: MatSelectChange, dropdownId: string): void { // todo: remove
+		if (!$event.value) {
+			if (dropdownId == 'mat-select-value-3') {
 				this.protagonistGoalAchieved.setValue(false);
 			}
 			if (dropdownId == 'mat-select-value-5') {
@@ -345,6 +364,13 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}, 100);
 	}
 
+	getDynamicControlIdForConflictForm(dto?: DmoConflictDto): string {
+		if (!dto) {
+			return 'empty-field';
+		}
+
+		return dto.characterId + '--' + dto.pairId + '--' + dto.characterType;
+	}
 
 	private resetDmoDetailsForm(): void {
 		this.dmoDetailsForm.clearValidators();
@@ -408,6 +434,22 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	private setConflictValues(): void {
+		if (this.dmoDetails.conflicts?.length == 0) {
+			return;
+		}
+
+		this.conflictPairs = [];
+		let conflicts = this.nnaHelpersService.groupBy(this.dmoDetails.conflicts.sort(c => c.pairOrder), c => c.pairId);
+
+		for (let index = 0; index < this.nnaHelpersService.grouppedLength(conflicts); index++) {
+			const conflictPair = this.nnaHelpersService.getGroupItem(conflicts, index) as DmoConflictDto[];
+			let newConflictPair: any = {};
+			newConflictPair.protagonist = conflictPair.find(cp => cp.characterType == 1);
+			newConflictPair.antagonist = conflictPair.find(cp => cp.characterType == 2);
+			this.conflictPairs.push(newConflictPair);
+		}
+
+		console.log(this.conflictPairs);
 
 	}
 }

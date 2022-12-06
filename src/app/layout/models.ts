@@ -114,6 +114,7 @@ export interface DmoDetailsDto {
     didacticism?: boolean;
 
     charactersForConflict: DmoCharactersForConflictDto[];
+    conflicts: DmoConflictDto[];
 }
 
 export interface DmoCharactersForConflictDto {
@@ -122,5 +123,14 @@ export interface DmoCharactersForConflictDto {
     aliases?: string;
     color: string;
     goal?: string;
+}
+
+export interface DmoConflictDto {
+    id: string;
+    pairId: string;
+    pairOrder: number;
+    characterId: string;
+    characterType: number;
+    achieved: boolean;
 }
 

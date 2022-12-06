@@ -20,7 +20,7 @@
             .nna-input-group, .validation-container {
                 margin-top: 14px;
 
-                .field-description, .dropdown-description {
+                .field-description, .selected-character-description {
                     opacity: .5;
                     user-select: none;
                 }
@@ -56,20 +56,17 @@
             }
 
 
-            .conflict-sides-container {
-                display: flex;
+            .conflict-headers {
                 margin-top: 14px;
+                display: flex;
 
-                .conflict-side {
-                    
+                h4 {
                     flex: 0 1 40%;
-                    h4 {
-                        @include font-primary-heading();
-                        margin-bottom: 0px;
-                    }
+                    @include font-primary-heading();
+                    margin-bottom: 0px;
                 }
 
-                .conflict-side-right {
+                h4.right-header {
                     margin-left: auto;
                 }
 
@@ -79,8 +76,26 @@
                     left: 45%;
                     top: 65px;
                 }
+            }
 
-                .dropdown-description {
+
+            
+
+            .conflict-sides-container {
+                display: flex;
+
+
+                .conflict-side {
+                    
+                    flex: 0 1 40%;
+
+                }
+
+                .conflict-side-right {
+                    margin-left: auto;
+                }
+
+                .selected-character-description {
                     margin-top: 14px;
                     min-height: 50px;
 

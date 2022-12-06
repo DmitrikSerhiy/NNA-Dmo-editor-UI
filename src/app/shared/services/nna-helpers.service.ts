@@ -48,4 +48,25 @@ export class NnaHelpersService {
 			return out;
 		}, {});
 	};
+
+	getGroupItem(groupped: any, i: number): any[] {
+		let index = 0;
+		let result: any;
+		for (const groupId in groupped) {
+			if (index == i) {
+				result = groupped[groupId];
+				break;
+			} 
+			index++;
+		}
+		return result; 
+	}
+
+	grouppedLength(groupped: any): number {
+		let count = 0;
+		for (const groupId in groupped) {
+			count++;
+		}
+		return count; 
+	}
 }
