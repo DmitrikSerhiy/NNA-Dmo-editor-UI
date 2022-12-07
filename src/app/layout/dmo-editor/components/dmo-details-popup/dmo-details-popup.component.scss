@@ -1,4 +1,5 @@
 @import "src/styles/fonts-mixins.scss";
+@import "src/styles/colors.scss";
 
 .base-modal {
     .base-modal-header {
@@ -20,7 +21,7 @@
             .nna-input-group, .validation-container {
                 margin-top: 14px;
 
-                .field-description, .selected-character-description {
+                .field-description {
                     opacity: .5;
                     user-select: none;
                 }
@@ -55,7 +56,6 @@
                 margin-top: 14px;
             }
 
-
             .conflict-headers {
                 margin-top: 14px;
                 display: flex;
@@ -74,7 +74,7 @@
                     @include font-primary-heading();
                     position: absolute;
                     left: 45%;
-                    top: 65px;
+                    top: 82px;
                 }
             }
 
@@ -83,26 +83,40 @@
 
             .conflict-sides-container {
                 display: flex;
-
+                margin-bottom: 28px;
 
                 .conflict-side {
-                    
                     flex: 0 1 40%;
-
                 }
 
                 .conflict-side-right {
                     margin-left: auto;
                 }
 
-                .selected-character-description {
+                p {
                     margin-top: 14px;
                     min-height: 50px;
-
-                    overflow-x: hidden;
-					text-overflow: ellipsis;
-					white-space: pre-line;
+                    opacity: .5;
+                    user-select: none;
+                    display: none;
                 }
+
+                .checkbox-container {
+                    display: none;
+                }
+            }
+
+            .primary-conflict {
+                margin-top: 14px;
+
+                border-width: 1px;
+                border-style: solid;
+                border-image: $active-gradient-for-border;
+
+                border-right: none !important;
+                border-left: none !important;
+
+                background: #F7F7F7; // todo: add such background to all active elements (tables, popups etc.)
             }
 
             .help-window {

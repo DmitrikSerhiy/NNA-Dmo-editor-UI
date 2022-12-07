@@ -8,6 +8,7 @@ $for-background-contrast-color:#212123;
 
 $button-border-gradient: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%) 1;
 $active-gradient: linear-gradient(90deg, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%);
+$active-gradient-for-border: linear-gradient(90deg, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%) 1;
 $link-hover-gradient: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%) 1;
 $input-underline-gradient: repeating-linear-gradient(90deg,$primary-color 0px,$intermidiate-color 40%,$secondary-color 100%);
 $sidebar-border: repeating-linear-gradient(90deg, rgba($primary-color, 0.01) 0px,$intermidiate-color 50%,$secondary-color 100%);

@@ -128,26 +128,18 @@
                     <div class="conflict-versus">VS</div>
                 </div>
 
-                <form *ngIf="!helpWindow" role="form" [formGroup]="conflictForm" class="nna-form conflict-form">
-                    
-                    <div class="conflict-sides-container" *ngFor="let loadedPair of conflictPairs">
+                <div *ngIf="!helpWindow" class="nna-form conflict-form">
+                    <div  class="conflict-sides-container" [ngClass]="{'primary-conflict': i === 0}" *ngFor="let loadedPair of conflictPairs; let i = index">
                         <div class="conflict-side">
-
-                            <!-- left protagonist {{loadedPair.protagonist?.characterId}} -->
-
-                            <!-- (selectionChange)="setCharacterInConflict($event, 'mat-select-value-3')" -->
-                            <!-- [(value)]="loadedPair.protagonist.characterId" -->
-                            <!-- *ngIf="loadedPair.protagonist.characterId" -->
-
                             <mat-form-field appearance="none" class="nna-input-group group-without-margin">
-                                <mat-label>Main hero</mat-label>
+                                <mat-label *ngIf="i === 0">Main hero</mat-label>
+                                <mat-label *ngIf="i !== 0">Secondary character</mat-label>
                                 <mat-select 
                                     #conflictSelect
                                     autocomplete="off" 
-                                    attr.id="{{getDynamicControlIdForConflictForm(loadedPair.protagonist)}}" 
-                                    attr.name="{{getDynamicControlIdForConflictForm(loadedPair.protagonist)}}" 
-                                    attr.formControlName="{{getDynamicControlIdForConflictForm(loadedPair.protagonist)}}"
-                                    (selectionChange)="selectCharacter($event, getDynamicControlIdForConflictForm(loadedPair.protagonist))"
+                                    id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-select'}}" 
+                                    (selectionChange)="selectCharacter($event, conflictSelect.id, getUniqueControlIdForConflictForm(loadedPair.protagonist))"
+                                    value="{{ loadedPair.protagonist ? loadedPair.protagonist.characterId : ''  }}"
                                     class="form-control nna-input nna-select" 
                                     panelClass="nna-select-option">
                                     <mat-option>Not selected</mat-option>
@@ -158,20 +150,57 @@
                                             {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
                                     </mat-option>
                                 </mat-select>
-                                <p class="selected-character-description"></p>
+                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-description'}}" attr.class="{{conflictSelect.id + '-description'}}"></p>
                             </mat-form-field>
 
-                            <!-- <mat-checkbox id="protagonistGoalCheckbox" name="protagonistGoalCheckbox" formControlName="protagonistGoalCheckbox">
-                                Goal achieved?
-                            </mat-checkbox> -->
+                            <div #conflictCheckboxContainer attr.id="{{conflictSelect.id + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox-container' }}">
+                                <mat-checkbox
+                                    #conflictCheckbox
+                                    id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox'}}" 
+                                    name="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox'}}" 
+                                    class="goal-achieved-checkbox">
+                                    Goal achieved?
+                                </mat-checkbox>
+                            </div>
                         </div>
 
                         <div class="conflict-side conflict-side-right">
+                            <mat-form-field appearance="none" class="nna-input-group group-without-margin">
+                                <mat-label *ngIf="i === 0">Main anti-hero</mat-label>
+                                <mat-label *ngIf="i !== 0">Secondary character</mat-label>
+                                <mat-select 
+                                    #conflictSelect
+                                    autocomplete="off" 
+                                    id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-select'}}" 
+                                    (selectionChange)="selectCharacter($event, conflictSelect.id, getUniqueControlIdForConflictForm(loadedPair.antagonist))"
+                                    value="{{ loadedPair.antagonist ? loadedPair.antagonist.characterId : ''  }}"
+                                    class="form-control nna-input nna-select" 
+                                    panelClass="nna-select-option">
+                                    <mat-option>Not selected</mat-option>
+                                    <mat-option 
+                                        *ngFor="let dmoCharacter of dmoDetails.charactersForConflict" 
+                                        attr.style="color: {{dmoCharacter.color}}" 
+                                        [value]="dmoCharacter.characterId">
+                                            {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
+                                    </mat-option>
+                                </mat-select>
+                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-description'}}" attr.class="{{conflictSelect.id + '-description'}}"></p>
+                            </mat-form-field>
 
+                            <div #conflictCheckboxContainer attr.id="{{conflictSelect.id + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox-container' }}">
+                                <mat-checkbox
+                                    #conflictCheckbox
+                                    id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox'}}" 
+                                    name="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox'}}" 
+                                    class="goal-achieved-checkbox">
+                                    Goal achieved?
+                                </mat-checkbox>
+                            </div>
+                            
                         </div>
 
                     </div>
-                </form>
+                </div>
 
                 <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window">
                     help conflict
@@ -191,9 +220,9 @@
             <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
 
 
-            <button *ngIf="currentTabIndex === 2 && !conflictForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
-            <button *ngIf="currentTabIndex === 2 && conflictForm.dirty" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
-            <button *ngIf="currentTabIndex === 2 && conflictForm.dirty" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button>
+            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+            <!-- <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button> -->
         
     </div>
 </div>
