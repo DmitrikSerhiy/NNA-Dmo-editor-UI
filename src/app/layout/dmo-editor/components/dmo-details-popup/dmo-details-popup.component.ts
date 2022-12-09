@@ -4,8 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DmoCharactersForConflictDto, DmoConflictDto, DmoDetailsDto, UpdateDmoDetailsDto, UpdateDmoPlotDetailsDto  } from 'src/app/layout/models';
 import { EditorHub } from '../../services/editor-hub.service';
 import { compare } from 'fast-json-patch';
-import { MatSelect, MatSelectChange } from '@angular/material/select';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatSelectChange } from '@angular/material/select';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 
@@ -18,6 +18,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	dmoDetailsForm: FormGroup;
 	dmoPlotDetailsForm: FormGroup;
+	dmoConflictForm: FormGroup;
 	currentTabIndex: number = 0;
 	helpWindow: boolean = false;
 	private maxEntityNameLength = 100;
@@ -42,7 +43,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 	get didacticismDescription() { return this.dmoPlotDetailsForm.get('didacticismInput'); }
 
 
-	@ViewChildren('conflictSelect') conflictSelectElements: QueryList<MatSelect>;
 	@ViewChildren('conflictDescription') conflictDescriptionElements: QueryList<ElementRef>;
 	@ViewChildren('conflictCheckbox') conflictCheckboxElements: QueryList<MatCheckbox>;
 	@ViewChildren('conflictCheckboxContainer') conflictCheckboxContainerElements: QueryList<ElementRef>;
@@ -108,6 +108,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 			'didacticismCheckbox': new FormControl(''),
 			'didacticismInput': new FormControl('',  [Validators.maxLength(this.maxLongEntityLength)])	
 		});
+
+		this.dmoConflictForm = new FormGroup({});
 
 		this.setDmoDetailsValues();
 	}
@@ -242,11 +244,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 		
 		if (shouldSave === false) {
 			this.resetConflictForm();
-			// todo
+			this.setConflictValues();
 			return;
 		}
-
-		
 
 	}
 
@@ -303,12 +303,24 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}
 	}
 
-
-	selectCharacter($event: MatSelectChange, selectId: string, uniqueId?: string) {
+	selectCharacter($event: MatSelectChange, uniqueId: string): void {
 		if (!$event.value) { // if no value was selected
-			this.clearConflictCharacterGoalDescriptionValue(selectId);
-			this.clearConflictCheckbox(selectId, uniqueId);
+			this.dmoConflictForm.get(uniqueId + '-select').setValue('');
+			this.dmoConflictForm.get(uniqueId + '-checkbox').setValue(false);
+			this.clearConflictCharacterGoalDescriptionValue(uniqueId);
+			this.resetConflictCheckbox(uniqueId);
+			this.dmoConflictForm.markAsDirty();
 			return;
+		}
+
+		const previouslySelectedCharacter = this.dmoConflictForm.get(uniqueId + '-select').value;
+		if (previouslySelectedCharacter) {
+			if ($event.value == previouslySelectedCharacter) {
+				return;
+			} else {
+				this.resetConflictCheckbox(uniqueId);
+				this.dmoConflictForm.get(uniqueId + '-checkbox').setValue(false);
+			}
 		}
 
 		const character = this.dmoDetails.charactersForConflict.find(character => character.characterId == $event.value)
@@ -316,25 +328,32 @@ export class DmoDetailsPopupComponent implements OnInit {
 			return;	
 		}
 
-		this.setColorOnSelectPick(selectId, character.color);
+		this.setColorOnSelectPick(uniqueId, character.color);
+		this.dmoConflictForm.get(uniqueId + '-select').setValue($event.value);
+		this.dmoConflictForm.markAsDirty();
 
 		let descriptionElement = this.conflictDescriptionElements
 			.toArray()
-			.filter(conflictDescriptionElement => conflictDescriptionElement.nativeElement.classList.contains(selectId + '-description'))[0].nativeElement;
+			.filter(conflictDescriptionElement => conflictDescriptionElement.nativeElement.getAttribute('id') == uniqueId + '-description')[0].nativeElement;
 		this.setConflictCharacterGoalDescriptionValue(character, descriptionElement);
 
 		let checkboxContainer = this.conflictCheckboxContainerElements
 			.toArray()
-			.filter(conflictCheckboxContainerElement => conflictCheckboxContainerElement.nativeElement.id == (selectId + '-checkbox-container') )[0].nativeElement;
+			.filter(conflictCheckboxContainerElement => conflictCheckboxContainerElement.nativeElement.id == (uniqueId + '-checkbox-container') )[0].nativeElement;
 		checkboxContainer.style.display = 'block';
 	}
 
-	getUniqueControlIdForConflictForm(dto?: DmoConflictDto): string {
+	changeGoalAchieved($event: MatCheckboxChange, contronId: string): void {
+		this.dmoConflictForm.markAsDirty();
+		this.dmoConflictForm.get(contronId + '-checkbox').setValue($event.checked);
+	}
+
+	getUniqueControlIdForConflictForm(order: number, characterType: number, dto?: DmoConflictDto): string {
 		if (!dto) {
-			return 'empty-field';
+			return 'empty--field' + '--' + characterType + '--' + order;
 		}
 
-		return dto.characterId + '--' + dto.pairId + '--' + dto.characterType;
+		return dto.characterId + '--' + dto.pairId + '--' + characterType + '--' + order;
 	}
 
 	private resetDmoDetailsForm(): void {
@@ -383,6 +402,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 	private resetConflictForm() {
 		this.conflictFormValidations = [];
 		this.conflictPairs = [];
+		this.dmoConflictForm.reset();
 	}
 
 	private setConflictValues(): void {
@@ -401,7 +421,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.conflictPairs.push(newConflictPair);
 		}
 
-		console.log(this.conflictPairs);
 		if (this.conflictPairs?.length == 0) {
 			return;
 		}
@@ -409,19 +428,26 @@ export class DmoDetailsPopupComponent implements OnInit {
 		setTimeout(() => {
 			let selectNativeElements = Array.from(document.getElementsByClassName('mat-select-value')) as HTMLElement[];
 			
-			this.conflictPairs.forEach(conflictPair => {
-				this.setCharacterDataInHtml(conflictPair.protagonist, selectNativeElements);
-				this.setCharacterDataInHtml(conflictPair.antagonist, selectNativeElements);
+			this.conflictPairs.forEach((conflictPair, i) => {
+				this.setCharacterDataInHtml(conflictPair.protagonist, 1, i, selectNativeElements);
+				this.setCharacterDataInHtml(conflictPair.antagonist, 2, i, selectNativeElements);
 			});
 		}, 100);
 	}
 
-	private setCharacterDataInHtml(characterInConflict: DmoConflictDto, selectedInSelectElements: HTMLElement[]) {
-		if (!characterInConflict){
+	private setCharacterDataInHtml(characterInConflict: DmoConflictDto, type: number, order: number, selectedInSelectElements: HTMLElement[]) {
+		if (!characterInConflict) {
+			const emptyControlName = this.getUniqueControlIdForConflictForm(order, type);
+			let checkboxControl = new FormControl('');
+			checkboxControl.setValue(false);
+			let selectControl = new FormControl('');
+			selectControl.setValue('');
+			this.dmoConflictForm.addControl(emptyControlName + '-select', selectControl);
+			this.dmoConflictForm.addControl(emptyControlName + '-checkbox', checkboxControl);
 			return;
 		}
 		const character = this.dmoDetails.charactersForConflict.find(cha => cha.characterId == characterInConflict.characterId);
-		const controlName = this.getUniqueControlIdForConflictForm(characterInConflict);
+		const controlName = this.getUniqueControlIdForConflictForm(order, type, characterInConflict);
 		
 		selectedInSelectElements.forEach(selectNativeElement => {
 			if (selectNativeElement.parentElement.parentElement.getAttribute('id') == controlName + '-select') {
@@ -441,6 +467,14 @@ export class DmoDetailsPopupComponent implements OnInit {
 				conflictCheckboxElement.checked = characterInConflict.achieved;
 			}
 		});
+
+		let checkboxControl = new FormControl('');
+		checkboxControl.setValue(characterInConflict.achieved);
+		let selectControl = new FormControl('');
+		selectControl.setValue(character.characterId);
+
+		this.dmoConflictForm.addControl(controlName + '-select', selectControl);
+		this.dmoConflictForm.addControl(controlName + '-checkbox', checkboxControl);
 	}
 
 	//todo: filter characters on select
@@ -473,14 +507,14 @@ export class DmoDetailsPopupComponent implements OnInit {
 	private clearConflictCharacterGoalDescriptionValue(contronId: string): void {
 		let description = this.conflictDescriptionElements 
 			.toArray()
-			.filter(conflictDescriptionElement => conflictDescriptionElement.nativeElement.classList.contains(contronId + '-description'))[0].nativeElement;
+			.filter(conflictDescriptionElement => conflictDescriptionElement.nativeElement.getAttribute('id') == (contronId + '-description'))[0].nativeElement;
 		description.innerText = '';
 		description.style.display = 'none';
 	}
 
-	private clearConflictCheckbox(contronId: string, uniqueId: string): void {
+	private resetConflictCheckbox(contronId: string): void {
 		this.conflictCheckboxElements.toArray().forEach(conflictCheckboxElement => {
-			if (conflictCheckboxElement.name == uniqueId + '-checkbox') {
+			if (conflictCheckboxElement.name == contronId + '-checkbox') {
 				conflictCheckboxElement.checked = false;
 			}
 		});
@@ -495,7 +529,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 	private setColorOnSelectPick(controlId: string, color: string): void {
 		let selectNativeElements = Array.from(document.getElementsByClassName('mat-select-value')) as HTMLElement[];
 		selectNativeElements.forEach(selectNativeElement => {
-			if (selectNativeElement.parentElement.parentElement.id == controlId)
+			if (selectNativeElement.parentElement.parentElement.getAttribute('id') == controlId + '-select')
 				selectNativeElement.style.color = color;
 		});
 	}

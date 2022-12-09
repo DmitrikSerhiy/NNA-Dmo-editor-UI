@@ -128,17 +128,17 @@
                     <div class="conflict-versus">VS</div>
                 </div>
 
-                <div *ngIf="!helpWindow" class="nna-form conflict-form">
+                <form *ngIf="!helpWindow" role="form" [formGroup]="dmoConflictForm" class="nna-form conflict-form">
                     <div  class="conflict-sides-container" [ngClass]="{'primary-conflict': i === 0}" *ngFor="let loadedPair of conflictPairs; let i = index">
                         <div class="conflict-side">
                             <mat-form-field appearance="none" class="nna-input-group group-without-margin">
                                 <mat-label *ngIf="i === 0">Main hero</mat-label>
                                 <mat-label *ngIf="i !== 0">Secondary character</mat-label>
-                                <mat-select 
-                                    #conflictSelect
+                                <mat-select
                                     autocomplete="off" 
-                                    id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-select'}}" 
-                                    (selectionChange)="selectCharacter($event, conflictSelect.id, getUniqueControlIdForConflictForm(loadedPair.protagonist))"
+                                    id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-select'}}" 
+                                    (selectionChange)="selectCharacter($event, getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist))"
+                                    attr.formControlName="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-select'}}"
                                     value="{{ loadedPair.protagonist ? loadedPair.protagonist.characterId : ''  }}"
                                     class="form-control nna-input nna-select" 
                                     panelClass="nna-select-option">
@@ -150,14 +150,16 @@
                                             {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
                                     </mat-option>
                                 </mat-select>
-                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-description'}}" attr.class="{{conflictSelect.id + '-description'}}"></p>
+                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-description'}}" class="conflict-description"></p>
                             </mat-form-field>
 
-                            <div #conflictCheckboxContainer attr.id="{{conflictSelect.id + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox-container' }}">
+                            <div #conflictCheckboxContainer attr.id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox-container' }}">
                                 <mat-checkbox
                                     #conflictCheckbox
-                                    id="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox'}}" 
-                                    name="{{getUniqueControlIdForConflictForm(loadedPair.protagonist) + '-checkbox'}}" 
+                                    id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}" 
+                                    name="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}" 
+                                    attr.formControlName="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}"
+                                    (change)="changeGoalAchieved($event, getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist))"
                                     class="goal-achieved-checkbox">
                                     Goal achieved?
                                 </mat-checkbox>
@@ -169,10 +171,10 @@
                                 <mat-label *ngIf="i === 0">Main anti-hero</mat-label>
                                 <mat-label *ngIf="i !== 0">Secondary character</mat-label>
                                 <mat-select 
-                                    #conflictSelect
                                     autocomplete="off" 
-                                    id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-select'}}" 
-                                    (selectionChange)="selectCharacter($event, conflictSelect.id, getUniqueControlIdForConflictForm(loadedPair.antagonist))"
+                                    id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-select'}}" 
+                                    (selectionChange)="selectCharacter($event, getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist))"
+                                    attr.formControlName="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-select'}}"
                                     value="{{ loadedPair.antagonist ? loadedPair.antagonist.characterId : ''  }}"
                                     class="form-control nna-input nna-select" 
                                     panelClass="nna-select-option">
@@ -184,14 +186,16 @@
                                             {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
                                     </mat-option>
                                 </mat-select>
-                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-description'}}" attr.class="{{conflictSelect.id + '-description'}}"></p>
+                                <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-description'}}" class="conflict-description"></p>
                             </mat-form-field>
 
-                            <div #conflictCheckboxContainer attr.id="{{conflictSelect.id + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox-container' }}">
+                            <div #conflictCheckboxContainer attr.id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox-container' }}">
                                 <mat-checkbox
                                     #conflictCheckbox
-                                    id="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox'}}" 
-                                    name="{{getUniqueControlIdForConflictForm(loadedPair.antagonist) + '-checkbox'}}" 
+                                    id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}" 
+                                    name="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}"
+                                    attr.formControlName="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}" 
+                                    (change)="changeGoalAchieved($event, getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist))"
                                     class="goal-achieved-checkbox">
                                     Goal achieved?
                                 </mat-checkbox>
@@ -200,7 +204,7 @@
                         </div>
 
                     </div>
-                </div>
+                </form>
 
                 <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window">
                     help conflict
@@ -220,9 +224,9 @@
             <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
 
 
-            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
-            <!-- <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
-            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button> -->
+            <button *ngIf="currentTabIndex === 2 && !dmoConflictForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
+            <button *ngIf="currentTabIndex === 2 && dmoConflictForm.dirty" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 2 && dmoConflictForm.dirty" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button>
         
     </div>
 </div>
