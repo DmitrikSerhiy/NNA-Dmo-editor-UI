@@ -122,14 +122,14 @@
                 
             </mat-tab>
             <mat-tab *ngIf="dmoDetails.charactersForConflict" label="Conflict" class="nna-tab"> 
-                <div class="conflict-headers">
+                <div *ngIf="conflictPairs?.length" class="conflict-headers">
                     <h4>Protagonist</h4>
                     <h4 class="right-header">Antagonist</h4>
                     <div class="conflict-versus">VS</div>
                 </div>
 
                 <form *ngIf="!helpWindow" role="form" [formGroup]="dmoConflictForm" class="nna-form conflict-form">
-                    <div  class="conflict-sides-container" [ngClass]="{'primary-conflict': i === 0}" *ngFor="let loadedPair of conflictPairs; let i = index">
+                    <div class="conflict-sides-container" [ngClass]="{'primary-conflict': i === 0}" *ngFor="let loadedPair of conflictPairs; let i = index">
                         <div class="conflict-side">
                             <mat-form-field appearance="none" class="nna-input-group group-without-margin">
                                 <mat-label *ngIf="i === 0">Main hero</mat-label>
@@ -199,11 +199,21 @@
                                     class="goal-achieved-checkbox">
                                     Goal achieved?
                                 </mat-checkbox>
-                            </div>
-                            
+                            </div>                            
+                        </div>
+
+                        <div class="delete-conflict-button-container">
+                            <button type="button" class="nna-icon-button" (click)="deleteConflict(loadedPair.pairId)">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
                         </div>
 
                     </div>
+
+                    <div *ngIf="!conflictPairs?.length" class="empty-conflict-placeholder">
+                        Conflicts are not specified
+                    </div>
+
                 </form>
 
                 <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window">
@@ -224,9 +234,10 @@
             <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
 
 
-            <button *ngIf="currentTabIndex === 2 && !dmoConflictForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
-            <button *ngIf="currentTabIndex === 2 && dmoConflictForm.dirty" type="button" class="nna-button-secondary" (click)="saveConflictChanges(false)">Cancel</button>
-            <button *ngIf="currentTabIndex === 2 && dmoConflictForm.dirty" type="button" class="nna-button-primary" (click)="saveConflictChanges(true)">Save</button>
-        
+            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-primary" (click)="addConflict()"> 
+                <span *ngIf="!conflictPairs?.length">Add main conflict</span> 
+                <span *ngIf="conflictPairs?.length">Add sub conflict</span> 
+            </button>
+            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
     </div>
 </div>

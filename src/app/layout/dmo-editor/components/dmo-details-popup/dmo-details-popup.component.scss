@@ -73,8 +73,8 @@
                 .conflict-versus {
                     @include font-primary-heading();
                     position: absolute;
-                    left: 45%;
-                    top: 82px;
+                    left: 40%;
+                    top: 14px;
                 }
             }
 
@@ -84,6 +84,7 @@
             .conflict-sides-container {
                 display: flex;
                 margin-bottom: 28px;
+                padding-bottom: 14px;
 
                 .conflict-side {
                     flex: 0 1 40%;
@@ -91,6 +92,13 @@
 
                 .conflict-side-right {
                     margin-left: auto;
+                }
+
+                .delete-conflict-button-container {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-top: 32px;
+                    margin-left: 14px;
                 }
 
                 .conflict-description {
@@ -105,6 +113,12 @@
                     display: none;
                 }
             }
+
+            .empty-conflict-placeholder {
+                margin-top: 14px;
+                @include font-primary-heading();
+            }
+
 
             .primary-conflict {
                 margin-top: 14px;

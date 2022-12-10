@@ -193,21 +193,40 @@ export class EditorHub {
             .toPromise();
     }
 
-    updateDmoDetails(id: string, update: Operation[]): Promise<any> {
+    updateDmoDetails(id: string, update: Operation[]): Promise<void> {
         return this.http
-            .patch<any>(this.serverUrl + 'dmos/details/' + id, update)
+            .patch<any>(this.serverUrl + 'dmos/' + id + '/details' , update)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }
 
-    updateDmoPlotDetails(id: string, update: Operation[]): Promise<any> {
+    updateDmoPlotDetails(id: string, update: Operation[]): Promise<void> {
         return this.http
-            .patch<any>(this.serverUrl + 'dmos/plot/' + id, update)
+            .patch<any>(this.serverUrl + 'dmos/' + id + '/plot', update)
             .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }
 
-    // createDmoConflict()
+    createConflict(id: string, order: number): Promise<any> {
+        return this.http
+            .post<any>(this.serverUrl + 'dmos/' + id + '/conflict', {зairOrder: order })
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
+   
+    deleteConflict(conflictPairId: string): Promise<void> {
+        return this.http
+            .delete<any>(this.serverUrl + 'dmos/dmo/conflictPair/' + conflictPairId)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
+
+    patchConflict(conflictId: string, update: Operation[]): Promise<void>  {
+        return this.http
+            .patch<any>(this.serverUrl + 'dmos/dmo/conflict/' + conflictId, update)
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
 
     sanitizeTempIds(dmoId: string): Promise<void> {
         return this.http

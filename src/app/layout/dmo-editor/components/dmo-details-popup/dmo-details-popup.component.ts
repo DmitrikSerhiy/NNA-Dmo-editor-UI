@@ -237,19 +237,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.setDmoPlotDetailsValues();
 	}
 
-	saveConflictChanges(shouldSave: boolean): Promise<void> {
-		if (this.currentTabIndex !== 2) {
-			return;
-		}
-		
-		if (shouldSave === false) {
-			this.resetConflictForm();
-			this.setConflictValues();
-			return;
-		}
-
-	}
-
 	toggleHelp(open: boolean) {
 		if (open == true) {
 			this.helpWindow = true;
@@ -303,13 +290,27 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}
 	}
 
-	selectCharacter($event: MatSelectChange, uniqueId: string): void {
+	async selectCharacter($event: MatSelectChange, uniqueId: string): Promise<void> {
 		if (!$event.value) { // if no value was selected
 			this.dmoConflictForm.get(uniqueId + '-select').setValue('');
 			this.dmoConflictForm.get(uniqueId + '-checkbox').setValue(false);
 			this.clearConflictCharacterGoalDescriptionValue(uniqueId);
 			this.resetConflictCheckbox(uniqueId);
 			this.dmoConflictForm.markAsDirty();
+
+			
+			let conglictDto =  this.getDmoConflictFromControlName(uniqueId.split('-select')[0]);
+			let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
+			conglictDto.characterId = '';
+			conglictDto.achieved = false;
+			conglictDto.pairOrder = previousConflictDto.pairOrder;
+			let patch = compare(previousConflictDto, conglictDto);
+			if (patch?.length == 0) {
+				return;
+			}
+
+			await this.editorHub.patchConflict(conglictDto.id, patch);
+			this.updateDmoconflictInitialValues(conglictDto);
 			return;
 		}
 
@@ -341,19 +342,64 @@ export class DmoDetailsPopupComponent implements OnInit {
 			.toArray()
 			.filter(conflictCheckboxContainerElement => conflictCheckboxContainerElement.nativeElement.id == (uniqueId + '-checkbox-container') )[0].nativeElement;
 		checkboxContainer.style.display = 'block';
-	}
 
-	changeGoalAchieved($event: MatCheckboxChange, contronId: string): void {
-		this.dmoConflictForm.markAsDirty();
-		this.dmoConflictForm.get(contronId + '-checkbox').setValue($event.checked);
-	}
 
-	getUniqueControlIdForConflictForm(order: number, characterType: number, dto?: DmoConflictDto): string {
-		if (!dto) {
-			return 'empty--field' + '--' + characterType + '--' + order;
+		let conglictDto =  this.getDmoConflictFromControlName(uniqueId.split('-select')[0]);
+		let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
+		conglictDto.characterId = $event.value;
+		conglictDto.achieved = previousConflictDto.achieved;
+		conglictDto.pairOrder = previousConflictDto.pairOrder;
+		let patch = compare(previousConflictDto, conglictDto);
+		if (patch?.length == 0) {
+			return;
 		}
 
-		return dto.characterId + '--' + dto.pairId + '--' + characterType + '--' + order;
+		await this.editorHub.patchConflict(conglictDto.id, patch);
+		this.updateDmoconflictInitialValues(conglictDto);
+	}
+
+	async changeGoalAchieved($event: MatCheckboxChange, contronId: string): Promise<void> {
+		this.dmoConflictForm.markAsDirty();
+		this.dmoConflictForm.get(contronId + '-checkbox').setValue($event.checked);
+
+		let conglictDto =  this.getDmoConflictFromControlName(contronId.split('-checkbox')[0]);
+		let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
+
+		conglictDto.achieved = $event.checked;
+		conglictDto.characterId = previousConflictDto.characterId;
+		conglictDto.pairOrder = previousConflictDto.pairOrder;
+		let patch = compare(previousConflictDto, conglictDto);
+		if (patch?.length == 0) {
+			return;
+		}
+
+		await this.editorHub.patchConflict(conglictDto.id, patch);
+		this.updateDmoconflictInitialValues(conglictDto);
+	}
+
+	getUniqueControlIdForConflictForm(order: number, characterType: number, dto: DmoConflictDto): string {
+		return dto.pairId + '--' + order + '--' + dto.id + '--' + characterType;
+	}
+
+	async addConflict() {
+		if (this.dmoDetails.conflicts?.length == 0) {
+			this.conflictPairs = [];
+		}
+
+		let newConflict = await this.editorHub.createConflict(this.dmoId, this.dmoDetails.conflicts?.length);
+		let newConflictPair: any = {
+			protagonist: newConflict.protagonist,
+			antagonist: newConflict.antagonist
+		};
+
+		this.conflictPairs.push(newConflictPair);
+	}
+
+	async deleteConflict(pairId: string): Promise<void> {
+		await this.editorHub.deleteConflict(pairId);
+		this.dmoDetails.conflicts = [...this.dmoDetails.conflicts.filter(conflict => conflict.pairId != pairId)];
+		this.resetConflictForm();
+		this.setConflictValues();
 	}
 
 	private resetDmoDetailsForm(): void {
@@ -405,7 +451,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.dmoConflictForm.reset();
 	}
 
-	private setConflictValues(): void {
+	private async setConflictValues(): Promise<void> {
 		if (this.dmoDetails.conflicts?.length == 0) {
 			return;
 		}
@@ -418,6 +464,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 			let newConflictPair: any = {};
 			newConflictPair.protagonist = conflictPair.find(cp => cp.characterType == 1);
 			newConflictPair.antagonist = conflictPair.find(cp => cp.characterType == 2);
+			newConflictPair.order = index;
+			newConflictPair.pairId = newConflictPair.protagonist.pairId;
 			this.conflictPairs.push(newConflictPair);
 		}
 
@@ -435,9 +483,23 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}, 100);
 	}
 
+	private updateDmoconflictInitialValues(update: DmoConflictDto): void {
+		this.dmoDetails.conflicts.forEach(conflict => {
+			if (conflict.id == update.id) {
+				conflict.characterId = update.characterId;
+				conflict.achieved = update.achieved;
+				return;
+			}
+		});
+	}
+
 	private setCharacterDataInHtml(characterInConflict: DmoConflictDto, type: number, order: number, selectedInSelectElements: HTMLElement[]) {
-		if (!characterInConflict) {
-			const emptyControlName = this.getUniqueControlIdForConflictForm(order, type);
+		if (!characterInConflict?.characterId) {
+			let dmoConflict = {
+				id: characterInConflict.id,
+				pairId: characterInConflict.pairId,
+			} as DmoConflictDto;
+			const emptyControlName = this.getUniqueControlIdForConflictForm(order, type, dmoConflict);
 			let checkboxControl = new FormControl('');
 			checkboxControl.setValue(false);
 			let selectControl = new FormControl('');
@@ -446,6 +508,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.dmoConflictForm.addControl(emptyControlName + '-checkbox', checkboxControl);
 			return;
 		}
+
 		const character = this.dmoDetails.charactersForConflict.find(cha => cha.characterId == characterInConflict.characterId);
 		const controlName = this.getUniqueControlIdForConflictForm(order, type, characterInConflict);
 		
@@ -533,4 +596,27 @@ export class DmoDetailsPopupComponent implements OnInit {
 				selectNativeElement.style.color = color;
 		});
 	}
+
+	private getDmoConflictFromControlName(controlName: string): DmoConflictDto {
+		const fields = controlName.split('--');
+
+		return fields.some(field => field == 'empty-field')
+			? 
+				{
+					id: '',
+					characterId: '',
+					pairId: '',
+					characterType: +fields[2],
+					pairOrder: +fields[1]
+				} as DmoConflictDto
+			: 
+				{
+					id: fields[2],
+					characterId: '',
+					pairId: fields[0],
+					characterType: +fields[3],
+					pairOrder: +fields[1]
+				} as DmoConflictDto;
+	}
+
 }
