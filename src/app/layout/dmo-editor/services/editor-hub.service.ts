@@ -207,9 +207,9 @@ export class EditorHub {
             .toPromise();
     }
 
-    createConflict(id: string, order: number): Promise<any> {
+    createConflict(id: string): Promise<any> {
         return this.http
-            .post<any>(this.serverUrl + 'dmos/' + id + '/conflict', { pairOrder: order })
+            .post<any>(this.serverUrl + 'dmos/' + id + '/conflict', {} )
             .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
             .toPromise();
     }

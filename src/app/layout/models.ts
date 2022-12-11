@@ -128,7 +128,6 @@ export interface DmoCharactersForConflictDto {
 export interface DmoConflictDto {
     id: string;
     pairId: string;
-    pairOrder: number;
     characterId: string;
     characterType: number;
     achieved: boolean;

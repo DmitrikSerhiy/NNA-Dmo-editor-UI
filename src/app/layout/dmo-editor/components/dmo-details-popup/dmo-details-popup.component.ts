@@ -303,7 +303,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 			let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
 			conglictDto.characterId = '';
 			conglictDto.achieved = false;
-			conglictDto.pairOrder = previousConflictDto.pairOrder;
 			let patch = compare(previousConflictDto, conglictDto);
 			if (!patch?.length) {
 				return;
@@ -348,7 +347,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 		let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
 		conglictDto.characterId = $event.value;
 		conglictDto.achieved = previousConflictDto.achieved;
-		conglictDto.pairOrder = previousConflictDto.pairOrder;
 		let patch = compare(previousConflictDto, conglictDto);
 		if (!patch?.length) {
 			return;
@@ -367,7 +365,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 		conglictDto.achieved = $event.checked;
 		conglictDto.characterId = previousConflictDto.characterId;
-		conglictDto.pairOrder = previousConflictDto.pairOrder;
 		let patch = compare(previousConflictDto, conglictDto);
 		if (!patch?.length) {
 			return;
@@ -386,7 +383,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.conflictPairs = [];
 		}
 
-		let newConflict = await this.editorHub.createConflict(this.dmoId, this.conflictPairs.length);
+		let newConflict = await this.editorHub.createConflict(this.dmoId);
 		let newConflictPair: any = {
 			protagonist: newConflict.protagonist,
 			antagonist: newConflict.antagonist,
@@ -478,7 +475,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}
 
 		this.conflictPairs = [];
-		let conflicts = this.nnaHelpersService.groupBy(this.dmoDetails.conflicts.sort(c => c.pairOrder), c => c.pairId);
+		let conflicts = this.nnaHelpersService.groupBy(this.dmoDetails.conflicts, c => c.pairId);
 
 		for (let index = 0; index < this.nnaHelpersService.grouppedLength(conflicts); index++) {
 			const conflictPair = this.nnaHelpersService.getGroupItem(conflicts, index) as DmoConflictDto[];
@@ -620,24 +617,12 @@ export class DmoDetailsPopupComponent implements OnInit {
 
 	private getDmoConflictFromControlName(controlName: string): DmoConflictDto {
 		const fields = controlName.split('--');
-
-		return fields.some(field => field == 'empty-field')
-			? 
-				{
-					id: '',
-					characterId: '',
-					pairId: '',
-					characterType: +fields[2],
-					pairOrder: +fields[1]
-				} as DmoConflictDto
-			: 
-				{
-					id: fields[2],
-					characterId: '',
-					pairId: fields[0],
-					characterType: +fields[3],
-					pairOrder: +fields[1]
-				} as DmoConflictDto;
+		return {
+			id: fields[2],
+			characterId: '',
+			pairId: fields[0],
+			characterType: +fields[3],
+		} as DmoConflictDto;
 	}
 
 }
