@@ -201,7 +201,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		$event.preventDefault();
 		const paste = $event.clipboardData.getData('text');
-		if (paste?.length == 0) {
+		if (!paste?.length) {
 			return;
 		}
 		const selection = window.getSelection();
@@ -234,7 +234,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private async loadDmoBeatsAndCharacters(sanitizeBeforeLoad: boolean): Promise<void> {
 		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId, sanitizeBeforeLoad);
 		this.initialDmoDto = new NnaDmoDto(this.dmoId);
-		if (dmoWithData?.beats?.length == 0) {
+		if (!dmoWithData?.beats?.length) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());
 			
 			const initialBeat = {

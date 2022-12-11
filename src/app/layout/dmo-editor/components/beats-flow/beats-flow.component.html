@@ -12,12 +12,12 @@
                         </li>
                     </ul>
 
-                    <div class="character-tooltip-empty-search-block no-select" *ngIf="filtredCharacters?.length == 0">
+                    <div class="character-tooltip-empty-search-block no-select" *ngIf="!filtredCharacters?.length">
                         <p>No search result</p>
                         <button type="button" class="nna-button-primary"(click)="onOpenCharactersPopup('add_character')">Add character</button>
                     </div>
                 </div>
-                <div class="character-tooltip-info-block no-select" *ngIf="characters?.length == 0">
+                <div class="character-tooltip-info-block no-select" *ngIf="!characters?.length">
                     <p>This Dmo has no characters</p>
                     <button type="button" class="nna-button-primary"(click)="onOpenCharactersPopup('add_first_character')">Add character</button>
                 </div>

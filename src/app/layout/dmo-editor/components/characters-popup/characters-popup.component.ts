@@ -363,7 +363,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		} as NnaMovieCharacterToUpdateDto;
 
 		const patch = compare(oldValue, update);
-		if (patch?.length == 0) {
+		if (!patch?.length) {
 			this.resetForm();
 			this.selectedCharacter = null;
 			this.addOrEditAction = false

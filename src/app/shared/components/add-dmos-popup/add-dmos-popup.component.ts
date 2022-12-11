@@ -53,7 +53,7 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 			return;
 		}
 		const result = this.selectedDmo.selected;
-		if (result?.length == 0) {
+		if (!result?.length) {
 			this.dialogRef.close();
 			return;
 		}

@@ -119,7 +119,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			let shouldReloadBeats: boolean = false;
 			let shouldSanitizeDeletedCharactersInBeats: boolean = false;
 
-			if (update.operations?.length == 0) {
+			if (!update.operations?.length) {
 				return;
 			}
 
@@ -724,7 +724,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
-		if (characterTags?.length == 0) {
+		if (!characterTags?.length) {
 			return;
 		}
 
@@ -1057,7 +1057,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	showCharactersTooltip(hostingElement: any): void {
 		let clearHostingElementInnerText: boolean = false;
 
-		if (hostingElement.innerText?.length == 0) {
+		if (!hostingElement.innerText?.length) {
 			hostingElement.appendChild(document.createTextNode('1'));
 			clearHostingElementInnerText = true;
 		}
@@ -1179,7 +1179,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		const key = $event.which || $event.keyCode || $event.charCode;
 		this.cdRef.detectChanges();
 		let characters = this.charactersOptionsElements.toArray();
-		if (characters?.length == 0) {
+		if (!characters?.length) {
 			return;
 		}
 
@@ -1232,11 +1232,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	
 	private setCharactersClaims(): void {
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
-		if (characterTags?.length == 0) {
+		if (!characterTags?.length) {
 			return;
 		}
 
-		if (characterTags?.length == 0) {
+		if (!characterTags?.length) {
 			return;
 		}
 

@@ -161,7 +161,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		} as UpdateDmoDetailsDto;
 
 		const patch = compare(oldValue, update);
-		if (patch?.length == 0) {
+		if (!patch?.length) {
 			this.resetDmoDetailsForm();
 			this.setDmoDetailsValues();
 			return;
@@ -223,7 +223,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		} as UpdateDmoPlotDetailsDto;
 
 		const patch = compare(oldValue, update);
-		if (patch?.length == 0) {
+		if (!patch?.length) {
 			this.resetDmoPlotDetailsForm();
 			this.setDmoPlotDetailsValues();
 			return;
@@ -299,13 +299,13 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.dmoConflictForm.markAsDirty();
 
 			
-			let conglictDto =  this.getDmoConflictFromControlName(uniqueId.split('-select')[0]);
+			let conglictDto = this.getDmoConflictFromControlName(uniqueId.split('-select')[0]);
 			let previousConflictDto = this.dmoDetails.conflicts.find(c => c.id == conglictDto.id);
 			conglictDto.characterId = '';
 			conglictDto.achieved = false;
 			conglictDto.pairOrder = previousConflictDto.pairOrder;
 			let patch = compare(previousConflictDto, conglictDto);
-			if (patch?.length == 0) {
+			if (!patch?.length) {
 				return;
 			}
 
@@ -350,7 +350,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		conglictDto.achieved = previousConflictDto.achieved;
 		conglictDto.pairOrder = previousConflictDto.pairOrder;
 		let patch = compare(previousConflictDto, conglictDto);
-		if (patch?.length == 0) {
+		if (!patch?.length) {
 			return;
 		}
 
@@ -369,7 +369,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 		conglictDto.characterId = previousConflictDto.characterId;
 		conglictDto.pairOrder = previousConflictDto.pairOrder;
 		let patch = compare(previousConflictDto, conglictDto);
-		if (patch?.length == 0) {
+		if (!patch?.length) {
 			return;
 		}
 
@@ -382,22 +382,43 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async addConflict() {
-		if (this.dmoDetails.conflicts?.length == 0) {
+		if (!this.conflictPairs?.length) {
 			this.conflictPairs = [];
 		}
 
-		let newConflict = await this.editorHub.createConflict(this.dmoId, this.dmoDetails.conflicts?.length);
+		let newConflict = await this.editorHub.createConflict(this.dmoId, this.conflictPairs.length);
 		let newConflictPair: any = {
 			protagonist: newConflict.protagonist,
-			antagonist: newConflict.antagonist
+			antagonist: newConflict.antagonist,
+			order: this.conflictPairs.length,
+			pairId: newConflict.protagonist.pairId
 		};
 
+		let protagonistControlName = this.getUniqueControlIdForConflictForm(this.conflictPairs.length, 1, newConflict.protagonist);
+		let antagonistControlName = this.getUniqueControlIdForConflictForm(this.conflictPairs.length, 2, newConflict.antagonist);
+
+		this.dmoConflictForm.addControl(protagonistControlName + '-select', new FormControl());
+		this.dmoConflictForm.addControl(protagonistControlName + '-checkbox', new FormControl());
+		
+		this.dmoConflictForm.addControl(antagonistControlName + '-select', new FormControl());
+		this.dmoConflictForm.addControl(antagonistControlName + '-checkbox', new FormControl());
+
 		this.conflictPairs.push(newConflictPair);
+		this.dmoDetails.conflicts.push(newConflict.protagonist);
+		this.dmoDetails.conflicts.push(newConflict.antagonist);
 	}
 
-	async deleteConflict(pairId: string): Promise<void> {
+	async deleteConflict(pairId: string, order: number): Promise<void> {
 		await this.editorHub.deleteConflict(pairId);
+		let conflictsToRemove = this.dmoDetails.conflicts.filter(conflict => conflict.pairId == pairId);
+
+		conflictsToRemove.forEach(conflictToRemove => {
+			this.dmoConflictForm.removeControl(this.getUniqueControlIdForConflictForm(order, conflictToRemove.characterType, conflictToRemove) + '-select');
+			this.dmoConflictForm.removeControl(this.getUniqueControlIdForConflictForm(order, conflictToRemove.characterType, conflictToRemove) + '-checkbox');
+		});
+
 		this.dmoDetails.conflicts = [...this.dmoDetails.conflicts.filter(conflict => conflict.pairId != pairId)];
+
 		this.resetConflictForm();
 		this.setConflictValues();
 	}
@@ -452,7 +473,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	private async setConflictValues(): Promise<void> {
-		if (this.dmoDetails.conflicts?.length == 0) {
+		if (!this.dmoDetails.conflicts?.length) {
 			return;
 		}
 
@@ -469,7 +490,7 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.conflictPairs.push(newConflictPair);
 		}
 
-		if (this.conflictPairs?.length == 0) {
+		if (!this.conflictPairs?.length) {
 			return;
 		}
 

@@ -34,16 +34,16 @@ export class CharactersColorPaleteService {
 	getNotUsedColor(usedColors: string[]): string {
 		const usedColorsWithoutDefault = usedColors.filter(color => color != "#000000");
 		// shuffle main palete first
-		let remainingColors = usedColorsWithoutDefault?.length == 0 
+		let remainingColors = !usedColorsWithoutDefault?.length
 			? this.mainPatete
 			: this.shuffleColors(this.mainPatete).filter(color => !usedColorsWithoutDefault.includes(color));
 
 		// if main palete is drain then try secondary palete
-		if (remainingColors?.length == 0) {
+		if (!remainingColors?.length) {
 			remainingColors = this.shuffleColors(this.secondaryPalete).filter(color => !usedColorsWithoutDefault.includes(color));
 		}
 
-		if (remainingColors?.length == 0) {
+		if (!remainingColors?.length) {
 			return "#000000";
 		}
 

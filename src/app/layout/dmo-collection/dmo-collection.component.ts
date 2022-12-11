@@ -300,7 +300,7 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	}
 
 	trimComment(comment: string): string {
-		if (!comment || comment?.length == 0) {
+		if (!comment || !comment?.length) {
 			return comment;
 		}
 
