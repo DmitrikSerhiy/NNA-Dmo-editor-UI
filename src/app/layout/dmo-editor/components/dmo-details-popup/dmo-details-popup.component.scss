@@ -78,8 +78,10 @@
                 }
             }
 
-
-            
+            .conflict-form {
+                max-height: 400px;
+                overflow-y: auto;
+            }
 
             .conflict-sides-container {
                 display: flex;
@@ -99,6 +101,7 @@
                     justify-content: flex-end;
                     margin-top: 32px;
                     margin-left: 14px;
+                    margin-right: 14px;
                 }
 
                 .conflict-description {
@@ -140,6 +143,10 @@
                 p {
                     margin-top: 14px;
                 }
+            }
+
+            .conflict-help-window {
+                overflow: auto;
             }
 
         }

@@ -122,7 +122,7 @@
                 
             </mat-tab>
             <mat-tab *ngIf="dmoDetails.charactersForConflict" label="Conflict" class="nna-tab"> 
-                <div *ngIf="conflictPairs?.length" class="conflict-headers">
+                <div *ngIf="conflictPairs?.length && !helpWindow" class="conflict-headers">
                     <h4>Protagonist</h4>
                     <h4 class="right-header">Antagonist</h4>
                     <div class="conflict-versus">VS</div>
@@ -216,8 +216,18 @@
 
                 </form>
 
-                <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window">
-                    help conflict
+                <div *ngIf="helpWindow && currentTabIndex === 2" class="help-window conflict-help-window">
+                    <p>
+                        The <strong>protagonist</strong> might be a single human, a group of characters, an animal or even Mother nature. Same for <strong>antagonist</strong>. 
+                        There might be as many conflicts as single movie can handle. But there only one <strong>main character</strong> and one <strong>anti-character</strong> appropriately. 
+                        Their conflict defines movie conflict. Usually theirs desires and goals are mutually exclusive.
+                    </p>
+
+                    <p>
+                        Everething in the movie flows through conflict. Every protagonist has the ultimate goal just like every antagonist want’s protagonist to fail. 
+                        Conflict is the global reason of protagonist existence. Every beat must be targeted to resolve the conflict in positive or negative way. 
+                        Otherwise it is not a beat in the first place.
+                    </p>
                 </div>
 
             </mat-tab>
