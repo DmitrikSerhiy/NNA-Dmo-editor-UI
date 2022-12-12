@@ -30,6 +30,9 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private plotPointRadius: number = 6;
 	private initialGraphTopMargin: number = 16;
 
+	private moveImage = new Image();
+	private swapImage = new Image();
+
 	
 	graphHeigth: string;
 	plotFlowWidth: number = 32;
@@ -78,6 +81,8 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 
 		this.resizeObserver.observe(this.host.nativeElement);
+		this.moveImage.src = '/assets/move.png';
+		this.swapImage.src = '/assets/swap.png';
 	}
 
 
@@ -240,11 +245,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			this.plotPointsContainerElement.nativeElement.classList.add('dragging-swap');
 			$event.dataTransfer.setData("application/beat-id-to-swap", $event.target.dataset.id);
 			$event.dataTransfer.setData("application/beat-order-to-swap", $event.target.dataset.order);
+			$event.dataTransfer.setDragImage(this.swapImage, 0, 21);
 		} else {
 			this.swapBeatsInsteadOfMove = false;
 			this.plotPointsContainerElement.nativeElement.classList.add('dragging-move');
 			$event.dataTransfer.setData("application/beat-id-to-move", $event.target.dataset.id);
-			$event.dataTransfer.setData("application/beat-order-to-move", $event.target.dataset.order);
+			$event.dataTransfer.setData("application/beat-order-to-move", $event.target.dataset.order);  
+			$event.dataTransfer.setDragImage(this.moveImage, 0, 21);
 		}
 	}
 
