@@ -1266,8 +1266,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			grouppedCharacterTags[group].forEach((characterTag, i) => {
 				if (i == 0) {
 					characterTag.innerHTML = characterTag.innerHTML.toUpperCase();
-				} else {
-					characterTag.innerHTML = characterTag.innerHTML.toLowerCase();
 				}
 			});
 		}

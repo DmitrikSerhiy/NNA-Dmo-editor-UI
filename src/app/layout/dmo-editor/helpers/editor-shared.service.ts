@@ -133,7 +133,6 @@ export class EditorSharedService {
 			characterElem.style.paddingLeft = '1px';
 			characterElem.style.paddingRight = '1px';
 			characterElem.style.userSelect = 'auto';
-			characterElem.style.textTransform = 'capitalize';
 			characterElem.style.borderBottomColor = color;
 			characterElem.style.borderBottomWidth = '1px';
 			characterElem.style.borderBottomStyle = 'solid';
@@ -144,7 +143,8 @@ export class EditorSharedService {
 			characterElem.setAttribute('draggable', "false");
 		}
 
-		characterElem.innerText = characterName;
+		const capitilizedName = characterName.charAt(0).toUpperCase() + characterName.slice(1);
+		characterElem.innerText = capitilizedName;
 		return characterElem;
 	}
 	
