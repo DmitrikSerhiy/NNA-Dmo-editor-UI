@@ -21,7 +21,7 @@ body {
 	height: 100%;
 	margin: 0;
 	font-size: 16px;
-	scrollbar-color: $for-background-contrast-color $background-color !important;
+	scrollbar-color: $for-background-contrast-color $general-background-color !important;
 	scrollbar-width: thin !important;
 }
 
@@ -31,12 +31,12 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-	background-color: $background-color;
+	background-color: $general-background-color;
 }
 
 ::-webkit-scrollbar {
 	width: 8px;
-	background-color: $background-color;
+	background-color: $general-background-color;
 }
 
 ::-webkit-scrollbar-thumb {

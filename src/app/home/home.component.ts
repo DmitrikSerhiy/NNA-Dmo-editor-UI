@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { take } from 'rxjs/operators';
@@ -13,11 +13,13 @@ import { UserManager } from '../shared/services/user-manager';
 	templateUrl: './home.component.html',
 	styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	isAuthorized: boolean;
 	private refreshSubscription: Subscription;
 	userName: string;
+
+	@ViewChild('centerInitialBlock') centerBlock: ElementRef;
 
 	constructor(
 		private router: Router, 
@@ -51,6 +53,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 					}
 				}); 		
 	};
+
+	ngAfterViewInit(): void {
+		this.centerBlock.nativeElement.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+	}
 
 	scrollToPlotPoint(plotPointElement: HTMLElement): void {
 		plotPointElement.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});

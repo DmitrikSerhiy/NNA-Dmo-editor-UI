@@ -3,21 +3,20 @@
 @import "src/styles/buttons.scss";
 
 .home-container {
-    margin: auto;
+    background: $general-background-color;
     width: 100%;
-    background: $background-color;
+    overflow-x: auto;
 
     .home-plot-points {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        align-content: center;
-        flex-wrap: wrap;
+        overflow-x: auto;
 
         .home-plot-point {
+            overflow-x: auto;
+            max-width: 650px;
             width: 650px;
             height: 650px;
-            color: $background-color;
+            margin: auto;
+            color: $general-background-color;
             background: $for-background-contrast-color;
             border-radius: 50%;
 
@@ -84,8 +83,6 @@
                 display: flex;
                 justify-content: center;
                 padding-top: 16px;
-                margin-left: 236px;
-                margin-right: auto;
             }
         }
 
@@ -96,17 +93,15 @@
             align-items: flex-start;
 
             .home-header {
+                margin: 0 auto;
                 padding-top: 16px;
-                margin-left: 236px;
-                margin-right: auto;
             }
 
             .home-subheader {
                 display: flex;
                 justify-content: center;
                 padding-top: 0 !important;
-                margin-left: 240px;
-                margin-right: auto;
+                margin: 0 auto;
             }
 
             .home-auth-block {
@@ -143,6 +138,10 @@
                         }
                     }
                 }
+            }
+
+            .home-info-slogan {
+                margin: 0 auto;
             }
         }
 
@@ -345,8 +344,8 @@
         }
 
         .home-plot-frame-container {
-            width: 100%;
             background: $primary-color;
+            min-width: 650px;
 
             .home-plot-frame-info {
 
@@ -364,20 +363,21 @@
                 }
 
                 .home-frame-block-info {
-                    display: flex;
-                    flex-direction: column;
                     min-width: 160px;
 
                     .home-frame-block-info-header {
-                        margin: 16px;
-                        align-self: center;
+                        padding-top: 16px;
                         @include font-primary-heading();
+
+                        @media screen and (max-width: 750px) {
+                            text-align: center;
+                        }
                     }
 
                     .home-frame-block-info-content {
                         @media screen and (max-width: 750px) {
-                            margin-left: auto;
-                            margin-right: auto;
+                            width: 50%;
+                            margin: auto;
                         }
 
                         ul, ol {
@@ -410,6 +410,11 @@
                                     }
                                 }
                             }
+                        }
+
+                        ul {
+                            padding-bottom: 16px;
+                            margin-block-end: unset;
                         }
                     }
                 }
@@ -494,7 +499,7 @@
                     margin-right: 34px;
                     padding-top: 28px;
                     a {
-                        color: $background-color;
+                        color: $general-background-color;
                         text-decoration: none;
                     }
                 }
@@ -506,10 +511,24 @@
         }
 
         .home-line {
-            margin: auto;
-            width: 2px;
+            width: 650px;
             height: 200px;
-            background: $for-background-contrast-color;
+            display: flex;
+            margin: auto;
+
+            .left-line {
+                margin: unset;
+                width: 325px;
+                height: inherit;
+                border-right: 1px solid $for-background-contrast-color;
+            }
+
+            .right-line {
+                margin: unset;
+                width: 325px;
+                height: inherit;
+                border-left: 1px solid $for-background-contrast-color;
+            }
         }
     }
 }
