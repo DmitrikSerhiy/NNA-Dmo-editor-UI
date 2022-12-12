@@ -343,6 +343,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 8 || key == 46 ) { // delete and backspace
+			if ($event.ctrlKey) {
+				this.deleteBeat($event.target, true);
+				return;
+			}
 			$event.preventDefault();
 			this.shiftCursorOnColon($event.target, key);
 			return;
@@ -502,6 +506,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		if (key == 8 || key == 46) { // delete or backspace
+			if ($event.ctrlKey) {
+				this.deleteBeat($event.target, false);
+				return;
+			}
 			this.valueBeforeRemove = $event.target.innerHTML;
 		}
 
@@ -582,6 +590,15 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 		}
 		return false;
+	}
+
+	private deleteBeat(nativeElement: any, fromTimePicker: boolean): void {
+		if (fromTimePicker == true) {
+			this.removeBeat.emit({beatIdToRemove: this.editorSharedService.selectBeatIdFromTimePicker(nativeElement)});
+		} else {
+			this.removeBeat.emit({beatIdToRemove: this.editorSharedService.selectBeatIdFromBeatDataHolder(nativeElement)});
+		}
+
 	}
 
 	private focusNextDefaultTimePicker($event: any): boolean {
