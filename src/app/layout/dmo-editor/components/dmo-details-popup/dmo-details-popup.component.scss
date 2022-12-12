@@ -133,7 +133,7 @@
                 border-right: none !important;
                 border-left: none !important;
 
-                background: #F7F7F7; // todo: add such background to all active elements (tables, popups etc.)
+                background: $active-background-color;
             }
 
             .help-window {

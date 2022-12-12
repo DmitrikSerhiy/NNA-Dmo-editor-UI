@@ -12,7 +12,7 @@
         </button>
     </div>
     <div [hidden]="!charactersTable || charactersCount == 0" class="base-modal-body">
-        <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
+        <table mat-table class="nna-table nna-table-for-popoup characters-table" [dataSource]="charactersTable" matSort>
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element no-select" (click)="resetSelected()"> Name </th>
                 <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}; text-transform: capitalize;"> {{row.name}} </td>
@@ -30,7 +30,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="charactersTableColumn"></tr>
-            <tr mat-row *matRowDef="let row; columns: charactersTableColumn;" [class.clicked-row]="selectedCharacter == row" (click)="onRowSelect(row)"> </tr>
+            <tr mat-row class="hoverable-element hoverable-character-element" *matRowDef="let row; columns: charactersTableColumn;" [class.clicked-row]="selectedCharacter == row" (click)="onRowSelect(row)"> </tr>
 
         </table>
         <mat-paginator [hidden]="charactersCount < 6" #charactersPaginator [length]="charactersCount" [pageSize]="5" [hidePageSize]="true" (page)="onPaginateChange()"></mat-paginator>

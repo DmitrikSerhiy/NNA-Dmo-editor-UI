@@ -1,7 +1,7 @@
 @import "src/styles/fonts-mixins.scss";
+@import "src/styles/colors.scss";
 
 .base-modal {
-
     .base-modal-header {
         display: flex;
         margin-bottom: 14px;
@@ -24,6 +24,18 @@
     flex-wrap: nowrap;
 
     .base-modal-body {
+        .characters-table {
+            .hoverable-character-element {
+                &:hover {
+                    background: $input-underline-gradient, $input-underline-gradient;
+                    background-repeat: no-repeat;
+                    background-size: 100% 1px;
+                    background-position: bottom, top;
+                    background-color: $active-background-color;
+                }
+            }
+        }
+
         .character-form {
             height: 520px;
             max-height: 600px;

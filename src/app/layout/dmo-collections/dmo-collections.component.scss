@@ -135,6 +135,14 @@
 				margin-right: 11px;
 			}
 		}
+
+		&:hover {
+			background: $input-underline-gradient, $input-underline-gradient;
+			background-repeat: no-repeat;
+			background-size: 100% 1px;
+			background-position: bottom, top;
+			background-color: $active-background-color;
+		}
 	}
 
 	.info-message {

@@ -88,7 +88,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 			this.maxDidacticismDescriptionLengthExceededValidationMessage = "Maximum didacticism description length exceeded";
 		}
 
-		//todo: add sanitizeSpaces for each field
 
 	async ngOnInit(): Promise<void> {
 		this.dmoDetails = await this.editorHub.getDmoDetails(this.dmoId);
@@ -147,17 +146,17 @@ export class DmoDetailsPopupComponent implements OnInit {
 		}
 
 		const update = {
-			movieTitle: this.movieTitle.value,
-			name: this.dmoName.value,
+			movieTitle: this.nnaHelpersService.sanitizeSpaces(this.movieTitle.value),
+			name: this.nnaHelpersService.sanitizeSpaces(this.dmoName.value),
 			dmoStatusId: this.dmoStatus.value,
-			shortComment: this.shortComment.value
+			shortComment: this.nnaHelpersService.sanitizeSpaces(this.shortComment.value)
 		} as UpdateDmoDetailsDto;
 
 		const oldValue = {
-			movieTitle: this.dmoDetails.movieTitle,
-			name: this.dmoDetails.name,
+			movieTitle: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.movieTitle),
+			name: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.name),
 			dmoStatusId: this.dmoDetails.dmoStatusId,
-			shortComment: this.dmoDetails.shortComment
+			shortComment: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.shortComment)
 		} as UpdateDmoDetailsDto;
 
 		const patch = compare(oldValue, update);
@@ -207,17 +206,17 @@ export class DmoDetailsPopupComponent implements OnInit {
 		
 
 		const update = {
-			premise: this.premise.value,
-			controllingIdea: this.controllingIdea.value,
-			didacticismDescription: this.didacticismDescription.value,
+			premise: this.nnaHelpersService.sanitizeSpaces(this.premise.value),
+			controllingIdea: this.nnaHelpersService.sanitizeSpaces(this.controllingIdea.value),
+			didacticismDescription: this.nnaHelpersService.sanitizeSpaces(this.didacticismDescription.value),
 			didacticism: this.didacticism.value,
 			controllingIdeaId: this.controllingIdeaType.value
 		} as UpdateDmoPlotDetailsDto;
 
 		const oldValue = {
-			premise: this.dmoDetails.premise,
-			controllingIdea: this.dmoDetails.controllingIdea,
-			didacticismDescription: this.dmoDetails.didacticismDescription,
+			premise: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.premise),
+			controllingIdea: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.controllingIdea),
+			didacticismDescription: this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.didacticismDescription),
 			didacticism: this.dmoDetails.didacticism,
 			controllingIdeaId: this.dmoDetails.controllingIdeaId
 		} as UpdateDmoPlotDetailsDto;
@@ -427,24 +426,24 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	private setDmoDetailsValues(): void {
-		this.dmoName.setValue(this.dmoDetails.name);
-		this.movieTitle.setValue(this.dmoDetails.movieTitle);
+		this.dmoName.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.name));
+		this.movieTitle.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.movieTitle));
 		this.dmoStatus.setValue(this.dmoDetails.dmoStatusId);
-		this.shortComment.setValue(this.dmoDetails.shortComment);
+		this.shortComment.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.shortComment));
 	}
 
 	private updateDmoDetailsInitialValues(): void {
-		this.dmoDetails.name = this.dmoName.value;
-		this.dmoDetails.movieTitle = this.movieTitle.value;
+		this.dmoDetails.name = this.nnaHelpersService.sanitizeSpaces(this.dmoName.value);
+		this.dmoDetails.movieTitle = this.nnaHelpersService.sanitizeSpaces(this.movieTitle.value);
 		this.dmoDetails.dmoStatusId = this.dmoStatus.value;
-		this.dmoDetails.shortComment = this.shortComment.value;
+		this.dmoDetails.shortComment = this.nnaHelpersService.sanitizeSpaces(this.shortComment.value);
 	}
 
 
 	private setDmoPlotDetailsValues(): void {
-		this.premise.setValue(this.dmoDetails.premise);
-		this.controllingIdea.setValue(this.dmoDetails.controllingIdea);
-		this.didacticismDescription.setValue(this.dmoDetails.didacticismDescription);
+		this.premise.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.premise));
+		this.controllingIdea.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.controllingIdea));
+		this.didacticismDescription.setValue(this.nnaHelpersService.sanitizeSpaces(this.dmoDetails.didacticismDescription));
 		this.didacticism.setValue(this.dmoDetails.didacticism);
 		this.controllingIdeaType.setValue(this.dmoDetails.controllingIdeaId);
 	}
@@ -456,9 +455,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	private updateDmoPlotDetailsInitialValues(): void {
-		this.dmoDetails.premise = this.premise.value;
-		this.dmoDetails.controllingIdea = this.controllingIdea.value;
-		this.dmoDetails.didacticismDescription = this.didacticismDescription.value;
+		this.dmoDetails.premise = this.nnaHelpersService.sanitizeSpaces(this.premise.value);
+		this.dmoDetails.controllingIdea = this.nnaHelpersService.sanitizeSpaces(this.controllingIdea.value);
+		this.dmoDetails.didacticismDescription = this.nnaHelpersService.sanitizeSpaces(this.didacticismDescription.value);
 		this.dmoDetails.didacticism = this.didacticism.value;
 		this.dmoDetails.controllingIdeaId = this.controllingIdeaType.value;
 	}
@@ -558,7 +557,6 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.dmoConflictForm.addControl(controlName + '-checkbox', checkboxControl);
 	}
 
-	//todo: filter characters on select
 	private setConflictCharacterGoalDescriptionValue(character: DmoCharactersForConflictDto, descriptionElement: HTMLElement): void {
 		if (!character?.goal) {
 			return;

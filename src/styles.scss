@@ -225,11 +225,13 @@ body {
 
 .nna-select-option {
 	mat-option {
+		border-width: 1px;
+		border-style: solid;
+		border-color: transparent;
 		&:hover {
-			background: $input-underline-gradient, $input-underline-gradient !important;
-			background-repeat: no-repeat !important;
-			background-size: 100% 1px !important;
-			background-position: bottom, top !important;
+			border-image: $active-gradient-for-border;
+			border-image-width: 1px 0px;
+			background-color: $active-background-color !important;
 		}
 	}
 

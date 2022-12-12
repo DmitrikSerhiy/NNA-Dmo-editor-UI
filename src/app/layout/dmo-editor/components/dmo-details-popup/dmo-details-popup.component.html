@@ -121,7 +121,7 @@
                 </div>
                 
             </mat-tab>
-            <mat-tab *ngIf="dmoDetails.charactersForConflict" label="Conflict" class="nna-tab"> 
+            <mat-tab *ngIf="dmoDetails.charactersForConflict.length > 0" label="Conflict" class="nna-tab"> 
                 <div *ngIf="conflictPairs?.length && !helpWindow" class="conflict-headers">
                     <h4>Protagonist</h4>
                     <h4 class="right-header">Antagonist</h4>
