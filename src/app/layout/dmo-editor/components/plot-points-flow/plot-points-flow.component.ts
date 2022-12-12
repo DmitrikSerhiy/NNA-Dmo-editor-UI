@@ -19,6 +19,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	@Output() updateBeatType: EventEmitter<UpdateBeatType> = new EventEmitter<UpdateBeatType>();
 	@Output() focusElementInBeatsFlow: EventEmitter<any> = new EventEmitter<any>();
 	@Output() addBeatByButton: EventEmitter<void> = new EventEmitter<void>();
+	@Output() removeBeatByButton: EventEmitter<string> = new EventEmitter<string>();
 
 	isDataLoaded: boolean = false;
 	plotPoints: any[];
@@ -363,8 +364,26 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		});
 	}
 
-	onAddBeatByButton() {
+	onAddBeatByButton(): void {
 		this.addBeatByButton.emit();
+	}
+
+	onRemoveBeatByButton(beatId: string): void {
+		this.removeBeatByButton.emit(beatId);
+	}
+
+	showRemoveBeatButton($event: any, i: number): void {
+		if (i === 0) {
+			return;
+		}
+		$event.target.firstChild.classList.add('plot-point-controls-container-visible');
+	}
+
+	hideRemoveBeatButton($event: any, i: number): void {
+		if (i === 0) {
+			return;
+		}
+		$event.target.firstChild.classList.remove('plot-point-controls-container-visible');
 	}
 
 	private renderGraph(): void {

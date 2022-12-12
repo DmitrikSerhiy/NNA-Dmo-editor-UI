@@ -514,7 +514,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 
-	addBeatByButton() {
+	addBeatByButton(): void {
 		let beats = this.selectBeatDtos();
 		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
 		beats.push(newBeat);
@@ -523,6 +523,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
 		this.updatePlotPoints();
 	}
+
+	removeBeatByButton(beatId: string): void {
+		this.removeBeat({beatIdToRemove: beatId})
+	} 
 
   	addBeat(fromBeat: any): void {
 		let indexToInsert: number;

@@ -12,69 +12,74 @@
 
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
-        <div #plotPoints class="plot-point-container" *ngFor="let plotPoint of plotPoints;"  
-            [attr.data-id]="plotPoint.beatId"
-            [attr.data-order]="plotPoint.order"
-            draggable="true" 
-            (dragstart)="onBeatDragBeggin($event)"  
-            (dragover)="onBeatDragOver($event)"
-            (dragenter)="onBeatDragHoverBeggin($event)"
-            (dragleave)="onBeatDragHoverEnd($event)"
-            (drop)="onBeatDrop($event)"
-            (dragend)="onDrugAndDropEnd($event)" >
+        <div class="plot-point-wrapper" *ngFor="let plotPoint of plotPoints; let i = index" (mouseenter)="showRemoveBeatButton($event, i)" (mouseleave)="hideRemoveBeatButton($event, i)" >
+            
+            <div class="plot-point-controls-container" (click)="onRemoveBeatByButton(plotPoint.beatId)" >
+                <i class="fa fa-minus" aria-hidden="true"></i>
+            </div>
+            <div #plotPoints class="plot-point-container"  
+                [attr.data-id]="plotPoint.beatId"
+                [attr.data-order]="plotPoint.order"
+                draggable="true" 
+                (dragstart)="onBeatDragBeggin($event)"  
+                (dragover)="onBeatDragOver($event)"
+                (dragenter)="onBeatDragHoverBeggin($event)"
+                (dragleave)="onBeatDragHoverEnd($event)"
+                (drop)="onBeatDrop($event)"
+                (dragend)="onDrugAndDropEnd($event)" >
 
-            <svg 
-                #plotPointsSvgs class="plot-point" 
-                [attr.id]="'plot_point_' + plotPoint.beatId"
-                [attr.viewBox]="getSvgCanvas()"
-                [attr.width]="plotPointContainerSize" 
-                [attr.height]="plotPointContainerSize"
-                transform="scale(1.5)"
-                >
-
-                <circle #beatIcon *ngIf="plotPoint.beatType == 1" 
-                    class="beat-icon"
-                    [attr.cx]="plotPointContainerSize/2" 
-                    [attr.cy]="plotPointContainerSize/2" 
-                    [attr.r]="plotPointRadius"
-                    (click)="onBeatSvgIconClick(beatIcon, plotPoint.beatId)"
-                    />
-
-                <circle #expBeatIcon *ngIf="plotPoint.beatType == 2"
-                    fill="white" stroke="black" stroke-width="1" class="beat-icon"
-                    [attr.cx]="plotPointContainerSize/2" 
-                    [attr.cy]="plotPointContainerSize/2" 
-                    [attr.r]="plotPointRadius"
-                    (click)="onBeatSvgIconClick(expBeatIcon, plotPoint.beatId)"
-                    />
-                    
-                <g #characterBeatIcon *ngIf="plotPoint.beatType == 3" 
-                    class="beat-icon" 
-                    transform="translate(9, 9)"
-                    (click)="onBeatSvgIconClick(characterBeatIcon, plotPoint.beatId)"
+                <svg 
+                    #plotPointsSvgs class="plot-point" 
+                    [attr.id]="'plot_point_' + plotPoint.beatId"
+                    [attr.viewBox]="getSvgCanvas()"
+                    [attr.width]="plotPointContainerSize" 
+                    [attr.height]="plotPointContainerSize"
+                    transform="scale(1.5)"
                     >
-                        <circle cx="7" cy="7" r="6" fill="white" stroke="black" stroke-width="1" />
-                        <circle cx="6.99999" cy="5.83333" r="1.83333" fill="white" stroke="black"/>
-                        <path d="M3 11L4.10728 10.5571C5.02731 10.1891 6.0091 10 7 10V10C7.9909 10 8.97269 10.1891 9.89272 10.5571L11 11" fill="white" stroke="black"/>         
-                </g>
+
+                    <circle #beatIcon *ngIf="plotPoint.beatType == 1" 
+                        class="beat-icon"
+                        [attr.cx]="plotPointContainerSize/2" 
+                        [attr.cy]="plotPointContainerSize/2" 
+                        [attr.r]="plotPointRadius"
+                        (click)="onBeatSvgIconClick(beatIcon, plotPoint.beatId)"
+                        />
+
+                    <circle #expBeatIcon *ngIf="plotPoint.beatType == 2"
+                        fill="white" stroke="black" stroke-width="1" class="beat-icon"
+                        [attr.cx]="plotPointContainerSize/2" 
+                        [attr.cy]="plotPointContainerSize/2" 
+                        [attr.r]="plotPointRadius"
+                        (click)="onBeatSvgIconClick(expBeatIcon, plotPoint.beatId)"
+                        />
+                        
+                    <g #characterBeatIcon *ngIf="plotPoint.beatType == 3" 
+                        class="beat-icon" 
+                        transform="translate(9, 9)"
+                        (click)="onBeatSvgIconClick(characterBeatIcon, plotPoint.beatId)"
+                        >
+                            <circle cx="7" cy="7" r="6" fill="white" stroke="black" stroke-width="1" />
+                            <circle cx="6.99999" cy="5.83333" r="1.83333" fill="white" stroke="black"/>
+                            <path d="M3 11L4.10728 10.5571C5.02731 10.1891 6.0091 10 7 10V10C7.9909 10 8.97269 10.1891 9.89272 10.5571L11 11" fill="white" stroke="black"/>         
+                    </g>
 
 
-                <g #astBeatIcon *ngIf="plotPoint.beatType == 4" 
-                    class="beat-icon" 
-                    transform="translate(9, 9)"
-                    (click)="onBeatSvgIconClick(astBeatIcon, plotPoint.beatId)">
-                        <circle cx="7" cy="7" r="1.5" fill="black" stroke="black"/>
-                        <path d="M13.5 7C13.5 7.33309 13.2975 7.69585 12.844 7.99819C12.394 8.29819 11.7435 8.5 11 8.5C10.2565 8.5 9.60604 8.29819 9.15603 7.99819C8.70253 7.69585 8.5 7.33309 8.5 7C8.5 6.66691 8.70253 6.30415 9.15603 6.00181C9.60604 5.70181 10.2565 5.5 11 5.5C11.7435 5.5 12.394 5.70181 12.844 6.00181C13.2975 6.30415 13.5 6.66691 13.5 7Z" fill="white" stroke="black"/>
-                        <path d="M11.3033 2.76777C11.5388 3.0033 11.6521 3.40302 11.5452 3.93748C11.4392 4.46782 11.1219 5.07048 10.5962 5.5962C10.0705 6.12192 9.46781 6.43918 8.93748 6.54525C8.40302 6.65214 8.0033 6.53884 7.76777 6.30331C7.53223 6.06777 7.41893 5.66805 7.52582 5.1336C7.63189 4.60326 7.94915 4.0006 8.47487 3.47488C9.0006 2.94916 9.60325 2.6319 10.1336 2.52583C10.668 2.41894 11.0678 2.53224 11.3033 2.76777Z" fill="white" stroke="black"/>
-                        <path d="M6.3033 7.76777C6.53883 8.0033 6.65213 8.40302 6.54524 8.93748C6.43918 9.46782 6.12192 10.0705 5.59619 10.5962C5.07047 11.1219 4.46781 11.4392 3.93748 11.5452C3.40302 11.6521 3.0033 11.5388 2.76777 11.3033C2.53223 11.0678 2.41893 10.6681 2.52582 10.1336C2.63189 9.60326 2.94915 9.0006 3.47487 8.47488C4.0006 7.94916 4.60325 7.6319 5.13359 7.52583C5.66805 7.41894 6.06777 7.53224 6.3033 7.76777Z" fill="white" stroke="black"/>
-                        <path d="M5.5 7C5.5 7.33309 5.29747 7.69585 4.84397 7.99819C4.39396 8.29819 3.74348 8.5 3 8.5C2.25652 8.5 1.60604 8.29819 1.15603 7.99819C0.702528 7.69585 0.5 7.33309 0.5 7C0.5 6.66691 0.702528 6.30415 1.15603 6.00181C1.60604 5.70181 2.25652 5.5 3 5.5C3.74348 5.5 4.39396 5.70181 4.84397 6.00181C5.29747 6.30415 5.5 6.66691 5.5 7Z" fill="white" stroke="black"/>
-                        <path d="M8.5 3C8.5 3.74348 8.29819 4.39396 7.99819 4.84397C7.69585 5.29747 7.33309 5.5 7 5.5C6.66691 5.5 6.30415 5.29747 6.00181 4.84397C5.70181 4.39396 5.5 3.74348 5.5 3C5.5 2.25652 5.70181 1.60604 6.00181 1.15603C6.30415 0.702528 6.66691 0.5 7 0.5C7.33309 0.5 7.69585 0.702528 7.99819 1.15603C8.29819 1.60604 8.5 2.25652 8.5 3Z" fill="white" stroke="black"/>
-                        <path d="M8.5 11C8.5 11.7435 8.29819 12.394 7.99819 12.844C7.69585 13.2975 7.33309 13.5 7 13.5C6.66691 13.5 6.30415 13.2975 6.00181 12.844C5.70181 12.394 5.5 11.7435 5.5 11C5.5 10.2565 5.70181 9.60604 6.00181 9.15603C6.30415 8.70253 6.66691 8.5 7 8.5C7.33309 8.5 7.69585 8.70253 7.99819 9.15603C8.29819 9.60604 8.5 10.2565 8.5 11Z" fill="white" stroke="black"/>
-                        <path d="M10.5962 8.47488C11.1219 9.0006 11.4392 9.60326 11.5452 10.1336C11.6521 10.6681 11.5388 11.0678 11.3033 11.3033C11.0678 11.5388 10.668 11.6521 10.1336 11.5452C9.60325 11.4392 9.0006 11.1219 8.47487 10.5962C7.94915 10.0705 7.63189 9.46782 7.52582 8.93748C7.41893 8.40302 7.53223 8.0033 7.76777 7.76777C8.0033 7.53224 8.40302 7.41894 8.93748 7.52583C9.46781 7.63189 10.0705 7.94916 10.5962 8.47488Z" fill="white" stroke="black"/>
-                        <path d="M5.59619 3.47488C6.12192 4.0006 6.43918 4.60326 6.54524 5.13359C6.65213 5.66805 6.53883 6.06777 6.3033 6.3033C6.06777 6.53884 5.66805 6.65214 5.13359 6.54525C4.60325 6.43918 4.0006 6.12192 3.47487 5.5962C2.94915 5.07048 2.63189 4.46782 2.52582 3.93748C2.41893 3.40302 2.53223 3.0033 2.76777 2.76777C3.0033 2.53224 3.40302 2.41894 3.93748 2.52583C4.46781 2.63189 5.07047 2.94916 5.59619 3.47488Z" fill="white" stroke="black"/>
-                </g>
-            </svg>
-
+                    <g #astBeatIcon *ngIf="plotPoint.beatType == 4" 
+                        class="beat-icon" 
+                        transform="translate(9, 9)"
+                        (click)="onBeatSvgIconClick(astBeatIcon, plotPoint.beatId)">
+                            <circle cx="7" cy="7" r="1.5" fill="black" stroke="black"/>
+                            <path d="M13.5 7C13.5 7.33309 13.2975 7.69585 12.844 7.99819C12.394 8.29819 11.7435 8.5 11 8.5C10.2565 8.5 9.60604 8.29819 9.15603 7.99819C8.70253 7.69585 8.5 7.33309 8.5 7C8.5 6.66691 8.70253 6.30415 9.15603 6.00181C9.60604 5.70181 10.2565 5.5 11 5.5C11.7435 5.5 12.394 5.70181 12.844 6.00181C13.2975 6.30415 13.5 6.66691 13.5 7Z" fill="white" stroke="black"/>
+                            <path d="M11.3033 2.76777C11.5388 3.0033 11.6521 3.40302 11.5452 3.93748C11.4392 4.46782 11.1219 5.07048 10.5962 5.5962C10.0705 6.12192 9.46781 6.43918 8.93748 6.54525C8.40302 6.65214 8.0033 6.53884 7.76777 6.30331C7.53223 6.06777 7.41893 5.66805 7.52582 5.1336C7.63189 4.60326 7.94915 4.0006 8.47487 3.47488C9.0006 2.94916 9.60325 2.6319 10.1336 2.52583C10.668 2.41894 11.0678 2.53224 11.3033 2.76777Z" fill="white" stroke="black"/>
+                            <path d="M6.3033 7.76777C6.53883 8.0033 6.65213 8.40302 6.54524 8.93748C6.43918 9.46782 6.12192 10.0705 5.59619 10.5962C5.07047 11.1219 4.46781 11.4392 3.93748 11.5452C3.40302 11.6521 3.0033 11.5388 2.76777 11.3033C2.53223 11.0678 2.41893 10.6681 2.52582 10.1336C2.63189 9.60326 2.94915 9.0006 3.47487 8.47488C4.0006 7.94916 4.60325 7.6319 5.13359 7.52583C5.66805 7.41894 6.06777 7.53224 6.3033 7.76777Z" fill="white" stroke="black"/>
+                            <path d="M5.5 7C5.5 7.33309 5.29747 7.69585 4.84397 7.99819C4.39396 8.29819 3.74348 8.5 3 8.5C2.25652 8.5 1.60604 8.29819 1.15603 7.99819C0.702528 7.69585 0.5 7.33309 0.5 7C0.5 6.66691 0.702528 6.30415 1.15603 6.00181C1.60604 5.70181 2.25652 5.5 3 5.5C3.74348 5.5 4.39396 5.70181 4.84397 6.00181C5.29747 6.30415 5.5 6.66691 5.5 7Z" fill="white" stroke="black"/>
+                            <path d="M8.5 3C8.5 3.74348 8.29819 4.39396 7.99819 4.84397C7.69585 5.29747 7.33309 5.5 7 5.5C6.66691 5.5 6.30415 5.29747 6.00181 4.84397C5.70181 4.39396 5.5 3.74348 5.5 3C5.5 2.25652 5.70181 1.60604 6.00181 1.15603C6.30415 0.702528 6.66691 0.5 7 0.5C7.33309 0.5 7.69585 0.702528 7.99819 1.15603C8.29819 1.60604 8.5 2.25652 8.5 3Z" fill="white" stroke="black"/>
+                            <path d="M8.5 11C8.5 11.7435 8.29819 12.394 7.99819 12.844C7.69585 13.2975 7.33309 13.5 7 13.5C6.66691 13.5 6.30415 13.2975 6.00181 12.844C5.70181 12.394 5.5 11.7435 5.5 11C5.5 10.2565 5.70181 9.60604 6.00181 9.15603C6.30415 8.70253 6.66691 8.5 7 8.5C7.33309 8.5 7.69585 8.70253 7.99819 9.15603C8.29819 9.60604 8.5 10.2565 8.5 11Z" fill="white" stroke="black"/>
+                            <path d="M10.5962 8.47488C11.1219 9.0006 11.4392 9.60326 11.5452 10.1336C11.6521 10.6681 11.5388 11.0678 11.3033 11.3033C11.0678 11.5388 10.668 11.6521 10.1336 11.5452C9.60325 11.4392 9.0006 11.1219 8.47487 10.5962C7.94915 10.0705 7.63189 9.46782 7.52582 8.93748C7.41893 8.40302 7.53223 8.0033 7.76777 7.76777C8.0033 7.53224 8.40302 7.41894 8.93748 7.52583C9.46781 7.63189 10.0705 7.94916 10.5962 8.47488Z" fill="white" stroke="black"/>
+                            <path d="M5.59619 3.47488C6.12192 4.0006 6.43918 4.60326 6.54524 5.13359C6.65213 5.66805 6.53883 6.06777 6.3033 6.3033C6.06777 6.53884 5.66805 6.65214 5.13359 6.54525C4.60325 6.43918 4.0006 6.12192 3.47487 5.5962C2.94915 5.07048 2.63189 4.46782 2.52582 3.93748C2.41893 3.40302 2.53223 3.0033 2.76777 2.76777C3.0033 2.53224 3.40302 2.41894 3.93748 2.52583C4.46781 2.63189 5.07047 2.94916 5.59619 3.47488Z" fill="white" stroke="black"/>
+                    </g>
+                </svg>
+            </div>
         </div>
     </div>
 

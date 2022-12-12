@@ -31,24 +31,42 @@
         flex: 0 0 30px;
         flex-direction: column;
 
-        .plot-point-container {
-            z-index: 100;
-            border-top: 1px transparent solid;
-            border-bottom: 1px transparent solid;
-            cursor: grab;
-            .plot-point  {
-                .beat-icon {
-                    outline: none !important;
-                    cursor: pointer;
+        .plot-point-wrapper {
+            .plot-point-container {
+                z-index: 100;
+                border-top: 1px transparent solid;
+                border-bottom: 1px transparent solid;
+                cursor: grab;
+                .plot-point  {
+                    .beat-icon {
+                        outline: none !important;
+                        cursor: pointer;
 
-                    &:hover {
-                        color: $secondary-color;
+                        &:hover {
+                            color: $secondary-color;
+                        }
                     }
+                }
+
+                .ignore-events {
+                    pointer-events: none;
                 }
             }
 
-            .ignore-events {
-                pointer-events: none;
+            .plot-point-controls-container {
+                position: absolute;
+                margin-top: 6px;
+                margin-left: -18px;
+                display: none;
+                cursor: pointer;
+
+                &:hover {
+                    color: $secondary-color;
+                }
+            }
+
+            .plot-point-controls-container-visible {
+                display: block
             }
         }
 
