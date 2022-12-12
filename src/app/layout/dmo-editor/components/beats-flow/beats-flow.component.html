@@ -8,7 +8,7 @@
                     <input #characterFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Character name or alias" (input)="filterCharacters($event.target.value)">
                     <ul>
                         <li #charactersOptions [attr.data-order]="i" class="character-option" *ngFor="let character of filtredCharacters; let i = index" attr.style="color: {{character.color}}"  (click)="pickCharacter(character)">
-                            {{character.name}} <span *ngIf="character.aliases">[</span> {{character.aliases}} <span *ngIf="character.aliases">]</span> 
+                            <span style="text-transform: capitalize;">{{character.name}}</span>  <span *ngIf="character.aliases">[</span> {{character.aliases}} <span *ngIf="character.aliases">]</span> 
                         </li>
                     </ul>
 

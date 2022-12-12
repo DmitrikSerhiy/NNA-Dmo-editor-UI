@@ -44,8 +44,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
-	
-	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82 }; 
+	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82 };
 	// q for beat type tooltip
 	// r for character tooltip
 
@@ -56,7 +55,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	@ViewChild('charactersTooltip') charactersTooltip: ElementRef;
 	@ViewChild('charactersTooltipArrow') charactersTooltipArrow: ElementRef;
-	
 	@ViewChild('characterFilterInput') characterFilterInputElement: ElementRef;
 	@ViewChildren('charactersOptions') charactersOptionsElements: QueryList<ElementRef>;
 
@@ -76,7 +74,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.setupEditorCallback();
 		this.setupSubscription();
 
-		
 		document.body.addEventListener('keydown', $event => {
 			const key = $event.which || $event.keyCode || $event.charCode;
 			if ($event.ctrlKey && key == this.editorHotKeys.openCharacterTooltipKeyCode) { // prevent browser tab from reload
@@ -114,7 +111,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		});
 
 		this.updateCharactersEvent.subscribe(update => {
-			const previousCharacters = [...this.characters]; 
+			const previousCharacters = [...this.characters];
 			this.characters = [...update.characters];
 			let shouldReloadBeats: boolean = false;
 			let shouldSanitizeDeletedCharactersInBeats: boolean = false;
@@ -147,8 +144,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 
 			if (shouldReloadBeats == true) {
-				let editedCharacters = previousCharacters.filter(character => 
-					(this.characters.findIndex(cha => cha.name == character.name) == -1) || 
+				let editedCharacters = previousCharacters.filter(character =>
+					(this.characters.findIndex(cha => cha.name == character.name) == -1) ||
 					(this.characters.findIndex(cha => cha.aliases == character.aliases) == -1) ||
 					(this.characters.findIndex(cha => cha.color == character.color) == -1));
 
@@ -165,7 +162,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 		this.focusElement.subscribe((element) => {
 			setTimeout(() => {
-				this.editorSharedService.isDiv(element) == true 
+				this.editorSharedService.isDiv(element) == true
 					? this.focusBeat(element.dataset.order)
 					: this.focusTimePickerByIndex(element.dataset.order);
 			}, 200);
@@ -290,8 +287,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	private setupEditorCallback(lastAction: string = null, actionMetaData: string = null): void {
 		this.beatsSet.emit({
-			timePickers: this.timePickersElements, 
-			beats: this.beatDataHolderElements, 
+			timePickers: this.timePickersElements,
+			beats: this.beatDataHolderElements,
 			beatMetadata: this.beatsMetaData,
 			beatsIds: this.beatsIds,
 			lastAction: lastAction,
@@ -307,7 +304,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 
 	// #region key event handlers
-	
+
 	setTimePickerKeyMetaData($event: any, index: number): void {
 		let key = $event.which || $event.keyCode || $event.charCode;
 		if (((key < 48 || key > 59) &&  // numbers
@@ -420,7 +417,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.beatsMetaData[index].isDirty = true;
 		}
 	}
- 
+
 	finalizeTimePicker($event: any, index: number): void {
 		$event.target.value = this.fillEmtpyTimeDto($event.target.value);
 		this.setEditableElementsFocusMetaData(false, false);
@@ -499,9 +496,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 					this.syncBeats.emit({ source: 'beat_data_holder_focus_out', metaData: index });
 					this.beatsMetaData[index].isDirty = false;
 				}
-				
+
 				this.addBeat.emit({ beatIdFrom: this.editorSharedService.selectBeatIdFromBeatDataHolder($event.target) });
-			} 
+			}
 			return;
 		}
 
@@ -572,10 +569,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	preventDrag($event: any): void {
-		$event.dataTransfer.dropEffect = 'none'; 
+		$event.dataTransfer.dropEffect = 'none';
 		$event.preventDefault();
 	}
-	
 
 	// #endregion
 
@@ -603,7 +599,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	private focusNextDefaultTimePicker($event: any): boolean {
 		let currentBeatId = this.editorSharedService.selectBeatIdFromBeatDataHolder($event.target)
-		let currentPosition: number; 
+		let currentPosition: number;
 		this.beatDataHolderElements.find((beatHolders, i) => {
 			if (this.editorSharedService.selectBeatIdFromBeatDataHolder(beatHolders.nativeElement) == currentBeatId) {
 				currentPosition = i;
@@ -777,10 +773,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 					const emptyElement = document.createTextNode(' ') as Node;
 					lastChild.after(emptyElement);
 					this.setBeatSelection(emptyElement);
-					if (scrollToElement == true) { 
+					if (scrollToElement == true) {
 						this.scrollToElement(dataHolder);
 					}
-					return 
+					return
 				}
 				lastChild.focus();
 				if (scrollToElement == true) {
@@ -806,7 +802,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	private deleteBeatIfEmpty(nativeElement: any, key: any): boolean {
 		let beatWasDeleted = false;
-		
+
 		if (nativeElement.value == this.editorSharedService.defaultEmptyTimePickerValue) {
 			const beatIdFromTimePicker = this.editorSharedService.selectBeatIdFromTimePicker(nativeElement)
 			this.beatDataHolderElements.forEach((beatDataHolder) => {
@@ -906,7 +902,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				nativeElement.selectionStart = start + 2;
 				nativeElement.selectionEnd = start + 2;
 			}
-		} 
+		}
 	}
 
 	private preventInvalidMinutesOrSeconds(nativeElement: any, value: number): boolean {
@@ -918,7 +914,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		if (start == 2 || start == 5 || start == 1 || start == 4) {
 			return value > 5;
 		}
-		
+
 		return false;
 	}
 
@@ -961,7 +957,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 			nativeElement.value = this.editorSharedService.replaceWith(initialValue, start, " ");
 			nativeElement.setSelectionRange(start, start);
-		}  
+		}
 	}
 
 	private focusBeat(index: number): void {
@@ -1001,7 +997,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		for (let i = index + 1; i <= this.beats.length - 1; i++) {
-			if (this.beats[i].type == 4) { 
+			if (this.beats[i].type == 4) {
 				this.focusNextTimePicker(i + 1);
 				continue;
 			}
@@ -1037,7 +1033,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
 		this.insertCharacterTagIntoPlaceholder(characterTag);
 		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
-		
+
 		this.characters = this.characters.map(characterInDmo => {
 			if (characterInDmo.id == character.id) {
 				characterInDmo.count++;
@@ -1090,7 +1086,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.nnaTooltipService.charactersTooltipName,
 			hostingElement,
 			this.charactersTooltip.nativeElement,
-			{ 
+			{
 				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
 				placement: 'bottom',
 				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
@@ -1106,10 +1102,10 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		previouslySelectedCharacters?.forEach(characterOpiton => {
 			characterOpiton.classList.remove('selected-character-option');
 		});
-		
+
 
 		this.nnaTooltipService.showTooltip(this.nnaTooltipService.charactersTooltipName);
-		
+
 		setTimeout(() => {
 			this.characterFilterInputElement?.nativeElement?.focus();
 		}, 200);
@@ -1118,13 +1114,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	filterCharacters(filterValue: string): void {
-		const formedFilterValue = filterValue?.trim()?.toLowerCase(); 
+		const formedFilterValue = filterValue?.trim()?.toLowerCase();
 		if (formedFilterValue == '') {
 			this.resetCharacterFilter();
 			return;
 		}
 
-		this.filtredCharacters = this.filtredCharacters.filter(character => 
+		this.filtredCharacters = this.filtredCharacters.filter(character =>
 			character.name.toLowerCase().includes(formedFilterValue) || character.aliases.toLowerCase().includes(formedFilterValue));
 		}
 
@@ -1142,26 +1138,27 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
 		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
+		characterTag.before(document.createTextNode(' '));
 		characterTag.after(document.createTextNode(' '));
 		this.observeCharacterTag(characterTag);
 	}
 
 	private addEventListenerForCharacterTag(characterTag: any): void {
-		characterTag.addEventListener('click', ($event) => { 
+		characterTag.addEventListener('click', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
 			const beatDataHolder = tagElement.parentNode.parentNode;
 			tagElement.remove();
 			this.focusBeatByElement(beatDataHolder, false);
 		});
-		characterTag.addEventListener('mouseover', ($event) => { 
+		characterTag.addEventListener('mouseover', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
 			tagElement.style.borderBottomWidth = '2px'
 		});
-		characterTag.addEventListener('mouseout', ($event) => { 
+		characterTag.addEventListener('mouseout', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
 			tagElement.style.borderBottomWidth = '1px'
 		});
-		characterTag.addEventListener('dragover', ($event) => { 
+		characterTag.addEventListener('dragover', ($event) => {
 			this.preventDrag($event);
 		});
 	}
@@ -1201,8 +1198,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 
 		const selectedCharacter = document.querySelector<HTMLElement>('.selected-character-option');
-		const selectedCharacterIndex: number = selectedCharacter?.dataset?.order 
-			? +selectedCharacter.dataset.order 
+		const selectedCharacterIndex: number = selectedCharacter?.dataset?.order
+			? +selectedCharacter.dataset.order
 			: -1;
 
 		characters?.forEach(characterOpiton => {
@@ -1225,7 +1222,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 				characters[selectedCharacterIndex-1].nativeElement.classList.add('selected-character-option');
 				return;
-	
+
 			} else if (key == 40) { // down
 				if (!selectedCharacter) {
 					characters[0].nativeElement.classList.add('selected-character-option');
@@ -1244,9 +1241,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			$event.preventDefault();
 			selectedCharacter?.click();
 			return;
-		} 
+		}
 	}
-	
+
 	private setCharactersClaims(): void {
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
 		if (!characterTags?.length) {

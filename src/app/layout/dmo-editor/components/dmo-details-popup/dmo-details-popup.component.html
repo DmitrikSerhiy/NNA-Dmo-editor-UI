@@ -141,13 +141,14 @@
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-select'}}"
                                     value="{{ loadedPair.protagonist ? loadedPair.protagonist.characterId : ''  }}"
                                     class="form-control nna-input nna-select" 
-                                    panelClass="nna-select-option">
+                                    panelClass="nna-select-option"
+                                    style="text-transform: capitalize">
                                     <mat-option>Not selected</mat-option>
                                     <mat-option 
                                         *ngFor="let dmoCharacter of dmoDetails.charactersForConflict" 
                                         attr.style="color: {{dmoCharacter.color}}" 
                                         [value]="dmoCharacter.characterId">
-                                            {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
+                                            <span style="text-transform: capitalize;">{{dmoCharacter.name}}</span> <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
                                     </mat-option>
                                 </mat-select>
                                 <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-description'}}" class="conflict-description"></p>
@@ -177,13 +178,14 @@
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-select'}}"
                                     value="{{ loadedPair.antagonist ? loadedPair.antagonist.characterId : ''  }}"
                                     class="form-control nna-input nna-select" 
-                                    panelClass="nna-select-option">
+                                    panelClass="nna-select-option"
+                                    style="text-transform: capitalize">
                                     <mat-option>Not selected</mat-option>
                                     <mat-option 
                                         *ngFor="let dmoCharacter of dmoDetails.charactersForConflict" 
-                                        attr.style="color: {{dmoCharacter.color}}" 
+                                        attr.style="color: {{dmoCharacter.color}};" 
                                         [value]="dmoCharacter.characterId">
-                                            {{dmoCharacter.name}} <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
+                                            <span style="text-transform: capitalize;">{{dmoCharacter.name}} </span>   <span *ngIf="dmoCharacter.aliases">[</span> {{dmoCharacter.aliases}} <span *ngIf="dmoCharacter.aliases">]</span> 
                                     </mat-option>
                                 </mat-select>
                                 <p #conflictDescription attr.id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-description'}}" class="conflict-description"></p>

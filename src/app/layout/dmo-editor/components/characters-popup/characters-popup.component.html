@@ -15,7 +15,7 @@
         <table mat-table class="nna-table nna-table-for-popoup" [dataSource]="charactersTable" matSort>
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="name" class="hoverable-element no-select" (click)="resetSelected()"> Name </th>
-                <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}"> {{row.name}} </td>
+                <td mat-cell class="dmo-cell" *matCellDef="let row" attr.style="color: {{row.color}}; text-transform: capitalize;"> {{row.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="aliases">
