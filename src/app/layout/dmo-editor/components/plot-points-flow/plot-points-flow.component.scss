@@ -39,6 +39,24 @@
                 cursor: grab;
                 .plot-point  {
                     .beat-icon {
+                        fill: black;
+                    }
+                    .exposition-icon {
+                        fill: white;
+                    }
+                    .character-icon {
+                        .character-icon-outer-circle, .character-icon-inner-circle, .character-icon-other {
+                            fill: white;
+                        }
+                    }
+                    .aesthetic-icon {
+                        fill: white;
+                        .aesthetic-icon-leaf {
+                            fill: white;
+                        }
+                    }
+
+                    .beat-icon {
                         outline: none !important;
                         cursor: pointer;
 
@@ -87,8 +105,26 @@
             border-bottom: 1px $secondary-color dashed !important;
             .plot-point {
                 .beat-icon {
-                    fill: $secondary-color;
+                    fill: $secondary-color !important;
                     filter: brightness(.9);
+                }
+                .exposition-icon {
+                    fill: $secondary-color !important;
+                    filter: brightness(.9);
+                }
+                .character-icon {
+                    .character-icon-outer-circle, .character-icon-inner-circle, .character-icon-other {
+                        fill: $secondary-color !important;
+                        filter: brightness(.9);
+                    }
+                }
+                .aesthetic-icon {
+                    fill: $secondary-color !important;
+                    filter: brightness(.9);
+                    .aesthetic-icon-leaf {
+                        fill: $secondary-color !important;
+                        filter: brightness(.9);
+                    }
                 }
             }
         }
@@ -98,8 +134,26 @@
             border-bottom: 1px $primary-color dashed !important;
             .plot-point {
                 .beat-icon {
-                    fill: $primary-color;
+                    fill: $primary-color !important;
                     filter: brightness(.9);
+                }
+                .exposition-icon {
+                    fill: $primary-color !important;
+                    filter: brightness(.9);
+                }
+                .character-icon {
+                    .character-icon-outer-circle, .character-icon-inner-circle, .character-icon-other {
+                        fill: $primary-color !important;
+                        filter: brightness(.9);
+                    }
+                }
+                .aesthetic-icon {
+                    fill: $primary-color !important;
+                    filter: brightness(.9);
+                    .aesthetic-icon-leaf {
+                        fill: $primary-color !important;
+                        filter: brightness(.9);
+                    }
                 }
             }
         }

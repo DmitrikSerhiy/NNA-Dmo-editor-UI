@@ -29,7 +29,7 @@
     
     &:active {
         background-color: $secondary-color;
-        filter: brightness(1.2);
+        filter: $active-secondary-filter;
     }
 
     &:focus {

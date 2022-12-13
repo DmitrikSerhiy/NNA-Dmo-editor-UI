@@ -94,7 +94,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.currentSidebarService.setMenu(SidebarTabs.dmo);
 		this.toggleRightMenu$.emit(RightMenues.dmo);
 
-		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: null, width: '400px' });
+		this.initialPopup = this.matModule.open(DmoEditorPopupComponent, { data: null, width: '420px' });
 		const popupResult = await this.initialPopup.afterClosed().toPromise();
 
 		if (!popupResult || popupResult.cancelled) {

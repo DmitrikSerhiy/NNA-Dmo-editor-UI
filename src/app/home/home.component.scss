@@ -344,7 +344,7 @@
         }
 
         .home-plot-frame-container {
-            background: $primary-color;
+            background: $primary-background-color;
             min-width: 650px;
 
             .home-plot-frame-info {
@@ -422,25 +422,31 @@
         }
 
         .last-plot-point {
+            overflow: unset;
             height: 325px;
             border-top-left-radius: 10000rem;
             border-top-right-radius: 10000rem;
             border-bottom-left-radius: 0px;
             border-bottom-right-radius: 0px;
 
-            .home-header {
-                margin-top: 22px;
+            .home-header-last {
+                padding-top: 22px;
+                margin-top: unset;
             }
 
             .home-subheader {
                 display: flex;
-                margin-left: 230px;
+                justify-content: center;
+                padding-top: 0 !important;
+                margin: 0 auto;
             }
 
             .home-auth-block {
                 display: flex;
-                margin-left: 230px;
-                padding-top: 80px;
+                justify-content: center;
+                margin-left: auto;
+                margin-right: auto;
+                padding-top: 64px;
 
                 button {
                     display: flex;

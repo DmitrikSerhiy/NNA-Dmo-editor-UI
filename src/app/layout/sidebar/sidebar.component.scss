@@ -12,7 +12,7 @@
     border: none;
     border-radius: 0;
     overflow-y: auto;
-    background-color: $sidebar-background-color;
+    background-color: $primary-background-color;
     top: 0;
     bottom: 0;
     overflow-x: hidden;
@@ -68,7 +68,6 @@
             border: 0;
             border-radius: 0;
             user-select: none;
-
             text-decoration: none;
             .fa {
                 margin-right: 10px;
@@ -235,7 +234,7 @@
     width: 50px;
     justify-content: center;
     background-color: transparent;
-    border-right: 1px solid $sidebar-background-color;
+    border-right: 1px solid $primary-background-color;
 
     .logo-container  {
         background: transparent;

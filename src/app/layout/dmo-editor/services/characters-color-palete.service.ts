@@ -5,23 +5,22 @@ import { Injectable } from '@angular/core';
 })
 export class CharactersColorPaleteService {
 
-	// 9 colors
+	// 8 colors for main characters (equal by saturation)
 	private mainPatete: string[] = [
-		'#a4c400', // lime
-		'#009B77', // dark-lignt green
-		'#3e65ff', // blue
-		'#aa00ff', // violet
-		'#a20025', // deep red
-		'#f0a30a', // orange
-		'#76608a', // mauve
+		'#5E994E', // lime
+		'#4F9C8A', // dark-lignt green
+		'#4E5D99', // blue
+		'#A35567', // deep red
+		'#B3855B', // dark orange
+		'#754E99', // mauve
 		'#9A8B4F', // muted gold
-		'#a0522d'  // brown-red
+		'#99664E'  // brown-red
 	];
 
-	// 5 more
+	// 5 more additional colors (for contrast by brightnes and hue)
 	private secondaryPalete: string[] = [
-		'#6d8764', // muted green
-		'#e3c800', // golden
+		'#219900', // green
+		'#D4BB00', // golden
 		'#C3447A', // rose
 		'#92A8D1', // light blue
 		'#009B77'  // emerlad

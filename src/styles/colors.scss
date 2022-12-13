@@ -1,11 +1,11 @@
-$primary-color: #F8C33C; 
-$secondary-color: #9B00D1;
+$primary-color: #F7CA57;              // old value //#F8C33C; 
+$secondary-color: #A947CC;            // old value // #9B00D1;
 $intermidiate-color: #F0CEC4;
 $validation-color: #BF0404;
 $general-background-color: #F7F7F7;
 $for-background-contrast-color:#212123;
 $active-background-color: #F7F7F7;
-
+$active-secondary-filter: brightness(.8) saturate(140%);
 
 $button-border-gradient: linear-gradient(to right bottom, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%) 1;
 $active-gradient: linear-gradient(90deg, $primary-color 0%,  $intermidiate-color 40%, $secondary-color 100%);
@@ -20,4 +20,4 @@ $global-selection-background-color: rgba($primary-color, .7);
 $droppable-background-color: rgba($secondary-color, .1);
 $dragabble-background-color: rgba($primary-color, .2);
 $active-primary-background-color: rgba($primary-color, .2);
-$sidebar-background-color: rgba($primary-color, 0.6); 
+$primary-background-color: rgba($primary-color, 0.6); 

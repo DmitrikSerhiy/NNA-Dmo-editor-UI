@@ -133,7 +133,7 @@ body {
 
 	&:active {
 		background-color: $secondary-color !important;
-		filter: brightness(1.2);
+		filter: $active-secondary-filter;
 	}
 }
 
