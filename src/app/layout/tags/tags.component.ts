@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
@@ -20,26 +20,38 @@ export class TagsComponent implements OnInit, OnDestroy {
 	private rightMenuClsSubscription: Subscription;
 
 	tags: NnaTagWithoutDescriptionDto[];
+	filtredTags: NnaTagWithoutDescriptionDto[];
 
+	@ViewChild('tagNameSearch') tagSearchInputElement: ElementRef;
 	
 	constructor(private tagsService: CachedTagsService) { }
 
 
 	async ngOnInit(): Promise<void> {
 		this.rightMenuClsSubscription = this.rightMenuIsClosing$.subscribe(() => {
-			// do some shit on close menu
+			this.resetSearchInput();
 		});
 		this.rightMenuOpnSubscription = this.rightMenuIsOpening$.subscribe(() => {
 			// do some shit on open menu
 		});
 
 		this.tags = await this.tagsService.getAllTags()
-
+		this.filtredTags = [...this.tags];
 
 	}
 
 	ngOnDestroy(): void {
-		
+		this.rightMenuOpnSubscription?.unsubscribe();
+		this.rightMenuClsSubscription?.unsubscribe();
+		this.resetSearchInput();
+	}
+
+	filterTags(): void {
+		if (!this.tagSearchInputElement.nativeElement.value?.length) {
+			this.resetSearchInput();
+		}
+
+		this.filtredTags = this.tags.filter(tag => tag.name.toLocaleLowerCase().includes(this.tagSearchInputElement.nativeElement.value.toLocaleLowerCase()))
 	}
 
 
@@ -49,4 +61,8 @@ export class TagsComponent implements OnInit, OnDestroy {
 		return;
 	}
 
+	private resetSearchInput(): void {
+		this.filtredTags = [...this.tags];
+		this.tagSearchInputElement.nativeElement.value = '';
+	}
 }

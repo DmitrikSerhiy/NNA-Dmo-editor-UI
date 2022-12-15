@@ -1,8 +1,11 @@
 <div class="card card-default tags-container">
     <div class="card-header tags-header no-select"> Tags </div>
 
+    <div class="tag-seach-container">
+        <input #tagNameSearch type="text" class="nna-input" placeholder="Seach tag by name" (keyup)="filterTags()">
+    </div>
     <div class="tags-list" *ngIf="tags">
-        <div class="tag-item" *ngFor="let tag of tags;">
+        <div class="tag-item" *ngFor="let tag of filtredTags;">
            <div class="tag-name" (click)="openTagDescription(tag.id)"> 
                 <span> &#9679; {{ tag.name }} </span>
             </div>
