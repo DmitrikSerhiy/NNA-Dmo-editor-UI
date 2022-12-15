@@ -53,11 +53,11 @@ export class SsoContainerComponent implements OnInit {
 
 		let name = this.nnaHelpersService.sanitizeSpaces(authResult.name);
 		if (!name) {
-			name =  authResult.email.split("@gmail.com")[0];
+			name = authResult.email.split("@gmail.com")[0];
 		}
 
 		let authGoogleDto: AuthGoogleDto = {
-			name: authResult.name,
+			name: name,
 			email: authResult.email, 
 			googleToken: authResult.idToken
 		};

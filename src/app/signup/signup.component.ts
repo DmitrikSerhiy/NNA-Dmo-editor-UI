@@ -167,7 +167,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkUserEmail(this.nnaHelpersService.sanitizeSpaces(this.email.value));
+		let response = await this.authService.checkUserEmail(this.email.value);
 	  	if (response == true) {
 			this.emailInvalid = true;
 			this.emailValidationToShow = this.takenEmailValidaiton;
@@ -190,6 +190,9 @@ export class SignupComponent implements OnInit, OnDestroy {
   	}
 
 	async toThirdStep(): Promise<void> {
+		const newName = this.nnaHelpersService.sanitizeSpaces(this.name.value);
+		this.name.setValue(newName);
+
 		let errors = this.name.errors;
 		if (errors != null) {
 			this.nameInvalid = true;
@@ -203,7 +206,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		let response = await this.authService.checkName(this.nnaHelpersService.sanitizeSpaces(this.name.value))
+		
+
+		let response = await this.authService.checkName(newName)
 		if (response == true) {
 			this.nameInvalid = true;
 			this.nameValidationToShow = this.takenNameValidaiton;
@@ -230,9 +235,17 @@ export class SignupComponent implements OnInit, OnDestroy {
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 			return;
+		} else if (!this.nnaHelpersService.sanitizeSpaces(this.password.value)) {
+			this.password.setValue('');
+			this.passValidationToShow = this.emtpyPasswordValidation;
+			this.passwordInvalid = true;
+			this.passwordInput.nativeElement.focus();
+			return;
 		} else {
 			this.passwordInvalid = false;
 		}
+
+		this.password.setValue(this.nnaHelpersService.sanitizeSpaces(this.password.value));
 
 		let errors = this.password.errors;
 		if (errors != null) {
@@ -249,7 +262,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 		if (this.registerForm.valid) {
 			this.isProcessing = true;
 			this.registerSubscriptions = this.authService
-				.register(this.nnaHelpersService.sanitizeSpaces(this.name.value), this.nnaHelpersService.sanitizeSpaces(this.email.value), this.password.value)
+				.register(this.nnaHelpersService.sanitizeSpaces(this.name.value), this.email.value, this.password.value)
 				.subscribe(
 					(response) => {
 						this.isProcessing = false;

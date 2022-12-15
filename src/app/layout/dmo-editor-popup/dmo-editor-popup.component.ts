@@ -1,6 +1,7 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit, HostListener } from '@angular/core';
+import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 
 @Component({
 	selector: 'dmo-editor-popup',
@@ -28,7 +29,9 @@ export class DmoEditorPopupComponent implements OnInit {
 		}
 	}
 
-  	constructor(private dialogRef: MatDialogRef<DmoEditorPopupComponent>) { }
+  	constructor(
+		private dialogRef: MatDialogRef<DmoEditorPopupComponent>,
+		private nnaHelpersService: NnaHelpersService ) { }
 
 	ngOnInit() {
 		this.dialogRef.backdropClick().subscribe(() => this.onClose(true));
@@ -49,10 +52,22 @@ export class DmoEditorPopupComponent implements OnInit {
 			return;
 		}
 
+		let sanitizedMovieTitle = this.nnaHelpersService.sanitizeSpaces(this.movieTitleInput.value);
+		let sanitizedName = this.nnaHelpersService.sanitizeSpaces(this.dmoNameInput.value);
+		let sanitizedShortComment = this.nnaHelpersService.sanitizeSpaces(this.shortComment.value);
+
+		this.movieTitleInput.setValue(sanitizedMovieTitle)
+		this.dmoNameInput.setValue(sanitizedName);
+		this.shortComment.setValue(sanitizedShortComment)
+
+		if (!sanitizedMovieTitle) {
+			return;
+		}
+
 		this.dialogRef.close({
-			name: this.dmoNameInput.value,
-			movieTitle: this.movieTitleInput.value,
-			shortComment: this.shortComment.value,
+			name: sanitizedName,
+			movieTitle: sanitizedMovieTitle,
+			shortComment: sanitizedShortComment,
 			cancelled: false 
 		});
 	}

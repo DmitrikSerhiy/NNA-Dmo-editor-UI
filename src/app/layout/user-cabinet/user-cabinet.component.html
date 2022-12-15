@@ -107,6 +107,7 @@
                     <p *ngIf="missingPasswordValidation" class="validation-text">Current password is missing</p>
                     <p *ngIf ="missingNewPasswordValidation" class="validation-text">New password is missing</p>
                     <p *ngIf ="minLenghtPasswordValidation" class="validation-text">Password must be at least 10 characters long</p>
+                    <p *ngIf="notAllowedCharactersInPasswordValidation" class="validation-text">Non-allowed symbols detected</p>
                 </div> 
 
             </form>

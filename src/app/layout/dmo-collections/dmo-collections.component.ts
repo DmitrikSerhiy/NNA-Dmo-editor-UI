@@ -123,8 +123,10 @@ export class DmoCollectionsComponent implements OnInit, OnDestroy {
 	}
 
 	onAddCollection() {
+		const collectionName = this.nnaHelpersService.sanitizeSpaces(this.addCollectionForm.get('collectionName').value);
+		this.addCollectionForm.get('collectionName').setValue(collectionName);
+
 		if (this.addCollectionForm.valid) {
-			const collectionName = this.nnaHelpersService.sanitizeSpaces(this.addCollectionForm.get('collectionName').value);
 			this.showLoader();
 
 			const add$ = this.dmoCollectionsService.addCollection(collectionName);

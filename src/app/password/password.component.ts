@@ -147,6 +147,11 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.passValidationToShow = this.nonAllowedSymbols;
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
+		} else if (!this.nnaHelpersService.sanitizeSpaces(this.password.value)) {
+			this.password.setValue('');
+			this.passValidationToShow = this.emtpyPasswordValidation;
+			this.passwordInvalid = true;
+			this.passwordInput.nativeElement.focus();
 		} else {
 			this.passwordInvalid = false;
 		}
@@ -158,9 +163,17 @@ export class PasswordComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.passwordInvalid = true;
 			this.passwordInput.nativeElement.focus();
 			return;
+		} else if (!this.nnaHelpersService.sanitizeSpaces(this.password.value)) {
+			this.password.setValue('');
+			this.passValidationToShow = this.emtpyPasswordValidation;
+			this.passwordInvalid = true;
+			this.passwordInput.nativeElement.focus();
+			return;
 		} else {
 			this.passwordInvalid = false;
 		}
+
+		this.password.setValue(this.nnaHelpersService.sanitizeSpaces(this.password.value));
 
 		let errors = this.password.errors;
 		if (errors != null) {

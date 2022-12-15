@@ -37,6 +37,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	missingPasswordValidation: boolean = false;
 	missingNewPasswordValidation: boolean = false;
 	minLenghtPasswordValidation: boolean = false;
+	notAllowedCharactersInPasswordValidation: boolean = false;
 
 	hasServerValidationMessage: boolean = false;
 	serverValidationMessage: string;
@@ -164,11 +165,13 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
   	}
 
 	onUserNameChange() {
-		const newName = this.userName.value.trim();
+		const newName = this.nnaHelpersService.sanitizeSpaces(this.userName.value);
 		if (newName === this.initialUserName) {
 			this.toggleChangeUserNameForm(false);
 			return;
 		}
+
+		this.userName.setValue(newName);
 
 		if (this.changeUserNameForm.invalid) {
 			this.toggleChangeUserNameForm(false);
@@ -177,7 +180,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 		this.isFormProcessingAfterEdit = true;
 		this.authService
-			.updateUserName(this.userManager.getCurrentUserEmail(), this.nnaHelpersService.sanitizeSpaces(this.userName.value))
+			.updateUserName(this.userManager.getCurrentUserEmail(), newName)
 			.pipe(takeUntil(this.unsubscribe$))
 			.subscribe(() => {
 				this.initialUserName = newName;
@@ -200,6 +203,9 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	}
 
 	onPasswordChange() {
+		let sanitizedNewPassword = this.nnaHelpersService.sanitizeSpaces(this.newPassword.value);
+		this.newPassword.setValue(sanitizedNewPassword);
+
 		if (!this.changePasswordForm.valid) {
 			this.missingPasswordValidation = this.changePasswordForm.controls["oldPassword"].errors?.required ? true : false;
 			this.missingNewPasswordValidation = this.changePasswordForm.controls["newPassword"].errors?.required ? true : false;
@@ -212,6 +218,12 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 		if (!this.changePasswordForm.valid) {
 			return;
+		}
+
+		if (this.nnaHelpersService.containsNonAllowedSymbols(this.newPassword.value)) {
+			this.notAllowedCharactersInPasswordValidation = true;
+		} else {
+			this.notAllowedCharactersInPasswordValidation = false;
 		}
 
 		this.isFormProcessingAfterEdit = true;
