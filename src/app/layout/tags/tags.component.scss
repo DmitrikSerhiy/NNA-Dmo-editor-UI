@@ -1,0 +1,53 @@
+
+@import "src/styles/colors.scss";
+@import "src/styles/fonts-mixins.scss";
+
+.tags-container {
+    border: none;
+	height: 100%;
+
+    .tags-header {
+		background: $input-underline-gradient;
+		background-repeat: no-repeat;
+		background-size: 100% 1px;
+		background-position: bottom;
+		height: 41px;
+		min-height: 41px;
+		display: flex;
+		align-items: center;
+		padding: 0 11px;
+	}
+
+    .tags-list {
+        width: 100%;
+		padding: 0;
+		border: none;
+		cursor: pointer;
+
+        .tag-item {
+            text-decoration: none;
+			color: #000;
+			outline: none;
+			padding: 11px 11px;
+			width: 100%;
+			@include font-secondary-info();
+
+            .tag-name {
+                overflow-x: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-right: 8px;
+            }
+
+            &:hover {
+                background: $input-underline-gradient, $input-underline-gradient;
+                background-repeat: no-repeat;
+                background-size: 100% 1px;
+                background-position: bottom, top;
+                background-color: $active-background-color;
+            }
+        }
+    }
+
+
+}

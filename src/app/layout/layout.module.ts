@@ -17,6 +17,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TestRightMenuComponent } from './test-right-menu/test-right-menu.component';
 import { UserCabinetComponent } from './user-cabinet/user-cabinet.component';
 import { DmoEditorPopupComponent } from './dmo-editor-popup/dmo-editor-popup.component';
+import { TagsComponent } from './tags/tags.component';
 
 const routes: Routes = [{
     path: '',
@@ -30,7 +31,7 @@ const routes: Routes = [{
 ];
 
 @NgModule({
-    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent, UserCabinetComponent, DmoEditorPopupComponent, DmoEditorPopupComponent],
+    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent, UserCabinetComponent, DmoEditorPopupComponent, DmoEditorPopupComponent, TagsComponent],
     imports: [
         CommonModule,
         RouterModule.forChild(routes),

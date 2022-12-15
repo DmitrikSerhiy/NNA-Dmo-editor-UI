@@ -3,7 +3,8 @@ export enum RightMenues {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
-    userCabinet = 'userCabinet'
+    userCabinet = 'userCabinet',
+    tags = 'tags'
     // test = 'test'
 }
 
@@ -131,5 +132,19 @@ export interface DmoConflictDto {
     characterId: string;
     characterType: number;
     achieved: boolean;
+}
+
+export interface NnaTagWithoutDescriptionDto {
+    id: string;
+    name: string;
+}
+
+export interface NnaTagDescriptionDto {
+    description: string;
+}
+
+export interface CachedNnaTagDescriptionDto {
+    id: string;
+    description: string;
 }
 

@@ -64,6 +64,11 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.currentMenuName = RightMenues.dmoCollections;
                 this.rightMenuIsClosing$ = this.rightMenu.closedStart;
                 this.rightMenuGrabberService.showGrabber();
+            } else if (this.router.url.includes('editor')) {
+                this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.tags);
+                this.currentMenuName = RightMenues.tags;
+                this.rightMenuIsClosing$ = this.rightMenu.closedStart;
+                this.rightMenuGrabberService.showGrabber();
             }
         });
     }
@@ -115,11 +120,16 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     closeByBackdrop() {
-        if (!this.collectionService.getCurrentCollectionId()) {
-            this.resetMenues();
-        } else {
+        if (this.collectionService.getCurrentCollectionId()) {
             this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.dmoCollections);
+            this.currentMenuName = RightMenues.dmoCollections;
             this.rightMenuGrabberService.showGrabber();
+        } else if (this.router.url.includes('editor')) {
+            this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.tags);
+            this.currentMenuName = RightMenues.tags;
+            this.rightMenuGrabberService.showGrabber();
+        } else {
+            this.resetMenues();
         }
         if (window.location.href.includes('editor')) {
             this.currentSidebarService.resetTabs();
@@ -137,6 +147,9 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         this.rightMenuIsOpening$.emit();
         if ($event === RightMenues.dmoCollections) {
             this.setCollectionsRightMenu();
+            this.rightMenuGrabberService.showGrabber();
+        } else if ($event === RightMenues.tags) {
+            this.setTagsRightMenu();
             this.rightMenuGrabberService.showGrabber();
         } else if ($event === RightMenues.dmos) {
             this.rightMenuGrabberService.hideGrabber();
@@ -167,9 +180,16 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (menu) {
             case RightMenues.dmoCollections: return 'DMO collections';
             case RightMenues.userCabinet: return 'Personal info';
+            case RightMenues.tags: return 'Tags';
             // case RightMenues.test: return 'Test'
             default: return '';
         }
+    }
+
+    private setTagsRightMenu() {
+        this.currentMenuName = RightMenues.tags;
+        this.currentUserFriendlyMenuName = this.getCurrentUserFriendlyRightMenu(RightMenues.tags);
+        this.toggleRightMenu = RightMenues.tags;
     }
 
     private setCollectionsRightMenu() {
