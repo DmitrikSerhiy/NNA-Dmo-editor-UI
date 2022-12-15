@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { CachedNnaTagDescriptionDto, NnaTagDescriptionDto, NnaTagWithoutDescriptionDto } from 'src/app/layout/models';
+import { NnaTagDto, NnaTagWithoutDescriptionDto } from 'src/app/layout/models';
 import { environment } from 'src/environments/environment';
 import { CustomErrorHandler } from './custom-error-handler';
 
@@ -10,8 +10,8 @@ import { CustomErrorHandler } from './custom-error-handler';
 })
 export class CachedTagsService {
 	serverUrl = environment.server_user + 'tags/';
-	private cachedTags: NnaTagWithoutDescriptionDto[] = [];
-	private cachedTagsDescription: CachedNnaTagDescriptionDto[] = [];
+	private cachedTagList: NnaTagWithoutDescriptionDto[] = [];
+	private cachedTagsWithDescription: NnaTagDto[] = [];
 
 
 	constructor(		
@@ -19,30 +19,32 @@ export class CachedTagsService {
 		private errorHandler: CustomErrorHandler) { }
 
 	async getAllTags(): Promise<NnaTagWithoutDescriptionDto[]> {
-		if (this.cachedTags.length) {
-			return this.cachedTags;
+		if (this.cachedTagList.length) {
+			return this.cachedTagList;
 		}
 
-		this.cachedTags = await this.http
+		this.cachedTagList = await this.http
 			.get<NnaTagWithoutDescriptionDto[]>(this.serverUrl)
 			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaTagWithoutDescriptionDto[]>(response, obs)))
 			.toPromise();
 		
-		return this.cachedTags;
+		return this.cachedTagList;
 	}
 
 	
-	async getTagDescription(id: string): Promise<NnaTagDescriptionDto> {
-		if (this.cachedTagsDescription.some(ct => ct.id == id)) {
-			return { description: this.cachedTagsDescription.find(ct => ct.id == id).description } as NnaTagDescriptionDto;
+	async getTag(id: string): Promise<NnaTagDto> {
+		let cachedTag = this.cachedTagsWithDescription.find(ct => ct.id == id);
+		if (cachedTag) {
+			return cachedTag;
 		}
 
-		let newDescription = await this.http
-			.get<NnaTagDescriptionDto>(this.serverUrl + id)
-			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaTagDescriptionDto>(response, obs)))
-			.toPromise();
+		let loadedTag = await this.http
+			.get<NnaTagDto>(this.serverUrl + id)
+			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaTagDto>(response, obs)))
+			.toPromise<NnaTagDto>();
+			// todo: change toPromise method to generic version
 
-		this.cachedTagsDescription.push({ id: id, description: newDescription.description } as CachedNnaTagDescriptionDto)
-		return  { description: newDescription.description } as NnaTagDescriptionDto;
+		this.cachedTagsWithDescription.push(loadedTag);
+		return loadedTag;
 	}
 }

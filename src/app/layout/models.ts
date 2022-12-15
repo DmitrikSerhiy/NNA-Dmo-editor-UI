@@ -143,8 +143,8 @@ export interface NnaTagDescriptionDto {
     description: string;
 }
 
-export interface CachedNnaTagDescriptionDto {
+export interface NnaTagDto {
     id: string;
-    description: string;
+    name: string;
+    description: NnaTagDescriptionDto;
 }
-

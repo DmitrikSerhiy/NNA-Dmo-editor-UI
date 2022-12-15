@@ -18,6 +18,7 @@ import { TestRightMenuComponent } from './test-right-menu/test-right-menu.compon
 import { UserCabinetComponent } from './user-cabinet/user-cabinet.component';
 import { DmoEditorPopupComponent } from './dmo-editor-popup/dmo-editor-popup.component';
 import { TagsComponent } from './tags/tags.component';
+import { TagDescriptionPopupComponent } from './tags/tag-description-popup/tag-description-popup.component';
 
 const routes: Routes = [{
     path: '',
@@ -31,7 +32,7 @@ const routes: Routes = [{
 ];
 
 @NgModule({
-    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent, UserCabinetComponent, DmoEditorPopupComponent, DmoEditorPopupComponent, TagsComponent],
+    declarations: [LayoutComponent, NavMenuComponent, SidebarComponent, DmoCollectionsComponent, TestRightMenuComponent, UserCabinetComponent, DmoEditorPopupComponent, DmoEditorPopupComponent, TagsComponent, TagDescriptionPopupComponent],
     imports: [
         CommonModule,
         RouterModule.forChild(routes),

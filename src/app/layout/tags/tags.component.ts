@@ -1,8 +1,10 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaTagWithoutDescriptionDto } from '../models';
+import { TagDescriptionPopupComponent } from './tag-description-popup/tag-description-popup.component';
 
 @Component({
 	selector: 'app-tags',
@@ -24,7 +26,9 @@ export class TagsComponent implements OnInit, OnDestroy {
 
 	@ViewChild('tagNameSearch') tagSearchInputElement: ElementRef;
 	
-	constructor(private tagsService: CachedTagsService) { }
+	constructor(
+		private matModule: MatDialog,
+		private tagsService: CachedTagsService) { }
 
 
 	async ngOnInit(): Promise<void> {
@@ -56,9 +60,10 @@ export class TagsComponent implements OnInit, OnDestroy {
 
 
 	async openTagDescription(tagId: string): Promise<void> {
-		let result = await this.tagsService.getTagDescription(tagId);
-		console.log(result);
-		return;
+		await this.matModule
+			.open(TagDescriptionPopupComponent, { data: tagId, width: '400px' })
+			.afterClosed()
+			.toPromise();
 	}
 
 	private resetSearchInput(): void {

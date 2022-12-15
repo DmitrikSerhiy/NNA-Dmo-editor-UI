@@ -1,0 +1,11 @@
+<div class="base-modal">
+    <div class="base-modal-header">
+        <h2 *ngIf="tag" class="modal-title">{{tag.name}}</h2>
+    </div>
+    <div *ngIf="tag" class="base-modal-body">
+        {{tag.description}}
+    </div>
+    <div class="base-modal-footer">
+        <button type="button" class="nna-button-primary" (click)="onClose()">Ok</button>
+    </div>
+</div>
