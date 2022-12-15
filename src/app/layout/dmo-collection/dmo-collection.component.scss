@@ -177,6 +177,24 @@
 	.info-message {
 		height: 100%;
 		margin: auto;
+		display: flex;
+
+		.nna-button {
+			margin-left: 6px;
+			min-width: fit-content;
+		}
+
+		@media screen and (max-width: 800px) {
+			flex-direction: column;
+		}
+
+		.nna-button, span {
+			margin-bottom: 7px;
+		}
+
+		span {
+			max-width: 300px;
+		}
 	}
 
 	.dmo-collection-table-paginator {

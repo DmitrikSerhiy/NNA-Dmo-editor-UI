@@ -92,11 +92,11 @@
     </div>
 
     <div class="info-message" [hidden]="collectionLength != 0">
-        <span *ngIf="currentDmoCollection">'{{currentDmoCollection.collectionName}}' is empty</span>
+        <span *ngIf="currentDmoCollection">'{{currentDmoCollection.collectionName}}' is empty </span>
         <button class="nna-button nna-button-primary" (click)="onAddDmo()" title="">
             Add Dmo to collection 
         </button>
-        <span> or </span>
+        <span> or  </span>
         <button type="button" class='nna-button nna-button-secondary'(click)='onRemoveCollection()'>
             Delete collection
         </button>
