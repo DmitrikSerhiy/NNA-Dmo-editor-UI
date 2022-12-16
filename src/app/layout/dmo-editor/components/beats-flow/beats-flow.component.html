@@ -24,6 +24,24 @@
                 <div #charactersTooltipArrow class="nna-tooltip-arrow-base nna-tooltip-arrow-to-top"></div>
             </div>
 
+
+            <div #tagsTooltip class="nna-tooltip-base nna-tooltip-to-top tags-tooltip">
+                <div class="nna-tooltip-animatad-overflow-for-top"></div>
+                <div class="tag-tooltip-search-block">
+                    <input #tagFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Seach tag by name" (input)="filterTags()">
+                    <ul>
+                        <li #tagsOptions [attr.data-order]="i" class="tag-option" *ngFor="let tag of filtredTags; let i = index"  (click)="pickTag(tag)">
+                            <span>{{tag.name}}</span>
+                        </li>
+                    </ul>
+
+                    <div class="tag-tooltip-empty-search-block no-select" *ngIf="!filtredTags?.length">
+                        <p>No search result</p>
+                    </div>
+                </div>
+                <div #tagTooltipArrow class="nna-tooltip-arrow-base nna-tooltip-arrow-to-top"></div>
+            </div>
+
             <div class="beats-header no-select">
                 Start
             </div>

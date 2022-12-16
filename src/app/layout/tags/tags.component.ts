@@ -68,6 +68,8 @@ export class TagsComponent implements OnInit, OnDestroy {
 
 	private resetSearchInput(): void {
 		this.filtredTags = [...this.tags];
-		this.tagSearchInputElement.nativeElement.value = '';
+		if (this.tagSearchInputElement) {
+			this.tagSearchInputElement.nativeElement.value = '';
+		}
 	}
 }

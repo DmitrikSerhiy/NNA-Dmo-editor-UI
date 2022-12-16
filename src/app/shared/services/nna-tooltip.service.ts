@@ -40,6 +40,10 @@ export class NnaTooltipService {
 	get beatTypeTooltipName(): string {
 		return 'beatType';
 	}
+
+	get tagTooltipName(): string {
+		return 'tag';
+	}
 	
 
   	constructor() { }
@@ -188,7 +192,7 @@ export class NnaTooltipService {
 		if (placement == 'left' || placement == 'right') {
 			return arrowData.x;
 		}
-		let initialPosition =  arrowData.x;
+		let initialPosition = arrowData.x;
 
 		if (crossAxisOffset == 0 && arrowData.centerOffset == 0) {
 			return initialPosition;

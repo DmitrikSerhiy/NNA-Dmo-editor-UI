@@ -259,6 +259,9 @@ export class UpdateBeatType {
 }
 
 export const NnaCharacterTagName: string = 'nna-character';
-export const NnaCharacterInterpolatorPrefix: string = '{{nna-character-';
-export const NnaCharacterInterpolatorPostfix: string = '-nna-character}}';
+export const NnaCharacterInterpolatorPrefix: string = `{{${NnaCharacterTagName}-`;
+export const NnaCharacterInterpolatorPostfix: string = `-${NnaCharacterTagName}}}`;
+export const NnaTagElementName: string = 'nna-tag';
+export const NnaTagInterpolatorPrefix: string = `{{${NnaTagElementName}-`;
+export const NnaTagInterpolatorPostfix: string = `-${NnaTagElementName}}}`;
 

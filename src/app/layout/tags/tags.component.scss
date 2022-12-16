@@ -57,6 +57,15 @@
                 background-color: $active-background-color;
             }
         }
+
+        .empty-list-placeholder {
+            text-decoration: none;
+			color: #000;
+			outline: none;
+			padding: 11px 11px;
+			width: 100%;
+			@include font-secondary-info();
+        }
     }
 
 

@@ -112,6 +112,67 @@ $editor-font: 14px 'Courier New', Courier, monospace;  // this is open standart 
                 }
             }
 
+            .tags-tooltip {
+                height: fit-content;
+                width: 220px;
+                padding: 10px 5px;
+
+                .tag-tooltip-search-block {
+                    .nna-input {
+                        min-width: 180px;
+                    }
+                    ul {
+                        padding: 0;
+                        margin: 0;
+                        padding-top: 10px;
+
+                        display: flex;
+                        flex-direction: column;
+                        margin: auto;
+                    
+                        li {
+                            padding: 5px 0;
+                            user-select: none;
+                            list-style-type: none;
+                        }
+    
+                        .tag-option {
+                            overflow-x: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            border-width: 1px;
+                            border-style: solid;
+                            border-color: transparent;
+
+                            &:hover, &:active {
+                                border-image: $active-gradient-for-border;
+                                border-image-width: 1px 0px;
+                                background: $active-background-color;
+                                cursor: pointer;
+                            }
+                        }
+
+                        .selected-tag-option {
+                            border-image: $active-gradient-for-border;
+                            border-image-width: 1px 0px;
+                            background: $active-background-color;
+                            cursor: pointer;
+                        }
+                    }
+
+                    .tag-tooltip-empty-search-block {
+                        display: flex;
+                        flex-direction: column;
+                        margin: auto;
+
+                        p {
+                            margin: auto;
+                            margin-bottom: 5px;
+                        }
+                    }
+                }
+            }
+
             .beat-container {
                 min-height: 32px;
                 display: flex;

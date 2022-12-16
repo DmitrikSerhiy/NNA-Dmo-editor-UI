@@ -164,7 +164,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			$event.source == 'change_beat_type' || 
 			$event.source == 'attach_character_to_beat' ||
 			$event.source == 'detach_character_from_beat' ||
+			$event.source == 'attach_tag_to_beat' ||
+			$event.source == 'detach_tag_from_beat' ||
 			$event.source == 'paste_text') {
+				console.log($event.metaData);
 			await this.editorHub.updateBeat(this.selectSingleBeatForServer($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
@@ -358,6 +361,21 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   	// #endregion
 
+	// #region tags 
+
+	async syncTagsInBeats($event: any): Promise<void> {
+		if ($event.operation == 'attach') {
+			// await this.editorHub.attachCharacterToBeat($event.data.id, this.dmoId, $event.data.beatId, $event.data.characterId);
+		} else if ($event.operation == 'detach') {
+			// await this.editorHub.detachCharacterFromBeat($event.data.id, this.dmoId, $event.data.beatId);
+		} else {
+			return;
+		}
+
+		console.log(`Tags in beats sync: id: ${$event.data.id}. Operation: ${$event.operation}`);
+	}
+
+	// #endregion
 
 	// #region characters
 

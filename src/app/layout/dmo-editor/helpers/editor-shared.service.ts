@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto } from '../models/dmo-dtos';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName } from '../models/dmo-dtos';
 import { BeatGeneratorService } from './beat-generator';
 
 @Injectable({
@@ -146,6 +146,24 @@ export class EditorSharedService {
 		const capitilizedName = characterName.charAt(0).toUpperCase() + characterName.slice(1);
 		characterElem.innerText = capitilizedName;
 		return characterElem;
+	}
+
+	createNnaTagElement(tagId: string, tagName: string, beatId: string, id: string = null): HTMLElement {
+		let tagElement = document.createElement(NnaTagElementName);
+		tagElement.style.cursor = 'pointer';
+		tagElement.style.paddingLeft = '1px';
+		tagElement.style.paddingRight = '1px';
+		tagElement.style.userSelect = 'auto';
+		tagElement.style.fontWeight = '600';
+		tagElement.dataset.tagId = tagId;
+		tagElement.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
+		tagElement.dataset.beatId = beatId;
+		tagElement.setAttribute('contenteditable', "false");
+		tagElement.setAttribute('draggable', "false");
+
+		tagElement.innerText = '#' + tagName;
+
+		return tagElement;
 	}
 	
 	isDiv(element: any): boolean {

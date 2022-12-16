@@ -1,4 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { NnaTagWithoutDescriptionDto } from 'src/app/layout/models';
+import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { EditorSharedService } from '../../helpers/editor-shared.service';
@@ -26,12 +28,15 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@Output() openBeatTypeTooltip: EventEmitter<any> = new EventEmitter<any>();
 	@Output() openCharactersPopup: EventEmitter<any> = new EventEmitter<any>();
 	@Output() syncCharactersInDmo: EventEmitter<any> = new EventEmitter<any>();
+	@Output() syncTagsInBeats: EventEmitter<any> = new EventEmitter<any>();
 	@Output() reloadBeats: EventEmitter<void> = new EventEmitter<void>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
 	characters: NnaMovieCharacterInDmoDto[];
 	filtredCharacters: NnaMovieCharacterDto[];
+	allTags: NnaTagWithoutDescriptionDto[];
+	filtredTags: NnaTagWithoutDescriptionDto[];
 
 	private beatsIds: string[] = [];
 	private beatsMetaData: any[] = [];
@@ -44,11 +49,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
-	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82 };
+	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82, openTagTooltipKeyCode: 51 };
 	// q for beat type tooltip
 	// r for character tooltip
+	// 3 + shift = # for tags tooltip
 
 	private characterPlaceHolderClass: string = 'character-placeolder';
+	private tagPlaceHolderClass: string = 'tag-placeholder'
 
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
@@ -58,17 +65,25 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	@ViewChild('characterFilterInput') characterFilterInputElement: ElementRef;
 	@ViewChildren('charactersOptions') charactersOptionsElements: QueryList<ElementRef>;
 
+	@ViewChild('tagsTooltip') tagsTooltipElement: ElementRef;
+	@ViewChild('tagTooltipArrow') tagTooltipArrowElement: ElementRef;
+	@ViewChild('tagFilterInput') tagFilterInputElement: ElementRef;
+	@ViewChildren('tagsOptions') tagsOptionsElements: QueryList<ElementRef>;
+
 	constructor(
 		private cdRef: ChangeDetectorRef,
 		private nnaTooltipService: NnaTooltipService,
 		private editorSharedService: EditorSharedService,
-		private nnaHelpersService: NnaHelpersService) {}
+		private nnaHelpersService: NnaHelpersService,
+		private tagsService: CachedTagsService) {}
 
 
-	ngAfterViewInit(): void {
+	async ngAfterViewInit(): Promise<void> {
 		this.beats = this.initialBeats;
 		this.characters = this.initialCharacters;
 		this.isDataLoaded = true;
+		this.allTags = await this.tagsService.getAllTags();
+		this.filtredTags = [...this.allTags];
 
 		this.setupBeats(null, null, true);
 		this.setupEditorCallback();
@@ -467,11 +482,20 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	setBeatKeyMetaData($event: any, index: number): void {
 		const key = $event.which || $event.keyCode || $event.charCode;
 
+		// todo: detect # key for tags and @ for characters
+		// but keep key combination
 		if (key == this.editorHotKeys.openBeatTypeTooltipKeyCode || key == this.editorHotKeys.openCharacterTooltipKeyCode) {
 			if ($event.ctrlKey) {
 				this.subscribeToSpecialHotKeysListeners();
 				return;
 			}
+		}
+
+		if (key == this.editorHotKeys.openTagTooltipKeyCode && $event.shiftKey) {
+			$event.preventDefault();
+			this.showTagTooltip($event.target);
+			$event.target.blur();
+			return;
 		}
 
 		if (key == 9) { // tab
@@ -1273,4 +1297,214 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	// #endregion
+
+
+	// #region tags 
+
+	pickTag(tag: NnaTagWithoutDescriptionDto): void {
+		const beatId = this.nnaTooltipService.getTooltipMetadata(this.nnaTooltipService.tagTooltipName).beatId;
+		const beatDataHolder = this.nnaTooltipService.getHostingElementFromTooltip(this.nnaTooltipService.tagTooltipName);
+		const nnaTagHtmlElement = this.editorSharedService.createNnaTagElement(tag.id, tag.name, beatId);
+		this.addEventListenerForNnaTagElements(nnaTagHtmlElement);
+
+		this.syncTagsInBeats.emit({operation: 'attach', data: {id: nnaTagHtmlElement.dataset.id, beatId: beatId, tagId: tag.id }} );
+		this.insertNnaTagElementIntoPlaceholder(nnaTagHtmlElement);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.tagTooltipName);
+
+
+		const beatIndex = this.beatsIds.indexOf(beatId);
+		this.beatsMetaData[beatIndex].isDirty = true;
+		this.syncBeats.emit({ source: 'attach_tag_to_beat', metaData: beatIndex });
+		this.beatsMetaData[beatIndex].isDirty = false;
+		this.focusBeatByElement(beatDataHolder.parentElement);
+	}
+
+	removeTag(tag: HTMLElement): void {
+		this.syncTagsInBeats.emit({operation: 'detach', data: { id: tag.dataset.id, beatId: tag.dataset.beatId }} );
+		tag.remove();
+
+		const beatIndex = this.beatsIds.indexOf(tag.dataset.beatId);
+		this.beatsMetaData[beatIndex].isDirty = true;
+		this.syncBeats.emit({ source: 'detach_tag_from_beat', metaData: beatIndex });
+		this.beatsMetaData[beatIndex].isDirty = false;
+	}
+
+	showTagTooltip(hostingElement: any): void {
+		let clearHostingElementInnerText: boolean = false;
+
+		if (!hostingElement.innerText?.length) {
+			hostingElement.appendChild(document.createTextNode('#'));
+			clearHostingElementInnerText = true;
+		}
+
+		this.filtredTags = this.allTags;
+		const range = window.getSelection().getRangeAt(0);
+		range.collapse(false);
+		const tagPlaceHolderElement = document.createElement('span');
+		tagPlaceHolderElement.classList.add(this.tagPlaceHolderClass);
+		range.insertNode(tagPlaceHolderElement);
+
+		this.nnaTooltipService.addTooltip(
+			this.nnaTooltipService.tagTooltipName,
+			hostingElement,
+			this.tagsTooltipElement.nativeElement,
+			{
+				arrowNativeElenemt: this.tagTooltipArrowElement.nativeElement,
+				placement: 'bottom',
+				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
+				tooltipMetadata: { beatId: this.editorSharedService.selectBeatIdFromBeatDataHolder(hostingElement) },
+				callbackAfterHide: this.tagsTooltipHideCallback
+			},
+			tagPlaceHolderElement
+		);
+
+		this.resetTagFilter();
+
+		const previouslySelectedCharacters = document.querySelectorAll<HTMLElement>('.selected-tag-option');
+		previouslySelectedCharacters?.forEach(characterOpiton => {
+			characterOpiton.classList.remove('selected-tag-option');
+		});
+
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.tagTooltipName);
+
+		setTimeout(() => {
+			this.tagFilterInputElement?.nativeElement?.focus();
+		}, 200);
+
+		document.addEventListener('keydown', this.addTagsTooltipEventHandlersWrapper);
+	}
+
+	filterTags(filterValue: string): void {
+		const formedFilterValue = filterValue?.trim()?.toLowerCase();
+		if (formedFilterValue == '') {
+			this.resetTagFilter();
+			return;
+		}
+
+		this.filtredTags = this.allTags.filter(tag =>
+			tag.name.toLowerCase().includes(this.tagFilterInputElement.nativeElement.value.toLowerCase()));
+		}
+
+	private resetTagFilter() {
+		this.filtredTags = [...this.allTags];
+		if (this.tagFilterInputElement) {
+			this.tagFilterInputElement.nativeElement.value = '';
+		}
+	}
+
+
+	private tagsTooltipHideCallback = function() {
+		const tagPlaceHolderElement = document.querySelectorAll(`.${this.tagPlaceHolderClass}`);
+		tagPlaceHolderElement?.forEach(chaPlaceholder => chaPlaceholder.remove());
+		document.removeEventListener('keydown', this.addTagsTooltipEventHandlersWrapper);
+	}.bind(this);
+
+
+	private addTagsTooltipEventHandlersWrapper = function($event) {
+		this.addTagsTooltipEventHandlers($event);
+	}.bind(this);
+
+	private addTagsTooltipEventHandlers($event): void {
+		console.log('global on tags tooltip');
+		const key = $event.which || $event.keyCode || $event.charCode;
+		this.cdRef.detectChanges();
+		let tags = this.tagsOptionsElements.toArray();
+		if (!tags?.length) {
+			return;
+		}
+
+		const selectedTag = document.querySelector<HTMLElement>('.selected-tag-option');
+		const selectedTagIndex: number = selectedTag?.dataset?.order
+			? +selectedTag.dataset.order
+			: -1;
+
+		tags?.forEach(tagOption => {
+			tagOption.nativeElement.classList.remove('selected-tag-option');
+		});
+
+		if (key == 38 || key == 40) {
+			if (selectedTag) {
+				this.tagFilterInputElement?.nativeElement.blur();
+			}
+
+			if (key == 38) { // up
+				if (selectedTagIndex == -1) {
+					return;
+				}
+				if (selectedTagIndex == 0) {
+					this.tagFilterInputElement.nativeElement.focus();
+					return;
+				}
+
+				tags[selectedTagIndex-1].nativeElement.classList.add('selected-tag-option');
+				return;
+
+			} else if (key == 40) { // down
+				if (!selectedTag) {
+					tags[0].nativeElement.classList.add('selected-tag-option');
+					return;
+				}
+
+				if (selectedTagIndex == tags.length - 1) {
+					tags[tags.length - 1].nativeElement.classList.add('selected-tag-option');
+					return;
+				}
+
+				tags[selectedTagIndex+1].nativeElement.classList.add('selected-tag-option');
+				return;
+			}
+		} if (key == 13) {
+			$event.preventDefault();
+			selectedTag?.click();
+			return;
+		}
+	}
+
+	private addEventListenerForNnaTagElements(nnaTagElement: HTMLElement): void {
+		nnaTagElement.addEventListener('click', ($event) => {
+			const tagElement = ($event.target as HTMLElement);
+			const beatDataHolder = tagElement.parentNode.parentNode;
+			tagElement.remove();
+			this.focusBeatByElement(beatDataHolder, false);
+		});
+		nnaTagElement.addEventListener('mouseover', ($event) => {
+			const tagElement = ($event.target as HTMLElement);
+			tagElement.style.fontWeight = '700';
+		});
+		nnaTagElement.addEventListener('mouseout', ($event) => {
+			const tagElement = ($event.target as HTMLElement);
+			tagElement.style.fontWeight = '600'
+		});
+		nnaTagElement.addEventListener('dragover', ($event) => {
+			this.preventDrag($event);
+		});
+	}
+
+	private insertNnaTagElementIntoPlaceholder(nnaTagElement: HTMLElement): void {
+		const nnaTagPlaceHolderElement = document.querySelector(`.${this.tagPlaceHolderClass}`);
+		nnaTagPlaceHolderElement.parentNode.insertBefore(nnaTagElement, nnaTagPlaceHolderElement);
+		nnaTagElement.before(document.createTextNode(' '));
+		nnaTagElement.after(document.createTextNode(' '));
+		this.observeNnaTagElement(nnaTagElement);
+	}
+
+
+	private observeNnaTagElement(nnaTagElement: HTMLElement) {
+		this.onNnaTagElementRemoved(nnaTagElement, () => {
+			this.removeCharacter(nnaTagElement);
+		});
+	}
+
+	private onNnaTagElementRemoved = function(element, callback) {
+		new MutationObserver(function(mutations) {
+		  	if(!document.body.contains(element)) {
+				callback();
+				this.disconnect();
+		  	}
+		}).observe(element.parentElement as Node, {childList: true});
+	}.bind(this);
+
+
+	// #endregion
+
 }
