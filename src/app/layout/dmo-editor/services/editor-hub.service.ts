@@ -10,7 +10,7 @@ import { MessagePackHubProtocol } from '@microsoft/signalr-protocol-msgpack'
 import { environment } from '../../../../environments/environment';
 import { EditorResponseDto } from 'src/app/shared/models/editorResponseDto';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
-import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI, BeatsToSwapDto, DmoWithDataDto, AttachCharacterToBeatDtoAPI, DetachCharacterFromBeatDtoAPI, BeatToMoveDto } from '../models/dmo-dtos';
+import { CreateBeatDto, CreateBeatDtoAPI, NnaBeatDto, UpdateBeatDtoAPI, NnaDmoWithBeatsAsJson, NnaDmoWithBeatsAsJsonAPI, RemoveBeatDto, RemoveBeatDtoAPI, BeatsToSwapDto, DmoWithDataDto, AttachCharacterToBeatDtoAPI, DetachCharacterFromBeatDtoAPI, BeatToMoveDto, AttachTagToBeatDtoAPI, DetachTagFromBeatDtoAPI } from '../models/dmo-dtos';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import { Toastr } from 'src/app/shared/services/toastr.service';
@@ -139,33 +139,42 @@ export class EditorHub {
         return await this.invokeSocketMethodWithoutResponseData('SetBeatsId', { Id: dmoId });
     }
 
-    async addBeat(beat: CreateBeatDto) {
+    async addBeat(beat: CreateBeatDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('CreateBeat', new CreateBeatDtoAPI(beat));
     }
 
-    async removeBeat(beat: RemoveBeatDto) {
+    async removeBeat(beat: RemoveBeatDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('RemoveBeat', new RemoveBeatDtoAPI(beat));
     }
 
-    async updateBeat(beat: NnaBeatDto) {
+    async updateBeat(beat: NnaBeatDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('UpdateBeat', new UpdateBeatDtoAPI(beat));
     }
 
-    async swapBeats(beatsToSwapDto: BeatsToSwapDto) {
+    async swapBeats(beatsToSwapDto: BeatsToSwapDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('SwapBeats', beatsToSwapDto);
     }
 
-    async moveBeats(beatsToMove: BeatToMoveDto) {
+    async moveBeats(beatsToMove: BeatToMoveDto): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('MoveBeat', beatsToMove);
     }
 
-    async attachCharacterToBeat(id: string, dmoId: string, beatId: string, characterId: string) {
+    async attachCharacterToBeat(id: string, dmoId: string, beatId: string, characterId: string): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('AttachCharacterToBeat', new AttachCharacterToBeatDtoAPI(id, dmoId, beatId, characterId));
     }
 
-    async detachCharacterFromBeat(id: string, dmoId: string, beatId: string) {
+    async detachCharacterFromBeat(id: string, dmoId: string, beatId: string): Promise<void> {
         return await this.invokeSocketMethodWithoutResponseData('DetachCharacterFromBeat', new DetachCharacterFromBeatDtoAPI(id, dmoId, beatId));
     }
+
+    async attachTagToBeat(id: string, dmoId: string, beatId: string, tagId: string): Promise<void> {
+        return await this.invokeSocketMethodWithoutResponseData('AttachTagToBeat', { Id: id, DmoId: dmoId, BeatId: beatId, TagId: tagId } as AttachTagToBeatDtoAPI);
+    }
+
+    async detachTagFromBeat(id: string, dmoId: string, beatId: string): Promise<void> {
+        return await this.invokeSocketMethodWithoutResponseData('DetachTagFromBeat', { Id: id, DmoId: dmoId, BeatId: beatId } as DetachTagFromBeatDtoAPI);
+    }
+
 
     // ----- editor websocket methods ------
 

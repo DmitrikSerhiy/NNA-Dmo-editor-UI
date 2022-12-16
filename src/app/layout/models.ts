@@ -148,3 +148,9 @@ export interface NnaTagDto {
     name: string;
     description: NnaTagDescriptionDto;
 }
+
+export interface NnaTagInBeatDto {
+    id: string;
+    tagId: string;
+    name: string;
+}

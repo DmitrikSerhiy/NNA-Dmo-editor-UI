@@ -167,12 +167,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			$event.source == 'attach_tag_to_beat' ||
 			$event.source == 'detach_tag_from_beat' ||
 			$event.source == 'paste_text') {
-				console.log($event.metaData);
 			await this.editorHub.updateBeat(this.selectSingleBeatForServer($event.metaData));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
 		} else if ($event.source == 'move') {
-			console.log($event.metaData);
 			await this.editorHub.moveBeats($event.metaData);
 		}
 		this.autosaveTitle = this.savingIsDoneTitle;
@@ -245,7 +243,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 				order: 0,
 				tempId: this.initialDmoDto.beats[0].beatId,
 				type: 1,
-				charactersInBeat: []
+				charactersInBeat: [],
+				tagsInBeat: []
 			} as CreateBeatDto;
 	
 			await this.editorHub.addBeat(initialBeat);		
@@ -365,9 +364,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async syncTagsInBeats($event: any): Promise<void> {
 		if ($event.operation == 'attach') {
-			// await this.editorHub.attachCharacterToBeat($event.data.id, this.dmoId, $event.data.beatId, $event.data.characterId);
+			await this.editorHub.attachTagToBeat($event.data.id, this.dmoId, $event.data.beatId, $event.data.tagId);
 		} else if ($event.operation == 'detach') {
-			// await this.editorHub.detachCharacterFromBeat($event.data.id, this.dmoId, $event.data.beatId);
+			await this.editorHub.detachTagFromBeat($event.data.id, this.dmoId, $event.data.beatId);
 		} else {
 			return;
 		}
@@ -645,7 +644,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			text: encodeURIComponent(beatElement.innerHTML),
 			time: this.buildTimeDtoFromBeat(beatId),
 			type: +beatElement.dataset.beatType,
-			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement)
+			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement),
+			tagsInBeat: this.editorSharedService.selectTagsFromBeatElement(beatElement)
 		}
 
 		return beat;
@@ -658,10 +658,11 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		const beat : NnaBeatDto = {
 			beatId: beatId,
 			order: index,
-			text: encodeURIComponent(this.editorSharedService.getBeatTextWithInterpolatedCharacterTags(beatElement)),
+			text: encodeURIComponent(this.editorSharedService.getBeatTextWithInterpolatedNnaCustomTags(beatElement)),
 			time: this.buildTimeDtoFromBeat(beatId),
 			type: beatElement.dataset.beatType,
-			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement)
+			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement),
+			tagsInBeat: this.editorSharedService.selectTagsFromBeatElement(beatElement)
 		}
 
 		return beat;

@@ -4,7 +4,7 @@ import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { EditorSharedService } from '../../helpers/editor-shared.service';
-import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInDmoDto } from '../../models/dmo-dtos';
+import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInDmoDto, NnaTagElementName } from '../../models/dmo-dtos';
 
 @Component({
 	selector: 'app-beats-flow',
@@ -759,17 +759,22 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.beatsIds.push(beat.beatId);
 		});
 
-
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
-		if (!characterTags?.length) {
-			return;
+		if (characterTags?.length > 0) {
+			this.setCharactersClaims();
+			characterTags.forEach(characterTag => {
+				this.addEventListenerForCharacterTag(characterTag);
+				this.observeCharacterTag(characterTag);
+			});
 		}
 
-		this.setCharactersClaims();
-		characterTags.forEach(characterTag => {
-			this.addEventListenerForCharacterTag(characterTag);
-			this.observeCharacterTag(characterTag);
-		});
+		let nnaTagElements = document.querySelectorAll<HTMLElement>(NnaTagElementName);
+		if (nnaTagElements?.length > 0) {
+			nnaTagElements.forEach(tagElement => {
+				this.addEventListenerForNnaTagElements(tagElement);
+				this.observeNnaTagElement(tagElement);
+			});
+		}
 	}
 
 	private shiftCursorToTheEndOfChildren(dataHolderContainer: any, scrollToElement: boolean = true): void {
@@ -1491,7 +1496,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	private observeNnaTagElement(nnaTagElement: HTMLElement) {
 		this.onNnaTagElementRemoved(nnaTagElement, () => {
-			this.removeCharacter(nnaTagElement);
+			this.removeTag(nnaTagElement);
 		});
 	}
 

@@ -473,7 +473,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 	private getTrueCharactersView(beats: NnaBeatDto[], incluedeInnerTags: boolean = false, setStyle: boolean = true) {
 		let trueCharacters: string[] = [];
 		beats.forEach(trueCharacterBeat => {
-			trueCharacters.push(this.editorSharedService.getBeatTime(trueCharacterBeat.time, true) + ' ' + decodeURIComponent(trueCharacterBeat.text))//+ this.editorSharedService.getBeatText(trueCharacterBeat, incluedeInnerTags, setStyle));
+			trueCharacters.push(this.editorSharedService.getBeatTime(trueCharacterBeat.time, true) + ' ' + decodeURIComponent(trueCharacterBeat.text))
 		});
 		
 		return trueCharacters;

@@ -1,3 +1,4 @@
+import { NnaTagInBeatDto } from "../../models";
 import { DmoList } from "../helpers/dmo-list";
 
 export class NnaDmoDto {
@@ -101,7 +102,8 @@ export class NnaBeatDto {
     order: number;
     time: NnaBeatTimeDto;
     type: number;
-    charactersInBeat: NnaMovieCharacterInBeatDto[]
+    charactersInBeat: NnaMovieCharacterInBeatDto[];
+    tagsInBeat: NnaTagInBeatDto[];
 }
 
 export class UpdateBeatDtoAPI {
@@ -130,6 +132,19 @@ export class AttachCharacterToBeatDtoAPI {
         this.BeatId = beatId;
         this.CharacterId = characterId;
     }
+}
+
+export interface AttachTagToBeatDtoAPI {
+    Id: string;
+    DmoId: string;
+    BeatId: string;
+    TagId: string;
+}
+
+export interface DetachTagFromBeatDtoAPI {
+    Id: string;
+    DmoId: string;
+    BeatId: string;
 }
 
 export class DetachCharacterFromBeatDtoAPI {
@@ -181,7 +196,8 @@ export class CreateBeatDto {
     order: number;
     dmoId: string;
     type: number;
-    charactersInBeat: NnaMovieCharacterInBeatDto[]
+    charactersInBeat: NnaMovieCharacterInBeatDto[];
+    tagsInBeat: NnaTagInBeatDto[];
 }
 
 export class CreateBeatDtoAPI {

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName } from '../models/dmo-dtos';
+import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
+import { NnaTagInBeatDto, NnaTagWithoutDescriptionDto } from '../../models';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName, NnaTagInterpolatorPostfix, NnaTagInterpolatorPrefix } from '../models/dmo-dtos';
 import { BeatGeneratorService } from './beat-generator';
 
 @Injectable({
@@ -10,7 +12,11 @@ export class EditorSharedService {
 	get defaultTimePickerValue(): string { return '0:00:00'; };
 	get defaultEmptyTimePickerValue(): string { return ' :  :  '; }
 
-	constructor(private beatGeneratorService: BeatGeneratorService,) { }
+	private tags: NnaTagWithoutDescriptionDto[];
+
+	constructor(
+		private beatGeneratorService: BeatGeneratorService, 
+		private tagsService: CachedTagsService) { }
 
 	replaceWith(value: string, index: number, replace: string): string {
 		return `${value.substr(0, index)}${replace}${value.substr(index + 1)}`;
@@ -19,8 +25,8 @@ export class EditorSharedService {
 	getBeatText(beat: NnaBeatDto, includeInnerTags: boolean = false, withStyleAndDataSet: boolean = true): string {
 		let decodedBeatText = decodeURIComponent(beat.text);
 
-		let resultedText = beat.charactersInBeat?.length > 0 && includeInnerTags == true 
-			? this.getBeatTextWithCharacterTags(beat.charactersInBeat, decodedBeatText, beat.beatId, withStyleAndDataSet)
+		let resultedText = (beat.charactersInBeat?.length > 0 || beat.tagsInBeat?.length > 0) && includeInnerTags == true 
+			? this.getBeatTextWithNnaCustomTags(beat.charactersInBeat, beat.tagsInBeat, decodedBeatText, beat.beatId, withStyleAndDataSet)
 			: decodedBeatText;
 		
 		return resultedText;
@@ -112,17 +118,33 @@ export class EditorSharedService {
 	}
 
 
-	getBeatTextWithCharacterTags(charactersInBeat: NnaMovieCharacterInBeatDto[], interpolatedBeatText: string, beatId: string, withStyleAndDataSet: boolean = true) {
+	getBeatTextWithNnaCustomTags(charactersInBeat: NnaMovieCharacterInBeatDto[], tagsInBeat: NnaTagInBeatDto[], interpolatedBeatText: string, beatId: string, withStyleAndDataSet: boolean = true) {
 		let textToModify: string = interpolatedBeatText; 
-		charactersInBeat.forEach(characterInBeat => {
-			if (textToModify.includes(characterInBeat.id)) {
-				let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, characterInBeat.color, beatId, characterInBeat.id, withStyleAndDataSet);
-				textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML);
-			}
-		})
 
-		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPrefix, 'g'), '');
-		textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPostfix, 'g'), '');
+		if (charactersInBeat?.length > 0) {
+			charactersInBeat.forEach(characterInBeat => {
+				if (textToModify.includes(characterInBeat.id)) {
+					let tag = this.createCharacterTag(characterInBeat.characterId, characterInBeat.name, characterInBeat.color, beatId, characterInBeat.id, withStyleAndDataSet);
+					textToModify = textToModify.replace(characterInBeat.id, tag.outerHTML);
+				}
+			});
+
+			textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPrefix, 'g'), '');
+			textToModify = textToModify.replace(new RegExp(NnaCharacterInterpolatorPostfix, 'g'), '');
+		}
+
+		if (tagsInBeat?.length > 0) {
+			tagsInBeat.forEach(tagInBeat => {
+				if (textToModify.includes(tagInBeat.id)) {
+					let tag = this.createNnaTagElement(tagInBeat.tagId, tagInBeat.name, beatId, tagInBeat.id);
+					textToModify = textToModify.replace(tagInBeat.id, tag.outerHTML);
+				}
+			});
+
+			textToModify = textToModify.replace(new RegExp(NnaTagInterpolatorPrefix, 'g'), '');
+			textToModify = textToModify.replace(new RegExp(NnaTagInterpolatorPostfix, 'g'), '');
+		}
+
 		return textToModify;
 	}
 
@@ -227,13 +249,32 @@ export class EditorSharedService {
 		return characters;
 	}
 
-	getBeatTextWithInterpolatedCharacterTags(beatElement: HTMLElement): string {
+	selectTagsFromBeatElement(beatElement: HTMLElement): NnaTagInBeatDto[] {
+		let tags: NnaTagInBeatDto[] = [];
+		beatElement.childNodes?.forEach((childNode: HTMLElement) => {
+			if (childNode.nodeName.toLowerCase() == NnaTagElementName.toLowerCase()) {
+				tags.push({
+					id: childNode.dataset.id, 
+					name: childNode.nodeValue,
+					tagId: childNode.dataset.tagId
+				} as NnaTagInBeatDto )
+			}
+		});
+		return tags;
+	}
+
+	getBeatTextWithInterpolatedNnaCustomTags(beatElement: HTMLElement): string {
 		let beatCopy = beatElement.cloneNode(true) as HTMLElement;
 		beatCopy.childNodes?.forEach((childNode: HTMLElement) => {
 			if (childNode.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
 				const characterInBeatId = childNode.dataset.id;
 				const interpolatedCharacterTag = document.createTextNode(NnaCharacterInterpolatorPrefix + characterInBeatId + NnaCharacterInterpolatorPostfix);
 				childNode.parentElement.insertBefore(interpolatedCharacterTag, childNode);
+				childNode.remove();
+			} else if (childNode.nodeName.toLowerCase() == NnaTagElementName.toLocaleLowerCase()) {
+				const tagInBeatId = childNode.dataset.id;
+				const interpolatedNnaTag = document.createTextNode(NnaTagInterpolatorPrefix + tagInBeatId + NnaTagInterpolatorPostfix);
+				childNode.parentElement.insertBefore(interpolatedNnaTag, childNode);
 				childNode.remove();
 			}
 		});
