@@ -142,6 +142,7 @@
 
             .home-info-slogan {
                 margin: 0 auto;
+                padding-left: 25px;
             }
         }
 
@@ -492,14 +493,13 @@
             }
 
             .username-placeholder-container {
-                height: 38px;
+                height: 50px;
             }
 
             .home-footer {
                 display: flex;
                 @include font-secondary-info();
-                margin-bottom: 8px;
-                margin-left: 230px;
+                justify-content: center;
 
                 .links {
                     margin-right: 34px;

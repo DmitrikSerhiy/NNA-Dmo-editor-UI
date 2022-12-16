@@ -202,6 +202,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	// todo: save last time user change password in db
+	// do not allow to change it more then 2-3 time at a time 
 	onPasswordChange() {
 		let sanitizedNewPassword = this.nnaHelpersService.sanitizeSpaces(this.newPassword.value);
 		this.newPassword.setValue(sanitizedNewPassword);
@@ -222,6 +224,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 
 		if (this.nnaHelpersService.containsNonAllowedSymbols(this.newPassword.value)) {
 			this.notAllowedCharactersInPasswordValidation = true;
+			return;
 		} else {
 			this.notAllowedCharactersInPasswordValidation = false;
 		}
