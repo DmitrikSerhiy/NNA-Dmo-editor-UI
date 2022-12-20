@@ -10,7 +10,6 @@ export interface NnaTooltipOptions {
 	arrowNativeElenemt: any;
 	placement: string;
 	removeFakeHostElementAfter?: boolean;
-	clearHostingElementInnerTextAfter?: boolean;
 	shift?: number;
 	offset?: TooltipOffsetOptions;
 	tooltipMetadata?: any;
@@ -85,9 +84,6 @@ export class NnaTooltipService {
 			middleware: [offset(tooltipObj.options.offset), shift({padding: tooltipObj.options.shift}), arrow({element: tooltipObj.options.arrowNativeElenemt }) ]})
 				.then((callback) => {
 					this.applyTooltopStylesStyles(callback.x, callback.y, callback.strategy, callback.middlewareData, tooltipObj.tooltipElement, tooltipObj.options);
-					if (tooltipObj.options.clearHostingElementInnerTextAfter == true) {
-						tooltipObj.hostingElement.lastChild.nodeValue = '';
-					}
 					if (tooltipObj.options.removeFakeHostElementAfter == true) {
 						tooltipObj.fakeHostingElement.remove();
 					}
@@ -104,11 +100,15 @@ export class NnaTooltipService {
 		}
 	}
 
-	hideTooltip(name: string): void {
+	hideTooltip(name: string, clearHostingElementInnerTextAfterClose: boolean = false): void {
 		const tooltipObj = this.tooltips.find(t => t.name == name);
 		if (tooltipObj == undefined) {
 			return;
 		}	
+
+		if (clearHostingElementInnerTextAfterClose == true) {
+			tooltipObj.hostingElement.lastChild.nodeValue = '';
+		}
 
 		if (!tooltipObj.tooltipElement.style.display || tooltipObj.tooltipElement.style.display == 'none') {
 			return;

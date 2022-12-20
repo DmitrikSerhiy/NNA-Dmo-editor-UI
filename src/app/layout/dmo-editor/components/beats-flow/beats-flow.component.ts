@@ -49,9 +49,9 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private tabIsPressed: boolean;
 	private isTimePickerFocused: boolean = false;
 	private isBeatDataHolderFocused: boolean = false;
-	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 82, openTagTooltipKeyCode: 51 };
+	private editorHotKeys: any = { openBeatTypeTooltipKeyCode: 81, openCharacterTooltipKeyCode: 50, openTagTooltipKeyCode: 51 };
 	// q for beat type tooltip
-	// r for character tooltip
+	// 2 + shift for character tooltip
 	// 3 + shift = # for tags tooltip
 
 	private characterPlaceHolderClass: string = 'character-placeolder';
@@ -217,15 +217,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				currentElement.blur();
 				this.openBeatTypeTooltip.emit({ beatId, beatType: currentElement.dataset.beatType, elementToFocusAfterClose: currentElement });
 				return;
-		}
-
-		if (key == this.editorHotKeys.openCharacterTooltipKeyCode) {
-			$event.preventDefault();
-			console.log('global handler keydown from BEATS FLOW');
-			const currentElement = document.activeElement as HTMLElement;
-			this.showCharactersTooltip(currentElement);
-			currentElement.blur();
-			return;
 		}
 	}
 
@@ -482,13 +473,18 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	setBeatKeyMetaData($event: any, index: number): void {
 		const key = $event.which || $event.keyCode || $event.charCode;
 
-		// todo: detect # key for tags and @ for characters
-		// but keep key combination
 		if (key == this.editorHotKeys.openBeatTypeTooltipKeyCode || key == this.editorHotKeys.openCharacterTooltipKeyCode) {
 			if ($event.ctrlKey) {
 				this.subscribeToSpecialHotKeysListeners();
 				return;
 			}
+		}
+
+		if (key == this.editorHotKeys.openCharacterTooltipKeyCode && $event.shiftKey) {
+			$event.preventDefault();
+			this.showCharactersTooltip($event.target);
+			$event.target.blur();
+			return;
 		}
 
 		if (key == this.editorHotKeys.openTagTooltipKeyCode && $event.shiftKey) {
@@ -1061,7 +1057,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 		this.syncCharactersInDmo.emit({operation: 'attach', data: {id: characterTag.dataset.id, beatId: beatId, characterId: character.id }} );
 		this.insertCharacterTagIntoPlaceholder(characterTag);
-		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.charactersTooltipName, true);
 
 		this.characters = this.characters.map(characterInDmo => {
 			if (characterInDmo.id == character.id) {
@@ -1097,13 +1093,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	showCharactersTooltip(hostingElement: any): void {
-		let clearHostingElementInnerText: boolean = false;
-
-		if (!hostingElement.innerText?.length) {
-			hostingElement.appendChild(document.createTextNode('1'));
-			clearHostingElementInnerText = true;
-		}
-
+		hostingElement.appendChild(document.createTextNode('@'));
 		this.filtredCharacters = this.characters;
 		const range = window.getSelection().getRangeAt(0);
 		range.collapse(false);
@@ -1118,7 +1108,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			{
 				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
 				placement: 'bottom',
-				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
 				tooltipMetadata: { beatId: this.editorSharedService.selectBeatIdFromBeatDataHolder(hostingElement) },
 				callbackAfterHide: this.charactersTooltipHideCallback
 			},
@@ -1314,7 +1303,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 		this.syncTagsInBeats.emit({operation: 'attach', data: {id: nnaTagHtmlElement.dataset.id, beatId: beatId, tagId: tag.id }} );
 		this.insertNnaTagElementIntoPlaceholder(nnaTagHtmlElement);
-		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.tagTooltipName);
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.tagTooltipName, true);
 
 
 		const beatIndex = this.beatsIds.indexOf(beatId);
@@ -1335,13 +1324,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	showTagTooltip(hostingElement: any): void {
-		let clearHostingElementInnerText: boolean = false;
-
-		if (!hostingElement.innerText?.length) {
-			hostingElement.appendChild(document.createTextNode('#'));
-			clearHostingElementInnerText = true;
-		}
-
+		hostingElement.appendChild(document.createTextNode('#'));
 		this.filtredTags = this.allTags;
 		const range = window.getSelection().getRangeAt(0);
 		range.collapse(false);
@@ -1356,7 +1339,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			{
 				arrowNativeElenemt: this.tagTooltipArrowElement.nativeElement,
 				placement: 'bottom',
-				clearHostingElementInnerTextAfter: clearHostingElementInnerText,
 				tooltipMetadata: { beatId: this.editorSharedService.selectBeatIdFromBeatDataHolder(hostingElement) },
 				callbackAfterHide: this.tagsTooltipHideCallback
 			},
@@ -1474,11 +1456,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		});
 		nnaTagElement.addEventListener('mouseover', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
-			tagElement.style.fontWeight = '700';
+			tagElement.style.fontStyle = 'italic';
 		});
 		nnaTagElement.addEventListener('mouseout', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
-			tagElement.style.fontWeight = '600'
+			tagElement.style.fontStyle = 'normal';
 		});
 		nnaTagElement.addEventListener('dragover', ($event) => {
 			this.preventDrag($event);

@@ -166,17 +166,16 @@ export class EditorSharedService {
 		}
 
 		const capitilizedName = characterName.charAt(0).toUpperCase() + characterName.slice(1);
-		characterElem.innerText = capitilizedName;
+		characterElem.innerText = '@' + capitilizedName;
 		return characterElem;
 	}
 
 	createNnaTagElement(tagId: string, tagName: string, beatId: string, id: string = null): HTMLElement {
 		let tagElement = document.createElement(NnaTagElementName);
 		tagElement.style.cursor = 'pointer';
-		tagElement.style.paddingLeft = '1px';
-		tagElement.style.paddingRight = '1px';
 		tagElement.style.userSelect = 'auto';
-		tagElement.style.fontWeight = '600';
+		tagElement.style.fontWeight = '700';
+		tagElement.style.fontSize = '1.1rem';
 		tagElement.dataset.tagId = tagId;
 		tagElement.dataset.id = id == null ? this.beatGeneratorService.generateTempId() : id;
 		tagElement.dataset.beatId = beatId;

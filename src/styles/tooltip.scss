@@ -20,7 +20,7 @@
         background-color: white;
         width: 104%;
         height: 110%;
-        animation: tooltip-overflow-shrink-h 150ms linear 0s 1 normal forwards;
+        animation: tooltip-overflow-shrink-h 100ms linear 0s 1 normal forwards;
     }
 
     .nna-tooltip-animatad-overflow-for-left {
@@ -31,7 +31,13 @@
         background-color: white;
         width: 110%;
         height: 104%;
-        animation: tooltip-overflow-shrink-v 150ms linear 0s 1 normal forwards;
+        animation: tooltip-overflow-shrink-v 100ms linear 0s 1 normal forwards;
+    }
+
+
+
+    .tooltip-header {
+        text-align: center;
     }
 
 

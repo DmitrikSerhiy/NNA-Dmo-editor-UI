@@ -153,11 +153,9 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			}
 		);
 		
-		setTimeout(() => { // minor delay before showing tooltip to prevent radio animation on initial open
-			this.nnaTooltipService.showTooltip(this.nnaTooltipService.beatTypeTooltipName);
-			this.isBeatTypeTooltipShown = true;
-			this.cdRef.detectChanges();
-		}, 150);
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.beatTypeTooltipName);
+		this.isBeatTypeTooltipShown = true;
+		this.cdRef.detectChanges();
 	}
 
 	hideBeatTypeTooltip() {
@@ -183,6 +181,10 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	}
 	
 	private handleBeatTypeChangeByKeyboard($event: any): void {
+		if (!this.nnaTooltipService.isTooltipOpened(this.nnaTooltipService.beatTypeTooltipName)) {
+			this.unsubscribeFromBeatTypeTooltipKeyboardEvents();
+			return;
+		}
 		$event.preventDefault();
 		const key = $event.which || $event.keyCode || $event.charCode;
 		if (key != 40 && key != 38 && key != 13 && key != 27) { // up and down arrow

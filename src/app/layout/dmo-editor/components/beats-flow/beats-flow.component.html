@@ -4,6 +4,7 @@
 
             <div #charactersTooltip class="nna-tooltip-base nna-tooltip-to-top characters-tooltip">
                 <div class="nna-tooltip-animatad-overflow-for-top"></div>
+                <p class="tooltip-header">Insert @character</p>
                 <div class="character-tooltip-search-block" *ngIf="characters?.length > 0">
                     <input #characterFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Character name or alias" (input)="filterCharacters($event.target.value)">
                     <ul>
@@ -27,6 +28,7 @@
 
             <div #tagsTooltip class="nna-tooltip-base nna-tooltip-to-top tags-tooltip">
                 <div class="nna-tooltip-animatad-overflow-for-top"></div>
+                <p class="tooltip-header">Insert #tag</p>
                 <div class="tag-tooltip-search-block">
                     <input #tagFilterInput type="text" class="nna-input character-filtrer-input" placeholder="Seach tag by name" (input)="filterTags()">
                     <ul>
