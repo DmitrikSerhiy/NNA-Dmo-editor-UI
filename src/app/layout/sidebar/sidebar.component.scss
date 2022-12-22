@@ -69,10 +69,20 @@
             border-radius: 0;
             user-select: none;
             text-decoration: none;
-            .fa {
+
+            i, .material-icons {
                 margin-right: 10px;
             }
+
+            .material-icons {
+                font-size: 18px !important;
+            }
         }
+
+        a.with-material-icon {
+            display: flex;
+        }
+        
         a {
             -webkit-transition: all 0.2s ease-in-out;
             -moz-transition: all 0.2s ease-in-out;

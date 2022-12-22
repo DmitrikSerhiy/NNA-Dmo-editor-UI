@@ -17,8 +17,13 @@
         </a>
 
         <a *ngIf="isAuthorized" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
-            <i class="fa fa-layer-group" aria-hidden="true"></i> &nbsp;
+            <i class="fa fa-layer-group" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Collections' }}</span>
+        </a>
+
+        <a *ngIf="isAuthorized" id="comunity-tab" [routerLink]="['/app/comunity']" [routerLinkActive]="['router-link-active']" (click)="sendComunityEvent()" class="list-group-item with-material-icon" [ngClass]="{'side-item-collapse' : !sidebarState}">
+            <span class="material-icons"> group</span>&nbsp;
+            <span>{{ 'Comunity' }}</span>
         </a>
 
         <a *ngIf="isAuthorized" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}" title="{{userName}}">

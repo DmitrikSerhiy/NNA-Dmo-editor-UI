@@ -151,14 +151,12 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if ($event === RightMenues.tags) {
             this.setTagsRightMenu();
             this.rightMenuGrabberService.showGrabber();
-        } else if ($event === RightMenues.dmos) {
-            this.rightMenuGrabberService.hideGrabber();
-        } else if ($event === RightMenues.dmo) {
-            this.rightMenuGrabberService.hideGrabber();
         } else if ($event === RightMenues.userCabinet) {
             this.currentMenuName = RightMenues.userCabinet;
             this.rightMenuGrabberService.hideGrabber();
             this.toggleRightMenu = $event;
+        } else {
+            this.rightMenuGrabberService.hideGrabber();
         }
         //  else if ($event === RightMenues.test) {
         //     this.currentMenuName = RightMenues.test;
