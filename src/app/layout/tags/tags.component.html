@@ -5,8 +5,8 @@
         <input #tagNameSearch type="text" class="nna-input" placeholder="Seach tag by name" (input)="filterTags()">
     </div>
     <div class="tags-list" *ngIf="tags">
-        <div class="tag-item" *ngFor="let tag of filtredTags;">
-           <div class="tag-name" (click)="openTagDescription(tag.id)"> 
+        <div class="tag-item" *ngFor="let tag of filtredTags;" (click)="openTagDescription(tag.id)">
+           <div class="tag-name"> 
                 <span> &#9679; {{ tag.name }} </span>
             </div>
         </div>
