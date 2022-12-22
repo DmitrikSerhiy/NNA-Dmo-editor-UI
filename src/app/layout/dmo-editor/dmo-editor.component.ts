@@ -5,11 +5,12 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit, ViewChild } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaDmoDto, NnaMovieCharacterInBeatDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
+import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
 import { EditorSharedService } from './helpers/editor-shared.service';
+import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 
 @Component({
 	selector: 'app-dmo-editor',
@@ -54,6 +55,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	// ------ [start] not state
 	private isDmoFinised: boolean;
+	isDmoPublished: boolean;
 	private beatsMetaData: any[] = [];
 	private beatsIds: string[] = [];
 	private plotPointsWithMetaData: any[] = [];
@@ -123,6 +125,8 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		await this.loadDmoDetails();
 		await this.loadDmoBeatsAndCharacters(true);
 	}
+
+
 
 	async reloadBeatsAndCharacters(): Promise<void> {
 		this.autosaveTitle = this.savingInProgressTitle;
@@ -227,6 +231,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	private async loadDmoDetails(): Promise<void> {
 		this.currentShortDmo = await this.editorHub.getDmoDetailsShort(this.dmoId);
 		this.isDmoFinised = this.currentShortDmo.dmoStatusId === 1;
+		this.isDmoPublished = this.currentShortDmo.published;
 		this.isDmoInfoSet = true
 		this.showControlPanel = true;
 		this.cdRef.detectChanges();
@@ -322,7 +327,28 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			clearInterval(intervalId);
 			this.cdRef.detectChanges();
 		}, 1000);
+	}
 
+	async changePublishState(shouldState: boolean): Promise<void> {
+		const popupResult = await this.matModule
+			.open(PublishDmoPopupComponent, { data: { shouldPublish: shouldState }, width: '500px' })
+			.afterClosed()
+			.toPromise();
+
+		if (!popupResult) {
+			this.matModule.ngOnDestroy();
+			return;
+		}
+		
+		if (shouldState) {
+			await this.editorHub.publishDmo(this.dmoId);
+		} else if (!shouldState) {
+			await this.editorHub.unpublishDmo(this.dmoId);
+		}
+
+		this.currentShortDmo.published = shouldState;
+		this.isDmoPublished = shouldState;
+		this.cdRef.detectChanges();
 	}
 
 	showConnectionStateTooltip(): void {

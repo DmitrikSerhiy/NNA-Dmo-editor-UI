@@ -1,0 +1,20 @@
+@import "src/styles/fonts-mixins.scss";
+
+.base-modal {
+    .base-modal-header {
+        display: flex;
+        margin-bottom: 14px;
+        
+        .modal-title {
+            @include font-primary-heading();
+        }
+    }
+
+    .base-modal-body {
+
+    }
+
+    .base-modal-footer {
+        margin-top: auto;
+    }
+}

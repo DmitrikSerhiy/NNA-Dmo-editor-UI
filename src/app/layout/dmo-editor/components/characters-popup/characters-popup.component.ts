@@ -118,7 +118,7 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 			if (key == 27) { // esc
 				this.onClose();
 			}
-		})
+		});
 
 		document.addEventListener('keydown', this.keydownHandlerWrapper);
 		this.charactersForm = new FormGroup({

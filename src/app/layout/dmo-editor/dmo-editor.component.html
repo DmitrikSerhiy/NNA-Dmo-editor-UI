@@ -3,13 +3,21 @@
     <div class="controls-panel" *ngIf='isDmoInfoSet && showControlPanel'>
         <h1 class="movie-title no-select">{{currentShortDmo.movieTitle}} </h1>
 
-        <button type="button" class='nna-icon-button nna-button-primary' (click)='editDmoDetails()'>
+        <button *ngIf="this.initialDmoDto" type="button" class='nna-icon-button nna-button-primary' (click)='editDmoDetails()'>
             <i class="fa fa-pencil-alt" aria-hidden="true"></i>
         </button>
 
         <button *ngIf="this.initialDmoDto" type="button" class='nna-icon-button nna-button-primary no-select' (click)="openCharactersPopup($event)">
             <span *ngIf="this.initialDmoDto.characters.length == 0" class="material-icons"> group_add </span>
             <span *ngIf="this.initialDmoDto.characters.length > 0" class="material-icons"> groups </span>
+        </button>
+
+        <button *ngIf="this.isDmoInfoSet && showControlPanel && !isDmoPublished" type="button" class='nna-button nna-button-primary' (click)='changePublishState(true)'>
+            Publish
+        </button>
+
+        <button *ngIf="this.isDmoInfoSet && showControlPanel && isDmoPublished" type="button" class='nna-button nna-button-secondary' (click)='changePublishState(false)'>
+            Unpublish
         </button>
 
         <!-- <button class="nna-button nna-button-primary" (click)='save()'>Save</button> -->

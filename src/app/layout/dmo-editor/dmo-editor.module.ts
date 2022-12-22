@@ -18,6 +18,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 
 const routes: Routes = [
 	{ path: '', component: DmoEditor, data: { shouldReuse: false } }
@@ -25,7 +26,7 @@ const routes: Routes = [
 
 @NgModule({
   	entryComponents: [DmoEditorPopupComponent, NnaSpinnerComponent],
-  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, CharactersPopupComponent, DmoDetailsPopupComponent],
+  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, CharactersPopupComponent, DmoDetailsPopupComponent, PublishDmoPopupComponent],
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,

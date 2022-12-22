@@ -243,6 +243,20 @@ export class EditorHub {
             .pipe(catchError( (response, obs) => this.errorHandler.handle<void>(response, obs)))
             .toPromise();
     }
+
+    publishDmo(dmoId: string): Promise<void> {
+        return this.http
+            .post<any>(this.serverUrl + 'dmos/' + dmoId, {state: 1} )
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
+
+    unpublishDmo(dmoId: string): Promise<void> {
+        return this.http
+            .post<any>(this.serverUrl + 'dmos/' + dmoId, {state: 0} )
+            .pipe(catchError( (response, obs) => this.errorHandler.handle<any>(response, obs)))
+            .toPromise();
+    }
     
     // ----- editor http methods --------
 

@@ -40,6 +40,7 @@ export class CretedDmoDtoAPI {
     Name: string;
     MovieTitle: string;
     ShortComment: string;
+    published: boolean;
 
     HasBeats: boolean;
     DmoStatus: number;
@@ -100,6 +101,7 @@ export interface DmoDetailsShortDto {
     id: string;
     movieTitle: string;
     dmoStatusId: number;
+    published: boolean;
 }
 
 export interface DmoDetailsDto {

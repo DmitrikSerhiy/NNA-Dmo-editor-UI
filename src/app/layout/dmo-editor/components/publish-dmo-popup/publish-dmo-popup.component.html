@@ -1,0 +1,24 @@
+<div class="base-modal">
+    <div class="base-modal-header">
+        <h2 *ngIf="shouldPublish" class="modal-title no-select">Publish DMO</h2>
+        <h2 *ngIf="!shouldPublish" class="modal-title no-select">Unpublish DMO</h2>
+    </div>
+
+    <div *ngIf="shouldPublish" class="base-modal-body">
+        <p>Your DMO will appear in comunity tab. Every user would be able to read and rate your work. </p>
+        <br />
+        <p>Are you sure you want to publish your DMO? </p>
+    </div>
+
+    <div *ngIf="!shouldPublish" class="base-modal-body">
+        <p>Your DMO will be removed from shared access in comunity tab. You can publish it again in any time.</p>
+        <br />
+        <p>Are you sure you want to unpublish your DMO?</p>
+    </div>
+
+    <div class="base-modal-footer">
+        <button type="button" class="nna-button nna-button-secondary" (click)="onClose(false)">Cancel</button>
+        <button *ngIf="shouldPublish" type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Publish</button>
+        <button *ngIf="!shouldPublish" type="button" class="nna-button nna-button-primary" (click)="onClose(true)">Unpublish</button>
+    </div>
+</div>
