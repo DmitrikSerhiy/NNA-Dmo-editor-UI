@@ -157,3 +157,26 @@ export interface NnaTagInBeatDto {
     tagId: string;
     name: string;
 }
+
+export interface PaginationDetailsResultDto {
+    pageNumber: number;
+    totalAmount: number;
+    pagesAmount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean
+}
+
+export interface PublishedDmoShortDto {
+    id: string;
+    movieTitle: string;
+    name: string;
+    dmoStatusId: string;
+    authorName: string;
+    publishDate: string;
+    publishDateRaw: number;
+}
+
+export interface PublishedDmosDto {
+    dmos: PublishedDmoShortDto[];
+    pagination: PaginationDetailsResultDto;
+}

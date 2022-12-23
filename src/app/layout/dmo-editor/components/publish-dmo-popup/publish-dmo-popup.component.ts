@@ -41,7 +41,6 @@ export class PublishDmoPopupComponent implements OnInit {
 	private keydownHandlerWrapper = function($event) {
 		const key = $event.which || $event.keyCode || $event.charCode;
 
-		console.log(key);
 		if (key === 13) {
 			$event.preventDefault();
 			this.onClose(true);

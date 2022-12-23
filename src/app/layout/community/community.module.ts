@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ComunityComponent } from './comunity.component';
+import { CommunityComponent } from './community.component';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-	{ path: '', component: ComunityComponent }
+	{ path: '', component: CommunityComponent }
 ];
 
 @NgModule({
 	declarations: [
-		ComunityComponent
+		CommunityComponent
 	],
 	imports: [
 		CommonModule,
