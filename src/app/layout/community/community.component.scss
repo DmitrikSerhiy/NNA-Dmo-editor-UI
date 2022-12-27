@@ -1,0 +1,71 @@
+@import 'src/styles/fonts-mixins.scss';
+@import "src/styles/colors.scss";
+
+.community-page {
+    
+
+    .community-header {
+        display: flex;
+        min-height: 52px;
+        height: 52px;
+
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        box-shadow: 0 0 1em rgba(0, 0, 0, .1);
+        margin-left: -14px;
+        margin-right: -14px;
+        background-color: white;
+
+
+        .community-header {
+            @include font-primary-heading();
+            margin: 0;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            align-items: center;
+            padding-left: 14px;
+            box-shadow: none;
+            width: 200px;
+            min-width: 200px;
+            
+        }
+
+        .community-header-kpi {
+        }
+    }
+
+    .community-body {
+
+        .published-dmos-wrapper {
+            width: 500px;
+        }
+
+        .published-dmo-paginator {
+            background-color: white;
+        }
+
+
+        .published-dmos-table {
+        
+			.hoverable-active-element {
+                border-width: 1px;
+                border-style: solid;
+                border-color: transparent;
+                cursor: pointer;
+
+                &:hover {
+                   background: $input-underline-gradient, $input-underline-gradient;
+                   background-repeat: no-repeat;
+                   background-size: 100% 1px;
+                   background-position: bottom, top;
+                   background-color: $active-background-color;
+                   border-color: $active-background-color;
+               }
+           }
+        }
+    }
+}

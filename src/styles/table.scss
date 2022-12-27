@@ -19,6 +19,10 @@
 			border: none;
 		}
 	}
+
+	.non-selected-table-cell {
+		cursor: default !important;
+	}
   
 	::ng-deep .mat-sort-header-container {
 		button {

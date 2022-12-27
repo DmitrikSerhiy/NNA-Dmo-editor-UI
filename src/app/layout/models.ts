@@ -169,9 +169,10 @@ export interface PaginationDetailsResultDto {
 export interface PublishedDmoShortDto {
     id: string;
     movieTitle: string;
-    name: string;
+    name?: string;
     dmoStatusId: string;
     authorName: string;
+    shortComment?: string;
     publishDate: string;
     publishDateRaw: number;
 }
