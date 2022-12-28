@@ -7,16 +7,16 @@
         <div class="search-wrapper">
             <div class="search-container">
                 <i class="fa fa-search text-muted"></i>
-                <input #searchInput type="text" class="nna-input search-input" placeholder="dmo name, movie title, author name etc." autocomplete="off" (input)="changeSearchCriteria($event)">
+                <input #searchInput type="text" class="nna-input search-input" placeholder="dmo name, movie title, author name etc." autocomplete="off" (keyup)="localSearch($event); serverSideSearch()">
             </div>
 
             <div *ngIf="showSearchResultContainer" class="search-container-result">
                 <h2 class="search-header no-select">Search result</h2>
-                <div *ngIf="loadedDmosWhichFitSearch" class="search-result-inner-container">
+                <div class="search-result-inner-container">
                     <p class="search-result-subheader no-select">Published DMOs</p>
-                    <div class="searched-loaded-dmos">
+                    
+                    <div *ngIf="loadedDmosWhichFitSearch.length" class="searched-loaded-dmos">
                         <div class="searched-loaded-dmo" *ngFor="let loadedSearchedDmo of loadedDmosWhichFitSearch" (click)="openDmo(loadedSearchedDmo.id)">
-                            
                             <div class="search-block movie-search-block">
                                 <p class="short-seached-string">Movie: {{loadedSearchedDmo.movieTitle}}</p>
                                 <span *ngIf="loadedSearchedDmo.dmoStatusId === 0" class="material-icons movie-progress-icon" title="{{loadedSearchedDmo.dmoStatus}}">autorenew</span>
@@ -31,7 +31,16 @@
                                 <p class="short-seached-string">DMO name: {{loadedSearchedDmo.name}}</p>
                             </div>
                         </div>
+                    </div>
+                    <div *ngIf="serverSideSearchResult > 0" class="searched-server-side-dmos">
+                        <p>Found <span *ngIf="loadedDmosWhichFitSearch.length">another</span> {{serverSideSearchResult}} DMOs</p>
+                        <button type="button" class='nna-button nna-button-secondary'(click)='loadMoreDmosBySearch()'>
+                            Load search result
+                        </button>
+                    </div>
 
+                    <div *ngIf="!loadedDmosWhichFitSearch.length && serverSideSearchResult == 0 && serverSideSearchPristine == false" class="empty-search-result">
+                        <p>No search result</p>
                     </div>
                 </div>
             </div>

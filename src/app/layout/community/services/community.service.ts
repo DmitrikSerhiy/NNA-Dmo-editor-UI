@@ -29,4 +29,16 @@ export class CommunityService {
 			.get<PublishedDmoDetails>(this.serverUrl + 'dmos/' + id + '/details')
 			.pipe(take(1), catchError((response, obs) => this.errorHandler.handle<PublishedDmoDetails>(response, obs)));
 	}
+
+	getPublishedDmoAmountBySearch(searchBy: string, dmoIdsToIgnore: string[]): Observable<number> {
+		return this.http
+			.post<number>(this.serverUrl + 'dmos/search/amount?searchBy=' + searchBy, {dmoIdsToIgnore:  dmoIdsToIgnore})
+			.pipe(take(1), catchError((response, obs) => this.errorHandler.handle<number>(response, obs)));
+	}
+
+	getPublishedDmoBySearch(searchBy: string, dmoIdsToIgnore: string[], pageNumber: number, pageSize: number, totalAmount: number): Observable<PublishedDmosDto> {
+		return this.http
+			.post<PublishedDmosDto>(this.serverUrl + 'dmos/search/data/?searchBy=' + searchBy, {dmoIdsToIgnore:  dmoIdsToIgnore, pageNumber: pageNumber, pageSize: pageSize, totalAmount: totalAmount })
+			.pipe(catchError((response, obs) => this.errorHandler.handle<PublishedDmosDto>(response, obs)));
+	}
 }

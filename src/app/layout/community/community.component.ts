@@ -15,6 +15,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	pageSize: number = 10;
 	currentPage: number = 0;
 	dmosSubscription: Subscription;
+	serverSideSearchAmoutSubsctiprion: Subscription;
 
 	loadedDmos: any[] = [];
 	loadedDmoDetails: PublishedDmoDetails[] = [];
@@ -27,6 +28,10 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	showSearchResultContainer: boolean = false;
 	loadedDmosWhichFitSearch: PublishedDmoShortDto[] = [];
+
+	serverSideSearchResult: number = 0;
+	serverSideSearchPristine: boolean = true;
+
 	
 	@ViewChild('paginator') paginator: MatPaginator;
 	@ViewChild('searchInput') searchInputElement: ElementRef;
@@ -52,6 +57,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.dmosSubscription?.unsubscribe();
+		this.serverSideSearchAmoutSubsctiprion?.unsubscribe();
 		this.loadedDmos = [];
 		this.loadedDmoDetails = [];
 	}
@@ -61,6 +67,11 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.loadedDmosWhichFitSearch = [];
 		this.showSearchResultContainer = false;
 		this.searchInputElement.nativeElement.value = '';
+		this.serverSideSearchResult = 0;
+		this.serverSideSearchPristine = true;
+		if (this.serverSideSearchAmoutSubsctiprion) {
+			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
+		}
 
 
 		if ($event.pageIndex < this.currentPage) {
@@ -95,6 +106,11 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.loadedDmosWhichFitSearch = [];
 		this.showSearchResultContainer = false;
 		this.searchInputElement.nativeElement.value = '';
+		this.serverSideSearchResult = 0;
+		this.serverSideSearchPristine = true;
+		if (this.serverSideSearchAmoutSubsctiprion) {
+			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
+		}
 
 
 		if (this.selectedDmo && this.selectedDmo === row) {
@@ -131,11 +147,15 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		console.log(dmoIdToOpen);
 	}
 
-	changeSearchCriteria($event: any): void {
+	
+
+	localSearch($event: any): void {
 		this.resetSelected();
 		const searchValue = this.searchInputElement.nativeElement.value;
 		if (!searchValue) {
 			this.showSearchResultContainer = false;
+			this.serverSideSearchResult = 0;
+			this.serverSideSearchPristine = true;
 			return;
 		}
 
@@ -154,6 +174,59 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.showSearchResultContainer = true;
 	}
+
+	serverSideSearch = this.debounceServerSideSearch(() => this.serverSideSearchSender());
+
+	loadMoreDmosBySearch() {
+		const searchValue = this.searchInputElement.nativeElement.value?.trim();
+		if (!searchValue) {
+			return;
+		}
+
+		if (this.serverSideSearchResult == 0) {
+			return;
+		}
+
+		let excluededDmos: string[] = [];
+		if (this.loadedDmosWhichFitSearch.length) {
+			excluededDmos = this.loadedDmosWhichFitSearch.map(dmo => dmo.id);
+		}
+
+		this.communityService.getPublishedDmoBySearch(searchValue, excluededDmos, 0, this.pageSize, this.serverSideSearchResult)
+			.subscribe(loadedSearchedResult => {
+				console.log(loadedSearchedResult);
+			});
+	}
+
+	private serverSideSearchSender() {
+		const searchValue = this.searchInputElement.nativeElement.value?.trim();
+		if (!searchValue) {
+			return;
+		}
+
+		let excluededDmos: string[] = [];
+		if (this.loadedDmosWhichFitSearch.length) {
+			excluededDmos = this.loadedDmosWhichFitSearch.map(dmo => dmo.id);
+		}
+		
+		this.serverSideSearchPristine = false; 
+		if (this.serverSideSearchAmoutSubsctiprion) {
+			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
+		}
+		this.serverSideSearchAmoutSubsctiprion = this.communityService.getPublishedDmoAmountBySearch(searchValue, excluededDmos)
+			.subscribe(searchResult => {
+				this.serverSideSearchResult = searchResult;
+			});
+	}
+
+	private debounceServerSideSearch(func, timeout = 500){
+		let timer;
+		return (...args) => {
+		  	clearTimeout(timer);
+		  	timer = setTimeout(() => { func.apply(this, args); }, timeout);
+		};
+	}
+
 
 
 	private setDmosTable(loadedDmos: PublishedDmoShortDto[]) {
