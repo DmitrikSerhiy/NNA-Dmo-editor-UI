@@ -16,40 +16,43 @@
                 <ng-container matColumnDef="dmoDetails">
                     <th mat-header-cell *matHeaderCellDef (click)="resetSelected()" class="non-selected-table-cell no-select"> Published DMOs </th>
                     <td mat-cell class="table-cell" *matCellDef="let row"> 
-                        <!-- <div class="expand-row-header">
-                            <span #dmoActionButtons id="{{row.id}}" class="action-wrapper"></span>
-                            <span class="movie-title-name"> {{row.movieTitle}} </span> 
-    
+
+                        <div class="movie-block">
+                            <p class="short-string">Movie: {{row.movieTitle}}</p>
                             <span *ngIf="row.dmoStatusId === 0 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">autorenew</span>
                             <span *ngIf="row.dmoStatusId === 1 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">done</span>
                             <span *ngIf="row.dmoStatusId === 2 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">block</span>
                         </div>
-    
-                        <div *ngIf="selectedDmoInCollection?.id == row.id" class="expand-row-body moview-details-expand-cell">
-                            <span *ngIf="row.name">Dmo name: {{row.name}} </span>
-                            <br *ngIf="row.name" />
-                            Status: {{ row.dmoStatus }}
+
+                        <div class="author-block">
+                            <p>Author: {{row.authorNickname}}</p>
+                            <span>{{row.publishDate | date:'shortDate'}}</span>
                         </div>
-    
-                        <div *ngIf="selectedDmoInCollection?.id == row.id" class="expand-row-footer" >
-                            <button class="nna-button nna-button-primary first-nna-button" (click)="redirectToDmo()">Open in editor</button>
-                            <button class="nna-button nna-button-secondary" (click)="removeFromCollection()">Remove from collection</button>
-                        </div> -->
-                        <p>{{row.movieTitle}}</p>
-                        <p>{{row.id}} </p>        
-                        <p>{{row.authorName}}</p>                
+
+                        <div class="dmo-block">
+                            <p *ngIf="row.name" class="short-string">Name: {{row.name}}</p>
+                            <p *ngIf="row.shortComment" class="short-string">{{row.shortComment}}</p>
+                        </div>
+
+                        <div *ngIf="selectedDmoDetails?.id == row.id" class="dmo-details-block">
+                            <p>
+                                <span *ngIf="selectedDmoDetails.beatsCount > 1">Beats: {{selectedDmoDetails.beatsCount}}.&nbsp;</span> 
+                                <span *ngIf="selectedDmoDetails.charactersCount">Characters: {{selectedDmoDetails.charactersCount}}.</span>
+                            </p>
+                            <p *ngIf="selectedDmoDetails.premise" class="short-string">
+                                Premise: {{getPremiseWithQuestionMark(selectedDmoDetails.premise)}}
+                            </p>
+                            <p *ngIf="selectedDmoDetails.controllingIdea" class="short-string">
+                                Controlling idea: {{selectedDmoDetails.controllingIdea}}
+                            </p>
+
+                            <button type="button" class='nna-button nna-button-primary'(click)='openDmo()'>
+                                View (~{{selectedDmoDetails.minutesToRead}}min. to read)
+                            </button>
+                        </div>
                     </td>
                 </ng-container>
-    
-                <!-- <ng-container matColumnDef="shortComment">
-                    <th mat-header-cell *matHeaderCellDef (click)="resetSelected()"
-                        class="hoverable-element column-header comment-header no-select"> Comments </th>
-                    <td mat-cell class="table-cell comment-cell" *matCellDef="let row">  
-                        {{ selectedDmoInCollection?.id == row.id ? row.shortComment : trimComment(row.shortComment)}}
-    
-                    </td>
-                </ng-container> -->
-    
+
                 <tr mat-header-row *matHeaderRowDef="columns"></tr>
                 <tr mat-row class="hoverable-element hoverable-active-element" *matRowDef="let row; columns: columns;"
                     [class.clicked-row]="selectedDmo?.id == row.id" (click)="onRowSelect(row)">
@@ -57,8 +60,6 @@
             </table>
     
             <mat-paginator class="published-dmo-paginator" #paginator [length]="this.currentPagination.totalAmount" [pageIndex]="this.currentPagination.pageNumber" [hidePageSize]="true" [pageSize]="pageSize" (page)="onPaginateChange($event)"></mat-paginator>
-
-
         </div>
 
     </div>

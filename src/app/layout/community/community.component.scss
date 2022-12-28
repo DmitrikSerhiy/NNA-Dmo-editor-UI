@@ -48,9 +48,7 @@
             background-color: white;
         }
 
-
         .published-dmos-table {
-        
 			.hoverable-active-element {
                 border-width: 1px;
                 border-style: solid;
@@ -65,6 +63,29 @@
                    background-color: $active-background-color;
                    border-color: $active-background-color;
                }
+           }
+
+           .movie-block {
+                padding-top: 14px;
+           }
+
+           .movie-block, .author-block {
+                display: flex;
+                .movie-progress-icon, span {
+                    margin-left: auto;
+                }
+           }
+
+           .movie-block, .author-block, .dmo-block, .dmo-details-block {
+                .short-string {
+                    max-width: 350px;
+                }
+           }
+
+           .dmo-details-block {
+                .nna-button {
+                    margin-bottom: 14px;
+                }
            }
         }
     }

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableDataSourcePageEvent } from '@angular/material/table';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { PaginationDetailsResultDto, PublishedDmosDto, PublishedDmoShortDto } from '../models';
+import { PaginationDetailsResultDto, PublishedDmoDetails, PublishedDmosDto, PublishedDmoShortDto } from '../models';
 import { CommunityService } from './services/community.service';
 
 @Component({
@@ -17,11 +17,13 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	dmosSubscription: Subscription;
 
 	loadedDmos: any[] = [];
+	loadedDmoDetails: PublishedDmoDetails[] = [];
 	currentPagination: PaginationDetailsResultDto;
 
 	columns: string[];
 	source: MatTableDataSource<PublishedDmoShortDto>
 	selectedDmo: PublishedDmoShortDto;
+	selectedDmoDetails: PublishedDmoDetails;
 	@ViewChild('paginator') paginator: MatPaginator;
 
 
@@ -50,6 +52,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	onPaginateChange($event: MatTableDataSourcePageEvent): void {
+		this.resetSelected();
 		if ($event.pageIndex < this.currentPage) {
 			this.setDmosTable(this.loadedDmos.find(dmos => dmos.pageIndex == $event.pageIndex).data);
 			this.currentPage = $event.pageIndex;
@@ -75,14 +78,42 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	resetSelected() {
 		this.selectedDmo = null;
+		this.selectedDmoDetails = null;
 	}
 
 	onRowSelect(row: any): void {
 		if (this.selectedDmo && this.selectedDmo === row) {
 			this.selectedDmo = null;
+			this.selectedDmoDetails = null;
 			return;
 		}
-		this.selectedDmo = row;
+
+		const previouslyLoadedDetails = this.loadedDmoDetails.find(dmoDetails => dmoDetails.id == row.id);
+		if (previouslyLoadedDetails) {
+			this.selectedDmoDetails = previouslyLoadedDetails;
+			this.selectedDmo = row;
+			return;
+		}
+
+		this.communityService
+			.getPublishedDmoDetails(row.id)
+			.subscribe(dmoDetails => {
+				this.loadedDmoDetails.push(dmoDetails);
+				this.selectedDmoDetails = dmoDetails;
+				this.selectedDmo = row;
+			})
+	}
+
+	getPremiseWithQuestionMark(initialPremise: string): string {
+		let trimmedPremise = initialPremise.trim();
+		if (trimmedPremise.endsWith('?')) {
+			return trimmedPremise;
+		}
+		return trimmedPremise + '?';		
+	}
+
+	openDmo() {
+		console.log(this.selectedDmo.id);
 	}
 
 

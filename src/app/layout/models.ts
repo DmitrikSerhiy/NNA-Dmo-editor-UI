@@ -181,3 +181,12 @@ export interface PublishedDmosDto {
     dmos: PublishedDmoShortDto[];
     pagination: PaginationDetailsResultDto;
 }
+
+export interface PublishedDmoDetails {
+    id: string;
+    beatsCount: number;
+    charactersCount: number;
+    premise: string;
+    controllingIdea: string;
+    minutesToRead: number;
+}
