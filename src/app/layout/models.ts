@@ -171,7 +171,7 @@ export interface PublishedDmoShortDto {
     movieTitle: string;
     name?: string;
     dmoStatusId: string;
-    authorName: string;
+    authorNickname: string;
     shortComment?: string;
     publishDate: string;
     publishDateRaw: number;

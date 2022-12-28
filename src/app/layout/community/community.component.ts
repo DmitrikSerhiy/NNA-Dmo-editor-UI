@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableDataSourcePageEvent } from '@angular/material/table';
 import { Subscription } from 'rxjs/internal/Subscription';
@@ -24,9 +24,12 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	source: MatTableDataSource<PublishedDmoShortDto>
 	selectedDmo: PublishedDmoShortDto;
 	selectedDmoDetails: PublishedDmoDetails;
+
+	showSearchResultContainer: boolean = false;
+	loadedDmosWhichFitSearch: PublishedDmoShortDto[] = [];
+	
 	@ViewChild('paginator') paginator: MatPaginator;
-
-
+	@ViewChild('searchInput') searchInputElement: ElementRef;
 
 	constructor(private communityService: CommunityService) { }
 
@@ -49,10 +52,17 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.dmosSubscription?.unsubscribe();
+		this.loadedDmos = [];
+		this.loadedDmoDetails = [];
 	}
 
 	onPaginateChange($event: MatTableDataSourcePageEvent): void {
 		this.resetSelected();
+		this.loadedDmosWhichFitSearch = [];
+		this.showSearchResultContainer = false;
+		this.searchInputElement.nativeElement.value = '';
+
+
 		if ($event.pageIndex < this.currentPage) {
 			this.setDmosTable(this.loadedDmos.find(dmos => dmos.pageIndex == $event.pageIndex).data);
 			this.currentPage = $event.pageIndex;
@@ -76,12 +86,17 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 			});
 	}
 
-	resetSelected() {
+	resetSelected(): void {
 		this.selectedDmo = null;
 		this.selectedDmoDetails = null;
 	}
 
 	onRowSelect(row: any): void {
+		this.loadedDmosWhichFitSearch = [];
+		this.showSearchResultContainer = false;
+		this.searchInputElement.nativeElement.value = '';
+
+
 		if (this.selectedDmo && this.selectedDmo === row) {
 			this.selectedDmo = null;
 			this.selectedDmoDetails = null;
@@ -112,8 +127,32 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		return trimmedPremise + '?';		
 	}
 
-	openDmo() {
-		console.log(this.selectedDmo.id);
+	openDmo(dmoIdToOpen: string): void {
+		console.log(dmoIdToOpen);
+	}
+
+	changeSearchCriteria($event: any): void {
+		this.resetSelected();
+		const searchValue = this.searchInputElement.nativeElement.value;
+		if (!searchValue) {
+			this.showSearchResultContainer = false;
+			return;
+		}
+
+		this.loadedDmosWhichFitSearch = [];
+		const searchValueLover = searchValue.toLowerCase();
+
+		this.loadedDmos.forEach(loadedDmos => {
+			loadedDmos.data.forEach((loadedDmo: PublishedDmoShortDto) => {
+				if (loadedDmo.authorNickname.toLowerCase().includes(searchValueLover) ||
+					loadedDmo.movieTitle.toLowerCase().includes(searchValueLover) ||
+					loadedDmo?.name?.toLowerCase().includes(searchValueLover)) {
+						this.loadedDmosWhichFitSearch.push(loadedDmo);
+				}
+			})
+		});
+
+		this.showSearchResultContainer = true;
 	}
 
 

@@ -4,6 +4,39 @@
         <div class="community-header-kpi"></div>
     </div>
     <div class="community-body">
+        <div class="search-wrapper">
+            <div class="search-container">
+                <i class="fa fa-search text-muted"></i>
+                <input #searchInput type="text" class="nna-input search-input" placeholder="dmo name, movie title, author name etc." autocomplete="off" (input)="changeSearchCriteria($event)">
+            </div>
+
+            <div *ngIf="showSearchResultContainer" class="search-container-result">
+                <h2 class="search-header no-select">Search result</h2>
+                <div *ngIf="loadedDmosWhichFitSearch" class="search-result-inner-container">
+                    <p class="search-result-subheader no-select">Published DMOs</p>
+                    <div class="searched-loaded-dmos">
+                        <div class="searched-loaded-dmo" *ngFor="let loadedSearchedDmo of loadedDmosWhichFitSearch" (click)="openDmo(loadedSearchedDmo.id)">
+                            
+                            <div class="search-block movie-search-block">
+                                <p class="short-seached-string">Movie: {{loadedSearchedDmo.movieTitle}}</p>
+                                <span *ngIf="loadedSearchedDmo.dmoStatusId === 0" class="material-icons movie-progress-icon" title="{{loadedSearchedDmo.dmoStatus}}">autorenew</span>
+                                <span *ngIf="loadedSearchedDmo.dmoStatusId === 1" class="material-icons movie-progress-icon" title="{{loadedSearchedDmo.dmoStatus}}">done</span>
+                                <span *ngIf="loadedSearchedDmo.dmoStatusId === 2" class="material-icons movie-progress-icon" title="{{loadedSearchedDmo.dmoStatus}}">block</span>
+                            </div>
+                            <div class="search-block author-search-block">
+                                <p class="short-seached-string">Author: {{loadedSearchedDmo.authorNickname}}</p>
+                                <span>{{loadedSearchedDmo.publishDate | date:'shortDate'}}</span>
+                            </div>
+                            <div *ngIf="loadedSearchedDmo.name" class="search-block">
+                                <p class="short-seached-string">DMO name: {{loadedSearchedDmo.name}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div *ngIf="loadedDmos?.length" class="published-dmos-wrapper">
 
             <table mat-table class="nna-table published-dmos-table" [dataSource]="source">
@@ -19,9 +52,9 @@
 
                         <div class="movie-block">
                             <p class="short-string">Movie: {{row.movieTitle}}</p>
-                            <span *ngIf="row.dmoStatusId === 0 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">autorenew</span>
-                            <span *ngIf="row.dmoStatusId === 1 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">done</span>
-                            <span *ngIf="row.dmoStatusId === 2 && selectedDmoInCollection?.id != row.id" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">block</span>
+                            <span *ngIf="row.dmoStatusId === 0" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">autorenew</span>
+                            <span *ngIf="row.dmoStatusId === 1" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">done</span>
+                            <span *ngIf="row.dmoStatusId === 2" class="material-icons movie-progress-icon" title="{{row.dmoStatus}}">block</span>
                         </div>
 
                         <div class="author-block">
@@ -30,7 +63,7 @@
                         </div>
 
                         <div class="dmo-block">
-                            <p *ngIf="row.name" class="short-string">Name: {{row.name}}</p>
+                            <p *ngIf="row.name" class="short-string">DMO name: {{row.name}}</p>
                             <p *ngIf="row.shortComment" class="short-string">{{row.shortComment}}</p>
                         </div>
 
@@ -46,7 +79,7 @@
                                 Controlling idea: {{selectedDmoDetails.controllingIdea}}
                             </p>
 
-                            <button type="button" class='nna-button nna-button-primary'(click)='openDmo()'>
+                            <button type="button" class='nna-button nna-button-primary'(click)='openDmo(selectedDmoDetails.id)'>
                                 View (~{{selectedDmoDetails.minutesToRead}}min. to read)
                             </button>
                         </div>
