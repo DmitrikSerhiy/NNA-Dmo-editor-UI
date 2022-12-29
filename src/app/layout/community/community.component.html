@@ -6,7 +6,7 @@
     <div class="community-body">
         <div class="search-wrapper">
             <div class="search-container">
-                <i class="fa fa-search text-muted"></i>
+                <i class="fa fa-search text-muted" (click)="focusSearch()"></i>
                 <input #searchInput type="text" class="nna-input search-input" placeholder="dmo name, movie title, author name etc." autocomplete="off" (keyup)="localSearch($event); serverSideSearch()">
             </div>
 

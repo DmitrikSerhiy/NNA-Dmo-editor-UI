@@ -39,9 +39,11 @@
         .search-wrapper {
             display: flex;
             width: 100%;
+            justify-content: center;
 
             .search-container {
-				flex: 1 1 100%;
+				flex: 0 1 600px;
+                
 				cursor: pointer;
 				margin-right: 14px;
                 margin-top: 14px;
@@ -61,7 +63,6 @@
             .search-container-result {
                 position: absolute;
                 top: 95px;
-                left: 40%;
                 width: 600px;
                 min-height: 300px;
                 background-color: white;

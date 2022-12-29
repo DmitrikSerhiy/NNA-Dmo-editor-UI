@@ -198,6 +198,10 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 			});
 	}
 
+	focusSearch() : void {
+		this.searchInputElement.nativeElement.focus();
+	}
+
 	private serverSideSearchSender() {
 		const searchValue = this.searchInputElement.nativeElement.value?.trim();
 		if (!searchValue) {
