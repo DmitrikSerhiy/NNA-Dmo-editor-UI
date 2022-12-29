@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { take } from 'rxjs/internal/operators/take';
 import { CustomErrorHandler } from 'src/app/shared/services/custom-error-handler';
 import { environment } from 'src/environments/environment';
-import { PublishedDmoDetails, PublishedDmosDto } from '../../models';
+import { PublishedDmoDetails, PublishedDmosDto, PublishedDmoShortDto } from '../../models';
 
 @Injectable({
 	providedIn: 'root'
@@ -36,9 +36,9 @@ export class CommunityService {
 			.pipe(take(1), catchError((response, obs) => this.errorHandler.handle<number>(response, obs)));
 	}
 
-	getPublishedDmoBySearch(searchBy: string, dmoIdsToIgnore: string[], pageNumber: number, pageSize: number, totalAmount: number): Observable<PublishedDmosDto> {
+	getPublishedDmoBySearch(searchBy: string, dmoIdsToIgnore: string[], amount: number): Observable<PublishedDmoShortDto[]> {
 		return this.http
-			.post<PublishedDmosDto>(this.serverUrl + 'dmos/search/data/?searchBy=' + searchBy, {dmoIdsToIgnore:  dmoIdsToIgnore, pageNumber: pageNumber, pageSize: pageSize, totalAmount: totalAmount })
-			.pipe(catchError((response, obs) => this.errorHandler.handle<PublishedDmosDto>(response, obs)));
+			.post<PublishedDmoShortDto[]>(this.serverUrl + 'dmos/search/data/?searchBy=' + searchBy, { dmoIdsToIgnore: dmoIdsToIgnore, amount: amount })
+			.pipe(catchError((response, obs) => this.errorHandler.handle<PublishedDmoShortDto[]>(response, obs)));
 	}
 }

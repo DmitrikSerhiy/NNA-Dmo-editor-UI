@@ -13,10 +13,10 @@
             <div *ngIf="showSearchResultContainer" class="search-container-result">
                 <h2 class="search-header no-select">Search result</h2>
                 <div class="search-result-inner-container">
-                    <p class="search-result-subheader no-select">Published DMOs</p>
+                    <p class="search-result-subheader no-select">Published DMOs {{foundDmosAmount}}</p>
                     
-                    <div *ngIf="loadedDmosWhichFitSearch.length" class="searched-loaded-dmos">
-                        <div class="searched-loaded-dmo" *ngFor="let loadedSearchedDmo of loadedDmosWhichFitSearch" (click)="openDmo(loadedSearchedDmo.id)">
+                    <div *ngIf="loadedDmosWhichFitSearchToShow.length" class="searched-loaded-dmos">
+                        <div class="searched-loaded-dmo" *ngFor="let loadedSearchedDmo of loadedDmosWhichFitSearchToShow.concat(loadedFromServerSearchedDmos)" (click)="openDmo(loadedSearchedDmo.id)">
                             <div class="search-block movie-search-block">
                                 <p class="short-seached-string">Movie: {{loadedSearchedDmo.movieTitle}}</p>
                                 <span *ngIf="loadedSearchedDmo.dmoStatusId === 0" class="material-icons movie-progress-icon" title="{{loadedSearchedDmo.dmoStatus}}">autorenew</span>
@@ -31,10 +31,15 @@
                                 <p class="short-seached-string">DMO name: {{loadedSearchedDmo.name}}</p>
                             </div>
                         </div>
+
+                        <button *ngIf="loadedDmosWhichFitSearchToShow.length < loadedDmosWhichFitSearch.length" type="button" class='nna-button nna-button-secondary' (click)='addNextLoadedDmosWhichFitSearchBatch()'>
+                            <span *ngIf="loadedDmosWhichFitSearch.length - loadedDmosWhichFitSearchToShow.length < 5"> Show {{loadedDmosWhichFitSearch.length - loadedDmosWhichFitSearchToShow.length}} more DMOs </span>
+                            <span *ngIf="loadedDmosWhichFitSearch.length - loadedDmosWhichFitSearchToShow.length >= 5"> Show 5 more DMOs </span> 
+                        </button>
                     </div>
                     <div *ngIf="serverSideSearchResult > 0" class="searched-server-side-dmos">
-                        <p>Found <span *ngIf="loadedDmosWhichFitSearch.length">another</span> {{serverSideSearchResult}} DMOs</p>
-                        <button type="button" class='nna-button nna-button-secondary'(click)='loadMoreDmosBySearch()'>
+                        <p>Found <span *ngIf="loadedDmosWhichFitSearch.length">another</span> {{serverSideSearchResultToShow}} DMOs</p>
+                        <button type="button" class='nna-button nna-button-secondary' (click)='loadMoreDmosBySearch()'>
                             Load search result
                         </button>
                     </div>

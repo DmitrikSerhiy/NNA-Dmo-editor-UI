@@ -27,9 +27,13 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	selectedDmoDetails: PublishedDmoDetails;
 
 	showSearchResultContainer: boolean = false;
-	loadedDmosWhichFitSearch: PublishedDmoShortDto[] = [];
+	private loadedDmosWhichFitSearch: PublishedDmoShortDto[] = [];
+	loadedDmosWhichFitSearchToShow: PublishedDmoShortDto[] = [];
+	loadedFromServerSearchedDmos: PublishedDmoShortDto[] = [];
+	foundDmosAmount: number = 0;
 
 	serverSideSearchResult: number = 0;
+	serverSideSearchResultToShow: number = 5;
 	serverSideSearchPristine: boolean = true;
 
 	
@@ -68,6 +72,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.showSearchResultContainer = false;
 		this.searchInputElement.nativeElement.value = '';
 		this.serverSideSearchResult = 0;
+		this.serverSideSearchResultToShow = 5;
 		this.serverSideSearchPristine = true;
 		if (this.serverSideSearchAmoutSubsctiprion) {
 			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
@@ -107,6 +112,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.showSearchResultContainer = false;
 		this.searchInputElement.nativeElement.value = '';
 		this.serverSideSearchResult = 0;
+		this.serverSideSearchResultToShow = 5;
 		this.serverSideSearchPristine = true;
 		if (this.serverSideSearchAmoutSubsctiprion) {
 			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
@@ -151,28 +157,47 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	localSearch($event: any): void {
 		this.resetSelected();
-		const searchValue = this.searchInputElement.nativeElement.value;
+		const searchValue = this.searchInputElement.nativeElement.value?.trim();
 		if (!searchValue) {
 			this.showSearchResultContainer = false;
 			this.serverSideSearchResult = 0;
+			this.serverSideSearchResultToShow = 5;
 			this.serverSideSearchPristine = true;
 			return;
 		}
 
 		this.loadedDmosWhichFitSearch = [];
-		const searchValueLover = searchValue.toLowerCase();
+		this.loadedDmosWhichFitSearchToShow = [];
+		this.loadedFromServerSearchedDmos = [];
 
+		this.loadedDmosWhichFitSearch = this.getSearchedLoadedDmos(searchValue);
+		this.addNextLoadedDmosWhichFitSearchBatch();
+		this.foundDmosAmount = this.loadedDmosWhichFitSearch.length;
+		
+		this.showSearchResultContainer = true;
+	}
+
+	private getSearchedLoadedDmos(searchedValue: string): PublishedDmoShortDto[]  {
+		const searchValueLover = searchedValue.toLowerCase();
+		let array : PublishedDmoShortDto[] = [];
 		this.loadedDmos.forEach(loadedDmos => {
 			loadedDmos.data.forEach((loadedDmo: PublishedDmoShortDto) => {
 				if (loadedDmo.authorNickname.toLowerCase().includes(searchValueLover) ||
 					loadedDmo.movieTitle.toLowerCase().includes(searchValueLover) ||
 					loadedDmo?.name?.toLowerCase().includes(searchValueLover)) {
-						this.loadedDmosWhichFitSearch.push(loadedDmo);
+						array.push(loadedDmo);
 				}
 			})
 		});
 
-		this.showSearchResultContainer = true;
+		return array;
+	}
+
+	addNextLoadedDmosWhichFitSearchBatch() {
+		let loadedDmosWhichFitSearchBatch = this.loadedDmosWhichFitSearch.slice(this.loadedDmosWhichFitSearchToShow.length, this.loadedDmosWhichFitSearchToShow.length + (this.pageSize / 2));
+		loadedDmosWhichFitSearchBatch.forEach(loadedDmosWhichFitSearchItem => {
+			this.loadedDmosWhichFitSearchToShow.push(loadedDmosWhichFitSearchItem);
+		});
 	}
 
 	serverSideSearch = this.debounceServerSideSearch(() => this.serverSideSearchSender());
@@ -192,9 +217,12 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 			excluededDmos = this.loadedDmosWhichFitSearch.map(dmo => dmo.id);
 		}
 
-		this.communityService.getPublishedDmoBySearch(searchValue, excluededDmos, 0, this.pageSize, this.serverSideSearchResult)
+		this.communityService.getPublishedDmoBySearch(searchValue, excluededDmos, this.serverSideSearchResultToShow)
 			.subscribe(loadedSearchedResult => {
-				console.log(loadedSearchedResult);
+				loadedSearchedResult.forEach(loadedSearchedDmo => {
+					this.loadedFromServerSearchedDmos.push(loadedSearchedDmo);
+					this.serverSideSearchResult = this.serverSideSearchResult - this.serverSideSearchResultToShow
+				});
 			});
 	}
 
@@ -208,11 +236,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 			return;
 		}
 
-		let excluededDmos: string[] = [];
-		if (this.loadedDmosWhichFitSearch.length) {
-			excluededDmos = this.loadedDmosWhichFitSearch.map(dmo => dmo.id);
-		}
-		
+		let excluededDmos: string[] = this.getSearchedLoadedDmos(searchValue).map(dmo => dmo.id);
 		this.serverSideSearchPristine = false; 
 		if (this.serverSideSearchAmoutSubsctiprion) {
 			this.serverSideSearchAmoutSubsctiprion.unsubscribe();
@@ -220,10 +244,17 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.serverSideSearchAmoutSubsctiprion = this.communityService.getPublishedDmoAmountBySearch(searchValue, excluededDmos)
 			.subscribe(searchResult => {
 				this.serverSideSearchResult = searchResult;
+				this.foundDmosAmount = this.foundDmosAmount + this.serverSideSearchResult;
+
+				if (this.serverSideSearchResult < this.serverSideSearchResultToShow) {
+					this.serverSideSearchResultToShow = this.serverSideSearchResult;
+				} else {
+					this.serverSideSearchResultToShow = 5;
+				}
 			});
 	}
 
-	private debounceServerSideSearch(func, timeout = 500){
+	private debounceServerSideSearch(func, timeout = 500) {
 		let timer;
 		return (...args) => {
 		  	clearTimeout(timer);
