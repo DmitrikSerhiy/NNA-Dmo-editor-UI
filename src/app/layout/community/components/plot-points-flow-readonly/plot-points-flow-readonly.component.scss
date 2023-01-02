@@ -1,0 +1,103 @@
+@import "src/styles/colors.scss";
+
+.beat-type-tooltip {
+    width: 160px;
+    height: fit-content;
+
+    .beat-type-options {
+        .beat-type-option {
+            padding-left: 8px;;
+            &:first-child {
+                margin-top: 8px;
+            }
+        }
+    }
+}
+
+.plot-points-graph-container {
+    height: 100%;
+    width: 34px;
+    position: relative;
+    top:0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+
+    .plot-points {
+        position: absolute;
+        margin-top: 32px;
+        z-index: 10;
+        flex: 0 0 30px;
+        flex-direction: column;
+
+        .plot-point-wrapper {
+            .plot-point-container {
+                z-index: 100;
+                border-top: 1px transparent solid;
+                border-bottom: 1px transparent solid;
+                
+                .plot-point  {
+                    .beat-icon {
+                        fill: black;
+                    }
+                    .exposition-icon {
+                        fill: white;
+                    }
+                    .character-icon {
+                        .character-icon-outer-circle, .character-icon-inner-circle, .character-icon-other {
+                            fill: white;
+                        }
+                    }
+                    .aesthetic-icon {
+                        fill: white;
+                        .aesthetic-icon-leaf {
+                            fill: white;
+                        }
+                    }
+
+                    .beat-icon {
+                        outline: none !important;
+                        cursor: pointer;
+
+                        &:hover {
+                            color: $secondary-color;
+                        }
+                    }
+                }
+            }
+
+            .plot-point-controls-container {
+                position: absolute;
+                margin-top: 6px;
+                margin-left: -18px;
+                display: none;
+                cursor: pointer;
+
+                &:hover {
+                    color: $secondary-color;
+                }
+            }
+
+            .plot-point-controls-container-visible {
+                display: block
+            }
+        }
+    }
+
+    .plot-points-graph {
+        position: absolute;
+        height: 100%;
+
+        .start-end-coord {
+            fill: none;
+            stroke:black;
+            stroke-width: 4;
+        }
+
+        .graph-coord {
+            fill: none;
+            stroke:black;
+            stroke-width: 2;
+        }
+    }
+}

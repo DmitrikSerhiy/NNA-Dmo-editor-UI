@@ -1,0 +1,79 @@
+@import '../../../../../styles/fonts-mixins.scss';
+@import '../../../../../styles/colors.scss';
+
+.general-editor-wrapper {
+    height: 100%;
+    margin: -14px;
+    padding: 14px;
+
+    .controls-panel {
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 300;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: white;
+        margin-left: -14px;
+        margin-right: calc(-1rem - 1px);
+        padding-right: calc(1rem + 1px);
+        padding-left: 14px;
+        box-shadow: 0 0 1em rgba(0, 0, 0, .1);
+        height: 43px;
+
+        .movie-title {
+            @include font-primary-heading();
+            margin: 0;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+
+            margin-bottom: unset;
+        }
+
+        .nna-button, .nna-icon-button {
+            margin-left: 8px;
+        }
+
+        .editor-board-tools {
+            display: flex;
+            margin-left: auto;
+        }
+
+        .nna-icon-button {
+            .material-icons {
+                font-size: 20px;
+            }
+        }
+    }
+
+    .editor-board-wrapper {
+        display: flex;
+        flex-flow: row nowrap;
+        height: 100%;
+        margin-top: 14px;
+
+        @media (min-width: 1100px) {
+            justify-content: center;
+        }
+        
+        app-plot-points-flow-readonly {
+            flex: 0 0 34px;
+        }
+
+        app-beats-flow-readonly {
+            flex: 1 1 auto;
+            @media (min-width: 1100px) {
+                flex: 0 1 50% !important;
+            }
+        }
+    }
+}
+
+.dmo-details-popup-button {
+    display: flex;
+    margin: auto;
+}

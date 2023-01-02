@@ -69,7 +69,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	ngAfterViewInit(): void {
 		this.setupPlotPoints();
-
 		this.renderGraph();
 		this.setupEditorCallback();
 		this.setupSubscription();

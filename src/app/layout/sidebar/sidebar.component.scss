@@ -103,12 +103,15 @@
                 top: $i * 43px
             }
           }
+
         a.router-link-active {
             background: $primary-color;
             cursor: pointer;
         }
+
         .side-item-collapse {
             width: 50px;
+
             &:hover { 
                 span {
                     display: inline !important;
@@ -193,6 +196,7 @@
             padding: 11px 16px;
             text-decoration: none;
         }
+
         &:hover {
             background: $primary-color;
         }

@@ -1,0 +1,42 @@
+<div class="beats-wrapper">
+    <div class="beats-inner-wrapper">
+        <div *ngIf="isDataLoaded" class="beats-container">
+            <div class="beats-header no-select">
+                Start
+            </div>
+
+            <div class="beat-container" *ngFor="let beat of beats; let i = index">
+                
+                <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
+                    <input #timePickers class="time-picker"
+                        readonly
+                        [id]="'time_picker_' + beat.beatId"
+                        [attr.data-order]="i"
+                        maxlength='7' type="text" draggable="false" autocomplete="off" spellcheck = false    
+                        placeholder="h:mm:ss"
+                        (focusin)="prepareTimePicker()"
+                        (dragover)="preventDrag($event)" />
+                </div>
+
+                <div class="beat-data-holder-wrapper">
+                    <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
+                        <div #beatDataHolders class="beat-data-holder"
+                            [id]="'beat_' + beat.beatId"
+                            [attr.data-order]="i"
+                            type="text" contenteditable="true" draggable="false"
+                            (focusin)="prepareBeatDataHolder($event)"
+                            (dragover)="preventDrag($event)"
+                            (keydown)="preventInput($event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="isDmoFinished" class="beats-footer no-select">
+                End
+            </div>
+
+            <div class="editor-bottom-margin"></div>
+        </div>
+    </div>
+</div>

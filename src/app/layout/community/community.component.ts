@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableDataSourcePageEvent } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PaginationDetailsResultDto, PublishedDmoDetails, PublishedDmosDto, PublishedDmoShortDto } from '../models';
 import { CommunityService } from './services/community.service';
@@ -40,7 +41,9 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('paginator') paginator: MatPaginator;
 	@ViewChild('searchInput') searchInputElement: ElementRef;
 
-	constructor(private communityService: CommunityService) { }
+	constructor(
+		private communityService: CommunityService,
+		private router: Router) { }
 
 	ngOnInit(): void {
 
@@ -150,7 +153,7 @@ export class CommunityComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	openDmo(dmoIdToOpen: string): void {
-		console.log(dmoIdToOpen);
+		this.router.navigate(['app/community/dmo'], { queryParams: { dmoId: dmoIdToOpen } });
 	}
 
 	

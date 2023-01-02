@@ -13,7 +13,7 @@ export enum SidebarTabs {
     dmoCollections = 'dmoCollections',
     dmos = 'dmos',
     dmo = 'dmo',
-    comunity = 'comunity',
+    community = 'community',
     userCabinet = 'userCabinet'
     // test = 'test'
 }

@@ -28,7 +28,7 @@ const routes: Routes = [{
         { path: 'dmos', loadChildren: () => import('./dmos/dmos.module').then(m => m.DmosModule), canActivate: [AuthGuard] },
         { path: 'editor', loadChildren: () =>import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
         { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module').then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
-        { path: 'comunity', loadChildren: () => import('./community/community.module').then(m => m.ComunityModule), canActivate: [AuthGuard] },
+        { path: 'community', loadChildren: () => import('./community/community.module').then(m => m.CommunityModule), canActivate: [AuthGuard] },
     ]}
 ];
 

@@ -88,13 +88,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		this.setupBeats(null, null, true);
 		this.setupEditorCallback();
 		this.setupSubscription();
-
-		document.body.addEventListener('keydown', $event => {
-			const key = $event.which || $event.keyCode || $event.charCode;
-			if ($event.ctrlKey && key == this.editorHotKeys.openCharacterTooltipKeyCode) { // prevent browser tab from reload
-				$event.preventDefault()
-			}
-		});
 	}
 
 	ngOnDestroy(): void {

@@ -77,9 +77,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.router.navigate(['/']);
 	}
 
-	sendComunityEvent() {
+	sendCommunityEvent() {
 		if (this.isAuthorized) {
-			this.currentSidebarService.setMenu(SidebarTabs.comunity);
+			this.currentSidebarService.setMenu(SidebarTabs.community);
 		}
 	}
 

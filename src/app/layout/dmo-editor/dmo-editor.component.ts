@@ -91,13 +91,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		});
 
 		window.onbeforeunload = () => this.sanitizeEditor(); // todo: look at every component onDestroy method. add this when there's must have logic in onDestroy method
-
-		document.addEventListener('keydown', ($event) => {
-			const key = $event.which || $event.keyCode || $event.charCode;
-			if (key == 27) { // escape
-				this.nnaTooltipService.hideAllTooltips();
-			}	
-		});
+		document.addEventListener('keydown', this.hideAllTooltipsWrapper);
 	}
 
 	async ngAfterViewInit(): Promise<void> {
@@ -188,12 +182,20 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async ngOnDestroy(): Promise<void> {
+		document.removeEventListener('keydown', this.hideAllTooltipsWrapper);
 		await this.sanitizeEditor();
 	}
 
 	async closeEditor(): Promise<void> {
 		this.router.navigate(['app/dmos']);
 	}
+
+	private hideAllTooltipsWrapper = async function($event) {
+		const key = $event.which || $event.keyCode || $event.charCode;
+		if (key == 27) { // escape
+			this.nnaTooltipService.hideAllTooltips();
+		}	
+	}.bind(this);
 
 	private subscribeToClipboard() {
 		document.addEventListener('paste', this.pasteSanitizerWrapper);
@@ -330,6 +332,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async changePublishState(shouldState: boolean): Promise<void> {
+		this.nnaTooltipService.hideAllTooltips();
 		const popupResult = await this.matModule
 			.open(PublishDmoPopupComponent, { data: { shouldPublish: shouldState }, width: '500px' })
 			.afterClosed()
@@ -368,6 +371,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async editDmoDetails() {
+		this.nnaTooltipService.hideAllTooltips();
 		const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: this.dmoId, width: '600px' });
 		const popupResult = await dmoDetailsPopup.afterClosed().toPromise();
 
