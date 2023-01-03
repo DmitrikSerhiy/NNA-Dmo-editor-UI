@@ -4,7 +4,7 @@
         <h1 class="movie-title no-select">{{currentShortDmo.movieTitle}} </h1>
 
         <button *ngIf="this.initialDmoDto" type="button" class='nna-icon-button nna-button-primary' (click)='openDmoDetails()'>
-            <i class="fa fa-info-circle" aria-hidden="true"></i>
+            <i class="fa fa-cogs" aria-hidden="true"></i>
         </button>
 
         <button *ngIf="this.initialDmoDto && this.initialDmoDto.characters.length > 0" type="button" class='nna-icon-button nna-button-primary no-select' (click)="openCharactersPopup()">

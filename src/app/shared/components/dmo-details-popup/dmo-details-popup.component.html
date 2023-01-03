@@ -21,7 +21,7 @@
                         <label for="movieTitleInput" class="nna-input-label">Movie title*</label>
                     </div>
 
-                    <div class="nna-input-group">
+                    <div [hidden]="!dmoName.value?.length && readonly" class="nna-input-group">
                         <input autocomplete="off"  id="dmoNameInput" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
                             class="form-control nna-input" placeholder="DMO name" />
                         <label for="dmoNameInput" class="nna-input-label">DMO name</label>
@@ -36,7 +36,7 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <div class="nna-input-group">
+                    <div [hidden]="!shortComment.value?.length && readonly" class="nna-input-group">
                         <textarea autocomplete="off" id="shortCommentInput" name="shortCommentInput" formControlName="shortCommentInput" 
                             class="form-control nna-input" rows="3" placeholder="Short comment"></textarea>
                         <label for="shortCommentInput" class="nna-input-label">Short comment</label>
@@ -51,7 +51,7 @@
             <mat-tab class="nna-tab plot-tab" label="Plot"> 
                 <form *ngIf="!helpWindow" role="form" [formGroup]="dmoPlotDetailsForm" class="nna-form plot-form">
 
-                    <div class="nna-input-group">
+                    <div [hidden]="!premise.value?.length && readonly" class="nna-input-group">
                         <input autocomplete="off" id="premiseInput" type="text" name="premiseInput" formControlName="premiseInput" 
                             class="form-control nna-input premise-input" placeholder="Premise" (focus)="showPremiseQuestionMark = !showPremiseQuestionMark" (blur)="showPremiseQuestionMark = !showPremiseQuestionMark" />
                             <span *ngIf="showPremiseQuestionMark || premise.value" class="premise-question-mark">?</span>
@@ -59,7 +59,7 @@
                         <p [ngClass]="{'hidden-field-description': premise.value}" class="field-description"> What would happen if... </p>
                     </div>
 
-                    <div class="nna-input-group">
+                    <div [hidden]="!controllingIdea.value?.length && readonly" class="nna-input-group">
                         <input autocomplete="off" id="controllingIdeaInput" type="text" name="controllingIdeaInput" formControlName="controllingIdeaInput" 
                             class="form-control nna-input" placeholder="Controlling idea" (blur)="setControllingIdeaType()"/>
                         <label for="controllingIdeaInput" class="nna-input-label">Controlling idea</label>
@@ -72,18 +72,22 @@
                         <mat-radio-button class="controlling-idea-type-option" [value]="3">Ironic</mat-radio-button>
                     </mat-radio-group>
 
-                    <mat-checkbox (change)="setDidacticismDescription()" id="didacticismCheckbox" name="didacticismCheckbox" formControlName="didacticismCheckbox" class="didacticism-checkbox">
+                    <mat-checkbox [hidden]="!didacticism.value && readonly" (change)="setDidacticismDescription()" id="didacticismCheckbox" name="didacticismCheckbox" formControlName="didacticismCheckbox" class="didacticism-checkbox">
                         Moralizing? Didacticism? Propaganda?
                     </mat-checkbox>
 
                     <div class="nna-input-group" *ngIf="didacticism.value">
                         <input autocomplete="off" id="didacticismInput" type="text" name="didacticismInput" formControlName="didacticismInput" 
-                            class="form-control nna-input" placeholder="Didacticism description">
-                        <label for="didacticismInput" class="nna-input-label">Didacticism description</label>
+                            class="form-control nna-input" [ngClass]="{'textarea-without-label': readonly}" placeholder="Didacticism description">
+                        <label *ngIf="!readonly" for="didacticismInput" class="nna-input-label">Didacticism description</label>
                     </div>
 
                     <div class="validation-container" *ngIf="dmoPlotDetailsValidations?.length > 0">
                         <p class="validation-text" *ngFor="let dmoPlotDetailsValidation of dmoPlotDetailsValidations">{{dmoPlotDetailsValidation}}</p>
+                    </div>
+
+                    <div *ngIf="(!premise.value?.length && !controllingIdea.value?.length && !didacticism.value) && readonly" class="empty-conflict-placeholder">
+                        Plot details are not specified
                     </div>
 
                 </form>
@@ -135,7 +139,8 @@
                                 <mat-label *ngIf="i === 0">Main hero</mat-label>
                                 <mat-label *ngIf="i !== 0">Secondary character</mat-label>
                                 <mat-select
-                                    autocomplete="off" 
+                                    autocomplete="off"
+                                    [disabled]="readonly" 
                                     id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-select'}}" 
                                     (selectionChange)="selectCharacter($event, getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist))"
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-select'}}"
@@ -157,6 +162,7 @@
                             <div #conflictCheckboxContainer attr.id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox-container' }}">
                                 <mat-checkbox
                                     #conflictCheckbox
+                                    [disabled]="readonly"
                                     id="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}" 
                                     name="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}" 
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 1, loadedPair.protagonist) + '-checkbox'}}"
@@ -172,7 +178,8 @@
                                 <mat-label *ngIf="i === 0">Main anti-hero</mat-label>
                                 <mat-label *ngIf="i !== 0">Secondary character</mat-label>
                                 <mat-select 
-                                    autocomplete="off" 
+                                    autocomplete="off"
+                                    [disabled]="readonly"  
                                     id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-select'}}" 
                                     (selectionChange)="selectCharacter($event, getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist))"
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-select'}}"
@@ -194,6 +201,7 @@
                             <div #conflictCheckboxContainer attr.id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox-container'}}" attr.class="{{'checkbox-container' + ' ' +  getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox-container' }}">
                                 <mat-checkbox
                                     #conflictCheckbox
+                                    [disabled]="readonly" 
                                     id="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}" 
                                     name="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}"
                                     attr.formControlName="{{getUniqueControlIdForConflictForm(i, 2, loadedPair.antagonist) + '-checkbox'}}" 
@@ -204,7 +212,7 @@
                             </div>                            
                         </div>
 
-                        <div class="delete-conflict-button-container">
+                        <div *ngIf="!readonly" class="delete-conflict-button-container">
                             <button type="button" class="nna-icon-button" (click)="deleteConflict(loadedPair.pairId, i)">
                                 <i class="fas fa-trash" aria-hidden="true"></i>
                             </button>
@@ -237,16 +245,15 @@
     </div>
     <div *ngIf="dmoIsLoaded && !helpWindow" class="base-modal-footer">
             <button *ngIf="currentTabIndex === 0 && !dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
-            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
-            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
+            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty && !readonly" type="button" class="nna-button-secondary" (click)="saveDmoDetails(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 0 && dmoDetailsForm.dirty && !readonly" type="button" class="nna-button-primary" (click)="saveDmoDetails(true)">Save</button>
 
 
             <button *ngIf="currentTabIndex === 1 && !dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
-            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-secondary" (click)="savePlotChanges(false)">Cancel</button>
-            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
+            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty && !readonly" type="button" class="nna-button-secondary" (click)="savePlotChanges(false)">Cancel</button>
+            <button *ngIf="currentTabIndex === 1 && dmoPlotDetailsForm.dirty && !readonly" type="button" class="nna-button-primary" (click)="savePlotChanges(true)">Save</button>
 
-
-            <button *ngIf="currentTabIndex === 2" type="button" class="nna-button-primary" (click)="addConflict()"> 
+            <button *ngIf="currentTabIndex === 2  && !readonly" type="button" class="nna-button-primary" (click)="addConflict()"> 
                 <span *ngIf="!conflictPairs?.length">Add main conflict</span> 
                 <span *ngIf="conflictPairs?.length">Add sub conflict</span> 
             </button>

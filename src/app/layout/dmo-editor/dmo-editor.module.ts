@@ -15,10 +15,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDialogModule } from '@angular/material/dialog';
-
-
-import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
-
+import { DmoDetailsPopupComponent } from '../../shared/components/dmo-details-popup/dmo-details-popup.component';
 import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -28,8 +25,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  	entryComponents: [DmoEditorPopupComponent, NnaSpinnerComponent, CharactersPopupComponent],
-  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, DmoDetailsPopupComponent, PublishDmoPopupComponent],
+  	entryComponents: [DmoEditorPopupComponent, NnaSpinnerComponent, CharactersPopupComponent, DmoDetailsPopupComponent],
+  	declarations: [DmoEditor, BeatsFlowComponent, PlotPointsFlowComponent, PublishDmoPopupComponent],
 	imports: [
 		CommonModule,
 		FormsModule,

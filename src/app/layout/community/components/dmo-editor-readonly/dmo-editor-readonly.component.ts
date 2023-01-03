@@ -8,6 +8,7 @@ import { EditorHub } from 'src/app/layout/dmo-editor/services/editor-hub.service
 import { DmoDetailsShortDto } from 'src/app/layout/models';
 import { EditorSharedService } from 'src/app/shared/services/editor-shared.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { DmoDetailsPopupComponent } from 'src/app/shared/components/dmo-details-popup/dmo-details-popup.component';
 
 @Component({
 	selector: 'app-dmo-editor-readonly',
@@ -86,8 +87,9 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		this.nnaTooltipService.hideAllTooltips();
 		this.cdRef.detectChanges();
 
-		// const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: this.dmoId, width: '600px' });
-		// await dmoDetailsPopup.afterClosed().toPromise();
+		await this.matModule.open(DmoDetailsPopupComponent, { data: { dmoId: this.dmoId, readonly: true }, width: '600px' })
+			.afterClosed()
+			.toPromise();
 	}
 
 	async onOpenCharactersPopup($event: any): Promise<void> {

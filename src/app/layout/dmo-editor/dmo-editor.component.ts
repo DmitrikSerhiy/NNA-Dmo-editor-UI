@@ -8,7 +8,7 @@ import { BeatGeneratorService } from './helpers/beat-generator';
 import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
 import { CharactersPopupComponent } from '../../shared/components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
-import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
+import { DmoDetailsPopupComponent } from '../../shared/components/dmo-details-popup/dmo-details-popup.component';
 import { EditorSharedService } from '../../shared/services/editor-shared.service';
 import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 
@@ -372,7 +372,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async editDmoDetails() {
 		this.nnaTooltipService.hideAllTooltips();
-		const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: this.dmoId, width: '600px' });
+		const dmoDetailsPopup = this.matModule.open(DmoDetailsPopupComponent, { data: { dmoId: this.dmoId, readonly: false }, width: '600px' });
 		const popupResult = await dmoDetailsPopup.afterClosed().toPromise();
 
 		if (!popupResult || popupResult.cancelled) {

@@ -55,8 +55,8 @@
                 <label for="characterNameInput" class="nna-input-label">Name*</label>
             </div>
 
-            <div class="nna-input-group">
-                <input autocomplete="off"  type="text" name="characterAliasesInput" id="characterAliasesInput" formControlName="characterAliasesInput" 
+            <div [hidden]="!aliases.value?.length && viewCharacterAction" class="nna-input-group">
+                <input autocomplete="off" type="text" name="characterAliasesInput" id="characterAliasesInput" formControlName="characterAliasesInput" 
                     class="form-control nna-input" placeholder="Aliases [separated by ,]" />
                 <label for="characterAliasesInput" class="nna-input-label">Aliases [separated by ,]</label>
             </div>
@@ -73,21 +73,21 @@
 
             <br />
 
-            <div class="nna-input-group">
-                <input autocomplete="off"  type="text" name="goalInput" id="goalInput" formControlName="goalInput" 
+            <div [hidden]="!goal.value?.length && viewCharacterAction" class="nna-input-group">
+                <input autocomplete="off" type="text" name="goalInput" id="goalInput" formControlName="goalInput" 
                     class="form-control nna-input" placeholder="Goal/desire/need" />
                 <label for="goalInput" class="nna-input-label">Goal/desire/need</label>
             </div>
 
-            <div class="nna-input-group">
-                <input autocomplete="off"  type="text" name="unconsciousGoalInput" id="unconsciousGoalInput" formControlName="unconsciousGoalInput" 
+            <div [hidden]="!unconsciousGoal.value?.length && viewCharacterAction" class="nna-input-group">
+                <input autocomplete="off" type="text" name="unconsciousGoalInput" id="unconsciousGoalInput" formControlName="unconsciousGoalInput" 
                     class="form-control nna-input" placeholder="Unconscious desire" />
                 <label for="unconsciousGoalInput" class="nna-input-label">Unconscious desire</label>
             </div>
 
             <br />
 
-            <div *ngIf="selectedCharacter != null && (addOrEditAction == true || viewCharacterAction == true)" class="nna-input-group">
+            <div *ngIf="(selectedCharacter != null && (addOrEditAction == true || viewCharacterAction == true)) && character?.length > 0" class="nna-input-group">
                 <label class="nna-input-label">True character</label>
                 <ul *ngIf="character?.length > 0" class="true-character-list">
                     <li #beatsWithCurrentCharacter *ngFor="let characterDescription of character" [innerHTML]="domSanitizer.bypassSecurityTrustHtml(overrideCharacterCursorStyle(characterDescription))" class="true-character-option"></li>
@@ -95,13 +95,13 @@
                 <p *ngIf="!character?.length" class="true-character-placeholder">Character beats are not detected</p>
             </div>
 
-            <div class="nna-input-group">
+            <div [hidden]="!characterization.value?.length && viewCharacterAction" class="nna-input-group">
                 <textarea autocomplete="off"  type="text" name="characterizationInput" id="characterizationInput" formControlName="characterizationInput" 
                     class="form-control nna-input" rows="2" placeholder="Characterization"></textarea>
                 <label for="characterizationInput" class="nna-input-label">Characterization</label>
             </div>
 
-            <mat-checkbox (change)="setCharacterContrCharacterization()" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
+            <mat-checkbox [hidden]="!characterContrCharacterization.value && viewCharacterAction" (change)="setCharacterContrCharacterization()" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
                 Do character contradicts characterization?
             </mat-checkbox>
 
@@ -113,19 +113,19 @@
 
             <br />
 
-            <mat-checkbox (change)="setCharacterEmpathy()" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
+            <mat-checkbox [hidden]="!characterEmpathy.value && viewCharacterAction" (change)="setCharacterEmpathy()" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
                 Is character empathetic?
             </mat-checkbox>
 
             <div class="nna-input-group" *ngIf="showCharacterEmpathyDescriptionInput">
                 <textarea autocomplete="off" type="text" name="characterEmpathyDescriptionInput" id="characterEmpathyDescriptionInput" formControlName="characterEmpathyDescriptionInput" 
                     class="form-control nna-input" [ngClass]="{'textarea-without-label': viewCharacterAction}" rows="2" placeholder="How character make you empathize?"></textarea>
-                <label *ngIf="viewCharacterAction" for="characterEmpathyDescriptionInput" class="nna-input-label">How character make you empathize?</label>
+                <label *ngIf="!viewCharacterAction" for="characterEmpathyDescriptionInput" class="nna-input-label">How character make you empathize?</label>
             </div>
 
             <br />
 
-            <mat-checkbox (change)="setCharacterSympathy()" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
+            <mat-checkbox  [hidden]="!characterSympathy.value && viewCharacterAction" (change)="setCharacterSympathy()" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
                 Is character sympathetic?
             </mat-checkbox>
 
@@ -196,7 +196,7 @@
         <button *ngIf="selectedCharacter == null" type="button" class="nna-button-primary" (click)="onCharacterAdd()">Create character</button>
     </div>
 
-    <div *ngIf="deleteAction == false && addOrEditAction == false && helpWindow == false" class="base-modal-footer">
+    <div *ngIf="deleteAction == false && addOrEditAction == false && helpWindow == false && readonly" class="base-modal-footer">
         <button *ngIf="selectedCharacter == null && readonly" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
 
         <button *ngIf="selectedCharacter != null && readonly && !viewCharacterAction" type="button" class="nna-button-secondary" (click)="onClose()">Close</button>

@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChi
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DmoCharactersForConflictDto, DmoConflictDto, DmoDetailsDto, UpdateDmoDetailsDto, UpdateDmoPlotDetailsDto  } from 'src/app/layout/models';
-import { EditorHub } from '../../services/editor-hub.service';
+import { EditorHub } from '../../../layout/dmo-editor/services/editor-hub.service';
 import { compare } from 'fast-json-patch';
 import { MatSelectChange } from '@angular/material/select';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
@@ -30,6 +30,10 @@ export class DmoDetailsPopupComponent implements OnInit {
 	showPremiseQuestionMark: boolean = false;
 	initialControllingIdeaType: number = 0;
 	conflictPairs: any[];
+
+	get readonly(): boolean { return this._readonly; }
+	private set readonly(value: boolean) { this._readonly = value; }
+	private _readonly: boolean;
 
 	get dmoName() { return this.dmoDetailsForm.get('dmoNameInput'); }
 	get movieTitle() { return this.dmoDetailsForm.get('movieTitleInput'); }
@@ -75,8 +79,11 @@ export class DmoDetailsPopupComponent implements OnInit {
 		private dialogRef: MatDialogRef<DmoDetailsPopupComponent>,
 		private nnaHelpersService: NnaHelpersService,
 		private editorHub: EditorHub,
-		@Inject(MAT_DIALOG_DATA) private data: string) {
-			this.dmoId = data;
+		@Inject(MAT_DIALOG_DATA) private data: any) {
+			console.log(data);
+			this.dmoId = data.dmoId;
+			this.readonly = data.readonly;
+			console.log(this.readonly);
 
 			this.maxNameLengthExceededValidationMessage = "Maximum name length exceeded";
 			this.maxMovieTitleLengthExceededValidationMessage = "Maximum movie title length exceeded";
@@ -94,18 +101,18 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.dmoIsLoaded = true;
 		this.dialogRef.backdropClick().subscribe(() => this.onClose());
 		this.dmoDetailsForm = new FormGroup({
-			'dmoNameInput': new FormControl('', [Validators.maxLength(this.maxEntityNameLength)]),
-			'movieTitleInput': new FormControl('', [Validators.required, Validators.maxLength(this.maxEntityNameLength)]),
-			'dmoStatusInput': new FormControl(''),
-			'shortCommentInput': new FormControl('',  [Validators.maxLength(this.maxLongEntityLength)])
+			'dmoNameInput': new FormControl({value: '', disabled: this.readonly}, [Validators.maxLength(this.maxEntityNameLength)]),
+			'movieTitleInput': new FormControl({value: '', disabled: this.readonly}, [Validators.required, Validators.maxLength(this.maxEntityNameLength)]),
+			'dmoStatusInput': new FormControl({value: '', disabled: this.readonly}),
+			'shortCommentInput': new FormControl({value: '', disabled: this.readonly},  [Validators.maxLength(this.maxLongEntityLength)])
 		});
 
 		this.dmoPlotDetailsForm = new FormGroup({
-			'premiseInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
-			'controllingIdeaInput': new FormControl('', [Validators.maxLength(this.maxLongEntityLength)]),
-			'controllingIdeaTypeRadio': new FormControl(''),
-			'didacticismCheckbox': new FormControl(''),
-			'didacticismInput': new FormControl('',  [Validators.maxLength(this.maxLongEntityLength)])	
+			'premiseInput': new FormControl({value: '', disabled: this.readonly}, [Validators.maxLength(this.maxLongEntityLength)]),
+			'controllingIdeaInput': new FormControl({value: '', disabled: this.readonly}, [Validators.maxLength(this.maxLongEntityLength)]),
+			'controllingIdeaTypeRadio': new FormControl({value: '', disabled: this.readonly}),
+			'didacticismCheckbox': new FormControl({value: '', disabled: this.readonly}),
+			'didacticismInput': new FormControl({value: '', disabled: this.readonly},  [Validators.maxLength(this.maxLongEntityLength)])	
 		});
 
 		this.dmoConflictForm = new FormGroup({});
@@ -114,6 +121,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async saveDmoDetails(shouldSave: boolean): Promise<void> {
+		if (this.readonly) {
+			return;
+		}
 		if (this.currentTabIndex !== 0) {
 			return;
 		}
@@ -176,6 +186,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async savePlotChanges(shouldSave: boolean): Promise<void> {
+		if (this.readonly) {
+			return;
+		}
 		if (this.currentTabIndex !== 1) {
 			return;
 		}
@@ -249,6 +262,10 @@ export class DmoDetailsPopupComponent implements OnInit {
 		this.resetDmoPlotDetailsForm();
 		this.resetConflictForm();
 
+		if (this.readonly) {
+			this.updatedTab = [];
+		}
+
 		this.dialogRef.close({
 			cancelled: false,
 			tabs: this.updatedTab
@@ -278,18 +295,27 @@ export class DmoDetailsPopupComponent implements OnInit {
 	} 
 
 	setControllingIdeaType(): void {
+		if (this.readonly) {
+			return;
+		}
 		this.controllingIdea.value
 			? this.controllingIdeaType.setValue(this.controllingIdeaType.value) 
 			: this.controllingIdeaType.setValue(this.initialControllingIdeaType);
 	}
 
 	setDidacticismDescription(): void {
+		if (this.readonly) {
+			return;
+		}
 		if (!this.didacticism.value) {
 			this.didacticismDescription.setValue('');
 		}
 	}
 
 	async selectCharacter($event: MatSelectChange, uniqueId: string): Promise<void> {
+		if (this.readonly) {
+			return;
+		}
 		if (!$event.value) { // if no value was selected
 			this.dmoConflictForm.get(uniqueId + '-select').setValue('');
 			this.dmoConflictForm.get(uniqueId + '-checkbox').setValue(false);
@@ -356,6 +382,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async changeGoalAchieved($event: MatCheckboxChange, contronId: string): Promise<void> {
+		if (this.readonly) {
+			return;
+		}
 		this.dmoConflictForm.markAsDirty();
 		this.dmoConflictForm.get(contronId + '-checkbox').setValue($event.checked);
 
@@ -378,6 +407,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async addConflict() {
+		if (this.readonly) {
+			return;
+		}
 		if (!this.conflictPairs?.length) {
 			this.conflictPairs = [];
 		}
@@ -405,6 +437,9 @@ export class DmoDetailsPopupComponent implements OnInit {
 	}
 
 	async deleteConflict(pairId: string, order: number): Promise<void> {
+		if (this.readonly) {
+			return;
+		}
 		await this.editorHub.deleteConflict(pairId);
 		let conflictsToRemove = this.dmoDetails.conflicts.filter(conflict => conflict.pairId == pairId);
 

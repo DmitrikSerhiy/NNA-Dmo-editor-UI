@@ -17,6 +17,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 
 @NgModule({
@@ -28,12 +30,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 		SsoContainerComponent,
 		GoogleButtonComponent,
 		ToastrWrapperComponent,
-		CharactersPopupComponent
+		CharactersPopupComponent,
+		DmoDetailsPopupComponent
 	],
 	imports: [
 		CommonModule,
 		FormsModule,
 		ReactiveFormsModule,
+		MatTabsModule,
 		MatDialogModule,
 		MatRadioModule,
 		MatCheckboxModule,
@@ -49,7 +53,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 		SsoContainerComponent,
 		GoogleButtonComponent,
 		ToastrWrapperComponent,
-		CharactersPopupComponent
+		CharactersPopupComponent,
+		DmoDetailsPopupComponent
 	],
 	providers: [CustomErrorHandler]
 })
