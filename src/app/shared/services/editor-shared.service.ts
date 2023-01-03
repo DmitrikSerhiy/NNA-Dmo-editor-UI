@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
-import { NnaTagInBeatDto, NnaTagWithoutDescriptionDto } from '../../models';
-import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName, NnaTagInterpolatorPostfix, NnaTagInterpolatorPrefix } from '../models/dmo-dtos';
-import { BeatGeneratorService } from './beat-generator';
+import { NnaTagInBeatDto, NnaTagWithoutDescriptionDto } from '../../layout/models';
+import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName, NnaTagInterpolatorPostfix, NnaTagInterpolatorPrefix } from '../../layout/dmo-editor/models/dmo-dtos';
+import { BeatGeneratorService } from '../../layout/dmo-editor/helpers/beat-generator';
+import { NnaHelpersService } from './nna-helpers.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -11,11 +12,24 @@ export class EditorSharedService {
 
 	get defaultTimePickerValue(): string { return '0:00:00'; };
 	get defaultEmptyTimePickerValue(): string { return ' :  :  '; }
+	get plotPointSyfix(): string { return 'plot_point_'; }
+
+
+	get plotPointContainerSize(): number { return 32; }
+	get defaultBeatMarginBottom(): number{ return 16; }
+	get plotPointRadius(): number { return 6; }
+	get initialGraphTopMargin(): number {return  16; }
+	get plotFlowWidth(): number {return  32; }
+
+	get beatLineHeigth(): number {return  16; }
+	get beatContrainerMinHeight(): number {return  32; }
+
 
 	private tags: NnaTagWithoutDescriptionDto[];
 
 	constructor(
 		private beatGeneratorService: BeatGeneratorService, 
+		private nnaHelpersService: NnaHelpersService,
 		private tagsService: CachedTagsService) { }
 
 	replaceWith(value: string, index: number, replace: string): string {
@@ -300,5 +314,145 @@ export class EditorSharedService {
 
 		return rowBeatText;
 	}
+
+
+
+	selectBeatId(plotPointElement: any): string {
+		return plotPointElement.getAttribute('id').substring(this.plotPointSyfix.length);
+	}
+
+	calculateGraphHeigth(plotPoints: any[], isDmoFinished: boolean): string {
+		let heigth: number = 0;
+		let allLines: number = 0;
+		
+		plotPoints.forEach((pp, i) => {
+			allLines += pp.plotPointMetaData.lines;
+			if (plotPoints.length != i+1) {
+				heigth += (this.plotPointContainerSize * pp.plotPointMetaData.lineCount);
+				heigth += this.defaultBeatMarginBottom;
+
+				if (pp.plotPointMetaData.lines % 2 != 0 && pp.plotPointMetaData.lines > 2) {
+					heigth -= this.defaultBeatMarginBottom;
+				}
+
+			} else {
+				heigth += this.plotPointContainerSize;
+			}
+		});
+
+		heigth += this.initialGraphTopMargin;
+	
+		if (isDmoFinished == true) {
+			let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
+			heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize);
+			heigth += this.initialGraphTopMargin;
+
+			if (latsPlotPoint.lines % 2 != 0 && latsPlotPoint.lines > 2) {
+				heigth -= this.defaultBeatMarginBottom;
+			}
+		}
+
+		heigth += (2 * plotPoints.length);
+
+		return heigth.toString();
+	}
+
+	getSvgCanvas(): string {
+		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
+	}
+	
+	preventDrag($event: any): void {
+		$event.dataTransfer.dropEffect = 'none';
+		$event.preventDefault();
+	}
+
+	scrollToElement(element: any): void {
+		element.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+	}
+
+	calculateLineCount(nativeElement: any): any {
+		let spanHeight = nativeElement.offsetHeight;
+		let lines = Math.ceil(spanHeight / this.beatLineHeigth);
+
+		return lines <= 1
+			? { lineCount: 1, lines: lines }
+			: { lineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
+	}
+
+	shiftCursorToTheEndOfChildren(dataHolderContainer: any, scrollToElement: boolean = true): void {
+		if (!dataHolderContainer.children) {
+			return;
+		}
+
+		const dataHolder = dataHolderContainer.lastChild as HTMLElement;
+		const lastChild = dataHolder.lastChild as HTMLElement;
+
+		if (!lastChild) {
+			dataHolder.focus();
+			if (scrollToElement == true) {
+				this.scrollToElement(dataHolder);
+			}
+			return;
+		} else {
+			if (lastChild.nodeType == 3) { // TEXT_NODE
+				this.setBeatSelection(lastChild);
+				if (scrollToElement == true) {
+					this.scrollToElement(dataHolder);
+				}
+			} else { // any other element
+				if (lastChild.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
+					const emptyElement = document.createTextNode(' ') as Node;
+					lastChild.after(emptyElement);
+					this.setBeatSelection(emptyElement);
+					if (scrollToElement == true) {
+						this.scrollToElement(dataHolder);
+					}
+					return
+				}
+				lastChild.focus();
+				if (scrollToElement == true) {
+					this.scrollToElement(lastChild);
+				}
+			}
+		}
+	}
+
+	setBeatSelection(lastChildElement: HTMLElement | Node): void {
+		const range = document.createRange();
+		range.setStart(lastChildElement, lastChildElement.textContent.length);
+		range.collapse(true);
+		const selection = window.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+
+	setCharactersClaims(): void {
+		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
+		if (!characterTags?.length) {
+			return;
+		}
+
+		if (!characterTags?.length) {
+			return;
+		}
+
+		let grouppedCharacterTags = this.nnaHelpersService.groupBy(Array.from(characterTags), this.selectCharacterIdFromTag);
+		if (!grouppedCharacterTags) {
+			return;
+		}
+
+		for (const group in grouppedCharacterTags) {
+			grouppedCharacterTags[group].forEach((characterTag, i) => {
+				if (i == 0) {
+					characterTag.innerHTML = characterTag.innerHTML.toUpperCase();
+				}
+			});
+		}
+	}
+
+	selectCharacterIdFromTag(characterElement: HTMLElement): string {
+		return characterElement.dataset.characterId;
+	}
+
 
 }

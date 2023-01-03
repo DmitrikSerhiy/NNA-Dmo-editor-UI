@@ -9,7 +9,7 @@ import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDt
 import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
-import { EditorSharedService } from './helpers/editor-shared.service';
+import { EditorSharedService } from '../../shared/services/editor-shared.service';
 import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 
 @Component({

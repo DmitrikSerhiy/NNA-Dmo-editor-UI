@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { compare } from 'fast-json-patch';
 import { take } from 'rxjs/internal/operators/take';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
-import { EditorSharedService } from '../../helpers/editor-shared.service';
+import { EditorSharedService } from '../../../../shared/services/editor-shared.service';
 import { NnaBeatDto, NnaMovieCharacterInDmoDto, NnaMovieCharacterToCreateDto, NnaMovieCharacterToUpdateDto } from '../../models/dmo-dtos';
 import { CharactersColorPaleteService } from '../../services/characters-color-palete.service';
 import { CharactersService } from '../../services/characters.service';

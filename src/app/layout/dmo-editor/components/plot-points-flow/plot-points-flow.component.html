@@ -31,7 +31,7 @@
                 <svg 
                     #plotPointsSvgs class="plot-point" 
                     [attr.id]="'plot_point_' + plotPoint.beatId"
-                    [attr.viewBox]="getSvgCanvas()"
+                    [attr.viewBox]="editorSharedService.getSvgCanvas()"
                     [attr.width]="plotPointContainerSize" 
                     [attr.height]="plotPointContainerSize"
                     transform="scale(1.5)"

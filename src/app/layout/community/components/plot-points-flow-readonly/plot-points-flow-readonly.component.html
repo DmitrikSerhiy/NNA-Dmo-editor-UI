@@ -15,12 +15,12 @@
                 [attr.data-id]="plotPoint.beatId"
                 [attr.data-order]="plotPoint.order"
                 draggable="false" 
-                (dragover)="preventDrag($event)">
+                (dragover)="editorSharedService.preventDrag($event)">
 
                 <svg 
                     class="plot-point" 
                     [attr.id]="'plot_point_' + plotPoint.beatId"
-                    [attr.viewBox]="getSvgCanvas()"
+                    [attr.viewBox]="editorSharedService.getSvgCanvas()"
                     [attr.width]="plotPointContainerSize" 
                     [attr.height]="plotPointContainerSize"
                     transform="scale(1.5)"

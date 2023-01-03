@@ -3,7 +3,7 @@ import { NnaTagWithoutDescriptionDto } from 'src/app/layout/models';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
-import { EditorSharedService } from '../../helpers/editor-shared.service';
+import { EditorSharedService } from '../../../../shared/services/editor-shared.service';
 import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInDmoDto, NnaTagElementName } from '../../models/dmo-dtos';
 
 @Component({
@@ -41,8 +41,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private beatsIds: string[] = [];
 	private beatsMetaData: any[] = [];
 
-	private beatLineHeigth: number = 16;
-	private beatContrainerMinHeight: number = 32;
+	private beatLineHeigth: number;
+	private beatContrainerMinHeight: number;
 	private onDownLines: any = {};
 	private onUpLines: any = {};
 	private valueBeforeRemove: string;
@@ -73,9 +73,12 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	constructor(
 		private cdRef: ChangeDetectorRef,
 		private nnaTooltipService: NnaTooltipService,
-		private editorSharedService: EditorSharedService,
+		public editorSharedService: EditorSharedService,
 		private nnaHelpersService: NnaHelpersService,
-		private tagsService: CachedTagsService) {}
+		private tagsService: CachedTagsService) {
+			this.beatLineHeigth = editorSharedService.beatLineHeigth;
+			this.beatContrainerMinHeight = editorSharedService.beatContrainerMinHeight;
+		}
 
 
 	async ngAfterViewInit(): Promise<void> {
@@ -240,15 +243,15 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		if (!lastBeatElement.innerHTML) {
 			if (lastTimePickerElement.value == this.editorSharedService.defaultTimePickerValue) {
 				lastTimePickerElement.focus();
-				this.scrollToElement(lastTimePickerElement);
+				this.editorSharedService.scrollToElement(lastTimePickerElement);
 				lastTimePickerElement.setSelectionRange(0,0);
 			} else {
 				lastBeatElement.focus();
-				this.scrollToElement(lastBeatElement);
+				this.editorSharedService.scrollToElement(lastBeatElement);
 			}
 		} else {
-			this.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
-			this.scrollToElement(lastBeatElement);
+			this.editorSharedService.shiftCursorToTheEndOfChildren(lastBeatElement.parentElement)
+			this.editorSharedService.scrollToElement(lastBeatElement);
 		}
 	}
 
@@ -264,7 +267,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			if (beatId == timePickerToFocus) {
 				const timePickerElement = this.timePickersElements.toArray()[i].nativeElement;
 				timePickerElement.focus();
-				this.scrollToElement(timePickerElement);
+				this.editorSharedService.scrollToElement(timePickerElement);
 				timePickerElement.setSelectionRange(0,0);
 				return;
 			}
@@ -274,8 +277,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				if (beatId == beatIdToFocus) {
 					const beatDataHolderElement = this.beatDataHolderElements.toArray()[i].nativeElement;
 					beatDataHolderElement.focus();
-					this.scrollToElement(beatDataHolderElement);
-					this.shiftCursorToTheEndOfChildren(beatDataHolderElement.parentElement);
+					this.editorSharedService.scrollToElement(beatDataHolderElement);
+					this.editorSharedService.shiftCursorToTheEndOfChildren(beatDataHolderElement.parentElement);
 					return;
 				}
 			});
@@ -293,10 +296,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			lastAction: lastAction,
 			lastActionMetaData: actionMetaData
 		});
-	}
-
-	private scrollToElement(element: any): void {
-		element.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
 	}
 
   	// #endregion
@@ -459,7 +458,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	beatContainerClick($event: any): void {
 		if ($event.target.className == 'beat-data-holder-container') {
 			$event.target.children[0].focus();
-			this.shiftCursorToTheEndOfChildren($event.target);
+			this.editorSharedService.shiftCursorToTheEndOfChildren($event.target);
 		}
 	}
 
@@ -523,7 +522,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			this.valueBeforeRemove = $event.target.innerHTML;
 		}
 
-		this.onDownLines = this.calculateLineCount($event.target);
+		this.onDownLines = this.editorSharedService.calculateLineCount($event.target);
 	}
 
 	setBeatValue($event: any): void {
@@ -552,7 +551,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 		}
 
-		this.onUpLines = this.calculateLineCount($event.target);
+		this.onUpLines = this.editorSharedService.calculateLineCount($event.target);
 		this.checkLineCounts($event.target);
 	}
 
@@ -579,11 +578,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	onBeatChanged(index: number): void {
 		this.beatsMetaData[index].isDirty = true;
-	}
-
-	preventDrag($event: any): void {
-		$event.dataTransfer.dropEffect = 'none';
-		$event.preventDefault();
 	}
 
 	// #endregion
@@ -674,7 +668,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			if (this.tabIsPressed) {
 				if (index != 0) {
 					$event.preventDefault();
-					this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index - 1].nativeElement.parentElement);
+					this.editorSharedService.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index - 1].nativeElement.parentElement);
 					return;
 				}
 			}
@@ -683,7 +677,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			if (this.tabIsPressed) {
 				if (index != this.beatsIds.length - 1) {
 					$event.preventDefault();
-					this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index + 1].nativeElement.parentElement);
+					this.editorSharedService.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index + 1].nativeElement.parentElement);
 					return;
 				}
 			}
@@ -723,15 +717,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 		}
 	}
 
-	private calculateLineCount(nativeElement: any): any {
-		let spanHeight = nativeElement.offsetHeight;
-		let lines = Math.ceil(spanHeight / this.beatLineHeigth);
-
-		return lines <= 1
-			? { lineCount: 1, lines: lines }
-			: { lineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
-	}
-
 	private setupBeatDataHolderValuesAndMetaData(initialLoad: boolean = false): void {
 		this.beatsMetaData = [];
 		this.beatsIds = [];
@@ -744,13 +729,13 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 			beatDataHolder.nativeElement.innerHTML = this.editorSharedService.getBeatText(beat, initialLoad, true);
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
-			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
+			this.beatsMetaData.push(this.editorSharedService.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
 		});
 
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
 		if (characterTags?.length > 0) {
-			this.setCharactersClaims();
+			this.editorSharedService.setCharactersClaims();
 			characterTags.forEach(characterTag => {
 				this.addEventListenerForCharacterTag(characterTag);
 				this.observeCharacterTag(characterTag);
@@ -764,53 +749,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				this.observeNnaTagElement(tagElement);
 			});
 		}
-	}
-
-	private shiftCursorToTheEndOfChildren(dataHolderContainer: any, scrollToElement: boolean = true): void {
-		if (!dataHolderContainer.children) {
-			return;
-		}
-
-		const dataHolder = dataHolderContainer.lastChild as HTMLElement;
-		const lastChild = dataHolder.lastChild as HTMLElement;
-
-		if (!lastChild) {
-			dataHolder.focus();
-			if (scrollToElement == true) {
-				this.scrollToElement(dataHolder);
-			}
-			return;
-		} else {
-			if (lastChild.nodeType == 3) { // TEXT_NODE
-				this.setBeatSelection(lastChild);
-				if (scrollToElement == true) {
-					this.scrollToElement(dataHolder);
-				}
-			} else { // any other element
-				if (lastChild.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
-					const emptyElement = document.createTextNode(' ') as Node;
-					lastChild.after(emptyElement);
-					this.setBeatSelection(emptyElement);
-					if (scrollToElement == true) {
-						this.scrollToElement(dataHolder);
-					}
-					return
-				}
-				lastChild.focus();
-				if (scrollToElement == true) {
-					this.scrollToElement(lastChild);
-				}
-			}
-		}
-	}
-
-	private setBeatSelection(lastChildElement: HTMLElement | Node): void {
-		const range = document.createRange();
-		range.setStart(lastChildElement, lastChildElement.textContent.length);
-		range.collapse(true);
-		const selection = window.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
 	}
 
     // #endregion
@@ -850,7 +788,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 
 	private focusTimePicker(nativeElement: any): void {
 		nativeElement.focus();
-		this.scrollToElement(nativeElement);
+		this.editorSharedService.scrollToElement(nativeElement);
 		if (nativeElement.value == this.editorSharedService.defaultEmptyTimePickerValue) {
 			nativeElement.setSelectionRange(0,0);
 		} else {
@@ -979,11 +917,11 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	private focusBeat(index: number): void {
-		this.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index].nativeElement.parentElement);
+		this.editorSharedService.shiftCursorToTheEndOfChildren(this.beatDataHolderElements.toArray()[index].nativeElement.parentElement);
 	}
 
 	private focusBeatByElement(nativeEnement: any, scrollToBeat: boolean = false): void {
-		this.shiftCursorToTheEndOfChildren(nativeEnement, scrollToBeat);
+		this.editorSharedService.shiftCursorToTheEndOfChildren(nativeEnement, scrollToBeat);
 	}
 
 	private focusPreviousNextTimePicker(key: number, index: number): void {
@@ -1059,7 +997,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return characterInDmo;
 		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
-		this.setCharactersClaims();
+		this.editorSharedService.setCharactersClaims();
 		const beatIndex = this.beatsIds.indexOf(beatId);
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'attach_character_to_beat', metaData: beatIndex });
@@ -1079,7 +1017,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return characterInDmo;
 		}).sort((cha1, cha2) => cha2.count - cha1.count);
 
-		this.setCharactersClaims();
+		this.editorSharedService.setCharactersClaims();
 		this.beatsMetaData[beatIndex].isDirty = true;
 		this.syncBeats.emit({ source: 'detach_character_from_beat', metaData: beatIndex });
 		this.beatsMetaData[beatIndex].isDirty = false;
@@ -1170,7 +1108,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			tagElement.style.borderBottomWidth = '1px'
 		});
 		characterTag.addEventListener('dragover', ($event) => {
-			this.preventDrag($event);
+			this.editorSharedService.preventDrag($event);
 		});
 	}
 
@@ -1253,34 +1191,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			selectedCharacter?.click();
 			return;
 		}
-	}
-
-	private setCharactersClaims(): void {
-		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
-		if (!characterTags?.length) {
-			return;
-		}
-
-		if (!characterTags?.length) {
-			return;
-		}
-
-		let grouppedCharacterTags = this.nnaHelpersService.groupBy(Array.from(characterTags), this.selectCharacterIdFromTag);
-		if (!grouppedCharacterTags) {
-			return;
-		}
-
-		for (const group in grouppedCharacterTags) {
-			grouppedCharacterTags[group].forEach((characterTag, i) => {
-				if (i == 0) {
-					characterTag.innerHTML = characterTag.innerHTML.toUpperCase();
-				}
-			});
-		}
-	}
-
-	private selectCharacterIdFromTag(characterElement: HTMLElement): string {
-		return characterElement.dataset.characterId;
 	}
 
 	// #endregion
@@ -1456,7 +1366,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			tagElement.style.fontStyle = 'normal';
 		});
 		nnaTagElement.addEventListener('dragover', ($event) => {
-			this.preventDrag($event);
+			this.editorSharedService.preventDrag($event);
 		});
 	}
 

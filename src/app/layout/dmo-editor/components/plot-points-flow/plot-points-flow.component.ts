@@ -1,6 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BeatToMoveDto, BeatsToSwapDto, BeatToSwapDto, UpdateBeatType } from '../../models/dmo-dtos';
 import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
+import { EditorSharedService } from 'src/app/shared/services/editor-shared.service';
 
 @Component({
 	selector: 'app-plot-points-flow',
@@ -25,17 +26,18 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	plotPoints: any[];
 
 	private initialBeatType: number;
-	private plotPointContainerSize: number = 32;
-	private defaultBeatMarginBottom: number = 16;
-	private plotPointRadius: number = 6;
-	private initialGraphTopMargin: number = 16;
+
+	private plotPointContainerSize: number;
+	private defaultBeatMarginBottom: number;
+	private plotPointRadius: number;
+	private initialGraphTopMargin: number;
+	plotFlowWidth: number;
 
 	private moveImage = new Image();
 	private swapImage = new Image();
 
 	
 	graphHeigth: string;
-	plotFlowWidth: number = 32;
 	startCoord: string;
 	endCoord: string;
 	baseCoord: string;
@@ -51,7 +53,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private isBeatTypeTooltipShown: boolean = false;
 	private elementToFocusAfterClose: any = null;
 	private currentBeatIdToChangeBeatType: string;
-	private plotPointSyfix = 'plot_point_';
 	allowBeatTypeToChange: boolean = true;
 	selectedBeatType: number = 1;
 
@@ -65,7 +66,14 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	constructor(
 		private cdRef: ChangeDetectorRef, 
 		private host: ElementRef,
-		private nnaTooltipService: NnaTooltipService) {}
+		private nnaTooltipService: NnaTooltipService,
+		public editorSharedService: EditorSharedService) {
+			this.plotPointContainerSize = editorSharedService.plotPointContainerSize;
+			this.defaultBeatMarginBottom = editorSharedService.defaultBeatMarginBottom;
+			this.plotPointRadius = editorSharedService.plotPointRadius;
+			this.initialGraphTopMargin = editorSharedService.initialGraphTopMargin;
+			this.plotFlowWidth = editorSharedService.plotFlowWidth;
+		}
 
 	ngAfterViewInit(): void {
 		this.setupPlotPoints();
@@ -348,10 +356,6 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	// #region  general settings
 
-	getSvgCanvas(): string {
-		return `0 0 ${this.plotPointContainerSize} ${this.plotPointContainerSize}`;
-	}
-
 	private setupSubscription(): void {
 		this.updateGraph.subscribe(update => {
 			if (update.newplotPoints) {
@@ -360,7 +364,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 			if (update.isFinished !== undefined) {
 				this.isDmoFinished = update.isFinished;
 			}
-			this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
+			this.graphHeigth = this.editorSharedService.calculateGraphHeigth(this.plotPoints, this.isDmoFinished);
 			this.cdRef.detectChanges();
 
 			this.renderGraph();
@@ -408,7 +412,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 
 	private setupPlotPoints() {
 		this.plotPoints = [ ...this.initialPlotPoints];
-		this.graphHeigth = this.calculateGraphHeigth(this.plotPoints);
+		this.graphHeigth = this.editorSharedService.calculateGraphHeigth(this.plotPoints, this.isDmoFinished);
 		this.isDataLoaded = true;
 		this.cdRef.detectChanges();
 	}
@@ -424,53 +428,13 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.plusButtonShift = `top: ${+this.graphHeigth + this.plotPointContainerSize - this.plotPointRadius + 2}px`;
 	}
 
-	private calculateGraphHeigth(plotPoints: any[]): string {
-		let heigth: number = 0;
-		let allLines: number = 0;
-		
-		plotPoints.forEach((pp, i) => {
-			allLines += pp.plotPointMetaData.lines;
-			if (plotPoints.length != i+1) {
-				heigth += (this.plotPointContainerSize * pp.plotPointMetaData.lineCount);
-				heigth += this.defaultBeatMarginBottom;
-
-				if (pp.plotPointMetaData.lines % 2 != 0 && pp.plotPointMetaData.lines > 2) {
-					heigth -= this.defaultBeatMarginBottom;
-				}
-
-			} else {
-				heigth += this.plotPointContainerSize;
-			}
-		});
-
-		heigth += this.initialGraphTopMargin;
-	
-		if (this.isDmoFinished == true) {
-			let latsPlotPoint = plotPoints[plotPoints.length - 1].plotPointMetaData;
-			heigth += (latsPlotPoint.lineCount * this.plotPointContainerSize);
-			heigth += this.initialGraphTopMargin;
-
-			if (latsPlotPoint.lines % 2 != 0 && latsPlotPoint.lines > 2) {
-				heigth -= this.defaultBeatMarginBottom;
-			}
-		}
-
-		heigth += (2 * plotPoints.length);
-
-		return heigth.toString();
-	}
-
 	private setupPlotPointsMargin(): void {
 		this.plotPointsElements.forEach((plotPoint, i) => {
 			let nativeElement = plotPoint.nativeElement.firstChild;
-			if (this.plotPoints.find(p => p.beatId === this.selectBeatId(nativeElement))) {
+			if (this.plotPoints.find(p => p.beatId === this.editorSharedService.selectBeatId(nativeElement))) {
 				nativeElement.parentElement.setAttribute('style', `padding-bottom: ${this.calculatePlotPointMargin(i)}px`);
 			}
 		});
-	}
-
-	private selectBeatId(plotPointElement: any): string {
-		return plotPointElement.getAttribute('id').substring(this.plotPointSyfix.length);
 	}
 
 	private selectBeatIconElement(plotPointElement: any): any {
@@ -487,7 +451,7 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 	private selectPlotPointSvgIconFromBeatId(beatId: string): any {
 		let selectedPlotPointSvg;
 		this.plotPointsSvgElements.forEach(plotPointSvg => {
-			if (beatId == this.selectBeatId(plotPointSvg.nativeElement)) {
+			if (beatId == this.editorSharedService.selectBeatId(plotPointSvg.nativeElement)) {
 				selectedPlotPointSvg = plotPointSvg.nativeElement;
 				return;
 			}

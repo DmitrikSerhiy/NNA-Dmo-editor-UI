@@ -76,7 +76,6 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		this.clearData();
 		this.dmoId = '';
 		this.cdRef.detectChanges();
-
 	}
 
 	async openDmoDetails() {
@@ -94,7 +93,7 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 
 	async beatsSet(callbackResult: any): Promise<void> {
 		this.beatElements = callbackResult.beats;
-		this.beatsMetaData = callbackResult.beatMetadata
+		this.beatsMetaData = callbackResult.beatMetadata;
 		this.beatsIds = callbackResult.beatsIds;
 		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], beatType: beatElement.nativeElement.dataset.beatType, plotPointMetaData: this.beatsMetaData[i], order: i} }); 
 

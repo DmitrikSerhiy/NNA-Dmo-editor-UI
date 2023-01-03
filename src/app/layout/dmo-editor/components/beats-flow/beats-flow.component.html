@@ -50,7 +50,7 @@
 
             <div class="beat-container" *ngFor="let beat of beats; let i = index">
                 
-                <div class="time-picker-container" draggable="false" (dragover)="preventDrag($event)">
+                <div class="time-picker-container" draggable="false" (dragover)="editorSharedService.preventDrag($event)">
                     <input #timePickers class="time-picker" 
                         [id]="'time_picker_' + beat.beatId"
                         [attr.data-order]="i"
@@ -60,11 +60,11 @@
                         (keyup)="setTimePickerValue($event, i)"
                         (focusin)="prepareTimePicker($event)"
                         (focusout)="finalizeTimePicker($event, i)"
-                        (dragover)="preventDrag($event)" />
+                        (dragover)="editorSharedService.preventDrag($event)" />
                 </div>
 
                 <div class="beat-data-holder-wrapper">
-                    <div class="beat-data-holder-container" draggable="false" (dragover)="preventDrag($event)" (click)="beatContainerClick($event)">
+                    <div class="beat-data-holder-container" draggable="false" (dragover)="editorSharedService.preventDrag($event)" (click)="beatContainerClick($event)">
                         <div #beatDataHolders class="beat-data-holder"
                             [id]="'beat_' + beat.beatId"
                             [attr.data-order]="i"
@@ -74,7 +74,7 @@
                             (focusout)="finalizeBeat($event, i)"
                             (focusin)="prepareBeatDataHolder($event)"
                             (input)="onBeatChanged(i)"
-                            (dragover)="preventDrag($event)">
+                            (dragover)="editorSharedService.preventDrag($event)">
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EditorSharedService } from 'src/app/layout/dmo-editor/helpers/editor-shared.service';
+import { EditorSharedService } from 'src/app/shared/services/editor-shared.service';
 import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterInDmoDto, NnaTagElementName } from 'src/app/layout/dmo-editor/models/dmo-dtos';
 import { TagDescriptionPopupComponent } from 'src/app/layout/tags/tag-description-popup/tag-description-popup.component';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
@@ -28,18 +28,13 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 	private beatsIds: string[] = [];
 	private beatsMetaData: any[] = [];
 
-	private beatLineHeigth: number = 16;
-	private beatContrainerMinHeight: number = 32;
-
-
 	@ViewChildren('timePickers') timePickersElements: QueryList<ElementRef>;
 	@ViewChildren('beatDataHolders') beatDataHolderElements: QueryList<ElementRef>;
 
 	constructor(
 		private cdRef: ChangeDetectorRef,
 		private nnaTooltipService: NnaTooltipService,
-		private editorSharedService: EditorSharedService,
-		private nnaHelpersService: NnaHelpersService,
+		public editorSharedService: EditorSharedService,
 		private matModule: MatDialog) { }
 
 
@@ -72,11 +67,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 		});
 	}
 
-	private scrollToElement(element: any): void {
-		element.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-	}
-
-
 	prepareTimePicker(): void {
 		this.nnaTooltipService.hideAllTooltips();
 	}
@@ -88,13 +78,8 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 	beatContainerClick($event: any): void {
 		if ($event.target.className == 'beat-data-holder-container') {
 			$event.target.children[0].focus();
-			this.shiftCursorToTheEndOfChildren($event.target);
+			this.editorSharedService.shiftCursorToTheEndOfChildren($event.target);
 		}
-	}
-
-	preventDrag($event: any): void {
-		$event.dataTransfer.dropEffect = 'none';
-		$event.preventDefault();
 	}
 
 	preventInput($event: any): void {
@@ -103,15 +88,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 
 	private setupLastBeatMargin(): void {
 		this.beatDataHolderElements.last.nativeElement.parentNode.style.marginBottom = '0px';
-	}
-
-	private calculateLineCount(nativeElement: any): any {
-		let spanHeight = nativeElement.offsetHeight;
-		let lines = Math.ceil(spanHeight / this.beatLineHeigth);
-
-		return lines <= 1
-			? { lineCount: 1, lines: lines }
-			: { lineCount: lines % 2 == 0 ? (lines / 2) : Math.floor(lines / 2) + 1, lines: lines};
 	}
 
 	private setupBeatDataHolderValuesAndMetaData(): void {
@@ -126,13 +102,13 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 
 			beatDataHolder.nativeElement.innerHTML = this.editorSharedService.getBeatText(beat, true, true);
 			beatDataHolder.nativeElement.dataset.beatType = beat.type;
-			this.beatsMetaData.push(this.calculateLineCount(beatDataHolder.nativeElement));
+			this.beatsMetaData.push(this.editorSharedService.calculateLineCount(beatDataHolder.nativeElement));
 			this.beatsIds.push(beat.beatId);
 		});
 
 		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
 		if (characterTags?.length > 0) {
-			this.setCharactersClaims();
+			this.editorSharedService.setCharactersClaims();
 			characterTags.forEach(characterTag => {
 				this.addEventListenerForCharacterTag(characterTag);
 			});
@@ -143,64 +119,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 			nnaTagElements.forEach(tagElement => {
 				this.addEventListenerForNnaTagElements(tagElement);
 			});
-		}
-	}
-
-	private shiftCursorToTheEndOfChildren(dataHolderContainer: any, scrollToElement: boolean = true): void {
-		if (!dataHolderContainer.children) {
-			return;
-		}
-
-		const dataHolder = dataHolderContainer.lastChild as HTMLElement;
-		const lastChild = dataHolder.lastChild as HTMLElement;
-
-		if (!lastChild) {
-			dataHolder.focus();
-			if (scrollToElement == true) {
-				this.scrollToElement(dataHolder);
-			}
-			return;
-		} else {
-			if (lastChild.nodeType == 3) { // TEXT_NODE
-				this.setBeatSelection(lastChild);
-				if (scrollToElement == true) {
-					this.scrollToElement(dataHolder);
-				}
-			} else { // any other element
-				if (lastChild.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase()) {
-					const emptyElement = document.createTextNode(' ') as Node;
-					lastChild.after(emptyElement);
-					this.setBeatSelection(emptyElement);
-					if (scrollToElement == true) {
-						this.scrollToElement(dataHolder);
-					}
-					return
-				}
-				lastChild.focus();
-				if (scrollToElement == true) {
-					this.scrollToElement(lastChild);
-				}
-			}
-		}
-	}
-
-	private setBeatSelection(lastChildElement: HTMLElement | Node): void {
-		const range = document.createRange();
-		range.setStart(lastChildElement, lastChildElement.textContent.length);
-		range.collapse(true);
-		const selection = window.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
-	}
-
-	private focusTimePicker(nativeElement: any): void {
-		nativeElement.focus();
-		this.scrollToElement(nativeElement);
-		if (nativeElement.value == this.editorSharedService.defaultEmptyTimePickerValue) {
-			nativeElement.setSelectionRange(0,0);
-		} else {
-			nativeElement.setSelectionRange(8,8);
-			setTimeout(() => {nativeElement.setSelectionRange(8,8); }, 10);
 		}
 	}
 
@@ -240,37 +158,10 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 			tagElement.style.borderBottomWidth = '1px'
 		});
 		characterTag.addEventListener('dragover', ($event) => {
-			this.preventDrag($event);
+			this.editorSharedService.preventDrag($event);
 		});
 	}
 
-	private setCharactersClaims(): void {
-		let characterTags = document.querySelectorAll<HTMLElement>(NnaCharacterTagName);
-		if (!characterTags?.length) {
-			return;
-		}
-
-		if (!characterTags?.length) {
-			return;
-		}
-
-		let grouppedCharacterTags = this.nnaHelpersService.groupBy(Array.from(characterTags), this.selectCharacterIdFromTag);
-		if (!grouppedCharacterTags) {
-			return;
-		}
-
-		for (const group in grouppedCharacterTags) {
-			grouppedCharacterTags[group].forEach((characterTag, i) => {
-				if (i == 0) {
-					characterTag.innerHTML = characterTag.innerHTML.toUpperCase();
-				}
-			});
-		}
-	}
-
-	private selectCharacterIdFromTag(characterElement: HTMLElement): string {
-		return characterElement.dataset.characterId;
-	}
 
 	private addEventListenerForNnaTagElements(nnaTagElement: HTMLElement): void {
 		nnaTagElement.addEventListener('click', async ($event) => {
@@ -291,7 +182,7 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 			tagElement.style.fontStyle = 'normal';
 		});
 		nnaTagElement.addEventListener('dragover', ($event) => {
-			this.preventDrag($event);
+			this.editorSharedService.preventDrag($event);
 		});
 	}
 }
