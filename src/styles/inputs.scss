@@ -93,6 +93,10 @@ select:-webkit-autofill:focus {
         resize: none;
     }
 
+    .textarea-without-label {
+        margin-top: -24px !important;
+    }
+
     select {
         -webkit-appearance: none;
         appearance: none;
@@ -131,7 +135,7 @@ select:-webkit-autofill:focus {
         color: gray;
         user-select: none; 
     }
-      
+
     .nna-input:focus {
         ~ .nna-input-label {  
             position: absolute;

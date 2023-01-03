@@ -5,8 +5,8 @@ import { EditorHub } from './services/editor-hub.service';
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewInit, ViewChild } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { BeatGeneratorService } from './helpers/beat-generator';
-import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaBeatDto, NnaBeatTimeDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
-import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
+import { BeatToMoveDto, BeatsToSwapDto, CreateBeatDto, NnaDmoDto, RemoveBeatDto, UpdateBeatType } from './models/dmo-dtos';
+import { CharactersPopupComponent } from '../../shared/components/characters-popup/characters-popup.component';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 import { DmoDetailsPopupComponent } from './components/dmo-details-popup/dmo-details-popup.component';
 import { EditorSharedService } from '../../shared/services/editor-shared.service';
@@ -165,7 +165,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			$event.source == 'attach_tag_to_beat' ||
 			$event.source == 'detach_tag_from_beat' ||
 			$event.source == 'paste_text') {
-			await this.editorHub.updateBeat(this.selectSingleBeatForServer($event.metaData));
+			await this.editorHub.updateBeat(this.editorSharedService.selectSingleBeatForServer($event.metaData, this.beatElements, this.timePickerElements));
 		} else if ($event.source == 'swap') {
 			await this.editorHub.swapBeats($event.metaData);
 		} else if ($event.source == 'move') {
@@ -430,10 +430,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	
 	private async finalizeCharactersPopup(openOnAction: any): Promise<void> {
-		let characterBeats = this.selectBeatDtos();
+		let characterBeats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 		characterBeats = characterBeats.filter(beat => beat.type == 3);
 		const popupResult = await this.matModule
-			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, beats: characterBeats, openOnAction: openOnAction }, width: '600px' })
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, beats: characterBeats, readonly: false, openOnAction: openOnAction }, width: '600px' })
 			.afterClosed()
 			.toPromise();
 
@@ -474,7 +474,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async reorderBeats($event: any): Promise<void> {
 		if ($event.operation == 'swap') {
-			let beats = this.selectBeatDtos();
+			let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 			const beatsToSwap = $event.data as BeatsToSwapDto;
 			beats.forEach(beat => {
 				if (beat.beatId == 	beatsToSwap.beatToMove.id) {
@@ -492,7 +492,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.updatePlotPoints();
 
 		} else if ($event.operation == 'move') {
-			let beats = this.selectBeatDtos();
+			let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 			const beatToMove =  $event.data as BeatToMoveDto;
 			if (beatToMove.order == beatToMove.previousOrder) {
 				return;
@@ -530,7 +530,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async updateBeatType(updateBeatTypeResult: UpdateBeatType): Promise<void> {
-		let beats = this.selectBeatDtos();
+		let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 		let beatIndexToChangeType;
 		beats.forEach((b, i) =>  {
 			if (b.beatId == updateBeatTypeResult.beatId) {
@@ -562,10 +562,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 	addBeatByButton(): void {
-		let beats = this.selectBeatDtos();
+		let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
 		beats.push(newBeat);
-		beats = this.orderBeats(beats);
+		beats = this.editorSharedService.orderBeats(beats);
 		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
 		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
 		this.updatePlotPoints();
@@ -584,10 +584,10 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			}
 		});
 
-		let beats = this.selectBeatDtos();
+		let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 		const newBeat = this.dataGenerator.createNnaBeatWithDefaultData();
 		beats.splice(indexToInsert + 1, 0 , newBeat);
-		beats = this.orderBeats(beats);
+		beats = this.editorSharedService.orderBeats(beats);
 		const newBeatDto = this.dataGenerator.getCreatedBeatDto(newBeat, this.dmoId);
 		this.updateBeatsEvent.emit({ beats: beats, isFinished: this.isDmoFinised, timePickerToFocus: newBeat.beatId, actionName: 'add', actionMetaData: newBeatDto});
 		this.updatePlotPoints();
@@ -602,9 +602,9 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			}
 		});
 
-		let beats = this.selectBeatDtos();
+		let beats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
 		beats.splice(indexToRemove, 1);
-		beats = this.orderBeats(beats);
+		beats = this.editorSharedService.orderBeats(beats);
 
 		const beatIdToFocus = indexToRemove == 0 ? 0 : indexToRemove - 1;
 		const beatDtoToRemove = {
@@ -627,76 +627,6 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
   	// #endregion
-
-
-	// #region helpers
-
-	private orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
-		let shouldIncrement: boolean = false;
-		beats.forEach((beat, i) => {
-			if (beat.order == -1) {
-				beat.order = i - 1;
-				shouldIncrement = true;
-			} else {
-				beat.order = i;
-			}
-			if (shouldIncrement) {
-				beat.order = beat.order + 1;
-			}
-		});
-
-		return beats;
-	} 
-
-	private buildTimeDtoFromBeat(beatId: string): NnaBeatTimeDto {
-		let selectedTimePickerElement: any;
-		this.timePickerElements.forEach(timePicker => {
-			if (this.editorSharedService.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
-				selectedTimePickerElement = timePicker.nativeElement;
-				return;
-			}
-		});
-		
-		return this.editorSharedService.convertTimeToDto(selectedTimePickerElement.value);
-	}
-
-	private selectBeatDtos(): NnaBeatDto[] {
-		return this.beatElements.map((beatElement, i) => {
-				return this.selectSingleBeatForClient(beatElement.nativeElement, i);
-		});
-	}
-
-	private selectSingleBeatForClient(beatElement: HTMLElement, index): NnaBeatDto  {
-		const beatId = this.editorSharedService.selectBeatIdFromBeatDataHolder(beatElement);
-		const beat: NnaBeatDto = {
-			beatId: beatId,
-			order: index,
-			text: encodeURIComponent(beatElement.innerHTML),
-			time: this.buildTimeDtoFromBeat(beatId),
-			type: +beatElement.dataset.beatType,
-			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement),
-			tagsInBeat: this.editorSharedService.selectTagsFromBeatElement(beatElement)
-		}
-
-		return beat;
-	}
-
-
-	private selectSingleBeatForServer(index: number): NnaBeatDto {
-		const beatElement = this.beatElements.toArray()[index].nativeElement;
-		const beatId = this.editorSharedService.selectBeatIdFromBeatDataHolder(beatElement);
-		const beat : NnaBeatDto = {
-			beatId: beatId,
-			order: index,
-			text: encodeURIComponent(this.editorSharedService.getBeatTextWithInterpolatedNnaCustomTags(beatElement)),
-			time: this.buildTimeDtoFromBeat(beatId),
-			type: beatElement.dataset.beatType,
-			charactersInBeat: this.editorSharedService.selectCharactersFromBeatElement(beatElement),
-			tagsInBeat: this.editorSharedService.selectTagsFromBeatElement(beatElement)
-		}
-
-		return beat;
-	}
 
 	// private buildDmoWithBeatsJson() : NnaDmoWithBeatsAsJson {
 	// 	let dmoWithJson : NnaDmoWithBeatsAsJson = new NnaDmoWithBeatsAsJson(); 
@@ -753,5 +683,4 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.cdRef.detectChanges();
 	}
 
-  	// #endregion
 }

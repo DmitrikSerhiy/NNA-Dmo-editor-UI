@@ -1,7 +1,6 @@
 import { MatDialogModule } from '@angular/material/dialog';
 import { RemoveCollectionPopupComponent } from './components/remove-collection-popup/remove-collection-popup.component';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RightMenuGrabberComponent } from './components/right-menu-grabber/right-menu-grabber.component';
 import { RemoveDmoPopupComponent } from './components/remove-dmo-popup/remove-dmo-popup.component';
 import { NnaSpinnerComponent } from './components/nna-spinner/nna-spinner.component';
@@ -9,6 +8,16 @@ import { CustomErrorHandler } from './services/custom-error-handler';
 import { SsoContainerComponent } from './components/sso-container/sso-container.component';
 import { GoogleButtonComponent } from './components/google-button/google-button.component';
 import { ToastrWrapperComponent } from './components/toastr-wrapper/toastr-wrapper.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { CharactersPopupComponent } from './components/characters-popup/characters-popup.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
 	declarations: [
@@ -18,11 +27,20 @@ import { ToastrWrapperComponent } from './components/toastr-wrapper/toastr-wrapp
 		NnaSpinnerComponent,
 		SsoContainerComponent,
 		GoogleButtonComponent,
-		ToastrWrapperComponent
+		ToastrWrapperComponent,
+		CharactersPopupComponent
 	],
 	imports: [
 		CommonModule,
-		MatDialogModule
+		FormsModule,
+		ReactiveFormsModule,
+		MatDialogModule,
+		MatRadioModule,
+		MatCheckboxModule,
+		MatTableModule,
+		MatPaginatorModule,
+		MatSortModule,
+		MatSelectModule
 	],
 	exports: [
 		RemoveCollectionPopupComponent,
@@ -30,7 +48,8 @@ import { ToastrWrapperComponent } from './components/toastr-wrapper/toastr-wrapp
 		NnaSpinnerComponent,
 		SsoContainerComponent,
 		GoogleButtonComponent,
-		ToastrWrapperComponent
+		ToastrWrapperComponent,
+		CharactersPopupComponent
 	],
 	providers: [CustomErrorHandler]
 })

@@ -1,10 +1,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, QueryList } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CharactersPopupComponent } from 'src/app/shared/components/characters-popup/characters-popup.component';
 import { BeatGeneratorService } from 'src/app/layout/dmo-editor/helpers/beat-generator';
 import { NnaDmoDto } from 'src/app/layout/dmo-editor/models/dmo-dtos';
 import { EditorHub } from 'src/app/layout/dmo-editor/services/editor-hub.service';
 import { DmoDetailsShortDto } from 'src/app/layout/models';
+import { EditorSharedService } from 'src/app/shared/services/editor-shared.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
@@ -25,7 +27,8 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 	beatWasSet: boolean = false;
 
 	plotPointsWithMetaData: any[] = [];
-	beatElements: QueryList<ElementRef> = new QueryList<ElementRef>()
+	beatElements: QueryList<ElementRef> = new QueryList<ElementRef>();
+	timePickerElements: QueryList<ElementRef> = new QueryList<ElementRef>();
 	beatsMetaData: any[] = [];
 	beatsIds: string[] = [];
 
@@ -40,6 +43,7 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		public matModule: MatDialog,
 		private nnaTooltipService: NnaTooltipService,
 		private dataGenerator: BeatGeneratorService,
+		private editorSharedService: EditorSharedService,
 		) { }
 
 	ngOnInit(): void {
@@ -86,13 +90,25 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		// await dmoDetailsPopup.afterClosed().toPromise();
 	}
 
+	async onOpenCharactersPopup($event: any): Promise<void> {
+		await this.openCharactersPopup($event);
+	}
+
 	async openCharactersPopup($event: any = null): Promise<void> {
 		this.nnaTooltipService.hideAllTooltips();
-		await this.finalizeCharactersPopup($event);
+
+		let characterBeats = this.editorSharedService.selectBeatDtos(this.beatElements, this.timePickerElements);
+		characterBeats = characterBeats.filter(beat => beat.type == 3);
+		await this.matModule
+			.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, beats: characterBeats, readonly: true, openOnAction: $event }, width: '600px' })
+			.afterClosed()
+			.toPromise();
+		this.cdRef.detectChanges();
 	}
 
 	async beatsSet(callbackResult: any): Promise<void> {
 		this.beatElements = callbackResult.beats;
+		this.timePickerElements = callbackResult.timePickers;
 		this.beatsMetaData = callbackResult.beatMetadata;
 		this.beatsIds = callbackResult.beatsIds;
 		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], beatType: beatElement.nativeElement.dataset.beatType, plotPointMetaData: this.beatsMetaData[i], order: i} }); 
@@ -100,17 +116,6 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		this.plotPointsWithMetaData = this.beatElements.map((beatElement, i) => { return {beatId: this.beatsIds[i], beatType: beatElement.nativeElement.dataset.beatType, plotPointMetaData: this.beatsMetaData[i], order: i} }); 
 		this.beatWasSet = true;
 		this.cdRef.detectChanges();
-	}
-
-	private async finalizeCharactersPopup(openOnAction: any): Promise<void> {
-		// let characterBeats = this.selectBeatDtos();
-		// characterBeats = characterBeats.filter(beat => beat.type == 3);
-		// const popupResult = await this.matModule
-		// 	.open(CharactersPopupComponent, { data: { dmoId: this.dmoId, beats: characterBeats, openOnAction: openOnAction }, width: '600px' })
-		// 	.afterClosed()
-		// 	.toPromise();
-		// this.cdRef.detectChanges();
-
 	}
 
 	private hideAllTooltipsWrapper = async function($event) {

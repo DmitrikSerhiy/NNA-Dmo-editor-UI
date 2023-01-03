@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable, QueryList } from '@angular/core';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaTagInBeatDto, NnaTagWithoutDescriptionDto } from '../../layout/models';
 import { NnaBeatDto, NnaBeatTimeDto, NnaCharacterInterpolatorPostfix, NnaCharacterInterpolatorPrefix, NnaCharacterTagName, NnaMovieCharacterInBeatDto, NnaTagElementName, NnaTagInterpolatorPostfix, NnaTagInterpolatorPrefix } from '../../layout/dmo-editor/models/dmo-dtos';
@@ -454,5 +454,71 @@ export class EditorSharedService {
 		return characterElement.dataset.characterId;
 	}
 
+	selectBeatDtos(beatElements: QueryList<ElementRef>, timePickersElements: QueryList<ElementRef>): NnaBeatDto[] {
+		return beatElements.map((beatElement, i) => {
+				return this.selectSingleBeatForClient(beatElement.nativeElement, i, timePickersElements);
+		});
+	}
+
+	selectSingleBeatForClient(beatElement: HTMLElement, index: number, timePickersElements: QueryList<ElementRef>): NnaBeatDto  {
+		const beatId = this.selectBeatIdFromBeatDataHolder(beatElement);
+		const beat: NnaBeatDto = {
+			beatId: beatId,
+			order: index,
+			text: encodeURIComponent(beatElement.innerHTML),
+			time: this.buildTimeDtoFromBeat(beatId, timePickersElements),
+			type: +beatElement.dataset.beatType,
+			charactersInBeat: this.selectCharactersFromBeatElement(beatElement),
+			tagsInBeat: this.selectTagsFromBeatElement(beatElement)
+		}
+
+		return beat;
+	}
+
+
+	buildTimeDtoFromBeat(beatId: string, timePickerElements: QueryList<ElementRef>): NnaBeatTimeDto {
+		let selectedTimePickerElement: any;
+		timePickerElements.forEach(timePicker => {
+			if (this.selectBeatIdFromTimePicker(timePicker.nativeElement) == beatId) {
+				selectedTimePickerElement = timePicker.nativeElement;
+				return;
+			}
+		});
+		
+		return this.convertTimeToDto(selectedTimePickerElement.value);
+	}
+
+	orderBeats(beats: NnaBeatDto[]): NnaBeatDto[] {
+		let shouldIncrement: boolean = false;
+		beats.forEach((beat, i) => {
+			if (beat.order == -1) {
+				beat.order = i - 1;
+				shouldIncrement = true;
+			} else {
+				beat.order = i;
+			}
+			if (shouldIncrement) {
+				beat.order = beat.order + 1;
+			}
+		});
+
+		return beats;
+	}
+
+	selectSingleBeatForServer(index: number, beatElements: QueryList<ElementRef>, timePickersElements: QueryList<ElementRef>): NnaBeatDto {
+		const beatElement = beatElements.toArray()[index].nativeElement;
+		const beatId = this.selectBeatIdFromBeatDataHolder(beatElement);
+		const beat : NnaBeatDto = {
+			beatId: beatId,
+			order: index,
+			text: encodeURIComponent(this.getBeatTextWithInterpolatedNnaCustomTags(beatElement)),
+			time: this.buildTimeDtoFromBeat(beatId, timePickersElements),
+			type: beatElement.dataset.beatType,
+			charactersInBeat: this.selectCharactersFromBeatElement(beatElement),
+			tagsInBeat: this.selectTagsFromBeatElement(beatElement)
+		}
+
+		return beat;
+	}
 
 }

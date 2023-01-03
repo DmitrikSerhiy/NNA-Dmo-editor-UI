@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { EditorSharedService } from 'src/app/shared/services/editor-shared.service';
 import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterInDmoDto, NnaTagElementName } from 'src/app/layout/dmo-editor/models/dmo-dtos';
 import { TagDescriptionPopupComponent } from 'src/app/layout/tags/tag-description-popup/tag-description-popup.component';
-import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
@@ -19,7 +18,7 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 	@Input() isDmoFinished: boolean;
 
 	@Output() beatsSet: EventEmitter<any> = new EventEmitter<any>();
-
+	@Output() openCharactersPopup: EventEmitter<any> = new EventEmitter<any>();
 
 	isDataLoaded: boolean = false;
 	beats: NnaBeatDto[];
@@ -138,16 +137,11 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 		});
 	}
 
-	onOpenCharactersPopup($event: any) {
-		// this.openCharactersPopup.emit({action: $event});
-	}
-
 	private addEventListenerForCharacterTag(characterTag: any): void {
 		characterTag.addEventListener('click', ($event) => {
-			// const tagElement = ($event.target as HTMLElement);
-			// const beatDataHolder = tagElement.parentNode.parentNode;
-			// tagElement.remove();
-			// this.focusBeatByElement(beatDataHolder, false);
+			const tagElement = ($event.target as HTMLElement);
+			const characterId = tagElement.dataset.characterId;
+			this.openCharactersPopup.emit({action: 'view_character', characterId: characterId });
 		});
 		characterTag.addEventListener('mouseover', ($event) => {
 			const tagElement = ($event.target as HTMLElement);
