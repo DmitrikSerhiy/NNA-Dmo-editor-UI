@@ -1,3 +1,12 @@
+<div #beatTypeTooltip class="nna-tooltip-base nna-tooltip-arrow-to-left beat-type-tooltip" >  
+    <div class="nna-tooltip-animatad-overflow-for-left"></div>
+    <div class="beat-text" *ngIf="selectedBeatType == 1"> Beat </div>
+    <div class="beat-text" *ngIf="selectedBeatType == 2"> Exposition beat </div>
+    <div class="beat-text" *ngIf="selectedBeatType == 3"> Character beat </div>
+    <div class="beat-text" *ngIf="selectedBeatType == 4"> Aesthetic beat </div>    
+    <div #tooltipArrow class="nna-tooltip-arrow-base nna-tooltip-arrow-to-left"></div> 
+</div>
+
 <div *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
         <div class="plot-point-wrapper" *ngFor="let plotPoint of plotPoints; let i = index">
@@ -17,33 +26,36 @@
                     transform="scale(1.5)"
                     >
 
-                    <circle *ngIf="plotPoint.beatType == 1" 
+                    <circle #beatIcon *ngIf="plotPoint.beatType == 1" 
                         class="beat-icon"
                         [attr.cx]="plotPointContainerSize/2" 
                         [attr.cy]="plotPointContainerSize/2" 
                         [attr.r]="plotPointRadius"
+                        (click)="onBeatSvgIconClick(beatIcon, plotPoint.beatId)"
                         />
 
-                    <circle *ngIf="plotPoint.beatType == 2"
+                    <circle #expBeatIcon *ngIf="plotPoint.beatType == 2"
                         stroke="black" stroke-width="1" class="beat-icon exposition-icon"
                         [attr.cx]="plotPointContainerSize/2" 
                         [attr.cy]="plotPointContainerSize/2" 
                         [attr.r]="plotPointRadius"
+                        (click)="onBeatSvgIconClick(expBeatIcon, plotPoint.beatId)"
                         />
                         
-                    <g *ngIf="plotPoint.beatType == 3" 
+                    <g #characterBeatIcon *ngIf="plotPoint.beatType == 3" 
                         class="beat-icon character-icon" 
                         transform="translate(9, 9)"
+                        (click)="onBeatSvgIconClick(characterBeatIcon, plotPoint.beatId)"
                         >
                             <circle cx="7" cy="7" r="6" stroke="black" stroke-width="1" class="character-icon-outer-circle" />
                             <circle cx="6.99999" cy="5.83333" r="1.83333" stroke="black" class="character-icon-inner-circle"/>
                             <path d="M3 11L4.10728 10.5571C5.02731 10.1891 6.0091 10 7 10V10C7.9909 10 8.97269 10.1891 9.89272 10.5571L11 11" stroke="black" class="character-icon-other"/>         
                     </g>
 
-
-                    <g *ngIf="plotPoint.beatType == 4" 
+                    <g #astBeatIcon  *ngIf="plotPoint.beatType == 4" 
                         class="beat-icon aesthetic-icon" 
                         transform="translate(9, 9)"
+                        (click)="onBeatSvgIconClick(astBeatIcon, plotPoint.beatId)"
                         >
                             <circle cx="7" cy="7" r="1.5" fill="black" stroke="black"/>
                             <path d="M13.5 7C13.5 7.33309 13.2975 7.69585 12.844 7.99819C12.394 8.29819 11.7435 8.5 11 8.5C10.2565 8.5 9.60604 8.29819 9.15603 7.99819C8.70253 7.69585 8.5 7.33309 8.5 7C8.5 6.66691 8.70253 6.30415 9.15603 6.00181C9.60604 5.70181 10.2565 5.5 11 5.5C11.7435 5.5 12.394 5.70181 12.844 6.00181C13.2975 6.30415 13.5 6.66691 13.5 7Z" stroke="black" class="aesthetic-icon-leaf"/>

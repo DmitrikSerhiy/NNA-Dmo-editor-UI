@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { EditorSharedService } from 'src/app/layout/dmo-editor/helpers/editor-shared.service';
 import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterInDmoDto, NnaTagElementName } from 'src/app/layout/dmo-editor/models/dmo-dtos';
-import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
+import { TagDescriptionPopupComponent } from 'src/app/layout/tags/tag-description-popup/tag-description-popup.component';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
 import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
 
@@ -39,7 +40,7 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 		private nnaTooltipService: NnaTooltipService,
 		private editorSharedService: EditorSharedService,
 		private nnaHelpersService: NnaHelpersService,
-		private tagsService: CachedTagsService) { }
+		private matModule: MatDialog) { }
 
 
 	ngAfterViewInit(): void {
@@ -99,8 +100,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 	preventInput($event: any): void {
 		$event.preventDefault();
 	}
-
-    // #region beat data holders (helpers)
 
 	private setupLastBeatMargin(): void {
 		this.beatDataHolderElements.last.nativeElement.parentNode.style.marginBottom = '0px';
@@ -194,12 +193,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 		selection.addRange(range);
 	}
 
-    // #endregion
-
-
-  	// #region time picker (helpers)
-
-
 	private focusTimePicker(nativeElement: any): void {
 		nativeElement.focus();
 		this.scrollToElement(nativeElement);
@@ -226,14 +219,6 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 			}
 		});
 	}
-
-
-	private focusBeatByElement(nativeEnement: any, scrollToBeat: boolean = false): void {
-		this.shiftCursorToTheEndOfChildren(nativeEnement, scrollToBeat);
-	}
-
-  	// #endregion
-
 
 	onOpenCharactersPopup($event: any) {
 		// this.openCharactersPopup.emit({action: $event});
@@ -288,11 +273,14 @@ export class BeatsFlowReadonlyComponent implements AfterViewInit {
 	}
 
 	private addEventListenerForNnaTagElements(nnaTagElement: HTMLElement): void {
-		nnaTagElement.addEventListener('click', ($event) => {
-			// const tagElement = ($event.target as HTMLElement);
-			// const beatDataHolder = tagElement.parentNode.parentNode;
-			// tagElement.remove();
-			// this.focusBeatByElement(beatDataHolder, false);
+		nnaTagElement.addEventListener('click', async ($event) => {
+			const tagElement = ($event.target as HTMLElement);
+			const tagId = tagElement.dataset.tagId;
+
+			await this.matModule
+				.open(TagDescriptionPopupComponent, { data: tagId, width: '400px' })
+				.afterClosed()
+				.toPromise();
 		});
 		nnaTagElement.addEventListener('mouseover', ($event) => {
 			const tagElement = ($event.target as HTMLElement);

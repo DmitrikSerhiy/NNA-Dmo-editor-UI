@@ -58,7 +58,7 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 		this.showControlPanel = true;
 		this.cdRef.detectChanges();
 
-		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId, false);
+		const dmoWithData = await this.editorHub.initialDmoLoadWithData(this.dmoId, true);
 		this.initialDmoDto = new NnaDmoDto(this.dmoId);
 		if (!dmoWithData?.beats?.length) {
 			this.initialDmoDto.beats.push(this.dataGenerator.createNnaBeatWithDefaultData());

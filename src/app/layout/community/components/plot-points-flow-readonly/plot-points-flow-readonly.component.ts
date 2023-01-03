@@ -1,5 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
 
 @Component({
 	selector: 'app-plot-points-flow-readonly',
@@ -26,11 +26,15 @@ export class PlotPointsFlowReadonlyComponent implements AfterViewInit, OnDestroy
 	endCoord: string;
 	baseCoord: string;
 
-	// private resizeObserver: ResizeObserver 
+	selectedBeatType: number;
+
+	private resizeObserver: ResizeObserver
 
 	private plotPointSyfix = 'plot_point_';
 
 	@ViewChildren('plotPoints') plotPointsElements: QueryList<ElementRef>;
+	@ViewChild('beatTypeTooltip') beatTypeTooltipElement: ElementRef;
+	@ViewChild('tooltipArrow') tooltipArrowElement: ElementRef;
 
 	constructor(
 		private cdRef: ChangeDetectorRef, 
@@ -42,24 +46,40 @@ export class PlotPointsFlowReadonlyComponent implements AfterViewInit, OnDestroy
 		this.setupPlotPoints();
 		this.renderGraph();
 
-		// this.resizeObserver = new ResizeObserver((entries) => { 
-		// 	if (this.isBeatTypeTooltipShown == true) {
-		// 		this.hideBeatTypeTooltip()
-		// 	}
-		// });
+		this.resizeObserver = new ResizeObserver((entries) => { 
+		this.nnaTooltipService.hideTooltip(this.nnaTooltipService.beatTypeReadonlyTooltipName);
 
-		// this.resizeObserver.observe(this.host.nativeElement);
+		});
+		this.resizeObserver.observe(this.host.nativeElement);
 	}
 
 
 	ngOnDestroy(): void {
 		this.initialPlotPoints = [];
 		this.isDmoFinished = null;
-		// this.resizeObserver.disconnect();
+		this.resizeObserver.disconnect();
 	}
 
 	onBeatSvgIconClick(beatIconElement: any, beatId: string): void {
+		this.plotPoints.forEach(beat => {
+			if (beat.beatId == beatId) {
+				this.selectedBeatType = beat.beatType;
+				return;
+			}
+		});
 
+		this.nnaTooltipService.addTooltip(
+			this.nnaTooltipService.beatTypeReadonlyTooltipName,
+			beatIconElement,
+			this.beatTypeTooltipElement.nativeElement,
+			{ 
+				arrowNativeElenemt: this.tooltipArrowElement.nativeElement,
+				placement: 'right',
+				offset: { mainAxis: 10 } as TooltipOffsetOptions
+			}
+		);
+		
+		this.nnaTooltipService.showTooltip(this.nnaTooltipService.beatTypeReadonlyTooltipName);
 	}
 
 	preventDrag($event: any): void {

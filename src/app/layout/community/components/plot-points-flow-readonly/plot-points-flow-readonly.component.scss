@@ -1,16 +1,11 @@
 @import "src/styles/colors.scss";
 
 .beat-type-tooltip {
-    width: 160px;
+    width: fit-content;
     height: fit-content;
 
-    .beat-type-options {
-        .beat-type-option {
-            padding-left: 8px;;
-            &:first-child {
-                margin-top: 8px;
-            }
-        }
+    .beat-text {
+        padding: 7px;
     }
 }
 

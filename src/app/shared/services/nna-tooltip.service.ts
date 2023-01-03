@@ -43,7 +43,10 @@ export class NnaTooltipService {
 	get tagTooltipName(): string {
 		return 'tag';
 	}
-	
+
+	get beatTypeReadonlyTooltipName(): string {
+		return 'beatTypeReadonly';
+	}
 
   	constructor() { }
 
