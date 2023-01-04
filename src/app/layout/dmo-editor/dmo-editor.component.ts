@@ -128,7 +128,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.clearBeatsAndCharacters();
 
 		setTimeout(async () => {
-			await this.loadDmoBeatsAndCharacters(false); // sanitization was made during character update/delete request
+			await this.loadDmoBeatsAndCharacters(true); // sanitization was made during character update/delete request
 			this.autosaveTitle = this.savingIsDoneTitle;
 			this.cdRef.detectChanges();
 		}, 800);
