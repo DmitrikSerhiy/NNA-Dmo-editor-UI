@@ -49,7 +49,7 @@ export class AuthService {
         return this.http
             .post<boolean>(this.serverUrl + '/name', { 'name': name } )
             .pipe(catchError((response, obs) => this.errorHandler.handle<boolean>(response, obs) ))
-            .toPromise();;
+            .toPromise();
     }
 
     authenticate(email: string, password: string): Observable<UserDetails> {

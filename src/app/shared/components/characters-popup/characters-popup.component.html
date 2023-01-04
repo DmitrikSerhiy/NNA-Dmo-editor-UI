@@ -55,7 +55,7 @@
                 <label for="characterNameInput" class="nna-input-label">Name*</label>
             </div>
 
-            <div [hidden]="!aliases.value?.length && viewCharacterAction" class="nna-input-group">
+            <div *ngIf="aliases.value?.length || !viewCharacterAction" class="nna-input-group">
                 <input autocomplete="off" type="text" name="characterAliasesInput" id="characterAliasesInput" formControlName="characterAliasesInput" 
                     class="form-control nna-input" placeholder="Aliases [separated by ,]" />
                 <label for="characterAliasesInput" class="nna-input-label">Aliases [separated by ,]</label>
@@ -73,13 +73,13 @@
 
             <br />
 
-            <div [hidden]="!goal.value?.length && viewCharacterAction" class="nna-input-group">
+            <div *ngIf="goal.value?.length || !viewCharacterAction" class="nna-input-group">
                 <input autocomplete="off" type="text" name="goalInput" id="goalInput" formControlName="goalInput" 
                     class="form-control nna-input" placeholder="Goal/desire/need" />
                 <label for="goalInput" class="nna-input-label">Goal/desire/need</label>
             </div>
 
-            <div [hidden]="!unconsciousGoal.value?.length && viewCharacterAction" class="nna-input-group">
+            <div *ngIf="unconsciousGoal.value?.length || !viewCharacterAction" class="nna-input-group">
                 <input autocomplete="off" type="text" name="unconsciousGoalInput" id="unconsciousGoalInput" formControlName="unconsciousGoalInput" 
                     class="form-control nna-input" placeholder="Unconscious desire" />
                 <label for="unconsciousGoalInput" class="nna-input-label">Unconscious desire</label>
@@ -95,13 +95,13 @@
                 <p *ngIf="!character?.length" class="true-character-placeholder">Character beats are not detected</p>
             </div>
 
-            <div [hidden]="!characterization.value?.length && viewCharacterAction" class="nna-input-group">
+            <div *ngIf="characterization.value?.length || !viewCharacterAction" class="nna-input-group">
                 <textarea autocomplete="off"  type="text" name="characterizationInput" id="characterizationInput" formControlName="characterizationInput" 
                     class="form-control nna-input" rows="2" placeholder="Characterization"></textarea>
                 <label for="characterizationInput" class="nna-input-label">Characterization</label>
             </div>
 
-            <mat-checkbox [hidden]="!characterContrCharacterization.value && viewCharacterAction" (change)="setCharacterContrCharacterization()" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
+            <mat-checkbox *ngIf="characterContrCharacterization.value || !viewCharacterAction" (change)="setCharacterContrCharacterization()" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
                 Do character contradicts characterization?
             </mat-checkbox>
 
@@ -113,7 +113,7 @@
 
             <br />
 
-            <mat-checkbox [hidden]="!characterEmpathy.value && viewCharacterAction" (change)="setCharacterEmpathy()" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
+            <mat-checkbox *ngIf="characterEmpathy.value || !viewCharacterAction" (change)="setCharacterEmpathy()" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
                 Is character empathetic?
             </mat-checkbox>
 
@@ -125,7 +125,7 @@
 
             <br />
 
-            <mat-checkbox  [hidden]="!characterSympathy.value && viewCharacterAction" (change)="setCharacterSympathy()" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
+            <mat-checkbox *ngIf="characterSympathy.value || !viewCharacterAction" (change)="setCharacterSympathy()" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
                 Is character sympathetic?
             </mat-checkbox>
 

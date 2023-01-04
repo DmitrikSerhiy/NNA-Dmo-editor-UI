@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DmoCollectionDto, ShortDmoDto } from '../../../layout/models';
-import { Component, OnInit, ViewChild, Input, Inject, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Inject, OnDestroy, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -25,6 +25,13 @@ export class AddDmosPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 	selectedDmo = new SelectionModel<ShortDmoDto>(true, []);
 
 	@Input() openModule: boolean;
+
+	@HostListener('window:keydown', ['$event'])
+	handleKeyDown(event: KeyboardEvent) {
+		if (event.key === "Enter" && !event.shiftKey) {
+			this.onClose(true);
+		}
+	}
 
 	constructor(
 		public dialogRef: MatDialogRef<AddDmosPopupComponent>,

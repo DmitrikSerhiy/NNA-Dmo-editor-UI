@@ -26,7 +26,7 @@ export class CachedTagsService {
 		this.cachedTagList = await this.http
 			.get<NnaTagWithoutDescriptionDto[]>(this.serverUrl)
 			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaTagWithoutDescriptionDto[]>(response, obs)))
-			.toPromise();
+			.toPromise<NnaTagWithoutDescriptionDto[]>();
 		
 		return this.cachedTagList;
 	}
@@ -42,7 +42,6 @@ export class CachedTagsService {
 			.get<NnaTagDto>(this.serverUrl + id)
 			.pipe(catchError((response, obs) => this.errorHandler.handle<NnaTagDto>(response, obs)))
 			.toPromise<NnaTagDto>();
-			// todo: change toPromise method to generic version
 
 		this.cachedTagsWithDescription.push(loadedTag);
 		return loadedTag;

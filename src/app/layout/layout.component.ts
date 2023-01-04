@@ -69,6 +69,8 @@ export class LayoutComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.currentMenuName = RightMenues.tags;
                 this.rightMenuIsClosing$ = this.rightMenu.closedStart;
                 this.rightMenuGrabberService.showGrabber();
+            } else {
+                this.rightMenuGrabberService.hideGrabber();
             }
         });
     }

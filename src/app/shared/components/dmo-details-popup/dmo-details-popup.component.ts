@@ -80,10 +80,8 @@ export class DmoDetailsPopupComponent implements OnInit {
 		private nnaHelpersService: NnaHelpersService,
 		private editorHub: EditorHub,
 		@Inject(MAT_DIALOG_DATA) private data: any) {
-			console.log(data);
 			this.dmoId = data.dmoId;
 			this.readonly = data.readonly;
-			console.log(this.readonly);
 
 			this.maxNameLengthExceededValidationMessage = "Maximum name length exceeded";
 			this.maxMovieTitleLengthExceededValidationMessage = "Maximum movie title length exceeded";

@@ -21,7 +21,7 @@
                         <label for="movieTitleInput" class="nna-input-label">Movie title*</label>
                     </div>
 
-                    <div [hidden]="!dmoName.value?.length && readonly" class="nna-input-group">
+                    <div *ngIf="dmoName.value?.length || !readonly" class="nna-input-group">
                         <input autocomplete="off"  id="dmoNameInput" type="text" name="dmoNameInput" formControlName="dmoNameInput" 
                             class="form-control nna-input" placeholder="DMO name" />
                         <label for="dmoNameInput" class="nna-input-label">DMO name</label>
@@ -36,7 +36,7 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <div [hidden]="!shortComment.value?.length && readonly" class="nna-input-group">
+                    <div *ngIf="shortComment.value?.length || !readonly" class="nna-input-group">
                         <textarea autocomplete="off" id="shortCommentInput" name="shortCommentInput" formControlName="shortCommentInput" 
                             class="form-control nna-input" rows="3" placeholder="Short comment"></textarea>
                         <label for="shortCommentInput" class="nna-input-label">Short comment</label>
@@ -51,7 +51,7 @@
             <mat-tab class="nna-tab plot-tab" label="Plot"> 
                 <form *ngIf="!helpWindow" role="form" [formGroup]="dmoPlotDetailsForm" class="nna-form plot-form">
 
-                    <div [hidden]="!premise.value?.length && readonly" class="nna-input-group">
+                    <div *ngIf="premise.value?.length || !readonly" class="nna-input-group">
                         <input autocomplete="off" id="premiseInput" type="text" name="premiseInput" formControlName="premiseInput" 
                             class="form-control nna-input premise-input" placeholder="Premise" (focus)="showPremiseQuestionMark = !showPremiseQuestionMark" (blur)="showPremiseQuestionMark = !showPremiseQuestionMark" />
                             <span *ngIf="showPremiseQuestionMark || premise.value" class="premise-question-mark">?</span>
@@ -59,7 +59,7 @@
                         <p [ngClass]="{'hidden-field-description': premise.value}" class="field-description"> What would happen if... </p>
                     </div>
 
-                    <div [hidden]="!controllingIdea.value?.length && readonly" class="nna-input-group">
+                    <div *ngIf="controllingIdea.value?.length || !readonly" class="nna-input-group">
                         <input autocomplete="off" id="controllingIdeaInput" type="text" name="controllingIdeaInput" formControlName="controllingIdeaInput" 
                             class="form-control nna-input" placeholder="Controlling idea" (blur)="setControllingIdeaType()"/>
                         <label for="controllingIdeaInput" class="nna-input-label">Controlling idea</label>
@@ -72,7 +72,7 @@
                         <mat-radio-button class="controlling-idea-type-option" [value]="3">Ironic</mat-radio-button>
                     </mat-radio-group>
 
-                    <mat-checkbox [hidden]="!didacticism.value && readonly" (change)="setDidacticismDescription()" id="didacticismCheckbox" name="didacticismCheckbox" formControlName="didacticismCheckbox" class="didacticism-checkbox">
+                    <mat-checkbox *ngIf="didacticism.value || !readonly" (change)="setDidacticismDescription()" id="didacticismCheckbox" name="didacticismCheckbox" formControlName="didacticismCheckbox" class="didacticism-checkbox">
                         Moralizing? Didacticism? Propaganda?
                     </mat-checkbox>
 

@@ -43,7 +43,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 	private deleteCollectionSub: Subscription;
 	private loadDmosSub: Subscription;
 	private dialogSubscription: Subscription;
-	private delteCollectionModalSubscription: Subscription;
 
 	@ViewChild('collectionPaginator', { static: true }) collectionPaginator: MatPaginator;
 	@ViewChild('collectionSort', { static: true }) collectionSorter: MatSort;
@@ -93,7 +92,6 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		this.deleteCollectionSub?.unsubscribe();
 		this.loadDmosSub?.unsubscribe();
 		this.dialogSubscription?.unsubscribe();
-		this.delteCollectionModalSubscription?.unsubscribe();
 		
 		this.collectionManager.setCollectionId('');
 		this.unsubscribe$.next();
@@ -221,23 +219,18 @@ export class DmoCollectionComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	onRemoveCollection() {
+	async onRemoveCollection() {
 		const delteCollectionModal = this.matModule.open(RemoveCollectionPopupComponent, {
 			data: this.currentDmoCollection.collectionName
 		});
 
-		this.delteCollectionModalSubscription = delteCollectionModal.afterClosed().subscribe({
-			next: (shouldDelete: boolean) => {
-				if (!shouldDelete) {
-					return;
-				}
-				const deleteAndRedirect$ = this.dmoCollectionService.deleteCollection(this.currentDmoCollection.id);
+		let shouldDelete = await delteCollectionModal.afterClosed().toPromise();
+		if (!shouldDelete) {
+			return;
+		} 
 
-				this.deleteCollectionSub = deleteAndRedirect$.subscribe({
-					next: () => { this.redirectAfterRemove(); }
-				});
-			}
-		});
+		const deleteAndRedirect$ = this.dmoCollectionService.deleteCollection(this.currentDmoCollection.id);
+		this.deleteCollectionSub = deleteAndRedirect$.subscribe(() => this.redirectAfterRemove());
 	}
 
 	hideEditCollectionNameForm() {

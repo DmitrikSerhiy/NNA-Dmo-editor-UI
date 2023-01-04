@@ -33,8 +33,6 @@ export class DmoEditorReadonlyComponent implements OnInit, AfterViewInit, OnDest
 	beatsMetaData: any[] = [];
 	beatsIds: string[] = [];
 
-	// todo: fix delete dmo if it contains conflicts
-	// todo: fix order on sanitization 
 	
 	constructor(
 		private cdRef: ChangeDetectorRef,

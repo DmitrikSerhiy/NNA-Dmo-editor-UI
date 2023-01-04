@@ -90,7 +90,7 @@ export class DmoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.cdRef.detectChanges();
 		});
 
-		window.onbeforeunload = () => this.sanitizeEditor(); // todo: look at every component onDestroy method. add this when there's must have logic in onDestroy method
+		window.onbeforeunload = () => this.sanitizeEditor();
 		document.addEventListener('keydown', this.hideAllTooltipsWrapper);
 	}
 
