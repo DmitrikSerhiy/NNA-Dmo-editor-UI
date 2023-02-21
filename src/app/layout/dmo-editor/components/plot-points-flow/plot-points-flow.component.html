@@ -13,7 +13,6 @@
 <div #plotPointsContainer *ngIf="isDataLoaded" class="plot-points-graph-container">
     <div class="plot-points">
         <div class="plot-point-wrapper" *ngFor="let plotPoint of plotPoints; let i = index" (mouseenter)="showRemoveBeatButton($event, i)" (mouseleave)="hideRemoveBeatButton($event, i)" >
-            
             <div class="plot-point-controls-container" (click)="onRemoveBeatByButton(plotPoint.beatId)" >
                 <i class="fa fa-minus" aria-hidden="true"></i>
             </div>

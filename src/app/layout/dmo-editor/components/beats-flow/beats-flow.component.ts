@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { NnaTagWithoutDescriptionDto } from 'src/app/layout/models';
 import { CachedTagsService } from 'src/app/shared/services/cached-tags.service';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
-import { NnaTooltipService } from 'src/app/shared/services/nna-tooltip.service';
+import { NnaTooltipService, TooltipOffsetOptions } from 'src/app/shared/services/nna-tooltip.service';
 import { EditorSharedService } from '../../../../shared/services/editor-shared.service';
 import { NnaBeatDto, NnaCharacterTagName, NnaMovieCharacterDto, NnaMovieCharacterInDmoDto, NnaTagElementName } from '../../models/dmo-dtos';
 
@@ -549,6 +549,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				$event.preventDefault();
 				return;
 			}
+
+			this.deleteInnerTagIfItSingle($event.target);
 		}
 
 		this.onUpLines = this.editorSharedService.calculateLineCount($event.target);
@@ -593,6 +595,20 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			}
 		}
 		return false;
+	}
+
+	private deleteInnerTagIfItSingle(nativeElement: any) {
+		[ ...nativeElement.childNodes ].filter(node => node.nodeType == 3 && node.nodeValue == '').forEach(node => node.remove());
+		let children = [ ...nativeElement.childNodes ];
+
+		if (children.filter(node => node.nodeType != 3).length == 2) {
+			if (children.some(node => 
+				node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase() || 
+				node.nodeName.toLowerCase() == NnaTagElementName || 
+				node.nodeName == "BR")) {
+				children.forEach(child => child.remove());
+			}
+		}
 	}
 
 	private deleteBeat(nativeElement: any, fromTimePicker: boolean): void {
@@ -643,7 +659,7 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 			return;
 		}
 
-		if([ ...$event.target.childNodes ].some(node => node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase())) {
+		if([ ...$event.target.childNodes ].some(node => node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase() || node.nodeName.toLowerCase() == NnaTagElementName)) {
 			return;
 		}
 
@@ -1040,7 +1056,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				arrowNativeElenemt: this.charactersTooltipArrow.nativeElement,
 				placement: 'bottom',
 				tooltipMetadata: { beatId: this.editorSharedService.selectBeatIdFromBeatDataHolder(hostingElement) },
-				callbackAfterHide: this.charactersTooltipHideCallback
+				callbackAfterHide: this.charactersTooltipHideCallback,
+				offset:  { mainAxis: 5, crossAxis: 10 } as TooltipOffsetOptions
 			},
 			characterPlaceHolderElement
 		);
@@ -1087,8 +1104,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private insertCharacterTagIntoPlaceholder(characterTag: HTMLElement): void {
 		const characterPlaceHolderElement = document.querySelector(`.${this.characterPlaceHolderClass}`);
 		characterPlaceHolderElement.parentNode.insertBefore(characterTag, characterPlaceHolderElement);
-		characterTag.before(document.createTextNode(' '));
-		characterTag.after(document.createTextNode(' '));
 		this.observeCharacterTag(characterTag);
 	}
 
@@ -1243,7 +1258,8 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 				arrowNativeElenemt: this.tagTooltipArrowElement.nativeElement,
 				placement: 'bottom',
 				tooltipMetadata: { beatId: this.editorSharedService.selectBeatIdFromBeatDataHolder(hostingElement) },
-				callbackAfterHide: this.tagsTooltipHideCallback
+				callbackAfterHide: this.tagsTooltipHideCallback,
+				offset: { mainAxis: 5, crossAxis: 10 } as TooltipOffsetOptions
 			},
 			tagPlaceHolderElement
 		);
@@ -1373,8 +1389,6 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	private insertNnaTagElementIntoPlaceholder(nnaTagElement: HTMLElement): void {
 		const nnaTagPlaceHolderElement = document.querySelector(`.${this.tagPlaceHolderClass}`);
 		nnaTagPlaceHolderElement.parentNode.insertBefore(nnaTagElement, nnaTagPlaceHolderElement);
-		nnaTagElement.before(document.createTextNode(' '));
-		nnaTagElement.after(document.createTextNode(' '));
 		this.observeNnaTagElement(nnaTagElement);
 	}
 

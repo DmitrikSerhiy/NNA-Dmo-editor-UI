@@ -384,18 +384,27 @@ export class PlotPointsFlowComponent implements AfterViewInit, OnDestroy  {
 		this.removeBeatByButton.emit(beatId);
 	}
 
-	showRemoveBeatButton($event: any, i: number): void {
+	showRemoveBeatButton($event: any, i: number, fromSibling : boolean = false): void {
 		if (i === 0) {
 			return;
 		}
-		$event.target.firstChild.classList.add('plot-point-controls-container-visible');
+		if (!fromSibling) {
+			$event.target.firstChild?.classList.add('plot-point-controls-container-visible');
+		} else {
+			$event.target.parentNode?.firstChild?.classList.add('plot-point-controls-container-visible');
+		}
 	}
 
-	hideRemoveBeatButton($event: any, i: number): void {
+	hideRemoveBeatButton($event: any, i: number, fromSibling : boolean = false): void {
 		if (i === 0) {
 			return;
 		}
-		$event.target.firstChild.classList.remove('plot-point-controls-container-visible');
+
+		if (!fromSibling) {
+			$event.target.firstChild?.classList.remove('plot-point-controls-container-visible');
+		} else {
+			$event.target.parentNode?.firstChild?.classList.remove('plot-point-controls-container-visible');
+		}
 	}
 
 	private renderGraph(): void {
