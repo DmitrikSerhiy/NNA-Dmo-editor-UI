@@ -42,7 +42,10 @@ export class EditorRouteReuseStrategyService extends BaseRouteReuseStrategy {
 	}
 
 	private handleSidebarForEditorPage(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot) {
-		if ((!curr.routeConfig.path.includes('editor')) && future.routeConfig.path.includes('editor')) {
+		if (
+			(!curr.routeConfig.path.includes('editor')) && future.routeConfig.path.includes('editor') ||
+			( (!curr.children?.some(ch => ch.routeConfig.path?.includes('editor'))) && (future.children?.some(ch => ch.routeConfig.path?.includes('editor'))) )
+		) {
 			if (this.sidebarManagerService.IsOpen === true) {
 				this.sidebarManagerService.collapseSidebar();
 			}
