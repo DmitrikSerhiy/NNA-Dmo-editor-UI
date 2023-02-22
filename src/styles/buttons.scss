@@ -26,6 +26,7 @@
     user-select: none;
     background-color: transparent;
     transition: background-color .3s;
+    color: #000000;
     
     &:active {
         background-color: $secondary-color;
@@ -62,17 +63,17 @@
 
 .nna-icon-button {
     @include nna-button();
-        font-size: 14px !important;
-        min-width: 26px;
-        width: 26px;
-        padding: 0;
-        justify-content: center;
-        
-        i, span {
-            display: flex;
-            margin: auto;
-            display: flex;
-        }
+    font-size: 14px !important;
+    min-width: 26px;
+    width: 26px;
+    padding: 0;
+    justify-content: center;
+    
+    i, span {
+        display: flex;
+        margin: auto;
+        display: flex;
+    }
 }
 
 .first-nna-button {
@@ -85,6 +86,10 @@
 
 .nna-button-width-unset {
     width: unset !important;
+}
+
+.fa, .material-icons {
+    color: #000000;
 }
 
 
