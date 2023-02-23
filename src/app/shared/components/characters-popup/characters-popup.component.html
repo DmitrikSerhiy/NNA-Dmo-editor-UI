@@ -101,7 +101,7 @@
                 <label for="characterizationInput" class="nna-input-label">Characterization</label>
             </div>
 
-            <mat-checkbox *ngIf="characterContrCharacterization.value || !viewCharacterAction" (change)="setCharacterContrCharacterization()" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
+            <mat-checkbox *ngIf="characterContrCharacterization.value || !viewCharacterAction" (change)="setCharacterContrCharacterization($event)" id="characterContrCharacterizationCheckbox" name="characterContrCharacterizationCheckbox" formControlName="characterContrCharacterizationCheckbox">
                 Do character contradicts characterization?
             </mat-checkbox>
 
@@ -113,7 +113,7 @@
 
             <br />
 
-            <mat-checkbox *ngIf="characterEmpathy.value || !viewCharacterAction" (change)="setCharacterEmpathy()" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
+            <mat-checkbox *ngIf="characterEmpathy.value || !viewCharacterAction" (change)="setCharacterEmpathy($event)" id="characterEmpathyCheckbox" name="characterEmpathyCheckbox" formControlName="characterEmpathyCheckbox">
                 Is character empathetic?
             </mat-checkbox>
 
@@ -125,7 +125,7 @@
 
             <br />
 
-            <mat-checkbox *ngIf="characterSympathy.value || !viewCharacterAction" (change)="setCharacterSympathy()" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
+            <mat-checkbox *ngIf="characterSympathy.value || !viewCharacterAction" (change)="setCharacterSympathy($event)" id="characterSympathyCheckbox" name="characterSympathyCheckbox" formControlName="characterSympathyCheckbox">
                 Is character sympathetic?
             </mat-checkbox>
 
@@ -173,12 +173,12 @@
 
 
 
-    <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false && helpWindow == false && !readonly"  class="base-modal-footer">
+    <div *ngIf="selectedCharacter != null && deleteAction == false && addOrEditAction == false && helpWindow == false && !readonly"  class="base-modal-footer table-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onCharacterToDelete()">Delete</button>
         <button type="button" class="nna-button-primary"(click)="onCharacterToEdit()">Edit</button>
     </div>
 
-    <div *ngIf="selectedCharacter == null && deleteAction == false && addOrEditAction == false && helpWindow == false && !readonly" class="base-modal-footer">
+    <div *ngIf="selectedCharacter == null && deleteAction == false && addOrEditAction == false && helpWindow == false && !readonly" class="base-modal-footer table-modal-footer">
         <button type="button" class="nna-button-secondary" (click)="onClose()">Close</button>
         <button type="button" class="nna-button-primary"(click)="onCharacterToAdd()">Add character</button>
     </div>

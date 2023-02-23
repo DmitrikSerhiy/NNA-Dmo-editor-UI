@@ -433,18 +433,18 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.refreshBeatsTagsWithNewColor(this.color.value);
 	}
 
-	setCharacterContrCharacterization(): void {
-		this.showCharacterContrCharacterizationDescriptionInput = !this.showCharacterContrCharacterizationDescriptionInput;
+	setCharacterContrCharacterization($event): void {
+		this.showCharacterContrCharacterizationDescriptionInput = $event.checked;
 		this.characterContrCharacterizationDescription.setValue('');
 	}
 
-	setCharacterEmpathy(): void {
-		this.showCharacterEmpathyDescriptionInput = !this.showCharacterEmpathyDescriptionInput;
+	setCharacterEmpathy($event): void {
+		this.showCharacterEmpathyDescriptionInput = $event.checked;
 		this.characterEmpathyDescription.setValue('');
 	}
 
-	setCharacterSympathy(): void {
-		this.showCharacterSympathyDescriptionInput = !this.showCharacterSympathyDescriptionInput;
+	setCharacterSympathy($event): void {
+		this.showCharacterSympathyDescriptionInput = $event.checked;
 		this.characterSympathyDescription.setValue('');
 	}
 
@@ -619,6 +619,9 @@ export class CharactersPopupComponent implements OnInit, AfterViewInit, OnDestro
 		this.charactersForm.markAsUntouched();
 		this.initialAction = '';
 		this.initialCharacterIdToView = ''; 
+		this.showCharacterContrCharacterizationDescriptionInput = false;
+		this.showCharacterEmpathyDescriptionInput = false;
+		this.showCharacterSympathyDescriptionInput = false;
 	}
 
 	private resetCharactersTable(): void {

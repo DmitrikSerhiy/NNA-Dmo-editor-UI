@@ -22,6 +22,11 @@
     display: flex;
     flex-flow: column;
     flex-wrap: nowrap;
+    overflow-y: auto;
+
+    @media only screen and (max-height: 620px) {
+        height: 500px;
+    }
 
     .base-modal-body {
         .characters-table {
@@ -37,10 +42,16 @@
         }
 
         .character-form {
-            height: fit-content;
+            height: 485px;
             max-height: 600px;
             padding-right: 14px;
             overflow-y: auto;
+
+            
+            @media only screen and (max-height: 620px) {
+                height: fit-content;
+                overflow: visible;
+            }
 
             .nna-input-group, .nna-input-group-validation {
                 margin-top: 14px;
@@ -85,5 +96,15 @@
 
     .base-modal-footer {
         margin-top: auto;
+
+        @media only screen and (max-height: 620px) {
+            margin-top: 100px;
+        }
+    }
+
+    .table-modal-footer {
+        @media only screen and (max-height: 620px) {
+            margin-top: unset;
+        }
     }
 }
