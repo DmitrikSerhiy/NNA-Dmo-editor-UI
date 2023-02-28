@@ -598,16 +598,18 @@ export class BeatsFlowComponent implements AfterViewInit, OnDestroy {
 	}
 
 	private deleteInnerTagIfItSingle(nativeElement: any) {
-		[ ...nativeElement.childNodes ].filter(node => node.nodeType == 3 && node.nodeValue == '').forEach(node => node.remove());
+		[ ...nativeElement.childNodes ].filter(node => (node.nodeType == 3 && node.nodeValue == '') || node.nodeName == "BR").forEach(node => node.remove());
 		let children = [ ...nativeElement.childNodes ];
+		
+		let customTags = children.filter(node => 
+			node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase() || 
+			node.nodeName.toLowerCase() == NnaTagElementName
+		);
 
-		if (children.filter(node => node.nodeType != 3).length == 2) {
-			if (children.some(node => 
-				node.nodeName.toLowerCase() == NnaCharacterTagName.toLowerCase() || 
-				node.nodeName.toLowerCase() == NnaTagElementName || 
-				node.nodeName == "BR")) {
-				children.forEach(child => child.remove());
-			}
+		
+		if (customTags.length == 1 && children.filter(node => node.nodeType == 3 ).length == 0) {
+			customTags.forEach(child => child.remove());
+			children.filter(node => node.nodeName == "BR").forEach(child => child.remove());
 		}
 	}
 
