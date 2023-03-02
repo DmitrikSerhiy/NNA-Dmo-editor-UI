@@ -56,6 +56,10 @@ export class CustomErrorHandler {
 			return throwError({message: 'Bad request', serverResponse: response } );
 		}
 
+		if (response.headers.get('RedirectToLogin') || response.status == 403) {
+			return this.refreshHelperService.clearLocalStorageAndRedirectToLogin();
+		}
+
 		// else if (response.status == 404) {
 		// 	this.toastr.error(new ToastrErrorMessage(response.error, 'Entity is not Found: 404'));
 		// 	return throwError({message: 'Entity is not Found', status: 404 } );

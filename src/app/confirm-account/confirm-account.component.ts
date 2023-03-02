@@ -26,7 +26,7 @@ export class ConfirmAccountComponent implements OnInit, OnDestroy {
     	private router: Router,
 		private route: ActivatedRoute,
 		private authService: AuthService,
-		private userManager: UserManager) { }
+		public userManager: UserManager) { }
 
 
 	ngOnInit(): void {
@@ -72,9 +72,10 @@ export class ConfirmAccountComponent implements OnInit, OnDestroy {
 	toLogin() {
 		this.router.navigate(['/login']);
 	}
-	
-	redirectToHome() {
-		this.router.navigate(['/app']);
+
+	toLoginAgain() {
+		this.userManager.clearUserData();
+		this.router.navigate(['/login']);
 	}
 
 	ngOnDestroy(): void {

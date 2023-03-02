@@ -32,8 +32,8 @@
 
         <div class="buttons-block">
             <button *ngIf="failedToConfirm && !userIsNotAuthorized && !emailIsSent" type="button" class="nna-button-secondary" (click)="sendConfirmEmail()">Try again</button>
-            <button *ngIf="!userIsNotAuthorized" type="button" class="nna-button-primary" (click)="redirectToHome()">Ok</button>
-            <button *ngIf="userIsNotAuthorized" type="button" class="nna-button-primary" (click)="toLogin()">Login</button>
+            <button *ngIf="!this.userManager.isAuthorized()" type="button" class="nna-button-primary" (click)="toLogin()">Login</button>
+            <button *ngIf="this.userManager.isAuthorized()" type="button" class="nna-button-primary" (click)="toLoginAgain()">Login again</button>
         </div>
     </div>
 </div>
