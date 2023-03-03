@@ -9,6 +9,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DmoEditorPopupComponent } from '../dmo-editor-popup/dmo-editor-popup.component';
 import { DmosService } from 'src/app/shared/services/dmos.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { UserRole } from 'src/app/shared/models/authDto';
 
 @Component({
 	selector: 'app-sidebar',
@@ -17,6 +18,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 	isAuthorized: boolean;
+	currentRole: UserRole;
 	sidebarState: boolean;
 	@Input() updateUserNameDisplay: EventEmitter<void>;
 	@Output() innerEvent$: EventEmitter<any> = new EventEmitter<any>();
@@ -44,6 +46,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 		this.sidebarSubscription = this.sidebarManagerService.sidebarObserver$.subscribe((state) => { this.sidebarState = state; })
 		this.userName = this.userManager.getCurrentUser();
 		this.updateUserNameDisplay.subscribe(() => { this.userName = this.userManager.getCurrentUser(); } );	
+		this.currentRole = this.userManager.getHighestUserRole();
 	}
 
 	toggleSidebar() {

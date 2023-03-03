@@ -52,8 +52,11 @@ export class CurrentSidebarService {
 		Object.keys(SidebarTabs)
 			.filter(t => t!=  SidebarTabs.none)
 			.forEach(sideBarTab => {
-				const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
-				this.renderer.removeClass(selectedTab, 'router-link-active');
+				try {
+					const selectedTab = this.renderer.selectRootElement(`#${sideBarTab.toString()}-tab`, true);
+					this.renderer.removeClass(selectedTab, 'router-link-active');
+				} catch { } // boolshit
+
 		});
 	}
 

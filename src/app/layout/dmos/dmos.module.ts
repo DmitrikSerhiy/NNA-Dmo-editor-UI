@@ -8,9 +8,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { AuthActiveUserGuard, AuthGuard } from 'src/app/shared/services/auth.guards';
 
 const routes: Routes = [
-  { path: '', component: DmosComponent }
+  { path: '', component: DmosComponent, canActivate: [AuthGuard, AuthActiveUserGuard] }
 ];
 
 @NgModule({

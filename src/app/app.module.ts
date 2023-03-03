@@ -2,7 +2,7 @@ import { Toastr } from './shared/services/toastr.service';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { UserManager } from './shared/services/user-manager';
 import { AuthService } from './shared/services/auth.service';
-import { AuthGuard } from './shared/services/auth.guards';
+import { AuthActiveUserGuard, AuthGuard, AuthNotActiveUserGuard, AuthSuperUserGuard } from './shared/services/auth.guards';
 import { Routes, RouterModule, RouteReuseStrategy } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -15,7 +15,6 @@ import { NgbDropdownModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_RIPPLE_GLOBAL_OPTIONS } from '@angular/material/core';
-import { AuthGuardForChild } from './shared/services/auth.guard-for-child';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
@@ -66,7 +65,7 @@ const routes: Routes = [
 		{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
 		{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: { disabled: true } },
 		UserManager, ToastrService, Toastr,
-		AuthGuardForChild, AuthGuard, AuthService,
+		AuthGuard, AuthSuperUserGuard, AuthActiveUserGuard, AuthNotActiveUserGuard, AuthService,
 		{	
 			provide: 'SocialAuthServiceConfig',
 			useValue: {

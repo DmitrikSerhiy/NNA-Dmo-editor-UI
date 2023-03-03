@@ -8,10 +8,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { DmoEditorReadonlyComponent } from './components/dmo-editor-readonly/dmo-editor-readonly.component';
 import { BeatsFlowReadonlyComponent } from './components/beats-flow-readonly/beats-flow-readonly.component';
 import { PlotPointsFlowReadonlyComponent } from './components/plot-points-flow-readonly/plot-points-flow-readonly.component';
+import { AuthNotActiveUserGuard, AuthGuard } from 'src/app/shared/services/auth.guards';
 
 const routes: Routes = [
-	{ path: '', component: CommunityComponent },
-	{ path: 'dmo', component: DmoEditorReadonlyComponent }
+	{ path: '', component: CommunityComponent, canActivate: [AuthGuard, AuthNotActiveUserGuard]  },
+	{ path: 'dmo', component: DmoEditorReadonlyComponent, canActivate: [AuthGuard, AuthNotActiveUserGuard] }
 ];
 
 @NgModule({

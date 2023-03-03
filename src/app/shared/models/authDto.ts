@@ -12,3 +12,11 @@ export interface PersonalInfoDto {
     isEmailVerified: boolean;
     hasPassword: boolean;
 }
+
+
+export enum UserRole {
+    None = 0,
+    NotActiveUser,
+    ActiveUser,
+    SuperUser
+}

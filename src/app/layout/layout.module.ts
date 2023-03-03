@@ -2,7 +2,7 @@ import { RightMenuGrabberComponent } from './../shared/components/right-menu-gra
 import { SharedModule } from './../shared/shared.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RemoveCollectionPopupComponent } from './../shared/components/remove-collection-popup/remove-collection-popup.component';
-import { AuthGuard } from '../shared/services/auth.guards';
+import { AuthActiveUserGuard, AuthGuard, AuthNotActiveUserGuard, AuthSuperUserGuard } from '../shared/services/auth.guards';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { LayoutComponent } from './layout.component';
@@ -25,10 +25,10 @@ const routes: Routes = [{
     component: LayoutComponent,
     children: [
 
-        { path: 'dmos', loadChildren: () => import('./dmos/dmos.module').then(m => m.DmosModule), canActivate: [AuthGuard] },
-        { path: 'editor', loadChildren: () =>import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard] },
-        { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module').then(m => m.DmoCollectionModule), canActivate: [AuthGuard] },
-        { path: 'community', loadChildren: () => import('./community/community.module').then(m => m.CommunityModule), canActivate: [AuthGuard] },
+        { path: 'dmos', loadChildren: () => import('./dmos/dmos.module').then(m => m.DmosModule), canActivate: [AuthGuard, AuthActiveUserGuard] },
+        { path: 'editor', loadChildren: () =>import('./dmo-editor/dmo-editor.module').then(m => m.DmoEditorModule), canActivate: [AuthGuard, AuthActiveUserGuard] },
+        { path: 'dmoCollection', loadChildren: () => import('./dmo-collection/dmo-collection.module').then(m => m.DmoCollectionModule), canActivate: [AuthGuard, AuthActiveUserGuard] },
+        { path: 'community', loadChildren: () => import('./community/community.module').then(m => m.CommunityModule), canActivate: [AuthGuard, AuthNotActiveUserGuard] },
     ]}
 ];
 

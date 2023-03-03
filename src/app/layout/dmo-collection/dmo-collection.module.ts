@@ -12,9 +12,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AddDmosPopupComponent } from '../../shared/components/add-dmos-popup/add-dmos-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { AuthActiveUserGuard, AuthGuard } from 'src/app/shared/services/auth.guards';
 
 const routes: Routes = [
-    { path: '', component: DmoCollectionComponent }
+    { path: '', component: DmoCollectionComponent, canActivate: [AuthGuard, AuthActiveUserGuard] }
 ];
 
 @NgModule({

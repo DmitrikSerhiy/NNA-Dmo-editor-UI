@@ -19,9 +19,10 @@ import { DmoDetailsPopupComponent } from '../../shared/components/dmo-details-po
 import { PublishDmoPopupComponent } from './components/publish-dmo-popup/publish-dmo-popup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthActiveUserGuard, AuthGuard } from 'src/app/shared/services/auth.guards';
 
 const routes: Routes = [
-	{ path: '', component: DmoEditor, data: { shouldReuse: false } }
+	{ path: '', component: DmoEditor, data: { shouldReuse: false }, canActivate: [AuthGuard, AuthActiveUserGuard] }
 ];
 
 @NgModule({

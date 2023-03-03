@@ -6,27 +6,27 @@
 
     <div class="list-group">
         <!-- Id should be the same as LeftMenuTab -->
-        <a *ngIf="isAuthorized" id="dmo-tab" (click)="sendDmoEvent($event)" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized && this.currentRole >= 2" id="dmo-tab" (click)="sendDmoEvent($event)" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Create DMO' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmos-tab" [routerLink]="['/app/dmos']" [routerLinkActive]="['router-link-active']" (click)="sendDmosEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized && this.currentRole >= 2" id="dmos-tab" [routerLink]="['/app/dmos']" [routerLinkActive]="['router-link-active']" (click)="sendDmosEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp;
             <span>{{ 'DMOs' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized && this.currentRole >= 2" id="dmoCollections-tab" (click)="sendDmoCollectionsEvent()" class="list-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <i class="fa fa-layer-group" aria-hidden="true"></i>&nbsp;
             <span>{{ 'Collections' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="community-tab" [routerLink]="['/app/community']" [routerLinkActive]="['router-link-active']" (click)="sendCommunityEvent()" class="list-group-item with-material-icon" [ngClass]="{'side-item-collapse' : !sidebarState}">
+        <a *ngIf="isAuthorized && this.currentRole >= 1" id="community-tab" [routerLink]="['/app/community']" [routerLinkActive]="['router-link-active']" (click)="sendCommunityEvent()" class="list-group-item with-material-icon" [ngClass]="{'side-item-collapse' : !sidebarState}">
             <div class="material-icons"> group</div>&nbsp;
             <span>{{ 'Community' }}</span>
         </a>
 
-        <a *ngIf="isAuthorized" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}" title="{{userName}}">
+        <a *ngIf="isAuthorized && this.currentRole >= 1" id="userCabinet-tab" (click)="sendUserCabinetEvent()" class="list-group-item bottom-group-item" [ngClass]="{'side-item-collapse' : !sidebarState}" title="{{userName}}">
             <i class="fa fa-user" aria-hidden="true"></i> &nbsp;
             <span>{{ userName }}</span>
         </a>
