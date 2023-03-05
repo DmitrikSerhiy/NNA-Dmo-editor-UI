@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { PersonalInfoDto } from 'src/app/shared/models/authDto';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { NnaHelpersService } from 'src/app/shared/services/nna-helpers.service';
+import { Toastr } from 'src/app/shared/services/toastr.service';
 import { UserManager } from 'src/app/shared/services/user-manager';
 
 @Component({
@@ -32,6 +33,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 	passwordHidden: boolean = true;
 	passwordChanged: boolean = false;
 	emailForAccountConfirmationHasBeenSent: boolean = false;
+	emailSentDate?: string;
 	unhandledError: boolean = false;
 
 	missingPasswordValidation: boolean = false;
@@ -68,6 +70,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 		private userManager: UserManager,
 		private nnaHelpersService: NnaHelpersService, 
 		private authService: AuthService,
+		private toastr: Toastr,
 		private router: Router) { 
 			this.showPasswordTitle = "Show password";
 			this.hidePasswordTitle = "Hide password";
@@ -108,6 +111,8 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 					this.userName.setValue(this.personalInfo.userName);
 					this.demoName.nativeElement.value = this.personalInfo.userName;
 					this.initialUserName = this.personalInfo.userName;
+					this.emailForAccountConfirmationHasBeenSent = this.personalInfo.isEmailSent;
+					this.emailSentDate = this.personalInfo.lastTimeEmailSent;
 
 					this.isFormProcessing = false;
 				},
@@ -148,6 +153,7 @@ export class UserCabinetComponent implements OnInit, OnDestroy {
 			.subscribe(() => {
 				this.emailForAccountConfirmationHasBeenSent = true;
 				this.isFormProcessingAfterEdit = false;
+				this.toastr.success("Mail has been sent. Check out your email box.");
 			}, () => {
 				this.isFormProcessingAfterEdit = false;
 			});

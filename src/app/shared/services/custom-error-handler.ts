@@ -56,8 +56,16 @@ export class CustomErrorHandler {
 			return throwError({message: 'Bad request', serverResponse: response } );
 		}
 
-		if (response.headers.get('RedirectToLogin') || response.status == 403) {
+		else if (response.headers.get('RedirectToLogin') || response.status == 403) {
 			return this.refreshHelperService.clearLocalStorageAndRedirectToLogin();
+		}
+
+		else if (response.status == 429) {
+			this.toastr.showError(new ToastrErrorMessage('Try again later', 'Too many requests'));
+			return new Observable<any>(sub => {
+				sub.error('Too many requests');
+				sub.complete();
+			});
 		}
 
 		// else if (response.status == 404) {

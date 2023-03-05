@@ -8,7 +8,8 @@
         <p class="header"> Account activation</p>
 
         <div *ngIf="token && isConfirmed" class="main-block">
-            <h6>Email is verified. Your account is activated.</h6>
+            <h6>Email is verified.</h6>
+            <h6>Your account is activated.</h6>
         </div>
 
         <div *ngIf="failedToConfirm && !emailIsSent" class="main-block">
