@@ -70,7 +70,8 @@ export class UserManager {
         localStorage.removeItem('user access token');
         localStorage.removeItem('user email');
         localStorage.removeItem('user name');
-        localStorage.removeItem('user refresh token');     
+        localStorage.removeItem('user refresh token');
+        localStorage.removeItem('roles');
         
         this.sidebarManagerService.clearSidebarState();
     }

@@ -71,7 +71,7 @@ export class AuthNotActiveUserGuard implements CanActivate {
 	constructor(private userManager: UserManager,private router: Router) { }
 
 	canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
-		if (this.userManager.getHighestUserRole() >= UserRole.ActiveUser) {
+		if (this.userManager.getHighestUserRole() >= UserRole.NotActiveUser) {
             return true;
 		}
 
