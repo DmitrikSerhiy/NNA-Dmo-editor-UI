@@ -78,6 +78,10 @@ export class ConfirmAccountComponent implements OnInit, OnDestroy {
 		this.router.navigate(['/login']);
 	}
 
+	redirectToHome() {
+		this.router.navigate(['/app']);
+	}
+
 	ngOnDestroy(): void {
 		this.confirmEmailSubscription?.unsubscribe();
 		this.sendEmailSubscripton?.unsubscribe();
