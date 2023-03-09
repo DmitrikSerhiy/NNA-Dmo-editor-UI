@@ -69,7 +69,7 @@ export class DmosComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	onDmoRemove() {
 		const delteDMOModal = this.matModule.open(RemoveDmoPopupComponent, {
-			data: this.selectedDmo.name
+			data: this.selectedDmo.movieTitle
 		});
 
 		this.deleteDmoModalSubscription = delteDMOModal.afterClosed().subscribe({
